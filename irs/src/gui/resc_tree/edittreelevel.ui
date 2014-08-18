@@ -1,0 +1,6957 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>EditTreeLevel</class>
+ <widget class="QDialog" name="EditTreeLevel">
+  <property name="windowModality">
+   <enum>Qt::ApplicationModal</enum>
+  </property>
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>522</width>
+    <height>558</height>
+   </rect>
+  </property>
+  <property name="font">
+   <font>
+    <weight>75</weight>
+    <bold>true</bold>
+   </font>
+  </property>
+  <property name="windowTitle">
+   <string>Add or Edit Tree Level</string>
+  </property>
+  <property name="modal">
+   <bool>true</bool>
+  </property>
+  <widget class="QGroupBox" name="layerBox">
+   <property name="geometry">
+    <rect>
+     <x>10</x>
+     <y>20</y>
+     <width>151</width>
+     <height>121</height>
+    </rect>
+   </property>
+   <property name="font">
+    <font>
+     <weight>75</weight>
+     <bold>true</bold>
+    </font>
+   </property>
+   <property name="title">
+    <string>Layer Type</string>
+   </property>
+   <layout class="QVBoxLayout" name="verticalLayout_2">
+    <item>
+     <widget class="QRadioButton" name="agencyButton">
+      <property name="text">
+       <string>by Agency</string>
+      </property>
+     </widget>
+    </item>
+    <item>
+     <widget class="QRadioButton" name="areaButton">
+      <property name="text">
+       <string>by Area</string>
+      </property>
+     </widget>
+    </item>
+    <item>
+     <widget class="QRadioButton" name="rescTypeButton">
+      <property name="enabled">
+       <bool>true</bool>
+      </property>
+      <property name="text">
+       <string>by Resource Type</string>
+      </property>
+     </widget>
+    </item>
+   </layout>
+  </widget>
+  <widget class="QStackedWidget" name="stackedWidget">
+   <property name="geometry">
+    <rect>
+     <x>170</x>
+     <y>20</y>
+     <width>191</width>
+     <height>141</height>
+    </rect>
+   </property>
+   <property name="currentIndex">
+    <number>2</number>
+   </property>
+   <widget class="QWidget" name="startPage">
+    <widget class="QLabel" name="label_11">
+     <property name="geometry">
+      <rect>
+       <x>20</x>
+       <y>10</y>
+       <width>141</width>
+       <height>101</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Select a layer type&lt;/p&gt;&lt;p&gt;to be added or edited&lt;/p&gt;&lt;p&gt;for the selected items.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+     </property>
+    </widget>
+   </widget>
+   <widget class="QWidget" name="agencyPage">
+    <widget class="QGroupBox" name="AgencyBox">
+     <property name="geometry">
+      <rect>
+       <x>0</x>
+       <y>0</y>
+       <width>151</width>
+       <height>131</height>
+      </rect>
+     </property>
+     <property name="font">
+      <font>
+       <weight>75</weight>
+       <bold>true</bold>
+      </font>
+     </property>
+     <property name="title">
+      <string>Agencies</string>
+     </property>
+     <layout class="QGridLayout" name="gridLayout">
+      <item row="0" column="0">
+       <spacer name="horizontalSpacer">
+        <property name="orientation">
+         <enum>Qt::Horizontal</enum>
+        </property>
+        <property name="sizeHint" stdset="0">
+         <size>
+          <width>40</width>
+          <height>20</height>
+         </size>
+        </property>
+       </spacer>
+      </item>
+      <item row="1" column="1">
+       <widget class="QLabel" name="label_2">
+        <property name="text">
+         <string>DOI</string>
+        </property>
+       </widget>
+      </item>
+      <item row="0" column="1">
+       <widget class="QLabel" name="label">
+        <property name="text">
+         <string>FS</string>
+        </property>
+       </widget>
+      </item>
+      <item row="2" column="2">
+       <widget class="QLabel" name="label_7">
+        <property name="text">
+         <string>BIA</string>
+        </property>
+       </widget>
+      </item>
+      <item row="5" column="2">
+       <widget class="QLabel" name="label_5">
+        <property name="text">
+         <string>FWS</string>
+        </property>
+       </widget>
+      </item>
+      <item row="3" column="2">
+       <widget class="QLabel" name="label_4">
+        <property name="text">
+         <string>BLM</string>
+        </property>
+       </widget>
+      </item>
+      <item row="6" column="2">
+       <widget class="QLabel" name="label_6">
+        <property name="text">
+         <string>NPS</string>
+        </property>
+       </widget>
+      </item>
+      <item row="10" column="1" colspan="2">
+       <widget class="QLabel" name="label_3">
+        <property name="text">
+         <string>State and Local</string>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </widget>
+   </widget>
+   <widget class="QWidget" name="areaPage">
+    <widget class="QGroupBox" name="areaBox">
+     <property name="geometry">
+      <rect>
+       <x>10</x>
+       <y>0</y>
+       <width>102</width>
+       <height>73</height>
+      </rect>
+     </property>
+     <property name="font">
+      <font>
+       <weight>75</weight>
+       <bold>true</bold>
+      </font>
+     </property>
+     <property name="title">
+      <string>Area Types</string>
+     </property>
+     <layout class="QVBoxLayout" name="verticalLayout_3">
+      <item>
+       <widget class="QRadioButton" name="regionButton">
+        <property name="text">
+         <string>Regions</string>
+        </property>
+        <property name="checked">
+         <bool>true</bool>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QRadioButton" name="stateButton">
+        <property name="text">
+         <string>States</string>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </widget>
+   </widget>
+   <widget class="QWidget" name="rescPage">
+    <widget class="QGroupBox" name="rescBox">
+     <property name="geometry">
+      <rect>
+       <x>0</x>
+       <y>0</y>
+       <width>151</width>
+       <height>121</height>
+      </rect>
+     </property>
+     <property name="title">
+      <string>Resource Types</string>
+     </property>
+     <layout class="QGridLayout" name="gridLayout_2">
+      <item row="4" column="1">
+       <widget class="QLabel" name="label_14">
+        <property name="text">
+         <string>Water Tenders</string>
+        </property>
+       </widget>
+      </item>
+      <item row="0" column="0">
+       <spacer name="horizontalSpacer_2">
+        <property name="orientation">
+         <enum>Qt::Horizontal</enum>
+        </property>
+        <property name="sizeHint" stdset="0">
+         <size>
+          <width>38</width>
+          <height>10</height>
+         </size>
+        </property>
+       </spacer>
+      </item>
+      <item row="0" column="1">
+       <widget class="QLabel" name="label_8">
+        <property name="text">
+         <string>Crews</string>
+        </property>
+       </widget>
+      </item>
+      <item row="3" column="1">
+       <widget class="QLabel" name="label_13">
+        <property name="text">
+         <string>   .......</string>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="1">
+       <widget class="QLabel" name="label_10">
+        <property name="text">
+         <string>Dozers</string>
+        </property>
+       </widget>
+      </item>
+      <item row="2" column="1">
+       <widget class="QLabel" name="label_9">
+        <property name="text">
+         <string>Engines</string>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </widget>
+   </widget>
+  </widget>
+  <widget class="QWidget" name="verticalLayoutWidget">
+   <property name="geometry">
+    <rect>
+     <x>370</x>
+     <y>20</y>
+     <width>141</width>
+     <height>131</height>
+    </rect>
+   </property>
+   <layout class="QVBoxLayout" name="verticalLayout">
+    <item>
+     <widget class="QPushButton" name="editButton">
+      <property name="text">
+       <string>&amp;Edit Selected Layer</string>
+      </property>
+     </widget>
+    </item>
+    <item>
+     <widget class="QPushButton" name="cancelButton">
+      <property name="text">
+       <string>&amp;Cancel</string>
+      </property>
+     </widget>
+    </item>
+    <item>
+     <spacer name="verticalSpacer">
+      <property name="orientation">
+       <enum>Qt::Vertical</enum>
+      </property>
+      <property name="sizeHint" stdset="0">
+       <size>
+        <width>20</width>
+        <height>40</height>
+       </size>
+      </property>
+     </spacer>
+    </item>
+    <item>
+     <widget class="QPushButton" name="acceptButton">
+      <property name="text">
+       <string>&amp;Accept Layer</string>
+      </property>
+     </widget>
+    </item>
+   </layout>
+  </widget>
+  <widget class="QStackedWidget" name="stackedWidget_2">
+   <property name="geometry">
+    <rect>
+     <x>40</x>
+     <y>170</y>
+     <width>471</width>
+     <height>351</height>
+    </rect>
+   </property>
+   <property name="currentIndex">
+    <number>3</number>
+   </property>
+   <widget class="QWidget" name="page">
+    <widget class="QLabel" name="label_15">
+     <property name="geometry">
+      <rect>
+       <x>230</x>
+       <y>20</y>
+       <width>191</width>
+       <height>16</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>Percent Adjustment by Agency</string>
+     </property>
+    </widget>
+    <widget class="QWidget" name="layoutWidget">
+     <property name="geometry">
+      <rect>
+       <x>60</x>
+       <y>40</y>
+       <width>371</width>
+       <height>241</height>
+      </rect>
+     </property>
+     <layout class="QGridLayout" name="gridLayout_3">
+      <item row="4" column="2">
+       <widget class="QSpinBox" name="FWSBox">
+        <property name="minimumSize">
+         <size>
+          <width>51</width>
+          <height>0</height>
+         </size>
+        </property>
+        <property name="maximumSize">
+         <size>
+          <width>51</width>
+          <height>16777215</height>
+         </size>
+        </property>
+        <property name="maximum">
+         <number>200</number>
+        </property>
+        <property name="singleStep">
+         <number>1</number>
+        </property>
+        <property name="value">
+         <number>100</number>
+        </property>
+       </widget>
+      </item>
+      <item row="4" column="1">
+       <widget class="QScrollBar" name="FWSScrollBar">
+        <property name="maximum">
+         <number>200</number>
+        </property>
+        <property name="value">
+         <number>99</number>
+        </property>
+        <property name="orientation">
+         <enum>Qt::Horizontal</enum>
+        </property>
+       </widget>
+      </item>
+      <item row="0" column="1">
+       <widget class="QScrollBar" name="FSScrollBar">
+        <property name="minimumSize">
+         <size>
+          <width>181</width>
+          <height>0</height>
+         </size>
+        </property>
+        <property name="maximum">
+         <number>200</number>
+        </property>
+        <property name="value">
+         <number>99</number>
+        </property>
+        <property name="orientation">
+         <enum>Qt::Horizontal</enum>
+        </property>
+       </widget>
+      </item>
+      <item row="4" column="0">
+       <widget class="QLabel" name="label_19">
+        <property name="text">
+         <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p align=&quot;center&quot;&gt;FWS&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+        </property>
+       </widget>
+      </item>
+      <item row="0" column="0">
+       <widget class="QLabel" name="label_12">
+        <property name="maximumSize">
+         <size>
+          <width>87</width>
+          <height>16777215</height>
+         </size>
+        </property>
+        <property name="text">
+         <string>FS</string>
+        </property>
+       </widget>
+      </item>
+      <item row="3" column="0">
+       <widget class="QLabel" name="label_17">
+        <property name="text">
+         <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p align=&quot;center&quot;&gt;BLM&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+        </property>
+       </widget>
+      </item>
+      <item row="0" column="2">
+       <widget class="QSpinBox" name="FSBox">
+        <property name="minimumSize">
+         <size>
+          <width>51</width>
+          <height>0</height>
+         </size>
+        </property>
+        <property name="maximumSize">
+         <size>
+          <width>51</width>
+          <height>16777215</height>
+         </size>
+        </property>
+        <property name="maximum">
+         <number>200</number>
+        </property>
+        <property name="singleStep">
+         <number>1</number>
+        </property>
+        <property name="value">
+         <number>100</number>
+        </property>
+       </widget>
+      </item>
+      <item row="2" column="2">
+       <widget class="QSpinBox" name="BIABox">
+        <property name="minimumSize">
+         <size>
+          <width>51</width>
+          <height>0</height>
+         </size>
+        </property>
+        <property name="maximumSize">
+         <size>
+          <width>51</width>
+          <height>16777215</height>
+         </size>
+        </property>
+        <property name="maximum">
+         <number>200</number>
+        </property>
+        <property name="singleStep">
+         <number>1</number>
+        </property>
+        <property name="value">
+         <number>100</number>
+        </property>
+       </widget>
+      </item>
+      <item row="2" column="1">
+       <widget class="QScrollBar" name="BIAScrollBar">
+        <property name="maximum">
+         <number>200</number>
+        </property>
+        <property name="value">
+         <number>99</number>
+        </property>
+        <property name="orientation">
+         <enum>Qt::Horizontal</enum>
+        </property>
+       </widget>
+      </item>
+      <item row="2" column="0">
+       <widget class="QLabel" name="label_18">
+        <property name="text">
+         <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p align=&quot;center&quot;&gt;BIA&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+        </property>
+       </widget>
+      </item>
+      <item row="3" column="1">
+       <widget class="QScrollBar" name="BLMScrollBar">
+        <property name="maximum">
+         <number>200</number>
+        </property>
+        <property name="value">
+         <number>99</number>
+        </property>
+        <property name="orientation">
+         <enum>Qt::Horizontal</enum>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="2">
+       <widget class="QSpinBox" name="DOIBox">
+        <property name="minimumSize">
+         <size>
+          <width>51</width>
+          <height>0</height>
+         </size>
+        </property>
+        <property name="maximumSize">
+         <size>
+          <width>51</width>
+          <height>16777215</height>
+         </size>
+        </property>
+        <property name="maximum">
+         <number>200</number>
+        </property>
+        <property name="singleStep">
+         <number>1</number>
+        </property>
+        <property name="value">
+         <number>100</number>
+        </property>
+       </widget>
+      </item>
+      <item row="3" column="2">
+       <widget class="QSpinBox" name="BLMBox">
+        <property name="minimumSize">
+         <size>
+          <width>51</width>
+          <height>0</height>
+         </size>
+        </property>
+        <property name="maximumSize">
+         <size>
+          <width>51</width>
+          <height>16777215</height>
+         </size>
+        </property>
+        <property name="maximum">
+         <number>200</number>
+        </property>
+        <property name="singleStep">
+         <number>1</number>
+        </property>
+        <property name="value">
+         <number>100</number>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="0">
+       <widget class="QLabel" name="label_16">
+        <property name="text">
+         <string>DOI</string>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="1">
+       <widget class="QScrollBar" name="DOIScrollBar">
+        <property name="minimumSize">
+         <size>
+          <width>181</width>
+          <height>0</height>
+         </size>
+        </property>
+        <property name="maximum">
+         <number>200</number>
+        </property>
+        <property name="value">
+         <number>99</number>
+        </property>
+        <property name="orientation">
+         <enum>Qt::Horizontal</enum>
+        </property>
+       </widget>
+      </item>
+      <item row="6" column="0">
+       <widget class="QLabel" name="label_21">
+        <property name="text">
+         <string>State and Local</string>
+        </property>
+       </widget>
+      </item>
+      <item row="6" column="2">
+       <widget class="QSpinBox" name="SLBox">
+        <property name="minimumSize">
+         <size>
+          <width>51</width>
+          <height>0</height>
+         </size>
+        </property>
+        <property name="maximumSize">
+         <size>
+          <width>51</width>
+          <height>16777215</height>
+         </size>
+        </property>
+        <property name="maximum">
+         <number>200</number>
+        </property>
+        <property name="singleStep">
+         <number>1</number>
+        </property>
+        <property name="value">
+         <number>100</number>
+        </property>
+       </widget>
+      </item>
+      <item row="5" column="0">
+       <widget class="QLabel" name="label_20">
+        <property name="text">
+         <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p align=&quot;center&quot;&gt;NPS&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+        </property>
+       </widget>
+      </item>
+      <item row="5" column="1">
+       <widget class="QScrollBar" name="NPSScrollBar">
+        <property name="maximum">
+         <number>200</number>
+        </property>
+        <property name="value">
+         <number>99</number>
+        </property>
+        <property name="orientation">
+         <enum>Qt::Horizontal</enum>
+        </property>
+       </widget>
+      </item>
+      <item row="5" column="2">
+       <widget class="QSpinBox" name="NPSBox">
+        <property name="minimumSize">
+         <size>
+          <width>51</width>
+          <height>0</height>
+         </size>
+        </property>
+        <property name="maximumSize">
+         <size>
+          <width>51</width>
+          <height>16777215</height>
+         </size>
+        </property>
+        <property name="maximum">
+         <number>200</number>
+        </property>
+        <property name="singleStep">
+         <number>1</number>
+        </property>
+        <property name="value">
+         <number>100</number>
+        </property>
+       </widget>
+      </item>
+      <item row="6" column="1">
+       <widget class="QScrollBar" name="SLScrollBar">
+        <property name="maximum">
+         <number>200</number>
+        </property>
+        <property name="value">
+         <number>99</number>
+        </property>
+        <property name="orientation">
+         <enum>Qt::Horizontal</enum>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </widget>
+   </widget>
+   <widget class="QWidget" name="page_2">
+    <widget class="QLabel" name="label_37">
+     <property name="geometry">
+      <rect>
+       <x>240</x>
+       <y>20</y>
+       <width>191</width>
+       <height>16</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>Percent Adjustment by Region</string>
+     </property>
+    </widget>
+    <widget class="QWidget" name="layoutWidget">
+     <property name="geometry">
+      <rect>
+       <x>52</x>
+       <y>51</y>
+       <width>381</width>
+       <height>271</height>
+      </rect>
+     </property>
+     <layout class="QGridLayout" name="regionLayout">
+      <item row="0" column="0">
+       <widget class="QLabel" name="label_31">
+        <property name="minimumSize">
+         <size>
+          <width>81</width>
+          <height>0</height>
+         </size>
+        </property>
+        <property name="maximumSize">
+         <size>
+          <width>87</width>
+          <height>16777215</height>
+         </size>
+        </property>
+        <property name="text">
+         <string>Region 1 - NR</string>
+        </property>
+       </widget>
+      </item>
+      <item row="0" column="1">
+       <widget class="QScrollBar" name="R1ScrollBar">
+        <property name="minimumSize">
+         <size>
+          <width>181</width>
+          <height>0</height>
+         </size>
+        </property>
+        <property name="maximum">
+         <number>200</number>
+        </property>
+        <property name="value">
+         <number>99</number>
+        </property>
+        <property name="orientation">
+         <enum>Qt::Horizontal</enum>
+        </property>
+       </widget>
+      </item>
+      <item row="0" column="2">
+       <widget class="QSpinBox" name="R1Box">
+        <property name="minimumSize">
+         <size>
+          <width>51</width>
+          <height>0</height>
+         </size>
+        </property>
+        <property name="maximumSize">
+         <size>
+          <width>51</width>
+          <height>16777215</height>
+         </size>
+        </property>
+        <property name="maximum">
+         <number>200</number>
+        </property>
+        <property name="singleStep">
+         <number>1</number>
+        </property>
+        <property name="value">
+         <number>100</number>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="0">
+       <widget class="QLabel" name="label_34">
+        <property name="minimumSize">
+         <size>
+          <width>81</width>
+          <height>0</height>
+         </size>
+        </property>
+        <property name="text">
+         <string>Region 2 - RM</string>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="1">
+       <widget class="QScrollBar" name="R2ScrollBar">
+        <property name="minimumSize">
+         <size>
+          <width>181</width>
+          <height>0</height>
+         </size>
+        </property>
+        <property name="maximum">
+         <number>200</number>
+        </property>
+        <property name="value">
+         <number>99</number>
+        </property>
+        <property name="orientation">
+         <enum>Qt::Horizontal</enum>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="2">
+       <widget class="QSpinBox" name="R2Box">
+        <property name="minimumSize">
+         <size>
+          <width>51</width>
+          <height>0</height>
+         </size>
+        </property>
+        <property name="maximumSize">
+         <size>
+          <width>51</width>
+          <height>16777215</height>
+         </size>
+        </property>
+        <property name="maximum">
+         <number>200</number>
+        </property>
+        <property name="singleStep">
+         <number>1</number>
+        </property>
+        <property name="value">
+         <number>100</number>
+        </property>
+       </widget>
+      </item>
+      <item row="2" column="0">
+       <widget class="QLabel" name="label_33">
+        <property name="minimumSize">
+         <size>
+          <width>81</width>
+          <height>0</height>
+         </size>
+        </property>
+        <property name="text">
+         <string>Region 3 - SW</string>
+        </property>
+       </widget>
+      </item>
+      <item row="2" column="1">
+       <widget class="QScrollBar" name="R3ScrollBar">
+        <property name="maximum">
+         <number>200</number>
+        </property>
+        <property name="value">
+         <number>99</number>
+        </property>
+        <property name="orientation">
+         <enum>Qt::Horizontal</enum>
+        </property>
+       </widget>
+      </item>
+      <item row="2" column="2">
+       <widget class="QSpinBox" name="R3Box">
+        <property name="minimumSize">
+         <size>
+          <width>51</width>
+          <height>0</height>
+         </size>
+        </property>
+        <property name="maximumSize">
+         <size>
+          <width>51</width>
+          <height>16777215</height>
+         </size>
+        </property>
+        <property name="maximum">
+         <number>200</number>
+        </property>
+        <property name="singleStep">
+         <number>1</number>
+        </property>
+        <property name="value">
+         <number>100</number>
+        </property>
+       </widget>
+      </item>
+      <item row="3" column="0">
+       <widget class="QLabel" name="label_32">
+        <property name="minimumSize">
+         <size>
+          <width>81</width>
+          <height>0</height>
+         </size>
+        </property>
+        <property name="text">
+         <string>Region 4 - GB</string>
+        </property>
+       </widget>
+      </item>
+      <item row="3" column="1">
+       <widget class="QScrollBar" name="R4ScrollBar">
+        <property name="maximum">
+         <number>200</number>
+        </property>
+        <property name="value">
+         <number>99</number>
+        </property>
+        <property name="orientation">
+         <enum>Qt::Horizontal</enum>
+        </property>
+       </widget>
+      </item>
+      <item row="3" column="2">
+       <widget class="QSpinBox" name="R4Box">
+        <property name="minimumSize">
+         <size>
+          <width>51</width>
+          <height>0</height>
+         </size>
+        </property>
+        <property name="maximumSize">
+         <size>
+          <width>51</width>
+          <height>16777215</height>
+         </size>
+        </property>
+        <property name="maximum">
+         <number>200</number>
+        </property>
+        <property name="singleStep">
+         <number>1</number>
+        </property>
+        <property name="value">
+         <number>100</number>
+        </property>
+       </widget>
+      </item>
+      <item row="4" column="0">
+       <widget class="QLabel" name="label_30">
+        <property name="minimumSize">
+         <size>
+          <width>81</width>
+          <height>0</height>
+         </size>
+        </property>
+        <property name="text">
+         <string>Region 5 - CA</string>
+        </property>
+       </widget>
+      </item>
+      <item row="4" column="1">
+       <widget class="QScrollBar" name="R5ScrollBar">
+        <property name="maximum">
+         <number>200</number>
+        </property>
+        <property name="value">
+         <number>99</number>
+        </property>
+        <property name="orientation">
+         <enum>Qt::Horizontal</enum>
+        </property>
+       </widget>
+      </item>
+      <item row="4" column="2">
+       <widget class="QSpinBox" name="R5Box">
+        <property name="minimumSize">
+         <size>
+          <width>51</width>
+          <height>0</height>
+         </size>
+        </property>
+        <property name="maximumSize">
+         <size>
+          <width>51</width>
+          <height>16777215</height>
+         </size>
+        </property>
+        <property name="maximum">
+         <number>200</number>
+        </property>
+        <property name="singleStep">
+         <number>1</number>
+        </property>
+        <property name="value">
+         <number>100</number>
+        </property>
+       </widget>
+      </item>
+      <item row="5" column="0">
+       <widget class="QLabel" name="label_36">
+        <property name="minimumSize">
+         <size>
+          <width>81</width>
+          <height>0</height>
+         </size>
+        </property>
+        <property name="text">
+         <string>Region 6 - NW</string>
+        </property>
+       </widget>
+      </item>
+      <item row="5" column="1">
+       <widget class="QScrollBar" name="R6ScrollBar">
+        <property name="maximum">
+         <number>200</number>
+        </property>
+        <property name="value">
+         <number>99</number>
+        </property>
+        <property name="orientation">
+         <enum>Qt::Horizontal</enum>
+        </property>
+       </widget>
+      </item>
+      <item row="5" column="2">
+       <widget class="QSpinBox" name="R6Box">
+        <property name="minimumSize">
+         <size>
+          <width>51</width>
+          <height>0</height>
+         </size>
+        </property>
+        <property name="maximumSize">
+         <size>
+          <width>51</width>
+          <height>16777215</height>
+         </size>
+        </property>
+        <property name="maximum">
+         <number>200</number>
+        </property>
+        <property name="singleStep">
+         <number>1</number>
+        </property>
+        <property name="value">
+         <number>100</number>
+        </property>
+       </widget>
+      </item>
+      <item row="6" column="0">
+       <widget class="QLabel" name="label_35">
+        <property name="minimumSize">
+         <size>
+          <width>81</width>
+          <height>0</height>
+         </size>
+        </property>
+        <property name="text">
+         <string>Region 8 - SA</string>
+        </property>
+       </widget>
+      </item>
+      <item row="6" column="1">
+       <widget class="QScrollBar" name="R8ScrollBar">
+        <property name="maximum">
+         <number>200</number>
+        </property>
+        <property name="value">
+         <number>99</number>
+        </property>
+        <property name="orientation">
+         <enum>Qt::Horizontal</enum>
+        </property>
+       </widget>
+      </item>
+      <item row="6" column="2">
+       <widget class="QSpinBox" name="R8Box">
+        <property name="minimumSize">
+         <size>
+          <width>51</width>
+          <height>0</height>
+         </size>
+        </property>
+        <property name="maximumSize">
+         <size>
+          <width>51</width>
+          <height>16777215</height>
+         </size>
+        </property>
+        <property name="maximum">
+         <number>200</number>
+        </property>
+        <property name="singleStep">
+         <number>1</number>
+        </property>
+        <property name="value">
+         <number>100</number>
+        </property>
+       </widget>
+      </item>
+      <item row="7" column="0">
+       <widget class="QLabel" name="label_38">
+        <property name="minimumSize">
+         <size>
+          <width>81</width>
+          <height>0</height>
+         </size>
+        </property>
+        <property name="maximumSize">
+         <size>
+          <width>87</width>
+          <height>16777215</height>
+         </size>
+        </property>
+        <property name="text">
+         <string>Region 9 - EA</string>
+        </property>
+       </widget>
+      </item>
+      <item row="7" column="1">
+       <widget class="QScrollBar" name="R9ScrollBar">
+        <property name="minimumSize">
+         <size>
+          <width>181</width>
+          <height>0</height>
+         </size>
+        </property>
+        <property name="maximum">
+         <number>200</number>
+        </property>
+        <property name="value">
+         <number>99</number>
+        </property>
+        <property name="orientation">
+         <enum>Qt::Horizontal</enum>
+        </property>
+       </widget>
+      </item>
+      <item row="7" column="2">
+       <widget class="QSpinBox" name="R9Box">
+        <property name="minimumSize">
+         <size>
+          <width>51</width>
+          <height>0</height>
+         </size>
+        </property>
+        <property name="maximumSize">
+         <size>
+          <width>51</width>
+          <height>16777215</height>
+         </size>
+        </property>
+        <property name="maximum">
+         <number>200</number>
+        </property>
+        <property name="singleStep">
+         <number>1</number>
+        </property>
+        <property name="value">
+         <number>100</number>
+        </property>
+       </widget>
+      </item>
+      <item row="8" column="0">
+       <widget class="QLabel" name="label_39">
+        <property name="minimumSize">
+         <size>
+          <width>91</width>
+          <height>0</height>
+         </size>
+        </property>
+        <property name="text">
+         <string>Region 10 - AK</string>
+        </property>
+       </widget>
+      </item>
+      <item row="8" column="1">
+       <widget class="QScrollBar" name="R10ScrollBar">
+        <property name="minimumSize">
+         <size>
+          <width>181</width>
+          <height>0</height>
+         </size>
+        </property>
+        <property name="maximum">
+         <number>200</number>
+        </property>
+        <property name="value">
+         <number>99</number>
+        </property>
+        <property name="orientation">
+         <enum>Qt::Horizontal</enum>
+        </property>
+       </widget>
+      </item>
+      <item row="8" column="2">
+       <widget class="QSpinBox" name="R10Box">
+        <property name="minimumSize">
+         <size>
+          <width>51</width>
+          <height>0</height>
+         </size>
+        </property>
+        <property name="maximumSize">
+         <size>
+          <width>51</width>
+          <height>16777215</height>
+         </size>
+        </property>
+        <property name="maximum">
+         <number>200</number>
+        </property>
+        <property name="singleStep">
+         <number>1</number>
+        </property>
+        <property name="value">
+         <number>100</number>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </widget>
+   </widget>
+   <widget class="QWidget" name="page_5">
+    <widget class="QLabel" name="label_49">
+     <property name="geometry">
+      <rect>
+       <x>230</x>
+       <y>20</y>
+       <width>191</width>
+       <height>16</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>Percent Adjustment by State</string>
+     </property>
+    </widget>
+    <widget class="QScrollArea" name="scrollArea_4">
+     <property name="geometry">
+      <rect>
+       <x>40</x>
+       <y>40</y>
+       <width>391</width>
+       <height>291</height>
+      </rect>
+     </property>
+     <property name="widgetResizable">
+      <bool>true</bool>
+     </property>
+     <widget class="QWidget" name="scrollAreaWidgetContents_4">
+      <property name="geometry">
+       <rect>
+        <x>0</x>
+        <y>-841</y>
+        <width>372</width>
+        <height>1130</height>
+       </rect>
+      </property>
+      <layout class="QGridLayout" name="gridLayout_7">
+       <item row="28" column="2">
+        <widget class="QScrollBar" name="OHScrollBar">
+         <property name="minimumSize">
+          <size>
+           <width>181</width>
+           <height>0</height>
+          </size>
+         </property>
+         <property name="maximum">
+          <number>200</number>
+         </property>
+         <property name="value">
+          <number>99</number>
+         </property>
+         <property name="orientation">
+          <enum>Qt::Horizontal</enum>
+         </property>
+        </widget>
+       </item>
+       <item row="40" column="2">
+        <widget class="QScrollBar" name="VAScrollBar">
+         <property name="minimumSize">
+          <size>
+           <width>181</width>
+           <height>0</height>
+          </size>
+         </property>
+         <property name="maximum">
+          <number>200</number>
+         </property>
+         <property name="value">
+          <number>99</number>
+         </property>
+         <property name="orientation">
+          <enum>Qt::Horizontal</enum>
+         </property>
+        </widget>
+       </item>
+       <item row="37" column="3">
+        <widget class="QSpinBox" name="TNBox">
+         <property name="minimumSize">
+          <size>
+           <width>51</width>
+           <height>0</height>
+          </size>
+         </property>
+         <property name="maximumSize">
+          <size>
+           <width>51</width>
+           <height>16777215</height>
+          </size>
+         </property>
+         <property name="maximum">
+          <number>200</number>
+         </property>
+         <property name="singleStep">
+          <number>1</number>
+         </property>
+         <property name="value">
+          <number>100</number>
+         </property>
+        </widget>
+       </item>
+       <item row="33" column="3">
+        <widget class="QSpinBox" name="PABox">
+         <property name="minimumSize">
+          <size>
+           <width>51</width>
+           <height>0</height>
+          </size>
+         </property>
+         <property name="maximumSize">
+          <size>
+           <width>51</width>
+           <height>16777215</height>
+          </size>
+         </property>
+         <property name="maximum">
+          <number>200</number>
+         </property>
+         <property name="singleStep">
+          <number>1</number>
+         </property>
+         <property name="value">
+          <number>100</number>
+         </property>
+        </widget>
+       </item>
+       <item row="24" column="3">
+        <widget class="QSpinBox" name="NHBox">
+         <property name="minimumSize">
+          <size>
+           <width>51</width>
+           <height>0</height>
+          </size>
+         </property>
+         <property name="maximumSize">
+          <size>
+           <width>51</width>
+           <height>16777215</height>
+          </size>
+         </property>
+         <property name="maximum">
+          <number>200</number>
+         </property>
+         <property name="singleStep">
+          <number>1</number>
+         </property>
+         <property name="value">
+          <number>100</number>
+         </property>
+        </widget>
+       </item>
+       <item row="35" column="3">
+        <widget class="QSpinBox" name="SCBox">
+         <property name="minimumSize">
+          <size>
+           <width>51</width>
+           <height>0</height>
+          </size>
+         </property>
+         <property name="maximumSize">
+          <size>
+           <width>51</width>
+           <height>16777215</height>
+          </size>
+         </property>
+         <property name="maximum">
+          <number>200</number>
+         </property>
+         <property name="singleStep">
+          <number>1</number>
+         </property>
+         <property name="value">
+          <number>100</number>
+         </property>
+        </widget>
+       </item>
+       <item row="25" column="3">
+        <widget class="QSpinBox" name="NJBox">
+         <property name="minimumSize">
+          <size>
+           <width>51</width>
+           <height>0</height>
+          </size>
+         </property>
+         <property name="maximumSize">
+          <size>
+           <width>51</width>
+           <height>16777215</height>
+          </size>
+         </property>
+         <property name="maximum">
+          <number>200</number>
+         </property>
+         <property name="singleStep">
+          <number>1</number>
+         </property>
+         <property name="value">
+          <number>100</number>
+         </property>
+        </widget>
+       </item>
+       <item row="26" column="3">
+        <widget class="QSpinBox" name="NMBox">
+         <property name="minimumSize">
+          <size>
+           <width>51</width>
+           <height>0</height>
+          </size>
+         </property>
+         <property name="maximumSize">
+          <size>
+           <width>51</width>
+           <height>16777215</height>
+          </size>
+         </property>
+         <property name="maximum">
+          <number>200</number>
+         </property>
+         <property name="singleStep">
+          <number>1</number>
+         </property>
+         <property name="value">
+          <number>100</number>
+         </property>
+        </widget>
+       </item>
+       <item row="36" column="3">
+        <widget class="QSpinBox" name="SDBox">
+         <property name="minimumSize">
+          <size>
+           <width>51</width>
+           <height>0</height>
+          </size>
+         </property>
+         <property name="maximumSize">
+          <size>
+           <width>51</width>
+           <height>16777215</height>
+          </size>
+         </property>
+         <property name="maximum">
+          <number>200</number>
+         </property>
+         <property name="singleStep">
+          <number>1</number>
+         </property>
+         <property name="value">
+          <number>100</number>
+         </property>
+        </widget>
+       </item>
+       <item row="30" column="3">
+        <widget class="QSpinBox" name="OKBox">
+         <property name="minimumSize">
+          <size>
+           <width>51</width>
+           <height>0</height>
+          </size>
+         </property>
+         <property name="maximumSize">
+          <size>
+           <width>51</width>
+           <height>16777215</height>
+          </size>
+         </property>
+         <property name="maximum">
+          <number>200</number>
+         </property>
+         <property name="singleStep">
+          <number>1</number>
+         </property>
+         <property name="value">
+          <number>100</number>
+         </property>
+        </widget>
+       </item>
+       <item row="32" column="2">
+        <widget class="QScrollBar" name="ORScrollBar">
+         <property name="minimumSize">
+          <size>
+           <width>181</width>
+           <height>0</height>
+          </size>
+         </property>
+         <property name="maximum">
+          <number>200</number>
+         </property>
+         <property name="value">
+          <number>99</number>
+         </property>
+         <property name="orientation">
+          <enum>Qt::Horizontal</enum>
+         </property>
+        </widget>
+       </item>
+       <item row="44" column="2">
+        <widget class="QScrollBar" name="WYScrollBar">
+         <property name="minimumSize">
+          <size>
+           <width>181</width>
+           <height>0</height>
+          </size>
+         </property>
+         <property name="maximum">
+          <number>200</number>
+         </property>
+         <property name="value">
+          <number>99</number>
+         </property>
+         <property name="orientation">
+          <enum>Qt::Horizontal</enum>
+         </property>
+        </widget>
+       </item>
+       <item row="35" column="2">
+        <widget class="QScrollBar" name="SCScrollBar">
+         <property name="minimumSize">
+          <size>
+           <width>181</width>
+           <height>0</height>
+          </size>
+         </property>
+         <property name="maximum">
+          <number>200</number>
+         </property>
+         <property name="value">
+          <number>99</number>
+         </property>
+         <property name="orientation">
+          <enum>Qt::Horizontal</enum>
+         </property>
+        </widget>
+       </item>
+       <item row="28" column="3">
+        <widget class="QSpinBox" name="OHBox">
+         <property name="minimumSize">
+          <size>
+           <width>51</width>
+           <height>0</height>
+          </size>
+         </property>
+         <property name="maximumSize">
+          <size>
+           <width>51</width>
+           <height>16777215</height>
+          </size>
+         </property>
+         <property name="maximum">
+          <number>200</number>
+         </property>
+         <property name="singleStep">
+          <number>1</number>
+         </property>
+         <property name="value">
+          <number>100</number>
+         </property>
+        </widget>
+       </item>
+       <item row="26" column="2">
+        <widget class="QScrollBar" name="NMScrollBar">
+         <property name="minimumSize">
+          <size>
+           <width>181</width>
+           <height>0</height>
+          </size>
+         </property>
+         <property name="maximum">
+          <number>200</number>
+         </property>
+         <property name="value">
+          <number>99</number>
+         </property>
+         <property name="orientation">
+          <enum>Qt::Horizontal</enum>
+         </property>
+        </widget>
+       </item>
+       <item row="27" column="1">
+        <widget class="QLabel" name="label_170">
+         <property name="minimumSize">
+          <size>
+           <width>91</width>
+           <height>0</height>
+          </size>
+         </property>
+         <property name="text">
+          <string>NV</string>
+         </property>
+        </widget>
+       </item>
+       <item row="30" column="2">
+        <widget class="QScrollBar" name="OKScrollBar">
+         <property name="minimumSize">
+          <size>
+           <width>181</width>
+           <height>0</height>
+          </size>
+         </property>
+         <property name="maximum">
+          <number>200</number>
+         </property>
+         <property name="value">
+          <number>99</number>
+         </property>
+         <property name="orientation">
+          <enum>Qt::Horizontal</enum>
+         </property>
+        </widget>
+       </item>
+       <item row="23" column="1">
+        <widget class="QLabel" name="label_147">
+         <property name="minimumSize">
+          <size>
+           <width>91</width>
+           <height>0</height>
+          </size>
+         </property>
+         <property name="text">
+          <string>NE</string>
+         </property>
+        </widget>
+       </item>
+       <item row="17" column="1">
+        <widget class="QLabel" name="label_182">
+         <property name="minimumSize">
+          <size>
+           <width>91</width>
+           <height>0</height>
+          </size>
+         </property>
+         <property name="text">
+          <string>MN</string>
+         </property>
+        </widget>
+       </item>
+       <item row="30" column="1">
+        <widget class="QLabel" name="label_169">
+         <property name="minimumSize">
+          <size>
+           <width>91</width>
+           <height>0</height>
+          </size>
+         </property>
+         <property name="text">
+          <string>OK</string>
+         </property>
+        </widget>
+       </item>
+       <item row="16" column="1">
+        <widget class="QLabel" name="label_158">
+         <property name="minimumSize">
+          <size>
+           <width>91</width>
+           <height>0</height>
+          </size>
+         </property>
+         <property name="text">
+          <string>MI</string>
+         </property>
+        </widget>
+       </item>
+       <item row="15" column="1">
+        <widget class="QLabel" name="label_163">
+         <property name="minimumSize">
+          <size>
+           <width>91</width>
+           <height>0</height>
+          </size>
+         </property>
+         <property name="text">
+          <string>MD</string>
+         </property>
+        </widget>
+       </item>
+       <item row="24" column="1">
+        <widget class="QLabel" name="label_161">
+         <property name="minimumSize">
+          <size>
+           <width>91</width>
+           <height>0</height>
+          </size>
+         </property>
+         <property name="text">
+          <string>NH</string>
+         </property>
+        </widget>
+       </item>
+       <item row="24" column="2">
+        <widget class="QScrollBar" name="NHScrollBar">
+         <property name="minimumSize">
+          <size>
+           <width>181</width>
+           <height>0</height>
+          </size>
+         </property>
+         <property name="maximum">
+          <number>200</number>
+         </property>
+         <property name="value">
+          <number>99</number>
+         </property>
+         <property name="orientation">
+          <enum>Qt::Horizontal</enum>
+         </property>
+        </widget>
+       </item>
+       <item row="10" column="1">
+        <widget class="QLabel" name="label_148">
+         <property name="minimumSize">
+          <size>
+           <width>91</width>
+           <height>0</height>
+          </size>
+         </property>
+         <property name="text">
+          <string>IL</string>
+         </property>
+        </widget>
+       </item>
+       <item row="10" column="3">
+        <widget class="QSpinBox" name="ILBox">
+         <property name="minimumSize">
+          <size>
+           <width>51</width>
+           <height>0</height>
+          </size>
+         </property>
+         <property name="maximumSize">
+          <size>
+           <width>51</width>
+           <height>16777215</height>
+          </size>
+         </property>
+         <property name="maximum">
+          <number>200</number>
+         </property>
+         <property name="singleStep">
+          <number>1</number>
+         </property>
+         <property name="value">
+          <number>100</number>
+         </property>
+        </widget>
+       </item>
+       <item row="19" column="3">
+        <widget class="QSpinBox" name="MSBox">
+         <property name="minimumSize">
+          <size>
+           <width>51</width>
+           <height>0</height>
+          </size>
+         </property>
+         <property name="maximumSize">
+          <size>
+           <width>51</width>
+           <height>16777215</height>
+          </size>
+         </property>
+         <property name="maximum">
+          <number>200</number>
+         </property>
+         <property name="singleStep">
+          <number>1</number>
+         </property>
+         <property name="value">
+          <number>100</number>
+         </property>
+        </widget>
+       </item>
+       <item row="6" column="2">
+        <widget class="QScrollBar" name="FLScrollBar">
+         <property name="maximum">
+          <number>200</number>
+         </property>
+         <property name="value">
+          <number>99</number>
+         </property>
+         <property name="orientation">
+          <enum>Qt::Horizontal</enum>
+         </property>
+        </widget>
+       </item>
+       <item row="18" column="3">
+        <widget class="QSpinBox" name="MOBox">
+         <property name="minimumSize">
+          <size>
+           <width>51</width>
+           <height>0</height>
+          </size>
+         </property>
+         <property name="maximumSize">
+          <size>
+           <width>51</width>
+           <height>16777215</height>
+          </size>
+         </property>
+         <property name="maximum">
+          <number>200</number>
+         </property>
+         <property name="singleStep">
+          <number>1</number>
+         </property>
+         <property name="value">
+          <number>100</number>
+         </property>
+        </widget>
+       </item>
+       <item row="14" column="2">
+        <widget class="QScrollBar" name="LAScrollBar">
+         <property name="minimumSize">
+          <size>
+           <width>181</width>
+           <height>0</height>
+          </size>
+         </property>
+         <property name="maximum">
+          <number>200</number>
+         </property>
+         <property name="value">
+          <number>99</number>
+         </property>
+         <property name="orientation">
+          <enum>Qt::Horizontal</enum>
+         </property>
+        </widget>
+       </item>
+       <item row="20" column="2">
+        <widget class="QScrollBar" name="MTScrollBar">
+         <property name="minimumSize">
+          <size>
+           <width>181</width>
+           <height>0</height>
+          </size>
+         </property>
+         <property name="maximum">
+          <number>200</number>
+         </property>
+         <property name="value">
+          <number>99</number>
+         </property>
+         <property name="orientation">
+          <enum>Qt::Horizontal</enum>
+         </property>
+        </widget>
+       </item>
+       <item row="38" column="2">
+        <widget class="QScrollBar" name="TXScrollBar">
+         <property name="minimumSize">
+          <size>
+           <width>181</width>
+           <height>0</height>
+          </size>
+         </property>
+         <property name="maximum">
+          <number>200</number>
+         </property>
+         <property name="value">
+          <number>99</number>
+         </property>
+         <property name="orientation">
+          <enum>Qt::Horizontal</enum>
+         </property>
+        </widget>
+       </item>
+       <item row="4" column="3">
+        <widget class="QSpinBox" name="CABox">
+         <property name="minimumSize">
+          <size>
+           <width>51</width>
+           <height>0</height>
+          </size>
+         </property>
+         <property name="maximumSize">
+          <size>
+           <width>51</width>
+           <height>16777215</height>
+          </size>
+         </property>
+         <property name="maximum">
+          <number>200</number>
+         </property>
+         <property name="singleStep">
+          <number>1</number>
+         </property>
+         <property name="value">
+          <number>100</number>
+         </property>
+        </widget>
+       </item>
+       <item row="6" column="3">
+        <widget class="QSpinBox" name="FLBox">
+         <property name="minimumSize">
+          <size>
+           <width>51</width>
+           <height>0</height>
+          </size>
+         </property>
+         <property name="maximumSize">
+          <size>
+           <width>51</width>
+           <height>16777215</height>
+          </size>
+         </property>
+         <property name="maximum">
+          <number>200</number>
+         </property>
+         <property name="singleStep">
+          <number>1</number>
+         </property>
+         <property name="value">
+          <number>100</number>
+         </property>
+        </widget>
+       </item>
+       <item row="37" column="2">
+        <widget class="QScrollBar" name="TNScrollBar">
+         <property name="minimumSize">
+          <size>
+           <width>181</width>
+           <height>0</height>
+          </size>
+         </property>
+         <property name="maximum">
+          <number>200</number>
+         </property>
+         <property name="value">
+          <number>99</number>
+         </property>
+         <property name="orientation">
+          <enum>Qt::Horizontal</enum>
+         </property>
+        </widget>
+       </item>
+       <item row="12" column="2">
+        <widget class="QScrollBar" name="KSScrollBar">
+         <property name="minimumSize">
+          <size>
+           <width>181</width>
+           <height>0</height>
+          </size>
+         </property>
+         <property name="maximum">
+          <number>200</number>
+         </property>
+         <property name="value">
+          <number>99</number>
+         </property>
+         <property name="orientation">
+          <enum>Qt::Horizontal</enum>
+         </property>
+        </widget>
+       </item>
+       <item row="8" column="1">
+        <widget class="QLabel" name="label_150">
+         <property name="minimumSize">
+          <size>
+           <width>91</width>
+           <height>0</height>
+          </size>
+         </property>
+         <property name="text">
+          <string>IA</string>
+         </property>
+        </widget>
+       </item>
+       <item row="8" column="3">
+        <widget class="QSpinBox" name="IABox">
+         <property name="minimumSize">
+          <size>
+           <width>51</width>
+           <height>0</height>
+          </size>
+         </property>
+         <property name="maximumSize">
+          <size>
+           <width>51</width>
+           <height>16777215</height>
+          </size>
+         </property>
+         <property name="maximum">
+          <number>200</number>
+         </property>
+         <property name="singleStep">
+          <number>1</number>
+         </property>
+         <property name="value">
+          <number>100</number>
+         </property>
+        </widget>
+       </item>
+       <item row="8" column="2">
+        <widget class="QScrollBar" name="IAScrollBar">
+         <property name="minimumSize">
+          <size>
+           <width>181</width>
+           <height>0</height>
+          </size>
+         </property>
+         <property name="maximum">
+          <number>200</number>
+         </property>
+         <property name="value">
+          <number>99</number>
+         </property>
+         <property name="orientation">
+          <enum>Qt::Horizontal</enum>
+         </property>
+        </widget>
+       </item>
+       <item row="14" column="1">
+        <widget class="QLabel" name="label_154">
+         <property name="minimumSize">
+          <size>
+           <width>91</width>
+           <height>0</height>
+          </size>
+         </property>
+         <property name="text">
+          <string>LA</string>
+         </property>
+        </widget>
+       </item>
+       <item row="4" column="1">
+        <widget class="QLabel" name="label_151">
+         <property name="minimumSize">
+          <size>
+           <width>81</width>
+           <height>0</height>
+          </size>
+         </property>
+         <property name="text">
+          <string>CA</string>
+         </property>
+        </widget>
+       </item>
+       <item row="15" column="3">
+        <widget class="QSpinBox" name="MDBox">
+         <property name="minimumSize">
+          <size>
+           <width>51</width>
+           <height>0</height>
+          </size>
+         </property>
+         <property name="maximumSize">
+          <size>
+           <width>51</width>
+           <height>16777215</height>
+          </size>
+         </property>
+         <property name="maximum">
+          <number>200</number>
+         </property>
+         <property name="singleStep">
+          <number>1</number>
+         </property>
+         <property name="value">
+          <number>100</number>
+         </property>
+        </widget>
+       </item>
+       <item row="7" column="1">
+        <widget class="QLabel" name="label_152">
+         <property name="minimumSize">
+          <size>
+           <width>81</width>
+           <height>0</height>
+          </size>
+         </property>
+         <property name="maximumSize">
+          <size>
+           <width>87</width>
+           <height>16777215</height>
+          </size>
+         </property>
+         <property name="text">
+          <string>GA</string>
+         </property>
+        </widget>
+       </item>
+       <item row="0" column="3">
+        <widget class="QSpinBox" name="AKBox">
+         <property name="minimumSize">
+          <size>
+           <width>51</width>
+           <height>0</height>
+          </size>
+         </property>
+         <property name="maximumSize">
+          <size>
+           <width>51</width>
+           <height>16777215</height>
+          </size>
+         </property>
+         <property name="maximum">
+          <number>200</number>
+         </property>
+         <property name="singleStep">
+          <number>1</number>
+         </property>
+         <property name="value">
+          <number>100</number>
+         </property>
+        </widget>
+       </item>
+       <item row="0" column="1">
+        <widget class="QLabel" name="label_153">
+         <property name="minimumSize">
+          <size>
+           <width>81</width>
+           <height>0</height>
+          </size>
+         </property>
+         <property name="maximumSize">
+          <size>
+           <width>87</width>
+           <height>16777215</height>
+          </size>
+         </property>
+         <property name="text">
+          <string>AK</string>
+         </property>
+        </widget>
+       </item>
+       <item row="17" column="2">
+        <widget class="QScrollBar" name="MNScrollBar">
+         <property name="minimumSize">
+          <size>
+           <width>181</width>
+           <height>0</height>
+          </size>
+         </property>
+         <property name="maximum">
+          <number>200</number>
+         </property>
+         <property name="value">
+          <number>99</number>
+         </property>
+         <property name="orientation">
+          <enum>Qt::Horizontal</enum>
+         </property>
+        </widget>
+       </item>
+       <item row="0" column="2">
+        <widget class="QScrollBar" name="AKScrollBar">
+         <property name="minimumSize">
+          <size>
+           <width>181</width>
+           <height>0</height>
+          </size>
+         </property>
+         <property name="maximum">
+          <number>200</number>
+         </property>
+         <property name="value">
+          <number>99</number>
+         </property>
+         <property name="orientation">
+          <enum>Qt::Horizontal</enum>
+         </property>
+        </widget>
+       </item>
+       <item row="18" column="2">
+        <widget class="QScrollBar" name="MOScrollBar">
+         <property name="minimumSize">
+          <size>
+           <width>181</width>
+           <height>0</height>
+          </size>
+         </property>
+         <property name="maximum">
+          <number>200</number>
+         </property>
+         <property name="value">
+          <number>99</number>
+         </property>
+         <property name="orientation">
+          <enum>Qt::Horizontal</enum>
+         </property>
+        </widget>
+       </item>
+       <item row="23" column="2">
+        <widget class="QScrollBar" name="NEScrollBar">
+         <property name="minimumSize">
+          <size>
+           <width>181</width>
+           <height>0</height>
+          </size>
+         </property>
+         <property name="maximum">
+          <number>200</number>
+         </property>
+         <property name="value">
+          <number>99</number>
+         </property>
+         <property name="orientation">
+          <enum>Qt::Horizontal</enum>
+         </property>
+        </widget>
+       </item>
+       <item row="7" column="3">
+        <widget class="QSpinBox" name="GABox">
+         <property name="minimumSize">
+          <size>
+           <width>51</width>
+           <height>0</height>
+          </size>
+         </property>
+         <property name="maximumSize">
+          <size>
+           <width>51</width>
+           <height>16777215</height>
+          </size>
+         </property>
+         <property name="maximum">
+          <number>200</number>
+         </property>
+         <property name="singleStep">
+          <number>1</number>
+         </property>
+         <property name="value">
+          <number>100</number>
+         </property>
+        </widget>
+       </item>
+       <item row="3" column="2">
+        <widget class="QScrollBar" name="AZScrollBar">
+         <property name="maximum">
+          <number>200</number>
+         </property>
+         <property name="value">
+          <number>99</number>
+         </property>
+         <property name="orientation">
+          <enum>Qt::Horizontal</enum>
+         </property>
+        </widget>
+       </item>
+       <item row="7" column="2">
+        <widget class="QScrollBar" name="GAScrollBar">
+         <property name="minimumSize">
+          <size>
+           <width>181</width>
+           <height>0</height>
+          </size>
+         </property>
+         <property name="maximum">
+          <number>200</number>
+         </property>
+         <property name="value">
+          <number>99</number>
+         </property>
+         <property name="orientation">
+          <enum>Qt::Horizontal</enum>
+         </property>
+        </widget>
+       </item>
+       <item row="9" column="2">
+        <widget class="QScrollBar" name="IDScrollBar">
+         <property name="minimumSize">
+          <size>
+           <width>181</width>
+           <height>0</height>
+          </size>
+         </property>
+         <property name="maximum">
+          <number>200</number>
+         </property>
+         <property name="value">
+          <number>99</number>
+         </property>
+         <property name="orientation">
+          <enum>Qt::Horizontal</enum>
+         </property>
+        </widget>
+       </item>
+       <item row="11" column="3">
+        <widget class="QSpinBox" name="INBox">
+         <property name="minimumSize">
+          <size>
+           <width>51</width>
+           <height>0</height>
+          </size>
+         </property>
+         <property name="maximumSize">
+          <size>
+           <width>51</width>
+           <height>16777215</height>
+          </size>
+         </property>
+         <property name="maximum">
+          <number>200</number>
+         </property>
+         <property name="singleStep">
+          <number>1</number>
+         </property>
+         <property name="value">
+          <number>100</number>
+         </property>
+        </widget>
+       </item>
+       <item row="13" column="3">
+        <widget class="QSpinBox" name="KYBox">
+         <property name="minimumSize">
+          <size>
+           <width>51</width>
+           <height>0</height>
+          </size>
+         </property>
+         <property name="maximumSize">
+          <size>
+           <width>51</width>
+           <height>16777215</height>
+          </size>
+         </property>
+         <property name="maximum">
+          <number>200</number>
+         </property>
+         <property name="singleStep">
+          <number>1</number>
+         </property>
+         <property name="value">
+          <number>100</number>
+         </property>
+        </widget>
+       </item>
+       <item row="19" column="2">
+        <widget class="QScrollBar" name="MSScrollBar">
+         <property name="minimumSize">
+          <size>
+           <width>181</width>
+           <height>0</height>
+          </size>
+         </property>
+         <property name="maximum">
+          <number>200</number>
+         </property>
+         <property name="value">
+          <number>99</number>
+         </property>
+         <property name="orientation">
+          <enum>Qt::Horizontal</enum>
+         </property>
+        </widget>
+       </item>
+       <item row="13" column="2">
+        <widget class="QScrollBar" name="KYScrollBar">
+         <property name="minimumSize">
+          <size>
+           <width>181</width>
+           <height>0</height>
+          </size>
+         </property>
+         <property name="maximum">
+          <number>200</number>
+         </property>
+         <property name="value">
+          <number>99</number>
+         </property>
+         <property name="orientation">
+          <enum>Qt::Horizontal</enum>
+         </property>
+        </widget>
+       </item>
+       <item row="12" column="3">
+        <widget class="QSpinBox" name="KSBox">
+         <property name="minimumSize">
+          <size>
+           <width>51</width>
+           <height>0</height>
+          </size>
+         </property>
+         <property name="maximumSize">
+          <size>
+           <width>51</width>
+           <height>16777215</height>
+          </size>
+         </property>
+         <property name="maximum">
+          <number>200</number>
+         </property>
+         <property name="singleStep">
+          <number>1</number>
+         </property>
+         <property name="value">
+          <number>100</number>
+         </property>
+        </widget>
+       </item>
+       <item row="2" column="2">
+        <widget class="QScrollBar" name="ARScrollBar">
+         <property name="maximum">
+          <number>200</number>
+         </property>
+         <property name="value">
+          <number>99</number>
+         </property>
+         <property name="orientation">
+          <enum>Qt::Horizontal</enum>
+         </property>
+        </widget>
+       </item>
+       <item row="4" column="2">
+        <widget class="QScrollBar" name="CAScrollBar">
+         <property name="maximum">
+          <number>200</number>
+         </property>
+         <property name="value">
+          <number>99</number>
+         </property>
+         <property name="orientation">
+          <enum>Qt::Horizontal</enum>
+         </property>
+        </widget>
+       </item>
+       <item row="2" column="1">
+        <widget class="QLabel" name="label_155">
+         <property name="minimumSize">
+          <size>
+           <width>81</width>
+           <height>0</height>
+          </size>
+         </property>
+         <property name="text">
+          <string>AR</string>
+         </property>
+        </widget>
+       </item>
+       <item row="9" column="3">
+        <widget class="QSpinBox" name="IDBox">
+         <property name="minimumSize">
+          <size>
+           <width>51</width>
+           <height>0</height>
+          </size>
+         </property>
+         <property name="maximumSize">
+          <size>
+           <width>51</width>
+           <height>16777215</height>
+          </size>
+         </property>
+         <property name="maximum">
+          <number>200</number>
+         </property>
+         <property name="singleStep">
+          <number>1</number>
+         </property>
+         <property name="value">
+          <number>100</number>
+         </property>
+        </widget>
+       </item>
+       <item row="5" column="1">
+        <widget class="QLabel" name="label_156">
+         <property name="minimumSize">
+          <size>
+           <width>81</width>
+           <height>0</height>
+          </size>
+         </property>
+         <property name="text">
+          <string>CO</string>
+         </property>
+        </widget>
+       </item>
+       <item row="16" column="3">
+        <widget class="QSpinBox" name="MIBox">
+         <property name="minimumSize">
+          <size>
+           <width>51</width>
+           <height>0</height>
+          </size>
+         </property>
+         <property name="maximumSize">
+          <size>
+           <width>51</width>
+           <height>16777215</height>
+          </size>
+         </property>
+         <property name="maximum">
+          <number>200</number>
+         </property>
+         <property name="singleStep">
+          <number>1</number>
+         </property>
+         <property name="value">
+          <number>100</number>
+         </property>
+        </widget>
+       </item>
+       <item row="6" column="1">
+        <widget class="QLabel" name="label_157">
+         <property name="minimumSize">
+          <size>
+           <width>81</width>
+           <height>0</height>
+          </size>
+         </property>
+         <property name="text">
+          <string>FL</string>
+         </property>
+        </widget>
+       </item>
+       <item row="5" column="2">
+        <widget class="QScrollBar" name="COScrollBar">
+         <property name="maximum">
+          <number>200</number>
+         </property>
+         <property name="value">
+          <number>99</number>
+         </property>
+         <property name="orientation">
+          <enum>Qt::Horizontal</enum>
+         </property>
+        </widget>
+       </item>
+       <item row="14" column="3">
+        <widget class="QSpinBox" name="LABox">
+         <property name="minimumSize">
+          <size>
+           <width>51</width>
+           <height>0</height>
+          </size>
+         </property>
+         <property name="maximumSize">
+          <size>
+           <width>51</width>
+           <height>16777215</height>
+          </size>
+         </property>
+         <property name="maximum">
+          <number>200</number>
+         </property>
+         <property name="singleStep">
+          <number>1</number>
+         </property>
+         <property name="value">
+          <number>100</number>
+         </property>
+        </widget>
+       </item>
+       <item row="11" column="2">
+        <widget class="QScrollBar" name="INScrollBar">
+         <property name="minimumSize">
+          <size>
+           <width>181</width>
+           <height>0</height>
+          </size>
+         </property>
+         <property name="maximum">
+          <number>200</number>
+         </property>
+         <property name="value">
+          <number>99</number>
+         </property>
+         <property name="orientation">
+          <enum>Qt::Horizontal</enum>
+         </property>
+        </widget>
+       </item>
+       <item row="3" column="3">
+        <widget class="QSpinBox" name="AZBox">
+         <property name="minimumSize">
+          <size>
+           <width>51</width>
+           <height>0</height>
+          </size>
+         </property>
+         <property name="maximumSize">
+          <size>
+           <width>51</width>
+           <height>16777215</height>
+          </size>
+         </property>
+         <property name="maximum">
+          <number>200</number>
+         </property>
+         <property name="singleStep">
+          <number>1</number>
+         </property>
+         <property name="value">
+          <number>100</number>
+         </property>
+        </widget>
+       </item>
+       <item row="15" column="2">
+        <widget class="QScrollBar" name="ScrollBarMD">
+         <property name="minimumSize">
+          <size>
+           <width>181</width>
+           <height>0</height>
+          </size>
+         </property>
+         <property name="maximum">
+          <number>200</number>
+         </property>
+         <property name="value">
+          <number>99</number>
+         </property>
+         <property name="orientation">
+          <enum>Qt::Horizontal</enum>
+         </property>
+        </widget>
+       </item>
+       <item row="1" column="3">
+        <widget class="QSpinBox" name="ALBox">
+         <property name="minimumSize">
+          <size>
+           <width>51</width>
+           <height>0</height>
+          </size>
+         </property>
+         <property name="maximumSize">
+          <size>
+           <width>51</width>
+           <height>16777215</height>
+          </size>
+         </property>
+         <property name="maximum">
+          <number>200</number>
+         </property>
+         <property name="singleStep">
+          <number>1</number>
+         </property>
+         <property name="value">
+          <number>100</number>
+         </property>
+        </widget>
+       </item>
+       <item row="1" column="1">
+        <widget class="QLabel" name="label_159">
+         <property name="minimumSize">
+          <size>
+           <width>81</width>
+           <height>0</height>
+          </size>
+         </property>
+         <property name="text">
+          <string>AL</string>
+         </property>
+        </widget>
+       </item>
+       <item row="16" column="2">
+        <widget class="QScrollBar" name="MIScrollBar">
+         <property name="minimumSize">
+          <size>
+           <width>181</width>
+           <height>0</height>
+          </size>
+         </property>
+         <property name="maximum">
+          <number>200</number>
+         </property>
+         <property name="value">
+          <number>99</number>
+         </property>
+         <property name="orientation">
+          <enum>Qt::Horizontal</enum>
+         </property>
+        </widget>
+       </item>
+       <item row="11" column="1">
+        <widget class="QLabel" name="label_160">
+         <property name="minimumSize">
+          <size>
+           <width>91</width>
+           <height>0</height>
+          </size>
+         </property>
+         <property name="text">
+          <string>IN</string>
+         </property>
+        </widget>
+       </item>
+       <item row="2" column="3">
+        <widget class="QSpinBox" name="ARBox">
+         <property name="minimumSize">
+          <size>
+           <width>51</width>
+           <height>0</height>
+          </size>
+         </property>
+         <property name="maximumSize">
+          <size>
+           <width>51</width>
+           <height>16777215</height>
+          </size>
+         </property>
+         <property name="maximum">
+          <number>200</number>
+         </property>
+         <property name="singleStep">
+          <number>1</number>
+         </property>
+         <property name="value">
+          <number>100</number>
+         </property>
+        </widget>
+       </item>
+       <item row="12" column="1">
+        <widget class="QLabel" name="label_162">
+         <property name="minimumSize">
+          <size>
+           <width>91</width>
+           <height>0</height>
+          </size>
+         </property>
+         <property name="text">
+          <string>KS</string>
+         </property>
+        </widget>
+       </item>
+       <item row="10" column="2">
+        <widget class="QScrollBar" name="ILScrollBar">
+         <property name="minimumSize">
+          <size>
+           <width>181</width>
+           <height>0</height>
+          </size>
+         </property>
+         <property name="maximum">
+          <number>200</number>
+         </property>
+         <property name="value">
+          <number>99</number>
+         </property>
+         <property name="orientation">
+          <enum>Qt::Horizontal</enum>
+         </property>
+        </widget>
+       </item>
+       <item row="13" column="1">
+        <widget class="QLabel" name="label_164">
+         <property name="minimumSize">
+          <size>
+           <width>91</width>
+           <height>0</height>
+          </size>
+         </property>
+         <property name="text">
+          <string>KY</string>
+         </property>
+        </widget>
+       </item>
+       <item row="5" column="3">
+        <widget class="QSpinBox" name="COBox">
+         <property name="minimumSize">
+          <size>
+           <width>51</width>
+           <height>0</height>
+          </size>
+         </property>
+         <property name="maximumSize">
+          <size>
+           <width>51</width>
+           <height>16777215</height>
+          </size>
+         </property>
+         <property name="maximum">
+          <number>200</number>
+         </property>
+         <property name="singleStep">
+          <number>1</number>
+         </property>
+         <property name="value">
+          <number>100</number>
+         </property>
+        </widget>
+       </item>
+       <item row="1" column="2">
+        <widget class="QScrollBar" name="ALScrollBar">
+         <property name="minimumSize">
+          <size>
+           <width>181</width>
+           <height>0</height>
+          </size>
+         </property>
+         <property name="maximum">
+          <number>200</number>
+         </property>
+         <property name="value">
+          <number>99</number>
+         </property>
+         <property name="orientation">
+          <enum>Qt::Horizontal</enum>
+         </property>
+        </widget>
+       </item>
+       <item row="9" column="1">
+        <widget class="QLabel" name="label_165">
+         <property name="minimumSize">
+          <size>
+           <width>91</width>
+           <height>0</height>
+          </size>
+         </property>
+         <property name="text">
+          <string>ID</string>
+         </property>
+        </widget>
+       </item>
+       <item row="27" column="2">
+        <widget class="QScrollBar" name="NVScrollBar">
+         <property name="minimumSize">
+          <size>
+           <width>181</width>
+           <height>0</height>
+          </size>
+         </property>
+         <property name="maximum">
+          <number>200</number>
+         </property>
+         <property name="value">
+          <number>99</number>
+         </property>
+         <property name="orientation">
+          <enum>Qt::Horizontal</enum>
+         </property>
+        </widget>
+       </item>
+       <item row="3" column="1">
+        <widget class="QLabel" name="label_167">
+         <property name="minimumSize">
+          <size>
+           <width>81</width>
+           <height>0</height>
+          </size>
+         </property>
+         <property name="text">
+          <string>AZ</string>
+         </property>
+        </widget>
+       </item>
+       <item row="18" column="1">
+        <widget class="QLabel" name="label_181">
+         <property name="minimumSize">
+          <size>
+           <width>91</width>
+           <height>0</height>
+          </size>
+         </property>
+         <property name="text">
+          <string>MO</string>
+         </property>
+        </widget>
+       </item>
+       <item row="19" column="1">
+        <widget class="QLabel" name="label_179">
+         <property name="minimumSize">
+          <size>
+           <width>91</width>
+           <height>0</height>
+          </size>
+         </property>
+         <property name="text">
+          <string>MS</string>
+         </property>
+        </widget>
+       </item>
+       <item row="25" column="1">
+        <widget class="QLabel" name="label_171">
+         <property name="minimumSize">
+          <size>
+           <width>91</width>
+           <height>0</height>
+          </size>
+         </property>
+         <property name="text">
+          <string>NJ</string>
+         </property>
+        </widget>
+       </item>
+       <item row="36" column="2">
+        <widget class="QScrollBar" name="SDScrollBar">
+         <property name="minimumSize">
+          <size>
+           <width>181</width>
+           <height>0</height>
+          </size>
+         </property>
+         <property name="maximum">
+          <number>200</number>
+         </property>
+         <property name="value">
+          <number>99</number>
+         </property>
+         <property name="orientation">
+          <enum>Qt::Horizontal</enum>
+         </property>
+        </widget>
+       </item>
+       <item row="34" column="2">
+        <widget class="QScrollBar" name="PRScrollBar">
+         <property name="minimumSize">
+          <size>
+           <width>181</width>
+           <height>0</height>
+          </size>
+         </property>
+         <property name="maximum">
+          <number>200</number>
+         </property>
+         <property name="value">
+          <number>99</number>
+         </property>
+         <property name="orientation">
+          <enum>Qt::Horizontal</enum>
+         </property>
+        </widget>
+       </item>
+       <item row="20" column="3">
+        <widget class="QSpinBox" name="MTBox">
+         <property name="minimumSize">
+          <size>
+           <width>51</width>
+           <height>0</height>
+          </size>
+         </property>
+         <property name="maximumSize">
+          <size>
+           <width>51</width>
+           <height>16777215</height>
+          </size>
+         </property>
+         <property name="maximum">
+          <number>200</number>
+         </property>
+         <property name="singleStep">
+          <number>1</number>
+         </property>
+         <property name="value">
+          <number>100</number>
+         </property>
+        </widget>
+       </item>
+       <item row="27" column="3">
+        <widget class="QSpinBox" name="NVBox">
+         <property name="minimumSize">
+          <size>
+           <width>51</width>
+           <height>0</height>
+          </size>
+         </property>
+         <property name="maximumSize">
+          <size>
+           <width>51</width>
+           <height>16777215</height>
+          </size>
+         </property>
+         <property name="maximum">
+          <number>200</number>
+         </property>
+         <property name="singleStep">
+          <number>1</number>
+         </property>
+         <property name="value">
+          <number>100</number>
+         </property>
+        </widget>
+       </item>
+       <item row="23" column="3">
+        <widget class="QSpinBox" name="NEBox">
+         <property name="minimumSize">
+          <size>
+           <width>51</width>
+           <height>0</height>
+          </size>
+         </property>
+         <property name="maximumSize">
+          <size>
+           <width>51</width>
+           <height>16777215</height>
+          </size>
+         </property>
+         <property name="maximum">
+          <number>200</number>
+         </property>
+         <property name="singleStep">
+          <number>1</number>
+         </property>
+         <property name="value">
+          <number>100</number>
+         </property>
+        </widget>
+       </item>
+       <item row="42" column="2">
+        <widget class="QScrollBar" name="WIScrollBar">
+         <property name="minimumSize">
+          <size>
+           <width>181</width>
+           <height>0</height>
+          </size>
+         </property>
+         <property name="maximum">
+          <number>200</number>
+         </property>
+         <property name="value">
+          <number>99</number>
+         </property>
+         <property name="orientation">
+          <enum>Qt::Horizontal</enum>
+         </property>
+        </widget>
+       </item>
+       <item row="25" column="2">
+        <widget class="QScrollBar" name="NJScrollBar">
+         <property name="minimumSize">
+          <size>
+           <width>181</width>
+           <height>0</height>
+          </size>
+         </property>
+         <property name="maximum">
+          <number>200</number>
+         </property>
+         <property name="value">
+          <number>99</number>
+         </property>
+         <property name="orientation">
+          <enum>Qt::Horizontal</enum>
+         </property>
+        </widget>
+       </item>
+       <item row="33" column="2">
+        <widget class="QScrollBar" name="PAScrollBar">
+         <property name="minimumSize">
+          <size>
+           <width>181</width>
+           <height>0</height>
+          </size>
+         </property>
+         <property name="maximum">
+          <number>200</number>
+         </property>
+         <property name="value">
+          <number>99</number>
+         </property>
+         <property name="orientation">
+          <enum>Qt::Horizontal</enum>
+         </property>
+        </widget>
+       </item>
+       <item row="32" column="3">
+        <widget class="QSpinBox" name="ORBox">
+         <property name="minimumSize">
+          <size>
+           <width>51</width>
+           <height>0</height>
+          </size>
+         </property>
+         <property name="maximumSize">
+          <size>
+           <width>51</width>
+           <height>16777215</height>
+          </size>
+         </property>
+         <property name="maximum">
+          <number>200</number>
+         </property>
+         <property name="singleStep">
+          <number>1</number>
+         </property>
+         <property name="value">
+          <number>100</number>
+         </property>
+        </widget>
+       </item>
+       <item row="41" column="2">
+        <widget class="QScrollBar" name="WAScrollBar">
+         <property name="minimumSize">
+          <size>
+           <width>181</width>
+           <height>0</height>
+          </size>
+         </property>
+         <property name="maximum">
+          <number>200</number>
+         </property>
+         <property name="value">
+          <number>99</number>
+         </property>
+         <property name="orientation">
+          <enum>Qt::Horizontal</enum>
+         </property>
+        </widget>
+       </item>
+       <item row="34" column="3">
+        <widget class="QSpinBox" name="PRBox">
+         <property name="minimumSize">
+          <size>
+           <width>51</width>
+           <height>0</height>
+          </size>
+         </property>
+         <property name="maximumSize">
+          <size>
+           <width>51</width>
+           <height>16777215</height>
+          </size>
+         </property>
+         <property name="maximum">
+          <number>200</number>
+         </property>
+         <property name="singleStep">
+          <number>1</number>
+         </property>
+         <property name="value">
+          <number>100</number>
+         </property>
+        </widget>
+       </item>
+       <item row="42" column="3">
+        <widget class="QSpinBox" name="WIBox">
+         <property name="minimumSize">
+          <size>
+           <width>51</width>
+           <height>0</height>
+          </size>
+         </property>
+         <property name="maximumSize">
+          <size>
+           <width>51</width>
+           <height>16777215</height>
+          </size>
+         </property>
+         <property name="maximum">
+          <number>200</number>
+         </property>
+         <property name="singleStep">
+          <number>1</number>
+         </property>
+         <property name="value">
+          <number>100</number>
+         </property>
+        </widget>
+       </item>
+       <item row="38" column="3">
+        <widget class="QSpinBox" name="TXBox">
+         <property name="minimumSize">
+          <size>
+           <width>51</width>
+           <height>0</height>
+          </size>
+         </property>
+         <property name="maximumSize">
+          <size>
+           <width>51</width>
+           <height>16777215</height>
+          </size>
+         </property>
+         <property name="maximum">
+          <number>200</number>
+         </property>
+         <property name="singleStep">
+          <number>1</number>
+         </property>
+         <property name="value">
+          <number>100</number>
+         </property>
+        </widget>
+       </item>
+       <item row="43" column="2">
+        <widget class="QScrollBar" name="WVScrollBar">
+         <property name="minimumSize">
+          <size>
+           <width>181</width>
+           <height>0</height>
+          </size>
+         </property>
+         <property name="maximum">
+          <number>200</number>
+         </property>
+         <property name="value">
+          <number>99</number>
+         </property>
+         <property name="orientation">
+          <enum>Qt::Horizontal</enum>
+         </property>
+        </widget>
+       </item>
+       <item row="39" column="2">
+        <widget class="QScrollBar" name="UTScrollBar">
+         <property name="minimumSize">
+          <size>
+           <width>181</width>
+           <height>0</height>
+          </size>
+         </property>
+         <property name="maximum">
+          <number>200</number>
+         </property>
+         <property name="value">
+          <number>99</number>
+         </property>
+         <property name="orientation">
+          <enum>Qt::Horizontal</enum>
+         </property>
+        </widget>
+       </item>
+       <item row="17" column="3">
+        <widget class="QSpinBox" name="MNBox">
+         <property name="minimumSize">
+          <size>
+           <width>51</width>
+           <height>0</height>
+          </size>
+         </property>
+         <property name="maximumSize">
+          <size>
+           <width>51</width>
+           <height>16777215</height>
+          </size>
+         </property>
+         <property name="maximum">
+          <number>200</number>
+         </property>
+         <property name="singleStep">
+          <number>1</number>
+         </property>
+         <property name="value">
+          <number>100</number>
+         </property>
+        </widget>
+       </item>
+       <item row="40" column="1">
+        <widget class="QLabel" name="label_185">
+         <property name="minimumSize">
+          <size>
+           <width>91</width>
+           <height>0</height>
+          </size>
+         </property>
+         <property name="text">
+          <string>VA</string>
+         </property>
+        </widget>
+       </item>
+       <item row="41" column="1">
+        <widget class="QLabel" name="label_186">
+         <property name="minimumSize">
+          <size>
+           <width>91</width>
+           <height>0</height>
+          </size>
+         </property>
+         <property name="text">
+          <string>WA</string>
+         </property>
+        </widget>
+       </item>
+       <item row="42" column="1">
+        <widget class="QLabel" name="label_187">
+         <property name="minimumSize">
+          <size>
+           <width>91</width>
+           <height>0</height>
+          </size>
+         </property>
+         <property name="text">
+          <string>WI</string>
+         </property>
+        </widget>
+       </item>
+       <item row="43" column="1">
+        <widget class="QLabel" name="label_188">
+         <property name="minimumSize">
+          <size>
+           <width>91</width>
+           <height>0</height>
+          </size>
+         </property>
+         <property name="text">
+          <string>WV</string>
+         </property>
+        </widget>
+       </item>
+       <item row="44" column="1">
+        <widget class="QLabel" name="label_189">
+         <property name="minimumSize">
+          <size>
+           <width>91</width>
+           <height>0</height>
+          </size>
+         </property>
+         <property name="text">
+          <string>WY</string>
+         </property>
+        </widget>
+       </item>
+       <item row="39" column="3">
+        <widget class="QSpinBox" name="UTBox">
+         <property name="minimumSize">
+          <size>
+           <width>51</width>
+           <height>0</height>
+          </size>
+         </property>
+         <property name="maximumSize">
+          <size>
+           <width>51</width>
+           <height>16777215</height>
+          </size>
+         </property>
+         <property name="maximum">
+          <number>200</number>
+         </property>
+         <property name="singleStep">
+          <number>1</number>
+         </property>
+         <property name="value">
+          <number>100</number>
+         </property>
+        </widget>
+       </item>
+       <item row="40" column="3">
+        <widget class="QSpinBox" name="VABox">
+         <property name="minimumSize">
+          <size>
+           <width>51</width>
+           <height>0</height>
+          </size>
+         </property>
+         <property name="maximumSize">
+          <size>
+           <width>51</width>
+           <height>16777215</height>
+          </size>
+         </property>
+         <property name="maximum">
+          <number>200</number>
+         </property>
+         <property name="singleStep">
+          <number>1</number>
+         </property>
+         <property name="value">
+          <number>100</number>
+         </property>
+        </widget>
+       </item>
+       <item row="41" column="3">
+        <widget class="QSpinBox" name="WABox">
+         <property name="minimumSize">
+          <size>
+           <width>51</width>
+           <height>0</height>
+          </size>
+         </property>
+         <property name="maximumSize">
+          <size>
+           <width>51</width>
+           <height>16777215</height>
+          </size>
+         </property>
+         <property name="maximum">
+          <number>200</number>
+         </property>
+         <property name="singleStep">
+          <number>1</number>
+         </property>
+         <property name="value">
+          <number>100</number>
+         </property>
+        </widget>
+       </item>
+       <item row="43" column="3">
+        <widget class="QSpinBox" name="WVBox">
+         <property name="minimumSize">
+          <size>
+           <width>51</width>
+           <height>0</height>
+          </size>
+         </property>
+         <property name="maximumSize">
+          <size>
+           <width>51</width>
+           <height>16777215</height>
+          </size>
+         </property>
+         <property name="maximum">
+          <number>200</number>
+         </property>
+         <property name="singleStep">
+          <number>1</number>
+         </property>
+         <property name="value">
+          <number>100</number>
+         </property>
+        </widget>
+       </item>
+       <item row="44" column="3">
+        <widget class="QSpinBox" name="WYBox">
+         <property name="minimumSize">
+          <size>
+           <width>51</width>
+           <height>0</height>
+          </size>
+         </property>
+         <property name="maximumSize">
+          <size>
+           <width>51</width>
+           <height>16777215</height>
+          </size>
+         </property>
+         <property name="maximum">
+          <number>200</number>
+         </property>
+         <property name="singleStep">
+          <number>1</number>
+         </property>
+         <property name="value">
+          <number>100</number>
+         </property>
+        </widget>
+       </item>
+       <item row="37" column="1">
+        <widget class="QLabel" name="label_178">
+         <property name="minimumSize">
+          <size>
+           <width>91</width>
+           <height>0</height>
+          </size>
+         </property>
+         <property name="text">
+          <string>TN</string>
+         </property>
+        </widget>
+       </item>
+       <item row="32" column="1">
+        <widget class="QLabel" name="label_177">
+         <property name="minimumSize">
+          <size>
+           <width>91</width>
+           <height>0</height>
+          </size>
+         </property>
+         <property name="text">
+          <string>OR</string>
+         </property>
+        </widget>
+       </item>
+       <item row="26" column="1">
+        <widget class="QLabel" name="label_173">
+         <property name="minimumSize">
+          <size>
+           <width>91</width>
+           <height>0</height>
+          </size>
+         </property>
+         <property name="text">
+          <string>NM</string>
+         </property>
+        </widget>
+       </item>
+       <item row="28" column="1">
+        <widget class="QLabel" name="label_174">
+         <property name="minimumSize">
+          <size>
+           <width>91</width>
+           <height>0</height>
+          </size>
+         </property>
+         <property name="text">
+          <string>OH</string>
+         </property>
+        </widget>
+       </item>
+       <item row="34" column="1">
+        <widget class="QLabel" name="label_175">
+         <property name="minimumSize">
+          <size>
+           <width>91</width>
+           <height>0</height>
+          </size>
+         </property>
+         <property name="text">
+          <string>PR</string>
+         </property>
+        </widget>
+       </item>
+       <item row="39" column="1">
+        <widget class="QLabel" name="label_184">
+         <property name="minimumSize">
+          <size>
+           <width>91</width>
+           <height>0</height>
+          </size>
+         </property>
+         <property name="text">
+          <string>UT</string>
+         </property>
+        </widget>
+       </item>
+       <item row="20" column="1">
+        <widget class="QLabel" name="label_149">
+         <property name="minimumSize">
+          <size>
+           <width>91</width>
+           <height>0</height>
+          </size>
+         </property>
+         <property name="text">
+          <string>MT</string>
+         </property>
+        </widget>
+       </item>
+       <item row="35" column="1">
+        <widget class="QLabel" name="label_176">
+         <property name="minimumSize">
+          <size>
+           <width>91</width>
+           <height>0</height>
+          </size>
+         </property>
+         <property name="text">
+          <string>SC</string>
+         </property>
+        </widget>
+       </item>
+       <item row="33" column="1">
+        <widget class="QLabel" name="label_168">
+         <property name="minimumSize">
+          <size>
+           <width>91</width>
+           <height>0</height>
+          </size>
+         </property>
+         <property name="text">
+          <string>PA</string>
+         </property>
+        </widget>
+       </item>
+       <item row="36" column="1">
+        <widget class="QLabel" name="label_172">
+         <property name="minimumSize">
+          <size>
+           <width>91</width>
+           <height>0</height>
+          </size>
+         </property>
+         <property name="text">
+          <string>SD</string>
+         </property>
+        </widget>
+       </item>
+       <item row="38" column="1">
+        <widget class="QLabel" name="label_183">
+         <property name="minimumSize">
+          <size>
+           <width>91</width>
+           <height>0</height>
+          </size>
+         </property>
+         <property name="text">
+          <string>TX</string>
+         </property>
+        </widget>
+       </item>
+       <item row="21" column="2">
+        <widget class="QScrollBar" name="NCScrollBar">
+         <property name="minimumSize">
+          <size>
+           <width>181</width>
+           <height>0</height>
+          </size>
+         </property>
+         <property name="maximum">
+          <number>200</number>
+         </property>
+         <property name="value">
+          <number>99</number>
+         </property>
+         <property name="orientation">
+          <enum>Qt::Horizontal</enum>
+         </property>
+        </widget>
+       </item>
+       <item row="22" column="2">
+        <widget class="QScrollBar" name="NDScrollBar">
+         <property name="minimumSize">
+          <size>
+           <width>181</width>
+           <height>0</height>
+          </size>
+         </property>
+         <property name="maximum">
+          <number>200</number>
+         </property>
+         <property name="value">
+          <number>99</number>
+         </property>
+         <property name="orientation">
+          <enum>Qt::Horizontal</enum>
+         </property>
+        </widget>
+       </item>
+       <item row="21" column="3">
+        <widget class="QSpinBox" name="NCBox">
+         <property name="minimumSize">
+          <size>
+           <width>51</width>
+           <height>0</height>
+          </size>
+         </property>
+         <property name="maximumSize">
+          <size>
+           <width>51</width>
+           <height>16777215</height>
+          </size>
+         </property>
+         <property name="maximum">
+          <number>200</number>
+         </property>
+         <property name="singleStep">
+          <number>1</number>
+         </property>
+         <property name="value">
+          <number>100</number>
+         </property>
+        </widget>
+       </item>
+       <item row="22" column="3">
+        <widget class="QSpinBox" name="NDBox">
+         <property name="minimumSize">
+          <size>
+           <width>51</width>
+           <height>0</height>
+          </size>
+         </property>
+         <property name="maximumSize">
+          <size>
+           <width>51</width>
+           <height>16777215</height>
+          </size>
+         </property>
+         <property name="maximum">
+          <number>200</number>
+         </property>
+         <property name="singleStep">
+          <number>1</number>
+         </property>
+         <property name="value">
+          <number>100</number>
+         </property>
+        </widget>
+       </item>
+       <item row="21" column="1">
+        <widget class="QLabel" name="label_166">
+         <property name="minimumSize">
+          <size>
+           <width>91</width>
+           <height>0</height>
+          </size>
+         </property>
+         <property name="text">
+          <string>NC</string>
+         </property>
+        </widget>
+       </item>
+       <item row="22" column="1">
+        <widget class="QLabel" name="label_180">
+         <property name="minimumSize">
+          <size>
+           <width>91</width>
+           <height>0</height>
+          </size>
+         </property>
+         <property name="text">
+          <string>ND</string>
+         </property>
+        </widget>
+       </item>
+       <item row="0" column="0">
+        <spacer name="horizontalSpacer_3">
+         <property name="orientation">
+          <enum>Qt::Horizontal</enum>
+         </property>
+         <property name="sizeHint" stdset="0">
+          <size>
+           <width>40</width>
+           <height>20</height>
+          </size>
+         </property>
+        </spacer>
+       </item>
+      </layout>
+     </widget>
+    </widget>
+   </widget>
+   <widget class="QWidget" name="page_3">
+    <widget class="QScrollArea" name="scrollArea_3">
+     <property name="geometry">
+      <rect>
+       <x>20</x>
+       <y>40</y>
+       <width>431</width>
+       <height>291</height>
+      </rect>
+     </property>
+     <property name="widgetResizable">
+      <bool>true</bool>
+     </property>
+     <widget class="QWidget" name="scrollAreaWidgetContents_3">
+      <property name="geometry">
+       <rect>
+        <x>0</x>
+        <y>-87</y>
+        <width>412</width>
+        <height>376</height>
+       </rect>
+      </property>
+      <layout class="QGridLayout" name="gridLayout_6">
+       <item row="10" column="2">
+        <widget class="QScrollBar" name="SEATScrollBar">
+         <property name="minimumSize">
+          <size>
+           <width>181</width>
+           <height>0</height>
+          </size>
+         </property>
+         <property name="maximum">
+          <number>200</number>
+         </property>
+         <property name="value">
+          <number>99</number>
+         </property>
+         <property name="orientation">
+          <enum>Qt::Horizontal</enum>
+         </property>
+        </widget>
+       </item>
+       <item row="6" column="4">
+        <widget class="QSpinBox" name="HelicBox">
+         <property name="minimumSize">
+          <size>
+           <width>51</width>
+           <height>0</height>
+          </size>
+         </property>
+         <property name="maximumSize">
+          <size>
+           <width>51</width>
+           <height>16777215</height>
+          </size>
+         </property>
+         <property name="maximum">
+          <number>200</number>
+         </property>
+         <property name="singleStep">
+          <number>1</number>
+         </property>
+         <property name="value">
+          <number>100</number>
+         </property>
+        </widget>
+       </item>
+       <item row="4" column="4">
+        <widget class="QSpinBox" name="FBDZBox">
+         <property name="minimumSize">
+          <size>
+           <width>51</width>
+           <height>0</height>
+          </size>
+         </property>
+         <property name="maximumSize">
+          <size>
+           <width>51</width>
+           <height>16777215</height>
+          </size>
+         </property>
+         <property name="maximum">
+          <number>200</number>
+         </property>
+         <property name="singleStep">
+          <number>1</number>
+         </property>
+         <property name="value">
+          <number>100</number>
+         </property>
+        </widget>
+       </item>
+       <item row="8" column="1">
+        <widget class="QLabel" name="label_106">
+         <property name="minimumSize">
+          <size>
+           <width>91</width>
+           <height>0</height>
+          </size>
+         </property>
+         <property name="text">
+          <string>Helitack Crews</string>
+         </property>
+        </widget>
+       </item>
+       <item row="13" column="2">
+        <widget class="QScrollBar" name="TPScrollBar">
+         <property name="minimumSize">
+          <size>
+           <width>181</width>
+           <height>0</height>
+          </size>
+         </property>
+         <property name="maximum">
+          <number>200</number>
+         </property>
+         <property name="value">
+          <number>99</number>
+         </property>
+         <property name="orientation">
+          <enum>Qt::Horizontal</enum>
+         </property>
+        </widget>
+       </item>
+       <item row="0" column="4">
+        <widget class="QSpinBox" name="CRWBox">
+         <property name="minimumSize">
+          <size>
+           <width>51</width>
+           <height>0</height>
+          </size>
+         </property>
+         <property name="maximumSize">
+          <size>
+           <width>51</width>
+           <height>16777215</height>
+          </size>
+         </property>
+         <property name="maximum">
+          <number>200</number>
+         </property>
+         <property name="singleStep">
+          <number>1</number>
+         </property>
+         <property name="value">
+          <number>100</number>
+         </property>
+        </widget>
+       </item>
+       <item row="6" column="2">
+        <widget class="QScrollBar" name="HelicScrollBar">
+         <property name="maximum">
+          <number>200</number>
+         </property>
+         <property name="value">
+          <number>99</number>
+         </property>
+         <property name="orientation">
+          <enum>Qt::Horizontal</enum>
+         </property>
+        </widget>
+       </item>
+       <item row="4" column="1">
+        <widget class="QLabel" name="label_107">
+         <property name="minimumSize">
+          <size>
+           <width>81</width>
+           <height>0</height>
+          </size>
+         </property>
+         <property name="text">
+          <string>FBDZ</string>
+         </property>
+        </widget>
+       </item>
+       <item row="0" column="2">
+        <widget class="QScrollBar" name="CRWScrollBar">
+         <property name="minimumSize">
+          <size>
+           <width>181</width>
+           <height>0</height>
+          </size>
+         </property>
+         <property name="maximum">
+          <number>200</number>
+         </property>
+         <property name="value">
+          <number>99</number>
+         </property>
+         <property name="orientation">
+          <enum>Qt::Horizontal</enum>
+         </property>
+        </widget>
+       </item>
+       <item row="7" column="4">
+        <widget class="QSpinBox" name="LHelicBox">
+         <property name="minimumSize">
+          <size>
+           <width>51</width>
+           <height>0</height>
+          </size>
+         </property>
+         <property name="maximumSize">
+          <size>
+           <width>51</width>
+           <height>16777215</height>
+          </size>
+         </property>
+         <property name="maximum">
+          <number>200</number>
+         </property>
+         <property name="singleStep">
+          <number>1</number>
+         </property>
+         <property name="value">
+          <number>100</number>
+         </property>
+        </widget>
+       </item>
+       <item row="3" column="2">
+        <widget class="QScrollBar" name="ENGScrollBar">
+         <property name="maximum">
+          <number>200</number>
+         </property>
+         <property name="value">
+          <number>99</number>
+         </property>
+         <property name="orientation">
+          <enum>Qt::Horizontal</enum>
+         </property>
+        </widget>
+       </item>
+       <item row="7" column="2">
+        <widget class="QScrollBar" name="LHelicScrollBar">
+         <property name="minimumSize">
+          <size>
+           <width>181</width>
+           <height>0</height>
+          </size>
+         </property>
+         <property name="maximum">
+          <number>200</number>
+         </property>
+         <property name="value">
+          <number>99</number>
+         </property>
+         <property name="orientation">
+          <enum>Qt::Horizontal</enum>
+         </property>
+        </widget>
+       </item>
+       <item row="12" column="4">
+        <widget class="QSpinBox" name="SMJRBox">
+         <property name="minimumSize">
+          <size>
+           <width>51</width>
+           <height>0</height>
+          </size>
+         </property>
+         <property name="maximumSize">
+          <size>
+           <width>51</width>
+           <height>16777215</height>
+          </size>
+         </property>
+         <property name="maximum">
+          <number>200</number>
+         </property>
+         <property name="singleStep">
+          <number>1</number>
+         </property>
+         <property name="value">
+          <number>100</number>
+         </property>
+        </widget>
+       </item>
+       <item row="14" column="4">
+        <widget class="QSpinBox" name="WTBox">
+         <property name="minimumSize">
+          <size>
+           <width>51</width>
+           <height>0</height>
+          </size>
+         </property>
+         <property name="maximumSize">
+          <size>
+           <width>51</width>
+           <height>16777215</height>
+          </size>
+         </property>
+         <property name="maximum">
+          <number>200</number>
+         </property>
+         <property name="singleStep">
+          <number>1</number>
+         </property>
+         <property name="value">
+          <number>100</number>
+         </property>
+        </widget>
+       </item>
+       <item row="14" column="2">
+        <widget class="QScrollBar" name="WTScrollBar">
+         <property name="minimumSize">
+          <size>
+           <width>181</width>
+           <height>0</height>
+          </size>
+         </property>
+         <property name="maximum">
+          <number>200</number>
+         </property>
+         <property name="value">
+          <number>99</number>
+         </property>
+         <property name="orientation">
+          <enum>Qt::Horizontal</enum>
+         </property>
+        </widget>
+       </item>
+       <item row="13" column="4">
+        <widget class="QSpinBox" name="TPBox">
+         <property name="minimumSize">
+          <size>
+           <width>51</width>
+           <height>0</height>
+          </size>
+         </property>
+         <property name="maximumSize">
+          <size>
+           <width>51</width>
+           <height>16777215</height>
+          </size>
+         </property>
+         <property name="maximum">
+          <number>200</number>
+         </property>
+         <property name="singleStep">
+          <number>1</number>
+         </property>
+         <property name="value">
+          <number>100</number>
+         </property>
+        </widget>
+       </item>
+       <item row="2" column="2">
+        <widget class="QScrollBar" name="DZRScrollBar">
+         <property name="maximum">
+          <number>200</number>
+         </property>
+         <property name="value">
+          <number>99</number>
+         </property>
+         <property name="orientation">
+          <enum>Qt::Horizontal</enum>
+         </property>
+        </widget>
+       </item>
+       <item row="4" column="2">
+        <widget class="QScrollBar" name="FBDZScrollBar">
+         <property name="maximum">
+          <number>200</number>
+         </property>
+         <property name="value">
+          <number>99</number>
+         </property>
+         <property name="orientation">
+          <enum>Qt::Horizontal</enum>
+         </property>
+        </widget>
+       </item>
+       <item row="2" column="1">
+        <widget class="QLabel" name="label_111">
+         <property name="minimumSize">
+          <size>
+           <width>81</width>
+           <height>0</height>
+          </size>
+         </property>
+         <property name="text">
+          <string>Dozers</string>
+         </property>
+        </widget>
+       </item>
+       <item row="10" column="4">
+        <widget class="QSpinBox" name="SEATBox">
+         <property name="minimumSize">
+          <size>
+           <width>51</width>
+           <height>0</height>
+          </size>
+         </property>
+         <property name="maximumSize">
+          <size>
+           <width>51</width>
+           <height>16777215</height>
+          </size>
+         </property>
+         <property name="maximum">
+          <number>200</number>
+         </property>
+         <property name="singleStep">
+          <number>1</number>
+         </property>
+         <property name="value">
+          <number>100</number>
+         </property>
+        </widget>
+       </item>
+       <item row="5" column="1">
+        <widget class="QLabel" name="label_112">
+         <property name="minimumSize">
+          <size>
+           <width>81</width>
+           <height>0</height>
+          </size>
+         </property>
+         <property name="text">
+          <string>FRBT</string>
+         </property>
+        </widget>
+       </item>
+       <item row="6" column="1">
+        <widget class="QLabel" name="label_113">
+         <property name="minimumSize">
+          <size>
+           <width>81</width>
+           <height>0</height>
+          </size>
+         </property>
+         <property name="text">
+          <string>Helicopters</string>
+         </property>
+        </widget>
+       </item>
+       <item row="5" column="2">
+        <widget class="QScrollBar" name="FRBTScrollBar">
+         <property name="maximum">
+          <number>200</number>
+         </property>
+         <property name="value">
+          <number>99</number>
+         </property>
+         <property name="orientation">
+          <enum>Qt::Horizontal</enum>
+         </property>
+        </widget>
+       </item>
+       <item row="12" column="2">
+        <widget class="QScrollBar" name="SMJRScrollBar">
+         <property name="minimumSize">
+          <size>
+           <width>181</width>
+           <height>0</height>
+          </size>
+         </property>
+         <property name="maximum">
+          <number>200</number>
+         </property>
+         <property name="value">
+          <number>99</number>
+         </property>
+         <property name="orientation">
+          <enum>Qt::Horizontal</enum>
+         </property>
+        </widget>
+       </item>
+       <item row="3" column="4">
+        <widget class="QSpinBox" name="ENGBox">
+         <property name="minimumSize">
+          <size>
+           <width>51</width>
+           <height>0</height>
+          </size>
+         </property>
+         <property name="maximumSize">
+          <size>
+           <width>51</width>
+           <height>16777215</height>
+          </size>
+         </property>
+         <property name="maximum">
+          <number>200</number>
+         </property>
+         <property name="singleStep">
+          <number>1</number>
+         </property>
+         <property name="value">
+          <number>100</number>
+         </property>
+        </widget>
+       </item>
+       <item row="1" column="4">
+        <widget class="QSpinBox" name="RCRWBox">
+         <property name="minimumSize">
+          <size>
+           <width>51</width>
+           <height>0</height>
+          </size>
+         </property>
+         <property name="maximumSize">
+          <size>
+           <width>51</width>
+           <height>16777215</height>
+          </size>
+         </property>
+         <property name="maximum">
+          <number>200</number>
+         </property>
+         <property name="singleStep">
+          <number>1</number>
+         </property>
+         <property name="value">
+          <number>100</number>
+         </property>
+        </widget>
+       </item>
+       <item row="1" column="1">
+        <widget class="QLabel" name="label_115">
+         <property name="minimumSize">
+          <size>
+           <width>81</width>
+           <height>0</height>
+          </size>
+         </property>
+         <property name="text">
+          <string>Regional Crews</string>
+         </property>
+        </widget>
+       </item>
+       <item row="12" column="1">
+        <widget class="QLabel" name="label_116">
+         <property name="minimumSize">
+          <size>
+           <width>91</width>
+           <height>0</height>
+          </size>
+         </property>
+         <property name="text">
+          <string>Smokejumpers</string>
+         </property>
+        </widget>
+       </item>
+       <item row="2" column="4">
+        <widget class="QSpinBox" name="DZRBox">
+         <property name="minimumSize">
+          <size>
+           <width>51</width>
+           <height>0</height>
+          </size>
+         </property>
+         <property name="maximumSize">
+          <size>
+           <width>51</width>
+           <height>16777215</height>
+          </size>
+         </property>
+         <property name="maximum">
+          <number>200</number>
+         </property>
+         <property name="singleStep">
+          <number>1</number>
+         </property>
+         <property name="value">
+          <number>100</number>
+         </property>
+        </widget>
+       </item>
+       <item row="13" column="1">
+        <widget class="QLabel" name="label_118">
+         <property name="minimumSize">
+          <size>
+           <width>91</width>
+           <height>0</height>
+          </size>
+         </property>
+         <property name="text">
+          <string>Tractor Plows</string>
+         </property>
+        </widget>
+       </item>
+       <item row="11" column="2">
+        <widget class="QScrollBar" name="SJACScrollBar">
+         <property name="minimumSize">
+          <size>
+           <width>181</width>
+           <height>0</height>
+          </size>
+         </property>
+         <property name="maximum">
+          <number>200</number>
+         </property>
+         <property name="value">
+          <number>99</number>
+         </property>
+         <property name="orientation">
+          <enum>Qt::Horizontal</enum>
+         </property>
+        </widget>
+       </item>
+       <item row="14" column="1">
+        <widget class="QLabel" name="label_120">
+         <property name="minimumSize">
+          <size>
+           <width>91</width>
+           <height>0</height>
+          </size>
+         </property>
+         <property name="text">
+          <string>Water Tenders</string>
+         </property>
+        </widget>
+       </item>
+       <item row="5" column="4">
+        <widget class="QSpinBox" name="FRBTBox">
+         <property name="minimumSize">
+          <size>
+           <width>51</width>
+           <height>0</height>
+          </size>
+         </property>
+         <property name="maximumSize">
+          <size>
+           <width>51</width>
+           <height>16777215</height>
+          </size>
+         </property>
+         <property name="maximum">
+          <number>200</number>
+         </property>
+         <property name="singleStep">
+          <number>1</number>
+         </property>
+         <property name="value">
+          <number>100</number>
+         </property>
+        </widget>
+       </item>
+       <item row="1" column="2">
+        <widget class="QScrollBar" name="RCRWScrollBar">
+         <property name="minimumSize">
+          <size>
+           <width>181</width>
+           <height>0</height>
+          </size>
+         </property>
+         <property name="maximum">
+          <number>200</number>
+         </property>
+         <property name="value">
+          <number>99</number>
+         </property>
+         <property name="orientation">
+          <enum>Qt::Horizontal</enum>
+         </property>
+        </widget>
+       </item>
+       <item row="10" column="1">
+        <widget class="QLabel" name="label_121">
+         <property name="minimumSize">
+          <size>
+           <width>91</width>
+           <height>0</height>
+          </size>
+         </property>
+         <property name="text">
+          <string>SEAT/Scoopers</string>
+         </property>
+        </widget>
+       </item>
+       <item row="3" column="1">
+        <widget class="QLabel" name="label_123">
+         <property name="minimumSize">
+          <size>
+           <width>81</width>
+           <height>0</height>
+          </size>
+         </property>
+         <property name="text">
+          <string>Engines</string>
+         </property>
+        </widget>
+       </item>
+       <item row="8" column="4">
+        <widget class="QSpinBox" name="HELIBox">
+         <property name="minimumSize">
+          <size>
+           <width>51</width>
+           <height>0</height>
+          </size>
+         </property>
+         <property name="maximumSize">
+          <size>
+           <width>51</width>
+           <height>16777215</height>
+          </size>
+         </property>
+         <property name="maximum">
+          <number>200</number>
+         </property>
+         <property name="singleStep">
+          <number>1</number>
+         </property>
+         <property name="value">
+          <number>100</number>
+         </property>
+        </widget>
+       </item>
+       <item row="11" column="1">
+        <widget class="QLabel" name="label_104">
+         <property name="minimumSize">
+          <size>
+           <width>91</width>
+           <height>0</height>
+          </size>
+         </property>
+         <property name="text">
+          <string>Smokejumper Aircraft</string>
+         </property>
+        </widget>
+       </item>
+       <item row="11" column="4">
+        <widget class="QSpinBox" name="SJACBox">
+         <property name="minimumSize">
+          <size>
+           <width>51</width>
+           <height>0</height>
+          </size>
+         </property>
+         <property name="maximumSize">
+          <size>
+           <width>51</width>
+           <height>16777215</height>
+          </size>
+         </property>
+         <property name="maximum">
+          <number>200</number>
+         </property>
+         <property name="singleStep">
+          <number>1</number>
+         </property>
+         <property name="value">
+          <number>100</number>
+         </property>
+        </widget>
+       </item>
+       <item row="7" column="1">
+        <widget class="QLabel" name="label_108">
+         <property name="minimumSize">
+          <size>
+           <width>81</width>
+           <height>0</height>
+          </size>
+         </property>
+         <property name="text">
+          <string>Large Helicopter</string>
+         </property>
+        </widget>
+       </item>
+       <item row="0" column="1">
+        <widget class="QLabel" name="label_109">
+         <property name="minimumSize">
+          <size>
+           <width>81</width>
+           <height>0</height>
+          </size>
+         </property>
+         <property name="maximumSize">
+          <size>
+           <width>87</width>
+           <height>16777215</height>
+          </size>
+         </property>
+         <property name="text">
+          <string>Crews</string>
+         </property>
+        </widget>
+       </item>
+       <item row="8" column="2">
+        <widget class="QScrollBar" name="HELIScrollBar">
+         <property name="minimumSize">
+          <size>
+           <width>181</width>
+           <height>0</height>
+          </size>
+         </property>
+         <property name="maximum">
+          <number>200</number>
+         </property>
+         <property name="value">
+          <number>99</number>
+         </property>
+         <property name="orientation">
+          <enum>Qt::Horizontal</enum>
+         </property>
+        </widget>
+       </item>
+      </layout>
+     </widget>
+    </widget>
+    <widget class="QLabel" name="label_50">
+     <property name="geometry">
+      <rect>
+       <x>190</x>
+       <y>10</y>
+       <width>231</width>
+       <height>20</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>Percent Adjustment by Resource Type</string>
+     </property>
+    </widget>
+   </widget>
+  </widget>
+ </widget>
+ <tabstops>
+  <tabstop>agencyButton</tabstop>
+  <tabstop>areaButton</tabstop>
+  <tabstop>rescTypeButton</tabstop>
+  <tabstop>regionButton</tabstop>
+  <tabstop>stateButton</tabstop>
+  <tabstop>cancelButton</tabstop>
+  <tabstop>editButton</tabstop>
+  <tabstop>acceptButton</tabstop>
+  <tabstop>FSBox</tabstop>
+  <tabstop>DOIBox</tabstop>
+  <tabstop>BIABox</tabstop>
+  <tabstop>BLMBox</tabstop>
+  <tabstop>FWSBox</tabstop>
+  <tabstop>NPSBox</tabstop>
+  <tabstop>SLBox</tabstop>
+  <tabstop>R1Box</tabstop>
+  <tabstop>R2Box</tabstop>
+  <tabstop>R3Box</tabstop>
+  <tabstop>R4Box</tabstop>
+  <tabstop>R5Box</tabstop>
+  <tabstop>R6Box</tabstop>
+  <tabstop>R8Box</tabstop>
+  <tabstop>R9Box</tabstop>
+  <tabstop>R10Box</tabstop>
+  <tabstop>AKBox</tabstop>
+  <tabstop>ALBox</tabstop>
+  <tabstop>ARBox</tabstop>
+  <tabstop>AZBox</tabstop>
+  <tabstop>CABox</tabstop>
+  <tabstop>COBox</tabstop>
+  <tabstop>FLBox</tabstop>
+  <tabstop>GABox</tabstop>
+  <tabstop>IABox</tabstop>
+  <tabstop>IDBox</tabstop>
+  <tabstop>ILBox</tabstop>
+  <tabstop>INBox</tabstop>
+  <tabstop>KSBox</tabstop>
+  <tabstop>KYBox</tabstop>
+  <tabstop>LABox</tabstop>
+  <tabstop>MDBox</tabstop>
+  <tabstop>MIBox</tabstop>
+  <tabstop>MNBox</tabstop>
+  <tabstop>MOBox</tabstop>
+  <tabstop>MSBox</tabstop>
+  <tabstop>MTBox</tabstop>
+  <tabstop>NCBox</tabstop>
+  <tabstop>NDBox</tabstop>
+  <tabstop>NEBox</tabstop>
+  <tabstop>NHBox</tabstop>
+  <tabstop>NJBox</tabstop>
+  <tabstop>NMBox</tabstop>
+  <tabstop>NVBox</tabstop>
+  <tabstop>OHBox</tabstop>
+  <tabstop>OKBox</tabstop>
+  <tabstop>ORBox</tabstop>
+  <tabstop>PABox</tabstop>
+  <tabstop>PRBox</tabstop>
+  <tabstop>SCBox</tabstop>
+  <tabstop>SDBox</tabstop>
+  <tabstop>TNBox</tabstop>
+  <tabstop>TXBox</tabstop>
+  <tabstop>UTBox</tabstop>
+  <tabstop>VABox</tabstop>
+  <tabstop>WABox</tabstop>
+  <tabstop>WIBox</tabstop>
+  <tabstop>WVBox</tabstop>
+  <tabstop>WYBox</tabstop>
+  <tabstop>CRWBox</tabstop>
+  <tabstop>RCRWBox</tabstop>
+  <tabstop>DZRBox</tabstop>
+  <tabstop>ENGBox</tabstop>
+  <tabstop>FBDZBox</tabstop>
+  <tabstop>FRBTBox</tabstop>
+  <tabstop>HelicBox</tabstop>
+  <tabstop>LHelicBox</tabstop>
+  <tabstop>HELIBox</tabstop>
+  <tabstop>SEATBox</tabstop>
+  <tabstop>SJACBox</tabstop>
+  <tabstop>SMJRBox</tabstop>
+  <tabstop>TPBox</tabstop>
+  <tabstop>WTBox</tabstop>
+  <tabstop>scrollArea_3</tabstop>
+  <tabstop>scrollArea_4</tabstop>
+ </tabstops>
+ <resources/>
+ <connections>
+  <connection>
+   <sender>FSScrollBar</sender>
+   <signal>valueChanged(int)</signal>
+   <receiver>FSBox</receiver>
+   <slot>setValue(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>422</x>
+     <y>219</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>479</x>
+     <y>218</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>FSBox</sender>
+   <signal>valueChanged(int)</signal>
+   <receiver>FSScrollBar</receiver>
+   <slot>setValue(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>479</x>
+     <y>218</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>422</x>
+     <y>219</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>CRWScrollBar</sender>
+   <signal>valueChanged(int)</signal>
+   <receiver>CRWBox</receiver>
+   <slot>setValue(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>294</x>
+     <y>140</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>429</x>
+     <y>140</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>RCRWScrollBar</sender>
+   <signal>valueChanged(int)</signal>
+   <receiver>RCRWBox</receiver>
+   <slot>setValue(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>330</x>
+     <y>166</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>424</x>
+     <y>164</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>CRWBox</sender>
+   <signal>valueChanged(int)</signal>
+   <receiver>CRWScrollBar</receiver>
+   <slot>setValue(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>420</x>
+     <y>139</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>371</x>
+     <y>137</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>RCRWBox</sender>
+   <signal>valueChanged(int)</signal>
+   <receiver>RCRWScrollBar</receiver>
+   <slot>setValue(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>431</x>
+     <y>161</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>339</x>
+     <y>164</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>DZRScrollBar</sender>
+   <signal>valueChanged(int)</signal>
+   <receiver>DZRBox</receiver>
+   <slot>setValue(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>374</x>
+     <y>193</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>422</x>
+     <y>188</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>DZRBox</sender>
+   <signal>valueChanged(int)</signal>
+   <receiver>DZRScrollBar</receiver>
+   <slot>setValue(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>449</x>
+     <y>186</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>401</x>
+     <y>193</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>ENGScrollBar</sender>
+   <signal>valueChanged(int)</signal>
+   <receiver>ENGBox</receiver>
+   <slot>setValue(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>359</x>
+     <y>217</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>421</x>
+     <y>215</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>ENGBox</sender>
+   <signal>valueChanged(int)</signal>
+   <receiver>ENGScrollBar</receiver>
+   <slot>setValue(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>430</x>
+     <y>213</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>393</x>
+     <y>218</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>FBDZBox</sender>
+   <signal>valueChanged(int)</signal>
+   <receiver>FBDZScrollBar</receiver>
+   <slot>setValue(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>431</x>
+     <y>237</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>399</x>
+     <y>240</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>FBDZScrollBar</sender>
+   <signal>valueChanged(int)</signal>
+   <receiver>FBDZBox</receiver>
+   <slot>setValue(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>385</x>
+     <y>242</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>427</x>
+     <y>240</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>FRBTScrollBar</sender>
+   <signal>valueChanged(int)</signal>
+   <receiver>FRBTBox</receiver>
+   <slot>setValue(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>362</x>
+     <y>270</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>427</x>
+     <y>268</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>FRBTBox</sender>
+   <signal>valueChanged(int)</signal>
+   <receiver>FRBTScrollBar</receiver>
+   <slot>setValue(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>427</x>
+     <y>268</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>387</x>
+     <y>267</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>HelicScrollBar</sender>
+   <signal>valueChanged(int)</signal>
+   <receiver>HelicBox</receiver>
+   <slot>setValue(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>287</x>
+     <y>294</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>418</x>
+     <y>296</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>HelicBox</sender>
+   <signal>valueChanged(int)</signal>
+   <receiver>HelicScrollBar</receiver>
+   <slot>setValue(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>431</x>
+     <y>292</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>387</x>
+     <y>291</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>LHelicScrollBar</sender>
+   <signal>valueChanged(int)</signal>
+   <receiver>LHelicBox</receiver>
+   <slot>setValue(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>320</x>
+     <y>318</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>417</x>
+     <y>319</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>LHelicBox</sender>
+   <signal>valueChanged(int)</signal>
+   <receiver>LHelicScrollBar</receiver>
+   <slot>setValue(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>439</x>
+     <y>321</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>381</x>
+     <y>318</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>HELIScrollBar</sender>
+   <signal>valueChanged(int)</signal>
+   <receiver>HELIBox</receiver>
+   <slot>setValue(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>341</x>
+     <y>344</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>420</x>
+     <y>345</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>HELIBox</sender>
+   <signal>valueChanged(int)</signal>
+   <receiver>HELIScrollBar</receiver>
+   <slot>setValue(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>424</x>
+     <y>345</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>383</x>
+     <y>343</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>SEATScrollBar</sender>
+   <signal>valueChanged(int)</signal>
+   <receiver>SEATBox</receiver>
+   <slot>setValue(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>348</x>
+     <y>371</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>428</x>
+     <y>370</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>SEATBox</sender>
+   <signal>valueChanged(int)</signal>
+   <receiver>SEATScrollBar</receiver>
+   <slot>setValue(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>436</x>
+     <y>371</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>376</x>
+     <y>371</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>SJACScrollBar</sender>
+   <signal>valueChanged(int)</signal>
+   <receiver>SJACBox</receiver>
+   <slot>setValue(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>339</x>
+     <y>398</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>446</x>
+     <y>397</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>SJACBox</sender>
+   <signal>valueChanged(int)</signal>
+   <receiver>SJACScrollBar</receiver>
+   <slot>setValue(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>450</x>
+     <y>393</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>381</x>
+     <y>400</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>SMJRScrollBar</sender>
+   <signal>valueChanged(int)</signal>
+   <receiver>SMJRBox</receiver>
+   <slot>setValue(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>387</x>
+     <y>424</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>433</x>
+     <y>427</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>SMJRBox</sender>
+   <signal>valueChanged(int)</signal>
+   <receiver>SMJRScrollBar</receiver>
+   <slot>setValue(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>442</x>
+     <y>428</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>395</x>
+     <y>425</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>TPScrollBar</sender>
+   <signal>valueChanged(int)</signal>
+   <receiver>TPBox</receiver>
+   <slot>setValue(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>395</x>
+     <y>455</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>430</x>
+     <y>445</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>TPBox</sender>
+   <signal>valueChanged(int)</signal>
+   <receiver>TPScrollBar</receiver>
+   <slot>setValue(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>451</x>
+     <y>452</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>383</x>
+     <y>451</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>WTScrollBar</sender>
+   <signal>valueChanged(int)</signal>
+   <receiver>WTBox</receiver>
+   <slot>setValue(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>356</x>
+     <y>475</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>436</x>
+     <y>475</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>WTBox</sender>
+   <signal>valueChanged(int)</signal>
+   <receiver>WTScrollBar</receiver>
+   <slot>setValue(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>453</x>
+     <y>473</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>395</x>
+     <y>473</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>AKScrollBar</sender>
+   <signal>valueChanged(int)</signal>
+   <receiver>AKBox</receiver>
+   <slot>setValue(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>306</x>
+     <y>229</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>433</x>
+     <y>229</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>AKBox</sender>
+   <signal>valueChanged(int)</signal>
+   <receiver>AKScrollBar</receiver>
+   <slot>setValue(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>453</x>
+     <y>222</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>381</x>
+     <y>227</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>ALScrollBar</sender>
+   <signal>valueChanged(int)</signal>
+   <receiver>ALBox</receiver>
+   <slot>setValue(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>319</x>
+     <y>251</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>442</x>
+     <y>263</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>ALBox</sender>
+   <signal>valueChanged(int)</signal>
+   <receiver>ALScrollBar</receiver>
+   <slot>setValue(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>438</x>
+     <y>247</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>407</x>
+     <y>250</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>ARScrollBar</sender>
+   <signal>valueChanged(int)</signal>
+   <receiver>ARBox</receiver>
+   <slot>setValue(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>327</x>
+     <y>278</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>448</x>
+     <y>279</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>ARBox</sender>
+   <signal>valueChanged(int)</signal>
+   <receiver>ARScrollBar</receiver>
+   <slot>setValue(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>450</x>
+     <y>282</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>393</x>
+     <y>281</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>AZScrollBar</sender>
+   <signal>valueChanged(int)</signal>
+   <receiver>AZBox</receiver>
+   <slot>setValue(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>354</x>
+     <y>306</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>428</x>
+     <y>315</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>AZBox</sender>
+   <signal>valueChanged(int)</signal>
+   <receiver>AZScrollBar</receiver>
+   <slot>setValue(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>458</x>
+     <y>300</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>410</x>
+     <y>301</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>CAScrollBar</sender>
+   <signal>valueChanged(int)</signal>
+   <receiver>CABox</receiver>
+   <slot>setValue(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>362</x>
+     <y>325</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>464</x>
+     <y>335</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>CABox</sender>
+   <signal>valueChanged(int)</signal>
+   <receiver>CAScrollBar</receiver>
+   <slot>setValue(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>427</x>
+     <y>325</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>395</x>
+     <y>329</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>COScrollBar</sender>
+   <signal>valueChanged(int)</signal>
+   <receiver>COBox</receiver>
+   <slot>setValue(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>376</x>
+     <y>363</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>455</x>
+     <y>367</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>COBox</sender>
+   <signal>valueChanged(int)</signal>
+   <receiver>COScrollBar</receiver>
+   <slot>setValue(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>451</x>
+     <y>354</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>413</x>
+     <y>356</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>FLScrollBar</sender>
+   <signal>valueChanged(int)</signal>
+   <receiver>FLBox</receiver>
+   <slot>setValue(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>378</x>
+     <y>384</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>438</x>
+     <y>389</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>FLBox</sender>
+   <signal>valueChanged(int)</signal>
+   <receiver>FLScrollBar</receiver>
+   <slot>setValue(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>456</x>
+     <y>384</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>405</x>
+     <y>384</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>GAScrollBar</sender>
+   <signal>valueChanged(int)</signal>
+   <receiver>GABox</receiver>
+   <slot>setValue(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>384</x>
+     <y>407</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>443</x>
+     <y>409</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>GABox</sender>
+   <signal>valueChanged(int)</signal>
+   <receiver>GAScrollBar</receiver>
+   <slot>setValue(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>459</x>
+     <y>406</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>408</x>
+     <y>410</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>IAScrollBar</sender>
+   <signal>valueChanged(int)</signal>
+   <receiver>IABox</receiver>
+   <slot>setValue(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>400</x>
+     <y>432</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>443</x>
+     <y>437</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>IABox</sender>
+   <signal>valueChanged(int)</signal>
+   <receiver>IAScrollBar</receiver>
+   <slot>setValue(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>466</x>
+     <y>439</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>381</x>
+     <y>437</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>IDScrollBar</sender>
+   <signal>valueChanged(int)</signal>
+   <receiver>IDBox</receiver>
+   <slot>setValue(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>348</x>
+     <y>461</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>454</x>
+     <y>461</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>IDBox</sender>
+   <signal>valueChanged(int)</signal>
+   <receiver>IDScrollBar</receiver>
+   <slot>setValue(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>448</x>
+     <y>461</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>399</x>
+     <y>463</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>ILScrollBar</sender>
+   <signal>valueChanged(int)</signal>
+   <receiver>ILBox</receiver>
+   <slot>setValue(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>359</x>
+     <y>494</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>440</x>
+     <y>493</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>ILBox</sender>
+   <signal>valueChanged(int)</signal>
+   <receiver>ILScrollBar</receiver>
+   <slot>setValue(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>451</x>
+     <y>480</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>409</x>
+     <y>484</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>INScrollBar</sender>
+   <signal>valueChanged(int)</signal>
+   <receiver>INBox</receiver>
+   <slot>setValue(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>274</x>
+     <y>511</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>423</x>
+     <y>511</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>INBox</sender>
+   <signal>valueChanged(int)</signal>
+   <receiver>INScrollBar</receiver>
+   <slot>setValue(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>441</x>
+     <y>518</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>382</x>
+     <y>522</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>KSScrollBar</sender>
+   <signal>valueChanged(int)</signal>
+   <receiver>KSBox</receiver>
+   <slot>setValue(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>318</x>
+     <y>534</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>441</x>
+     <y>545</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>KSBox</sender>
+   <signal>valueChanged(int)</signal>
+   <receiver>KSScrollBar</receiver>
+   <slot>setValue(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>446</x>
+     <y>535</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>373</x>
+     <y>535</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>KYScrollBar</sender>
+   <signal>valueChanged(int)</signal>
+   <receiver>KYBox</receiver>
+   <slot>setValue(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>350</x>
+     <y>573</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>455</x>
+     <y>568</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>KYBox</sender>
+   <signal>valueChanged(int)</signal>
+   <receiver>KYScrollBar</receiver>
+   <slot>setValue(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>442</x>
+     <y>566</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>390</x>
+     <y>570</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>LAScrollBar</sender>
+   <signal>valueChanged(int)</signal>
+   <receiver>LABox</receiver>
+   <slot>setValue(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>392</x>
+     <y>587</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>434</x>
+     <y>596</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>LABox</sender>
+   <signal>valueChanged(int)</signal>
+   <receiver>LAScrollBar</receiver>
+   <slot>setValue(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>455</x>
+     <y>585</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>403</x>
+     <y>586</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>ScrollBarMD</sender>
+   <signal>valueChanged(int)</signal>
+   <receiver>MDBox</receiver>
+   <slot>setValue(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>388</x>
+     <y>618</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>443</x>
+     <y>621</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>MDBox</sender>
+   <signal>valueChanged(int)</signal>
+   <receiver>ScrollBarMD</receiver>
+   <slot>setValue(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>450</x>
+     <y>613</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>396</x>
+     <y>613</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>MIScrollBar</sender>
+   <signal>valueChanged(int)</signal>
+   <receiver>MIBox</receiver>
+   <slot>setValue(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>368</x>
+     <y>651</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>455</x>
+     <y>654</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>MIBox</sender>
+   <signal>valueChanged(int)</signal>
+   <receiver>MIScrollBar</receiver>
+   <slot>setValue(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>429</x>
+     <y>640</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>400</x>
+     <y>642</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>MNScrollBar</sender>
+   <signal>valueChanged(int)</signal>
+   <receiver>MNBox</receiver>
+   <slot>setValue(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>284</x>
+     <y>666</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>462</x>
+     <y>668</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>MNBox</sender>
+   <signal>valueChanged(int)</signal>
+   <receiver>MNScrollBar</receiver>
+   <slot>setValue(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>447</x>
+     <y>667</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>393</x>
+     <y>669</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>MOScrollBar</sender>
+   <signal>valueChanged(int)</signal>
+   <receiver>MOBox</receiver>
+   <slot>setValue(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>384</x>
+     <y>698</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>434</x>
+     <y>698</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>MOBox</sender>
+   <signal>valueChanged(int)</signal>
+   <receiver>MOScrollBar</receiver>
+   <slot>setValue(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>455</x>
+     <y>689</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>406</x>
+     <y>695</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>MSScrollBar</sender>
+   <signal>valueChanged(int)</signal>
+   <receiver>MSBox</receiver>
+   <slot>setValue(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>400</x>
+     <y>727</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>442</x>
+     <y>728</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>MSBox</sender>
+   <signal>valueChanged(int)</signal>
+   <receiver>MSScrollBar</receiver>
+   <slot>setValue(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>464</x>
+     <y>720</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>396</x>
+     <y>715</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>MTScrollBar</sender>
+   <signal>valueChanged(int)</signal>
+   <receiver>MTBox</receiver>
+   <slot>setValue(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>370</x>
+     <y>748</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>441</x>
+     <y>756</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>MTBox</sender>
+   <signal>valueChanged(int)</signal>
+   <receiver>MTScrollBar</receiver>
+   <slot>setValue(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>434</x>
+     <y>743</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>386</x>
+     <y>741</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>NCScrollBar</sender>
+   <signal>valueChanged(int)</signal>
+   <receiver>NCBox</receiver>
+   <slot>setValue(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>386</x>
+     <y>771</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>464</x>
+     <y>778</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>NCBox</sender>
+   <signal>valueChanged(int)</signal>
+   <receiver>NCScrollBar</receiver>
+   <slot>setValue(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>462</x>
+     <y>770</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>396</x>
+     <y>769</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>NDScrollBar</sender>
+   <signal>valueChanged(int)</signal>
+   <receiver>NDBox</receiver>
+   <slot>setValue(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>342</x>
+     <y>794</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>445</x>
+     <y>802</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>NDBox</sender>
+   <signal>valueChanged(int)</signal>
+   <receiver>NDScrollBar</receiver>
+   <slot>setValue(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>444</x>
+     <y>794</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>408</x>
+     <y>794</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>NEScrollBar</sender>
+   <signal>valueChanged(int)</signal>
+   <receiver>NEBox</receiver>
+   <slot>setValue(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>374</x>
+     <y>826</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>442</x>
+     <y>833</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>NEBox</sender>
+   <signal>valueChanged(int)</signal>
+   <receiver>NEScrollBar</receiver>
+   <slot>setValue(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>451</x>
+     <y>825</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>398</x>
+     <y>825</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>NHScrollBar</sender>
+   <signal>valueChanged(int)</signal>
+   <receiver>NHBox</receiver>
+   <slot>setValue(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>398</x>
+     <y>851</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>445</x>
+     <y>849</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>NHBox</sender>
+   <signal>valueChanged(int)</signal>
+   <receiver>NHScrollBar</receiver>
+   <slot>setValue(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>460</x>
+     <y>854</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>406</x>
+     <y>851</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>NJScrollBar</sender>
+   <signal>valueChanged(int)</signal>
+   <receiver>NJBox</receiver>
+   <slot>setValue(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>345</x>
+     <y>876</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>437</x>
+     <y>876</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>NJBox</sender>
+   <signal>valueChanged(int)</signal>
+   <receiver>NJScrollBar</receiver>
+   <slot>setValue(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>454</x>
+     <y>878</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>388</x>
+     <y>877</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>NMScrollBar</sender>
+   <signal>valueChanged(int)</signal>
+   <receiver>NMBox</receiver>
+   <slot>setValue(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>384</x>
+     <y>901</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>441</x>
+     <y>900</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>NMBox</sender>
+   <signal>valueChanged(int)</signal>
+   <receiver>NMScrollBar</receiver>
+   <slot>setValue(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>445</x>
+     <y>904</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>404</x>
+     <y>905</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>NVScrollBar</sender>
+   <signal>valueChanged(int)</signal>
+   <receiver>NVBox</receiver>
+   <slot>setValue(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>387</x>
+     <y>926</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>427</x>
+     <y>932</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>NVBox</sender>
+   <signal>valueChanged(int)</signal>
+   <receiver>NVScrollBar</receiver>
+   <slot>setValue(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>459</x>
+     <y>936</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>409</x>
+     <y>937</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>OHScrollBar</sender>
+   <signal>valueChanged(int)</signal>
+   <receiver>OHBox</receiver>
+   <slot>setValue(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>372</x>
+     <y>955</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>443</x>
+     <y>955</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>OHBox</sender>
+   <signal>valueChanged(int)</signal>
+   <receiver>OHScrollBar</receiver>
+   <slot>setValue(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>457</x>
+     <y>951</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>413</x>
+     <y>956</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>OKScrollBar</sender>
+   <signal>valueChanged(int)</signal>
+   <receiver>OKBox</receiver>
+   <slot>setValue(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>395</x>
+     <y>977</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>437</x>
+     <y>982</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>OKBox</sender>
+   <signal>valueChanged(int)</signal>
+   <receiver>OKScrollBar</receiver>
+   <slot>setValue(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>448</x>
+     <y>983</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>405</x>
+     <y>983</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>ORScrollBar</sender>
+   <signal>valueChanged(int)</signal>
+   <receiver>ORBox</receiver>
+   <slot>setValue(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>377</x>
+     <y>1009</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>437</x>
+     <y>1013</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>ORBox</sender>
+   <signal>valueChanged(int)</signal>
+   <receiver>ORScrollBar</receiver>
+   <slot>setValue(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>458</x>
+     <y>1005</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>402</x>
+     <y>1003</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>PAScrollBar</sender>
+   <signal>valueChanged(int)</signal>
+   <receiver>PABox</receiver>
+   <slot>setValue(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>388</x>
+     <y>1033</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>459</x>
+     <y>1032</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>PABox</sender>
+   <signal>valueChanged(int)</signal>
+   <receiver>PAScrollBar</receiver>
+   <slot>setValue(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>468</x>
+     <y>1034</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>402</x>
+     <y>1035</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>PRScrollBar</sender>
+   <signal>valueChanged(int)</signal>
+   <receiver>PRBox</receiver>
+   <slot>setValue(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>331</x>
+     <y>1054</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>431</x>
+     <y>1056</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>PRBox</sender>
+   <signal>valueChanged(int)</signal>
+   <receiver>PRScrollBar</receiver>
+   <slot>setValue(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>473</x>
+     <y>1065</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>410</x>
+     <y>1059</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>SCScrollBar</sender>
+   <signal>valueChanged(int)</signal>
+   <receiver>SCBox</receiver>
+   <slot>setValue(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>323</x>
+     <y>1087</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>436</x>
+     <y>1094</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>SCBox</sender>
+   <signal>valueChanged(int)</signal>
+   <receiver>SCScrollBar</receiver>
+   <slot>setValue(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>433</x>
+     <y>1081</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>391</x>
+     <y>1079</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>SDScrollBar</sender>
+   <signal>valueChanged(int)</signal>
+   <receiver>SDBox</receiver>
+   <slot>setValue(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>329</x>
+     <y>1113</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>427</x>
+     <y>1115</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>SDBox</sender>
+   <signal>valueChanged(int)</signal>
+   <receiver>SDScrollBar</receiver>
+   <slot>setValue(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>458</x>
+     <y>1110</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>400</x>
+     <y>1111</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>TNScrollBar</sender>
+   <signal>valueChanged(int)</signal>
+   <receiver>TNBox</receiver>
+   <slot>setValue(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>381</x>
+     <y>1133</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>431</x>
+     <y>1137</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>TNBox</sender>
+   <signal>valueChanged(int)</signal>
+   <receiver>TNScrollBar</receiver>
+   <slot>setValue(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>461</x>
+     <y>1142</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>396</x>
+     <y>1142</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>TXScrollBar</sender>
+   <signal>valueChanged(int)</signal>
+   <receiver>TXBox</receiver>
+   <slot>setValue(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>378</x>
+     <y>1166</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>465</x>
+     <y>1160</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>TXBox</sender>
+   <signal>valueChanged(int)</signal>
+   <receiver>TXScrollBar</receiver>
+   <slot>setValue(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>434</x>
+     <y>1169</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>400</x>
+     <y>1169</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>UTScrollBar</sender>
+   <signal>valueChanged(int)</signal>
+   <receiver>UTBox</receiver>
+   <slot>setValue(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>397</x>
+     <y>1190</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>457</x>
+     <y>1189</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>UTBox</sender>
+   <signal>valueChanged(int)</signal>
+   <receiver>UTScrollBar</receiver>
+   <slot>setValue(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>443</x>
+     <y>1199</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>403</x>
+     <y>1198</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>VAScrollBar</sender>
+   <signal>valueChanged(int)</signal>
+   <receiver>VABox</receiver>
+   <slot>setValue(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>394</x>
+     <y>1217</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>440</x>
+     <y>1224</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>VABox</sender>
+   <signal>valueChanged(int)</signal>
+   <receiver>VAScrollBar</receiver>
+   <slot>setValue(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>457</x>
+     <y>1213</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>412</x>
+     <y>1215</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>WAScrollBar</sender>
+   <signal>valueChanged(int)</signal>
+   <receiver>WABox</receiver>
+   <slot>setValue(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>385</x>
+     <y>1243</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>443</x>
+     <y>1253</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>WABox</sender>
+   <signal>valueChanged(int)</signal>
+   <receiver>WAScrollBar</receiver>
+   <slot>setValue(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>461</x>
+     <y>1235</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>407</x>
+     <y>1240</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>WIScrollBar</sender>
+   <signal>valueChanged(int)</signal>
+   <receiver>WIBox</receiver>
+   <slot>setValue(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>319</x>
+     <y>1272</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>442</x>
+     <y>1271</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>WIBox</sender>
+   <signal>valueChanged(int)</signal>
+   <receiver>WIScrollBar</receiver>
+   <slot>setValue(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>438</x>
+     <y>1271</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>390</x>
+     <y>1267</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>WVScrollBar</sender>
+   <signal>valueChanged(int)</signal>
+   <receiver>WVBox</receiver>
+   <slot>setValue(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>374</x>
+     <y>1294</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>436</x>
+     <y>1290</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>WVBox</sender>
+   <signal>valueChanged(int)</signal>
+   <receiver>WVScrollBar</receiver>
+   <slot>setValue(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>451</x>
+     <y>1291</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>398</x>
+     <y>1289</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>WYScrollBar</sender>
+   <signal>valueChanged(int)</signal>
+   <receiver>WYBox</receiver>
+   <slot>setValue(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>312</x>
+     <y>1319</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>423</x>
+     <y>1319</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>WYBox</sender>
+   <signal>valueChanged(int)</signal>
+   <receiver>WYScrollBar</receiver>
+   <slot>setValue(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>445</x>
+     <y>1330</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>403</x>
+     <y>1326</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>R1ScrollBar</sender>
+   <signal>valueChanged(int)</signal>
+   <receiver>R1Box</receiver>
+   <slot>setValue(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>400</x>
+     <y>240</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>457</x>
+     <y>239</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>R1Box</sender>
+   <signal>valueChanged(int)</signal>
+   <receiver>R1ScrollBar</receiver>
+   <slot>setValue(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>485</x>
+     <y>231</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>439</x>
+     <y>234</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>R2ScrollBar</sender>
+   <signal>valueChanged(int)</signal>
+   <receiver>R2Box</receiver>
+   <slot>setValue(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>370</x>
+     <y>270</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>481</x>
+     <y>265</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>R2Box</sender>
+   <signal>valueChanged(int)</signal>
+   <receiver>R2ScrollBar</receiver>
+   <slot>setValue(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>461</x>
+     <y>265</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>428</x>
+     <y>265</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>R3ScrollBar</sender>
+   <signal>valueChanged(int)</signal>
+   <receiver>R3Box</receiver>
+   <slot>setValue(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>369</x>
+     <y>293</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>471</x>
+     <y>305</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>R3Box</sender>
+   <signal>valueChanged(int)</signal>
+   <receiver>R3ScrollBar</receiver>
+   <slot>setValue(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>458</x>
+     <y>289</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>432</x>
+     <y>289</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>R4ScrollBar</sender>
+   <signal>valueChanged(int)</signal>
+   <receiver>R4Box</receiver>
+   <slot>setValue(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>391</x>
+     <y>323</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>466</x>
+     <y>328</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>R4Box</sender>
+   <signal>valueChanged(int)</signal>
+   <receiver>R4ScrollBar</receiver>
+   <slot>setValue(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>465</x>
+     <y>318</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>434</x>
+     <y>325</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>R5ScrollBar</sender>
+   <signal>valueChanged(int)</signal>
+   <receiver>R5Box</receiver>
+   <slot>setValue(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>421</x>
+     <y>351</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>466</x>
+     <y>351</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>R5Box</sender>
+   <signal>valueChanged(int)</signal>
+   <receiver>R5ScrollBar</receiver>
+   <slot>setValue(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>478</x>
+     <y>358</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>438</x>
+     <y>357</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>R6ScrollBar</sender>
+   <signal>valueChanged(int)</signal>
+   <receiver>R6Box</receiver>
+   <slot>setValue(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>407</x>
+     <y>383</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>462</x>
+     <y>387</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>R6Box</sender>
+   <signal>valueChanged(int)</signal>
+   <receiver>R6ScrollBar</receiver>
+   <slot>setValue(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>471</x>
+     <y>377</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>423</x>
+     <y>378</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>R8ScrollBar</sender>
+   <signal>valueChanged(int)</signal>
+   <receiver>R8Box</receiver>
+   <slot>setValue(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>394</x>
+     <y>417</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>454</x>
+     <y>417</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>R8Box</sender>
+   <signal>valueChanged(int)</signal>
+   <receiver>R8ScrollBar</receiver>
+   <slot>setValue(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>462</x>
+     <y>407</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>429</x>
+     <y>410</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>R9ScrollBar</sender>
+   <signal>valueChanged(int)</signal>
+   <receiver>R9Box</receiver>
+   <slot>setValue(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>392</x>
+     <y>446</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>468</x>
+     <y>443</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>R9Box</sender>
+   <signal>valueChanged(int)</signal>
+   <receiver>R9ScrollBar</receiver>
+   <slot>setValue(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>482</x>
+     <y>450</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>433</x>
+     <y>451</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>R10ScrollBar</sender>
+   <signal>valueChanged(int)</signal>
+   <receiver>R10Box</receiver>
+   <slot>setValue(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>368</x>
+     <y>470</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>479</x>
+     <y>478</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>R10Box</sender>
+   <signal>valueChanged(int)</signal>
+   <receiver>R10ScrollBar</receiver>
+   <slot>setValue(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>477</x>
+     <y>468</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>436</x>
+     <y>472</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>DOIScrollBar</sender>
+   <signal>valueChanged(int)</signal>
+   <receiver>DOIBox</receiver>
+   <slot>setValue(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>342</x>
+     <y>254</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>452</x>
+     <y>254</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>DOIBox</sender>
+   <signal>valueChanged(int)</signal>
+   <receiver>DOIScrollBar</receiver>
+   <slot>setValue(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>466</x>
+     <y>266</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>400</x>
+     <y>265</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>BIAScrollBar</sender>
+   <signal>valueChanged(int)</signal>
+   <receiver>BIABox</receiver>
+   <slot>setValue(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>380</x>
+     <y>296</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>446</x>
+     <y>295</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>BIABox</sender>
+   <signal>valueChanged(int)</signal>
+   <receiver>BIAScrollBar</receiver>
+   <slot>setValue(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>457</x>
+     <y>286</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>375</x>
+     <y>296</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>BLMScrollBar</sender>
+   <signal>valueChanged(int)</signal>
+   <receiver>BLMBox</receiver>
+   <slot>setValue(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>360</x>
+     <y>323</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>453</x>
+     <y>336</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>BLMBox</sender>
+   <signal>valueChanged(int)</signal>
+   <receiver>BLMScrollBar</receiver>
+   <slot>setValue(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>455</x>
+     <y>326</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>418</x>
+     <y>328</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>FWSScrollBar</sender>
+   <signal>valueChanged(int)</signal>
+   <receiver>FWSBox</receiver>
+   <slot>setValue(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>367</x>
+     <y>356</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>469</x>
+     <y>360</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>FWSBox</sender>
+   <signal>valueChanged(int)</signal>
+   <receiver>FWSScrollBar</receiver>
+   <slot>setValue(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>460</x>
+     <y>361</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>416</x>
+     <y>364</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>NPSScrollBar</sender>
+   <signal>valueChanged(int)</signal>
+   <receiver>NPSBox</receiver>
+   <slot>setValue(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>346</x>
+     <y>392</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>447</x>
+     <y>396</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>NPSBox</sender>
+   <signal>valueChanged(int)</signal>
+   <receiver>NPSScrollBar</receiver>
+   <slot>setValue(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>463</x>
+     <y>386</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>407</x>
+     <y>388</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>SLScrollBar</sender>
+   <signal>valueChanged(int)</signal>
+   <receiver>SLBox</receiver>
+   <slot>setValue(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>378</x>
+     <y>426</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>461</x>
+     <y>423</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>SLBox</sender>
+   <signal>valueChanged(int)</signal>
+   <receiver>SLScrollBar</receiver>
+   <slot>setValue(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>472</x>
+     <y>434</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>384</x>
+     <y>429</y>
+    </hint>
+   </hints>
+  </connection>
+ </connections>
+</ui>

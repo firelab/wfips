@@ -1,0 +1,9 @@
+<RCC>
+    <qresource prefix="/" >
+        <file>mActionSelect.png</file>
+        <file>mActionIdentify.png</file>
+        <file>mActionPan.png</file>
+        <file>mActionZoomIn.png</file>
+        <file>mActionSelectRectangle.png</file>
+    </qresource>
+</RCC>

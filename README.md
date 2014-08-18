@@ -1,4 +1,5 @@
-FIPS
+WFIPS
 ====
 
-Fire Investment Planning System
+Wildland Fire Investment Planning System
+
