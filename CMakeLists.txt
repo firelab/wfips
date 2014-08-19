@@ -48,7 +48,17 @@ IF(V_SIZE GREATER 2)
     LIST(GET V2 1 OMFFR_VERSION_MINOR)
     LIST(GET V2 2 OMFFR_VERSION_PATCH)
 ENDIF(V_SIZE GREATER 2)
-#
+
+# *****************************************************************************
+# # OSGeo4W support
+# *****************************************************************************
+IF(WIN32)
+    OPTION(USE_OSGEO4W "Use dependencies (as many as possible) from OSGeo4W" OFF)
+    IF(USE_OSGEO4W)
+        FIND_PATH(OSGEO4W_HOME OSGeo4W CACHE PATH)
+    ENDIF(USE_OSGEO4W)
+ENDIF(WIN32)
+
 # *****************************************************************************
 # Enable or disable autotesting
 # *****************************************************************************
@@ -57,16 +67,6 @@ IF(BUILD_TESTING)
     ENABLE_TESTING()
     ADD_DEFINITIONS(-DOMMFR_ENABLE_TESTING)
 ENDIF(BUILD_TESTING)
-
-# *****************************************************************************
-# Allow the user to set the OSGEO4W home.  This can be used for all third party
-# libraries on windows if the proper packages are installed (gdal, sqlite,
-# spatialite, and qgis-dev).
-# *****************************************************************************
-
-IF(WIN32)
-    SET(OSGEO4W_HOME "" CACHE PATH "OSGeo4W directory")
-ENDIF(WIN32)
 
 # *****************************************************************************
 # Artificial Neural Network library modules
@@ -170,9 +170,27 @@ ENDIF(IRS_RESC_REDUCE_SQL)
 # *****************************************************************************
 # Put common libs here
 # *****************************************************************************
-
 INCLUDE(FindGDAL)
-FIND_PACKAGE(GDAL REQUIRED)
+IF(WIN32)
+    IF(NOT OSGEO4W_HOME)
+        FIND_PACKAGE(GDAL REQUIRED)
+    ELSE(NOT OSGEO4W_HOME)
+        FIND_PACKAGE(GDAL)
+    ENDIF(NOT OSGEO4W_HOME)
+ELSE(WIN32)
+    FIND_PACKAGE(GDAL REQUIRED)
+ENDIF(WIN32)
+
+IF(WIN32 AND NOT GDAL_INCLUDE_DIR-NOTFOUND AND OSGEO4W_HOME)
+        SET(GDAL_INCLUDE_DIR ${OSGEO4W_HOME}/include CACHE TYPE PATH FORCE)
+        SET(GDAL_LIBRARY ${OSGEO4W_HOME}/lib/gdal_i.lib CACHE TYPE NAME FORCE)
+        SET(GDAL_INCLUDE_DIR-FOUND TRUE)
+        SET(GDAL_LIBRARY-FOUND TRUE)
+ENDIF(WIN32 AND NOT GDAL_INCLUDE_DIR-NOTFOUND AND OSGEO4W_HOME)
+
+#
+# Handle sqlite.
+#
 OPTION(USE_INTERNAL_SQLITE "Use the internal SQLite3 implementation" OFF)
 IF(USE_INTERNAL_SQLITE)
     ADD_DEFINITIONS(-DSQLITE_ENABLE_LOAD_EXTENSION=1)
@@ -180,16 +198,34 @@ IF(USE_INTERNAL_SQLITE)
     ADD_SUBDIRECTORY(sqlite)
 ELSE(USE_INTERNAL_SQLITE)
     INCLUDE(FindSqlite3)
-    FIND_PACKAGE(Sqlite3 REQUIRED)
+    IF(WIN32)
+        IF(NOT SQLITE3_INCLUDE_DIR-NOTFOUND AND OSGEO4W_HOME)
+            SET(SQLITE3_INCLUDE_DIR ${OSGEO4W_HOME}/include CACHE TYPE PATH FORCE)
+            SET(SQLITE3_LIBRARY ${OSGEO4W_HOME}/lib/sqlite.lib CACHE TYPE NAME FORCE)
+            SET(SQLITE3_INCLUDE_DIR-FOUND TRUE)
+            SET(SQLITE3_LIBRARY-FOUND TRUE)
+        ELSE(NOT SQLITE3_INCLUDE_DIR-NOTFOUND AND OSGEO4W_HOME)
+            FIND_PACKAGE(Sqlite3 REQUIRED)
+        ENDIF(NOT SQLITE3_INCLUDE_DIR-NOTFOUND AND OSGEO4W_HOME)
+    ELSE(WIN32)
+        FIND_PACKAGE(Sqlite3 REQUIRED)
+    ENDIF(WIN32)
 ENDIF(USE_INTERNAL_SQLITE)
-
 SET(SQLITE3_LIBRARY ${SQLITE3_LIBRARY_DEBUG})
 
 INCLUDE(FindSPATIALITE)
-FIND_PACKAGE(SPATIALITE REQUIRED)
-IF(SPATIALITE_FOUND)
-    # SET binary
-ENDIF(SPATIALITE_FOUND)
+IF(WIN32)
+    IF(NOT SPATIALITE-NOTFOUND AND OSGEO4W_HOME)
+        SET(SPATIALITE_INCLUDE_DIR ${OSGEO4W_HOME}/include CACHE TYPE PATH FORCE)
+        SET(SPATIALITE_LIBRARY ${OSGEO4W_HOME}/lib/spatialite.lib CACHE TYPE NAME FORCE)
+        SET(SPATIALITE_INCLUDE_DIR-FOUND TRUE)
+        SET(SPATIALITE_LIBRARY-FOUND TRUE)
+    ELSE(NOT SPATIALITE_INCLUDE_DIR-NOTFOUND AND OSGEO4W_HOME)
+        FIND_PACKAGE(SPATIALITE REQUIRED)
+    ENDIF(NOT SPATIALITE_INCLUDE_DIR-NOTFOUND AND OSGEO4W_HOME)
+ELSE(WIN32)
+    FIND_PACKAGE(SPATIALITE REQUIRED)
+ENDIF(WIN32)
 
 # *****************************************************************************
 # Recurse through subdirectories
