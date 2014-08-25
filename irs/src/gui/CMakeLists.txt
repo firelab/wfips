@@ -40,22 +40,31 @@ SET (QT_USE_QTNETWORK TRUE)
 # *****************************************************************************
 # QGIS specific, straight from QGIS examples
 # *****************************************************************************
+IF(NOT WIN32 OR NOT OSGEO4W_HOME)
+    FIND_PATH(QWT_INCLUDE_DIR qwt.h /usr/include
+                                    /usr/include/qwt
+                                    /usr/local/include
+                                    /usr/local/include/qwt)
+    FIND_LIBRARY(QWT_LIBRARY qwt /usr/lib /usr/local/lib)
+    IF(${QWT_INCLUDE_DIR})
+        SET(QWT_FOUND "YES")
+    ENDIF(${QWT_INCLUDE_DIR})
+ENDIF(NOT WIN32 OR NOT OSGEO4W_HOME)
+
 IF(WIN32)
     IF(NOT OSGEO4W_HOME)
         FIND_PACKAGE(QGIS REQUIRED)
         FIND_PACKAGE(GEOS REQUIRED)
         FIND_PACKAGE(QWT REQUIRED)
         FIND_PACKAGE(Qt4 REQUIRED)
-    ELSE(NOT OSGEO4W_HOME)
+        ELSE(NOT OSGEO4W_HOME)
         FIND_PACKAGE(QGIS)
         FIND_PACKAGE(GEOS)
-        FIND_PACKAGE(QWT)
         FIND_PACKAGE(Qt4)
     ENDIF(NOT OSGEO4W_HOME)
 ELSE(WIN32)
     FIND_PACKAGE(QGIS REQUIRED)
     FIND_PACKAGE(GEOS REQUIRED)
-    FIND_PACKAGE(QWT REQUIRED)
     FIND_PACKAGE(Qt4 REQUIRED)
 ENDIF(WIN32)
 
@@ -103,29 +112,9 @@ ELSE (WIN32)
 ENDIF (WIN32)
 
 # *****************************************************************************
-# Geos required for Qt/QGIS build, but probably elsewhere.
-# *****************************************************************************
-FIND_PACKAGE(GEOS REQUIRED)
-IF(NOT GEOS_FOUND)
-  MESSAGE(SEND_ERROR "GEOS dependency was not found!")
-ENDIF(NOT GEOS_FOUND)
-
-# *****************************************************************************
 # Qwt so we can draw graphs.
 # *****************************************************************************
 #FIND_PACKAGE(QWT REQUIRED)
-FIND_PATH(QWT_INCLUDE_DIR qwt.h /usr/include
-                                /usr/include/qwt
-                                /usr/local/include
-                                /usr/local/include/qwt)
-FIND_LIBRARY(QWT_LIBRARY qwt /usr/lib /usr/local/lib)
-IF(${QWT_INCLUDE_DIR})
-    SET(QWT_FOUND "YES")
-ENDIF(${QWT_INCLUDE_DIR})
-
-IF(NOT QWT_FOUND)
-    #MESSAGE(ERROR "Could not locate Qwt")
-ENDIF(NOT QWT_FOUND)
 
 SET(OMFFR_GUI_SRCS main.cpp
                    omffr_gui.cpp
