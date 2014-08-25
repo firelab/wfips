@@ -4061,7 +4061,7 @@ SpatialiteDataAccess::CreateLargeAirtankers( std::vector<CRescType>&types,
     for( int i = 0; i < nATTCount; i ++ )
     {
 
-        snprintf( szName, 32, "LAT_%d", i );
+        sprintf( szName, "LAT_%d", i );
 
         poR = new CAirtanker( szName, types[nType], 1, "930", "2000",
                               DayOfWeek( i % 7 ), DayOfWeek( (i+5) % 7 ),
