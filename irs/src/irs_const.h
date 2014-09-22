@@ -38,12 +38,11 @@
 #endif
 #endif
 
-#define SPATIALITE_EXTENSION "C:/OSGeo4W64/bin/spatialite.dll"
 #ifndef SPATIALITE_EXTENSION
 #ifdef WIN32
-#define SPATIALITE_EXTENSION "spatialite.dll"
+#define SPATIALITE_EXTENSION "C:/OSGeo4W64/bin/spatialite.dll"
+//#define SPATIALITE_EXTENSION "spatialite.dll"
 #else
-//#define SPATIALITE_EXTENSION "libspatialite.so"
 #define SPATIALITE_EXTENSION "libspatialite.so"
 #endif
 #endif /* SPATIALITE_EXTENSION */
