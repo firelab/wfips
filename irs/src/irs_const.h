@@ -32,18 +32,21 @@
 
 #ifndef OMFFR_DB_DBG
 #ifdef WIN32
-#define OMFFR_DB_DBG "C:/src/omffr/data/omffr.sqlite"
+#define OMFFR_DB_DBG "C:/Users/ksshannon/Documents/GitHub/build/data/omffr.sqlite"
 #else
 #define OMFFR_DB_DBG "/home/kyle/src/omffr/trunk/data/omffr.sqlite"
 #endif
 #endif
 
+#define SPATIALITE_EXTENSION "C:/OSGeo4W64/bin/spatialite.dll"
+#ifndef SPATIALITE_EXTENSION
 #ifdef WIN32
 #define SPATIALITE_EXTENSION "spatialite.dll"
 #else
 //#define SPATIALITE_EXTENSION "libspatialite.so"
 #define SPATIALITE_EXTENSION "libspatialite.so"
 #endif
+#endif /* SPATIALITE_EXTENSION */
 
 #if SQLITE_VERSION_NUMBER > 3007017
 #define SPATIALITE_INIT NULL //"sqlite3_modspatialite_init"

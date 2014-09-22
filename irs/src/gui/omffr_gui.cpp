@@ -44,16 +44,18 @@ OmffrMainWindow::OmffrMainWindow(QWidget* parent) : QMainWindow(parent)
     setupUi(this);
 
     qgisPluginPath = QGIS_PLUGIN_DIR;
+    qDebug() << "QGIS plugin path: " << qgisPluginPath;
 #ifndef WIN32
     layerPath = "/home/kyle/src/omffr/trunk/data/omffr.sqlite|layername=";
 #else
-    layerPath = "c:/src/omffr/trunk/data/omffr.sqlite|layername=";
+    layerPath = "c:/Users/ksshannon/Documents/GitHub/build/data/omffr.sqlite|layername=";
 #ifdef IRS_DIANE_BUILD
     layerPath = "c:/src/omffr/data/omffr.sqlite|layername=";
 #endif
 #endif
     qDebug() << layerPath;
     providerName = "ogr";
+    //providerName = "spatialite";
     QgsProviderRegistry::instance(qgisPluginPath);
 
     pointLayers << "dispatch_location" << "tanker_base";// << "scenario";
@@ -477,12 +479,14 @@ void OmffrMainWindow::SetUpMapCanvas()
     {
         layerName = layerPath + pointLayers[i];
         layer = new QgsVectorLayer(layerName, "", providerName);
-        qDebug() << layerName << ":" << layer;
-        symbol = QgsSymbolV2::defaultSymbol(layer->geometryType());
-        qDebug() << symbol;
+        qDebug() << layerName << ":" << layer << " Provider: " << providerName;
+        //symbol = QgsSymbolV2::defaultSymbol(layer->geometryType());
+        symbol = QgsSymbolV2::defaultSymbol(QGis::Point);
+        qDebug() << "Geometry type: " << layer->geometryType() << " Symbol: " << symbol;
         symbol->setColor(QColor(255, 0, 0));
         renderer =
-            QgsFeatureRendererV2::defaultRenderer(layer->geometryType());
+            QgsFeatureRendererV2::defaultRenderer(QGis::Point);
+            //QgsFeatureRendererV2::defaultRenderer(layer->geometryType());
         layer->setRendererV2(renderer);
         ((QgsSingleSymbolRendererV2*)renderer)->setSymbol(symbol);
         QgsMapLayerRegistry::instance()->addMapLayer(layer, true);
@@ -496,9 +500,11 @@ void OmffrMainWindow::SetUpMapCanvas()
     for(int i = 0; i < areaLayers.size();i++)
     {
         layer = new QgsVectorLayer(layerPath + areaLayers[i], "", providerName);
-        symbol = QgsSymbolV2::defaultSymbol(layer->geometryType());
+        //symbol = QgsSymbolV2::defaultSymbol(layer->geometryType());
+        symbol = QgsSymbolV2::defaultSymbol(QGis::Polygon);
         renderer =
-            QgsFeatureRendererV2::defaultRenderer(layer->geometryType());
+            QgsFeatureRendererV2::defaultRenderer(QGis::Polygon);
+            //QgsFeatureRendererV2::defaultRenderer(layer->geometryType());
         symbol->setColor(QColor(115, 165, 214));
         layer->setRendererV2(renderer);
         ((QgsSingleSymbolRendererV2*)renderer)->setSymbol(symbol);
@@ -899,11 +905,18 @@ int OmffrMainWindow::SimulateIRS()
 #ifdef IRS_DIANE_BUILD
     poSuite = (IRSSuite*)IRSSuite::Create( "c:/src/omffr/data/omffr.sqlite", 0 );
 #else
-    poSuite = (IRSSuite*)IRSSuite::Create( "c:/src/omffr/trunk/data/omffr.sqlite", 0 );
+    poSuite = (IRSSuite*)IRSSuite::Create( "c:/Users/ksshannon/Documents/GitHub/build/data/omffr.sqlite", 0 );
 #endif
 #else
     poSuite = (IRSSuite*)IRSSuite::Create( "/home/kyle/src/omffr/trunk/data/omffr.sqlite", 0 );
 #endif
+	if( !poSuite )
+	{
+		QMessageBox::warning(this, tr("Initial Response Simulator"),
+                             tr("Could not open the SQLite database."),
+                             QMessageBox::Ok );
+        return 1;
+	}
     QString outputFile =
         QFileDialog::getSaveFileName(this, tr("Save SQLite database"), "",
                                      tr("SQLite DB Files (*.sqlite *.db)"));
@@ -1589,7 +1602,7 @@ void OmffrMainWindow::LoadResultsFile()
 
         //dataPath = OMFFR_DB_DBG;
 #ifdef WIN32
-        dataPath = "c:/src/omffr/irs/data/omffr.sqlite";
+        dataPath = "c:/Users/ksshannon/Documents/GitHub/build/data/omffr.sqlite";
 #else
         dataPath = "/home/kyle/src/omffr/trunk/data/omffr.sqlite";
 #endif
