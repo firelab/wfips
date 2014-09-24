@@ -2060,6 +2060,12 @@ void OmffrMainWindow::MapResults()
 	QString label("Very Low");
 	QColor color(Red[0], Green[0], Blue[0]);
 	QgsSymbolV2 *symbol = QgsSymbolV2::defaultSymbol(gaccSingleMapLayer->geometryType());
+	qDebug() << "Symbol: " << symbol;
+	if( symbol == NULL )
+	{
+		qDebug() << "Invalid symbol for GACC, geometryType() == " << gaccSingleMapLayer->geometryType();
+		return;
+	}
 	symbol->setColor(color);
 	range = new QgsRendererRangeV2(CMinimums[0], CMaximums[0], symbol, label);
 	QgsRangeList rangeList;
