@@ -1013,7 +1013,7 @@ int OmffrMainWindow::SimulateIRS()
         poDA->WriteCartFile(pszOutput, "fires.csv");
     }
     */
-    tabWidget->setCurrentIndex(4);
+    tabWidget->setCurrentIndex(6);
     newIRSRun = true;
     currentResultsFile = outputFile;
     return 0;
