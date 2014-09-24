@@ -145,7 +145,7 @@
           <enum>QTabWidget::North</enum>
          </property>
          <property name="currentIndex">
-          <number>4</number>
+          <number>1</number>
          </property>
          <property name="elideMode">
           <enum>Qt::ElideNone</enum>
@@ -1047,15 +1047,15 @@
                <property name="accelerated">
                 <bool>true</bool>
                </property>
+               <property name="displayFormat">
+                <string>dd MMM</string>
+               </property>
                <property name="date">
                 <date>
                  <year>2000</year>
                  <month>12</month>
                  <day>31</day>
                 </date>
-               </property>
-               <property name="displayFormat">
-                <string>dd MMM</string>
                </property>
               </widget>
              </item>
@@ -1116,7 +1116,7 @@
          </widget>
          <widget class="QWidget" name="largeFireTab">
           <attribute name="title">
-           <string>Page</string>
+           <string>Large Fire Simulation</string>
           </attribute>
           <layout class="QVBoxLayout" name="verticalLayout_18">
            <item>
@@ -1266,8 +1266,8 @@
                <rect>
                 <x>0</x>
                 <y>0</y>
-                <width>240</width>
-                <height>545</height>
+                <width>168</width>
+                <height>522</height>
                </rect>
               </property>
               <layout class="QVBoxLayout" name="verticalLayout_13">
@@ -2043,7 +2043,7 @@
      <x>0</x>
      <y>0</y>
      <width>1070</width>
-     <height>25</height>
+     <height>21</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFile">
@@ -2074,6 +2074,7 @@
    <class>QwtPlot</class>
    <extends>QFrame</extends>
    <header>qwt_plot.h</header>
+   <container>1</container>
   </customwidget>
   <customwidget>
    <class>PieWidget</class>
