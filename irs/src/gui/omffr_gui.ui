@@ -253,6 +253,9 @@
              </item>
              <item>
               <widget class="QLabel" name="label_4">
+               <property name="enabled">
+                <bool>false</bool>
+               </property>
                <property name="text">
                 <string>Identify</string>
                </property>
@@ -260,6 +263,9 @@
              </item>
              <item>
               <widget class="QComboBox" name="identifyComboBox">
+               <property name="enabled">
+                <bool>false</bool>
+               </property>
                <item>
                 <property name="text">
                  <string>None</string>
