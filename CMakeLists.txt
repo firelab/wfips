@@ -230,6 +230,11 @@ ELSE(WIN32)
     FIND_PACKAGE(SPATIALITE REQUIRED)
 ENDIF(WIN32)
 
+FIND_PATH(OMFFR_DATA_PATH CACHE PATH)
+IF(OMFFR_DATA_PATH)
+    ADD_DEFINITIONS(-DOMFFR_DATA="${OMFFR_DATA_PATH}")
+ENDIF(OMFFR_DATA_PATH)
+
 # *****************************************************************************
 # Recurse through subdirectories
 # *****************************************************************************
