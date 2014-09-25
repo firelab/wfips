@@ -38,18 +38,24 @@ SET (QT_USE_QTXML TRUE)
 SET (QT_USE_QTNETWORK TRUE)
 
 # *****************************************************************************
-# QGIS specific, straight from QGIS examples
+# qwt.  The OSGeo4W build has the release libs, but not debug.  Check build
+# type, then force user to supply if it is debug, or we don't have OSGeo4W.
 # *****************************************************************************
-IF(NOT WIN32 OR NOT OSGEO4W_HOME)
+STRING(TOLOWER "${CMAKE_BUILD_TYPE}" BUILD_TYPE)
+
+IF(NOT WIN32 OR NOT OSGEO4W_HOME)# OR NOT BUILD_TYPE MATCHES "release")
     FIND_PATH(QWT_INCLUDE_DIR qwt.h /usr/include
                                     /usr/include/qwt
                                     /usr/local/include
-                                    /usr/local/include/qwt)
-    FIND_LIBRARY(QWT_LIBRARY qwt /usr/lib /usr/local/lib)
+                                    /usr/local/include/qwt
+                                    NO_DEFAULT_PATH)
+    FIND_LIBRARY(QWT_LIBRARY qwt /usr/lib
+                                 /usr/local/lib
+                                 NO_DEFAULT_PATH)
     IF(${QWT_INCLUDE_DIR})
-        SET(QWT_FOUND "YES")
+        SET(QWT_FOUND TRUE)
     ENDIF(${QWT_INCLUDE_DIR})
-ENDIF(NOT WIN32 OR NOT OSGEO4W_HOME)
+ENDIF(NOT WIN32 OR NOT OSGEO4W_HOME)# OR NOT BUILD_TYPE MATCHES "release")
 
 IF(WIN32)
     IF(NOT OSGEO4W_HOME)
@@ -57,7 +63,7 @@ IF(WIN32)
         FIND_PACKAGE(GEOS REQUIRED)
         FIND_PACKAGE(QWT REQUIRED)
         FIND_PACKAGE(Qt4 REQUIRED)
-        ELSE(NOT OSGEO4W_HOME)
+    ELSE(NOT OSGEO4W_HOME)
         FIND_PACKAGE(QGIS)
         FIND_PACKAGE(GEOS)
         FIND_PACKAGE(Qt4)
@@ -70,11 +76,13 @@ ENDIF(WIN32)
 
 IF(WIN32)
     IF(NOT QGIS_INCLUDE_DIR-NOTFOUND AND OSGEO4W_HOME)
+        SET(QGIS_STABLE "qgis")
+        SET(QGIS_STABLE "qgis-dev")
         # QGIS
-        SET(QGIS_INCLUDE_DIR ${OSGEO4W_HOME}/apps/qgis/include CACHE TYPE PATH FORCE)
-        SET(QGIS_CORE_LIBRARY ${OSGEO4W_HOME}/apps/qgis/lib/qgis_core.lib CACHE TYPE NAME FORCE)
-        SET(QGIS_GUI_LIBRARY ${OSGEO4W_HOME}/apps/qgis/lib/qgis_gui.lib CACHE TYPE NAME FORCE)
-        SET(QGIS_PLUGIN_DIR ${OSGEO4W_HOME}/apps/qgis/plugins CACHE TYPE NAME FORCE)
+        SET(QGIS_INCLUDE_DIR ${OSGEO4W_HOME}/apps/${QGIS_STABLE}/include CACHE TYPE PATH FORCE)
+        SET(QGIS_CORE_LIBRARY ${OSGEO4W_HOME}/apps/${QGIS_STABLE}/lib/qgis_core.lib CACHE TYPE NAME FORCE)
+        SET(QGIS_GUI_LIBRARY ${OSGEO4W_HOME}/apps/${QGIS_STABLE}/lib/qgis_gui.lib CACHE TYPE NAME FORCE)
+        SET(QGIS_PLUGIN_DIR ${OSGEO4W_HOME}/apps/${QGIS_STABLE}/plugins CACHE TYPE NAME FORCE)
         SET(QGIS_INCLUDE_DIR-FOUND TRUE)
         SET(QGIS_LIBRARY-FOUND TRUE)
         # GEOS
@@ -83,10 +91,12 @@ IF(WIN32)
         SET(GEOS_INCLUDE_DIR-FOUND TRUE)
         SET(GEOS_LIBRARY-FOUND TRUE)
         # QWT
-        SET(QWT_INCLUDE_DIR ${OSGEO4W_HOME}/include/qwt CACHE TYPE PATH FORCE)
-        SET(QWT_LIBRARY ${OSGEO4W_HOME}/lib/qwt5.lib CACHE TYPE NAME FORCE)
-        SET(QWT_INCLUDE_DIR-FOUND TRUE)
-        SET(QWT_LIBRARY-FOUND TRUE)
+        #IF(BUILD_TYPE MATCHES "release")
+            SET(QWT_INCLUDE_DIR ${OSGEO4W_HOME}/include/qwt CACHE TYPE PATH FORCE)
+            SET(QWT_LIBRARY ${OSGEO4W_HOME}/lib/qwt5.lib CACHE TYPE NAME FORCE)
+            SET(QWT_INCLUDE_DIR-FOUND TRUE)
+            SET(QWT_LIBRARY-FOUND TRUE)
+        #ENDIF(BUILD_TYPE MATCHES "release")
         #QT
         IF(NOT QT_QMAKE_EXECUTABLE_NOTFOUND AND OSGEO4W_HOME)
             SET(QT_QMAKE_EXECUTABLE ${OSGEO4W_HOME}/bin/qmake.exe CACHE TYPE NAME FORCE)
@@ -110,11 +120,6 @@ ELSE (WIN32)
   ADD_DEFINITIONS(-DGUI_EXPORT=)
   ADD_DEFINITIONS(-DCORE_EXPORT=)
 ENDIF (WIN32)
-
-# *****************************************************************************
-# Qwt so we can draw graphs.
-# *****************************************************************************
-#FIND_PACKAGE(QWT REQUIRED)
 
 SET(OMFFR_GUI_SRCS main.cpp
                    omffr_gui.cpp
@@ -141,9 +146,9 @@ INCLUDE(${QT_USE_FILE})
 ########################################################
 # Build
 
-QT4_WRAP_UI (OMFFR_GUI_UIS_H  ${OMFFR_GUI_UIS})
+QT4_WRAP_UI(OMFFR_GUI_UIS_H  ${OMFFR_GUI_UIS})
 
-QT4_WRAP_CPP (OMFFR_GUI_MOC_SRCS  ${OMFFR_GUI_MOC_HDRS})
+QT4_WRAP_CPP(OMFFR_GUI_MOC_SRCS  ${OMFFR_GUI_MOC_HDRS})
 
 QT4_ADD_RESOURCES(OMFFR_GUI_RCC_SRCS ${OMFFR_GUI_RCCS})
 
@@ -178,7 +183,15 @@ ENDIF(QT_QTSQL_FOUND)
 
 TARGET_LINK_LIBRARIES(omffr_gui ${CMAKE_BINARY_DIR}/irs/src/${CMAKE_CFG_INTDIR}/${CMAKE_STATIC_LIBRARY_PREFIX}irs${CMAKE_STATIC_LIBRARY_SUFFIX})
 
-TARGET_LINK_LIBRARIES(omffr_gui ${QT_LIBRARIES}
+# Link to qt release libs always
+
+TARGET_LINK_LIBRARIES(omffr_gui #${QT_QTGUI_LIBRARY_RELEASE}
+                                #${QT_QTSQL_LIBRARY_RELEASE}
+                                #${QT_QTSVG_LIBRARY_RELEASE}
+                                #${QT_QTXML_LIBRARY_RELEASE}
+                                #${QT_QTNETWORK_LIBRARY_RELEASE}
+                                #${OMFFR_QT_LIBS}
+                                ${QT_LIBRARIES}
                                 ${QGIS_CORE_LIBRARY}
                                 ${QGIS_GUI_LIBRARY}
                                 #${GEOS_LIBRARY}
@@ -189,7 +202,7 @@ IF(NOT USE_INTERNAL_SQLITE)
 ENDIF(NOT USE_INTERNAL_SQLITE)
 
 IF (MSVC)
-    TARGET_LINK_LIBRARIES(omffr_gui ${QT_QTMAIN_LIBRARY})
+    TARGET_LINK_LIBRARIES(omffr_gui ${QT_QTMAIN_LIBRARY_RELEASE})
 ENDIF (MSVC)
 
 ADD_DEPENDENCIES(omffr_gui irs)
