@@ -30,12 +30,12 @@
 # *****************************************************************************
 # General Qt stuff
 # *****************************************************************************
-SET (QT_USE_QT3SUPPORT FALSE)
-SET (QT_USE_QTGUI TRUE)
-SET (QT_USE_QTSQL TRUE)
-SET (QT_USE_QTSVG TRUE)
-SET (QT_USE_QTXML TRUE)
-SET (QT_USE_QTNETWORK TRUE)
+SET(QT_USE_QT3SUPPORT FALSE)
+SET(QT_USE_QTGUI TRUE)
+SET(QT_USE_QTSQL TRUE)
+SET(QT_USE_QTSVG TRUE)
+SET(QT_USE_QTXML TRUE)
+SET(QT_USE_QTNETWORK TRUE)
 
 # *****************************************************************************
 # qwt.  The OSGeo4W build has the release libs, but not debug.  Check build
@@ -76,8 +76,12 @@ ENDIF(WIN32)
 
 IF(WIN32)
     IF(NOT QGIS_INCLUDE_DIR-NOTFOUND AND OSGEO4W_HOME)
-        SET(QGIS_STABLE "qgis")
-        SET(QGIS_STABLE "qgis-dev")
+        OPTION(QGIS_USE_UNTSTABLE "Use the develepment version of QGIS in OSGEO4W (-dev)" OFF)
+        IF(QGIS_USE_UNTSTABLE)
+            SET(QGIS_STABLE "qgis-dev")
+        ELSE(QGIS_USE_UNTSTABLE)
+            SET(QGIS_STABLE "qgis")
+        ENDIF(QGIS_USE_UNTSTABLE)
         # QGIS
         SET(QGIS_INCLUDE_DIR ${OSGEO4W_HOME}/apps/${QGIS_STABLE}/include CACHE TYPE PATH FORCE)
         SET(QGIS_CORE_LIBRARY ${OSGEO4W_HOME}/apps/${QGIS_STABLE}/lib/qgis_core.lib CACHE TYPE NAME FORCE)
@@ -175,23 +179,31 @@ INCLUDE_DIRECTORIES(${GDAL_INCLUDE_DIR}
                     ${PROJECT_SOURCE_DIR}/irs/src)
 
 ADD_DEFINITIONS(-DQGIS_PLUGIN_DIR="${QGIS_PLUGIN_DIR}")
-#This is probably no longer needed, but I will leave it in for Win machines for the moment
-IF(QT_QTSQL_FOUND)
-   FIND_LIBRARY(QT_QTSQL_LIBRARY NAMES QtSql QtSql4 PATHS ${QT_LIBRARY_DIR} NO_DEFAULT_PATH)
-   SET(QT_LIBRARIES ${QT_LIBRARIES} ${QT_QTSQL_LIBRARY})
-ENDIF(QT_QTSQL_FOUND)
 
 TARGET_LINK_LIBRARIES(omffr_gui ${CMAKE_BINARY_DIR}/irs/src/${CMAKE_CFG_INTDIR}/${CMAKE_STATIC_LIBRARY_PREFIX}irs${CMAKE_STATIC_LIBRARY_SUFFIX})
 
 # Link to qt release libs always
+SET(OMFFR_QT_LIBS ${QT_QTCORE_LIBRARY_RELEASE}
+                  ${QT_QTGUI_LIBRARY_RELEASE}
+                  ${QT_QTSQL_LIBRARY_RELEASE}
+                  ${QT_QTSVG_LIBRARY_RELEASE}
+                  ${QT_QTXML_LIBRARY_RELEASE}
+                  ${QT_QTNETWORK_LIBRARY_RELEASE})
 
-TARGET_LINK_LIBRARIES(omffr_gui #${QT_QTGUI_LIBRARY_RELEASE}
-                                #${QT_QTSQL_LIBRARY_RELEASE}
-                                #${QT_QTSVG_LIBRARY_RELEASE}
-                                #${QT_QTXML_LIBRARY_RELEASE}
-                                #${QT_QTNETWORK_LIBRARY_RELEASE}
-                                #${OMFFR_QT_LIBS}
-                                ${QT_LIBRARIES}
+OPTION(QGIS_OVERRIDE_RELEASE "Use the release libs for qt, even with debug builds" ON)
+IF(QGIS_OVERRIDE_RELEASE)
+    SET(QT_LIBS ${OMFFR_QT_LIBS})
+    IF(MSVC)
+        SET(QT_LIBS ${QT_LIBS} ${QT_QTMAIN_LIBRARY_RELEASE})
+    ENDIF(MSVC)
+ELSE(QGIS_OVERRIDE_RELEASE)
+    SET(QT_LIBS ${QT_LIBRARIES})
+    IF(MSVC)
+        SET(QT_LIBS ${QT_LIBS} ${QT_QTMAIN_LIBRARY})
+    ENDIF(MSVC)
+ENDIF(QGIS_OVERRIDE_RELEASE)
+
+TARGET_LINK_LIBRARIES(omffr_gui ${QT_LIBS}
                                 ${QGIS_CORE_LIBRARY}
                                 ${QGIS_GUI_LIBRARY}
                                 #${GEOS_LIBRARY}
