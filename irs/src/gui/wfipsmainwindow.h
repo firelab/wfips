@@ -10,11 +10,11 @@ class WfipsMainWindow;
 class WfipsMainWindow : public QMainWindow
 {
     Q_OBJECT
-    
+
 public:
     explicit WfipsMainWindow(QWidget *parent = 0);
     ~WfipsMainWindow();
-    
+
 private:
     Ui::WfipsMainWindow *ui;
 };

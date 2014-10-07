@@ -37,6 +37,9 @@ SET(QT_USE_QTSVG TRUE)
 SET(QT_USE_QTXML TRUE)
 SET(QT_USE_QTNETWORK TRUE)
 
+INCLUDE_DIRECTORIES(${PROJECT_SOURCE_DIR}/irs/src/gui
+                    ${CMAKE_BINARY_DIR}
+                    ${CMAKE_BINARY_DIR}/irs/src/gui)
 # *****************************************************************************
 # qwt.  The OSGeo4W build has the release libs, but not debug.  Check build
 # type, then force user to supply if it is debug, or we don't have OSGeo4W.
@@ -146,6 +149,12 @@ SET(OMFFR_GUI_MOC_HDRS ${PROJECT_SOURCE_DIR}/irs/src/data_load.h
 
 SET(OMFFR_GUI_RCCS resources.qrc)
 
+OPTION(BUILD_GUI_V2 "Build the new interface dummy project" OFF)
+IF(BUILD_GUI_V2)
+    QT4_WRAP_UI(WFIPS_GUI_UI_H  wfipsmainwindow.h)
+    QT4_WRAP_CPP(WFIPS_GUI_MOC wfipsmainwindow.h)
+ENDIF(BUILD_GUI_V2)
+
 INCLUDE(${QT_USE_FILE})
 ########################################################
 # Build
@@ -216,6 +225,12 @@ ENDIF(NOT USE_INTERNAL_SQLITE)
 IF (MSVC)
     TARGET_LINK_LIBRARIES(omffr_gui ${QT_QTMAIN_LIBRARY_RELEASE})
 ENDIF (MSVC)
+
+OPTION(BUILD_GUI_V2 "Build the new interface dummy project" OFF)
+IF(BUILD_GUI_V2)
+    ADD_EXECUTABLE(wfips main2.cpp wfipsmainwindow.cpp)
+    TARGET_LINK_LIBRARIES(wfips ${QT_QTLIBS})
+ENDIF(BUILD_GUI_V2)
 
 ADD_DEPENDENCIES(omffr_gui irs)
 

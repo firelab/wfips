@@ -12,3 +12,4 @@ WfipsMainWindow::~WfipsMainWindow()
 {
     delete ui;
 }
+
