@@ -66,6 +66,11 @@
       </item>
       <item>
        <property name="text">
+        <string>Fire Ignitions</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
         <string>Dispatch Locations</string>
        </property>
       </item>
