@@ -1,3 +1,7 @@
 # Vim
 *.swp
 *.swo
+
+# semi-standard build directory
+build
+
