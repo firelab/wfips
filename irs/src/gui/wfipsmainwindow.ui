@@ -104,6 +104,21 @@
       </item>
       <item>
        <property name="text">
+        <string>Fuel Treatment</string>
+       </property>
+       <item>
+        <property name="text">
+         <string>Probablility</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>Mask</string>
+        </property>
+       </item>
+      </item>
+      <item>
+       <property name="text">
         <string>Large Fire Simulation</string>
        </property>
       </item>
