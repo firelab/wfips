@@ -23,6 +23,9 @@
         <verstretch>0</verstretch>
        </sizepolicy>
       </property>
+      <property name="alternatingRowColors">
+       <bool>true</bool>
+      </property>
       <property name="animated">
        <bool>true</bool>
       </property>
