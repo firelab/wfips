@@ -31,11 +31,16 @@
 #include <qgsapplication.h>
 
 #include "omffr_gui.h"
+#include "wfipsmainwindow.h"
 
 int main(int argc, char *argv[])
 {
   QgsApplication app(argc, argv, TRUE);
+#ifdef WFIPS_GUI_V2
+  WfipsMainWindow *mainWindow = new WfipsMainWindow();
+#else
   OmffrMainWindow *mainWindow = new OmffrMainWindow();
+#endif /* WFIPS_GUI_V2 */
   mainWindow->show();
   return app.exec();
 }

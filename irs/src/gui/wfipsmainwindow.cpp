@@ -6,6 +6,7 @@ WfipsMainWindow::WfipsMainWindow(QWidget *parent) :
     ui(new Ui::WfipsMainWindow)
 {
     ui->setupUi(this);
+    ui->treeWidget->expandAll();
 }
 
 WfipsMainWindow::~WfipsMainWindow()
