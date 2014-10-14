@@ -171,42 +171,42 @@
          <item>
           <widget class="QLabel" name="label_2">
            <property name="text">
-            <string>Map Navigation Tools</string>
+            <string>Map Tools</string>
            </property>
           </widget>
          </item>
          <item>
           <widget class="QToolButton" name="toolButton_2">
            <property name="text">
-            <string>A</string>
+            <string/>
            </property>
           </widget>
          </item>
          <item>
           <widget class="QToolButton" name="toolButton_3">
            <property name="text">
-            <string>B</string>
+            <string/>
            </property>
           </widget>
          </item>
          <item>
           <widget class="QToolButton" name="toolButton_4">
            <property name="text">
-            <string>C</string>
+            <string/>
            </property>
           </widget>
          </item>
          <item>
           <widget class="QToolButton" name="toolButton_5">
            <property name="text">
-            <string>D</string>
+            <string/>
            </property>
           </widget>
          </item>
          <item>
           <widget class="QToolButton" name="toolButton">
            <property name="text">
-            <string>E</string>
+            <string/>
            </property>
           </widget>
          </item>
@@ -261,7 +261,31 @@
           </item>
          </layout>
         </widget>
-        <widget class="QWidget" name="page_2">
+        <widget class="QWidget" name="figPage">
+         <layout class="QVBoxLayout" name="verticalLayout_9">
+          <item>
+           <widget class="QLabel" name="label_8">
+            <property name="text">
+             <string>Fire Ignitions</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <spacer name="verticalSpacer_4">
+            <property name="orientation">
+             <enum>Qt::Vertical</enum>
+            </property>
+            <property name="sizeHint" stdset="0">
+             <size>
+              <width>20</width>
+              <height>40</height>
+             </size>
+            </property>
+           </spacer>
+          </item>
+         </layout>
+        </widget>
+        <widget class="QWidget" name="dispLocPage">
          <layout class="QVBoxLayout" name="verticalLayout_8">
           <item>
            <widget class="QLabel" name="label_7">
@@ -285,7 +309,7 @@
           </item>
          </layout>
         </widget>
-        <widget class="QWidget" name="largeFirePage">
+        <widget class="QWidget" name="resourcePage">
          <layout class="QVBoxLayout" name="verticalLayout_6">
           <item>
            <widget class="QLabel" name="label_4">
@@ -315,7 +339,31 @@
           </item>
          </layout>
         </widget>
-        <widget class="QWidget" name="page">
+        <widget class="QWidget" name="fuelTreatmentPage">
+         <layout class="QVBoxLayout" name="verticalLayout_10">
+          <item>
+           <widget class="QLabel" name="label_9">
+            <property name="text">
+             <string>Fuel Treatment</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <spacer name="verticalSpacer_5">
+            <property name="orientation">
+             <enum>Qt::Vertical</enum>
+            </property>
+            <property name="sizeHint" stdset="0">
+             <size>
+              <width>20</width>
+              <height>40</height>
+             </size>
+            </property>
+           </spacer>
+          </item>
+         </layout>
+        </widget>
+        <widget class="QWidget" name="largeFirePage">
          <layout class="QVBoxLayout" name="verticalLayout_5">
           <item>
            <widget class="QLabel" name="label_6">
