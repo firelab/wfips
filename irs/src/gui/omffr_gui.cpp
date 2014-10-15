@@ -120,6 +120,7 @@ OmffrMainWindow::~OmffrMainWindow()
     delete mapCanvas;
     delete mapPanTool;
     delete mapZoomInTool;
+    delete mapZoomOutTool;
     delete mapSimpleIdentifyTool;
     delete rubberBand;
 
@@ -464,6 +465,7 @@ void OmffrMainWindow::SetUpMapCanvas()
 
     mapPanTool = new QgsMapToolPan(mapCanvas);
     mapZoomInTool = new QgsMapToolZoom(mapCanvas, FALSE);
+    mapZoomOutTool = new QgsMapToolZoom(mapCanvas, TRUE);
     mapSimpleIdentifyTool = new SimpleIdentifyMapTool(mapCanvas);
     mapSelectTool = new QgsMapToolEmitPoint(mapCanvas);
     mapSimpleAreaTool = new SimpleAreaMapTool(mapCanvas);
@@ -580,6 +582,10 @@ void OmffrMainWindow::SetUpToolButtons()
     panToolButton->setToolTip(tr("Pan"));
     zoomInToolButton->setIcon(QIcon(":mActionZoomIn.png"));
     zoomInToolButton->setToolTip(tr("Zoom In"));
+    zoomOutToolButton->setIcon(QIcon(":mActionZoomOut.png"));
+    zoomOutToolButton->setToolTip(tr("Zoom out."));
+    zoomLayerToolButton->setIcon(QIcon(":mActionZoomToLayer.png"));
+    zoomLayerToolButton->setToolTip(tr("Zoom to layer extents."));
     identifyToolButton->setIcon(QIcon(":mActionIdentify.png"));
     identifyToolButton->setToolTip(tr("Identify"));
     selectToolButton->setIcon(QIcon(":mActionSelect.png"));
@@ -590,12 +596,17 @@ void OmffrMainWindow::SetUpToolButtons()
             this, SLOT(SetNavigationMode()));
     connect(zoomInToolButton, SIGNAL(clicked()),
             this, SLOT(SetNavigationMode()));
+    connect(zoomOutToolButton, SIGNAL(clicked()),
+            this, SLOT(SetNavigationMode()));
     connect(identifyToolButton, SIGNAL(clicked()),
             this, SLOT(SetNavigationMode()));
     connect(selectToolButton, SIGNAL(clicked()),
             this, SLOT(SetNavigationMode()));
     connect(selectAreaToolButton, SIGNAL(clicked(bool)),
             this, SLOT(SetNavigationMode()));
+
+    connect(zoomLayerToolButton, SIGNAL(clicked()),
+            this, SLOT(zoomLayer()));
 
     connect(mapSimpleAreaTool, SIGNAL(AreaSelected(QgsGeometry*)),
             this, SLOT(SelectGeometries(QgsGeometry*)));
@@ -712,6 +723,10 @@ void OmffrMainWindow::SetNavigationMode()
     {
         mapCanvas->setMapTool(mapZoomInTool);
     }
+    else if(zoomOutToolButton->isChecked())
+    {
+        mapCanvas->setMapTool(mapZoomOutTool);
+    }
     else if(identifyToolButton->isChecked())
     {
         mapCanvas->setMapTool(mapSimpleIdentifyTool);
@@ -735,7 +750,7 @@ OmffrMainWindow::NavigationMode OmffrMainWindow::CurrentNavigationMode()
     {
         return panMode;
     }
-    else if(zoomInToolButton->isChecked())
+    else if(zoomInToolButton->isChecked() || zoomOutToolButton->isChecked())
     {
         return zoomMode;
     }
@@ -2706,5 +2721,15 @@ int  OmffrMainWindow::SetPreposAndDrawDown()
                               dozerDDSeasonCheckBox->isChecked() );
     }
     return 0;
+}
+
+void OmffrMainWindow::zoomLayer()
+{
+    int layerIndex = areaLayerComboBox->currentIndex() + pointLayers.size();
+    QgsRectangle extent;
+    extent = mapLayerSet[layerIndex].layer()->extent();
+    mapCanvas->setLayerSet(mapLayerSet);
+    mapCanvas->setExtent(extent);
+    mapCanvas->refresh();
 }
 

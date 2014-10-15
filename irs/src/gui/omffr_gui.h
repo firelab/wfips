@@ -167,6 +167,8 @@ private:
 
     QgsMapTool *mapPanTool;
     QgsMapTool *mapZoomInTool;
+    QgsMapTool *mapZoomOutTool;
+    QgsMapTool *mapZoomLayerTool;
     SimpleIdentifyMapTool *mapSimpleIdentifyTool;
     QgsMapTool *mapSelectTool;
     SimpleAreaMapTool *mapSimpleAreaTool;
@@ -253,6 +255,8 @@ private slots:
     void RunIRSConcurrent(void*);
 
     void ToggleAutoReduce();
+
+    void zoomLayer();
 
 signals:
     //void SendProgress(double progress, const char *message, void *notUsed);

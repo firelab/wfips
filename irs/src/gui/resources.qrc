@@ -4,6 +4,8 @@
         <file>mActionIdentify.png</file>
         <file>mActionPan.png</file>
         <file>mActionZoomIn.png</file>
+        <file>mActionZoomOut.png</file>
+        <file>mActionZoomToLayer.png</file>
         <file>mActionSelectRectangle.png</file>
     </qresource>
 </RCC>

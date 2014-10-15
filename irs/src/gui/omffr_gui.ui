@@ -71,6 +71,19 @@
           </widget>
          </item>
          <item>
+          <widget class="QToolButton" name="zoomOutToolButton">
+           <property name="text">
+            <string/>
+           </property>
+           <property name="checkable">
+            <bool>true</bool>
+           </property>
+           <property name="autoExclusive">
+            <bool>true</bool>
+           </property>
+          </widget>
+         </item>
+         <item>
           <widget class="QToolButton" name="identifyToolButton">
            <property name="text">
             <string/>
@@ -121,6 +134,13 @@
             </size>
            </property>
           </spacer>
+         </item>
+         <item>
+          <widget class="QToolButton" name="zoomLayerToolButton">
+           <property name="text">
+            <string/>
+           </property>
+          </widget>
          </item>
         </layout>
        </item>
@@ -1053,15 +1073,15 @@
                <property name="accelerated">
                 <bool>true</bool>
                </property>
-               <property name="displayFormat">
-                <string>dd MMM</string>
-               </property>
                <property name="date">
                 <date>
                  <year>2000</year>
                  <month>12</month>
                  <day>31</day>
                 </date>
+               </property>
+               <property name="displayFormat">
+                <string>dd MMM</string>
                </property>
               </widget>
              </item>
@@ -1272,8 +1292,8 @@
                <rect>
                 <x>0</x>
                 <y>0</y>
-                <width>168</width>
-                <height>522</height>
+                <width>316</width>
+                <height>574</height>
                </rect>
               </property>
               <layout class="QVBoxLayout" name="verticalLayout_13">
@@ -2049,7 +2069,7 @@
      <x>0</x>
      <y>0</y>
      <width>1070</width>
-     <height>21</height>
+     <height>25</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFile">
