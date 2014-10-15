@@ -625,8 +625,6 @@ void OmffrMainWindow::CreateConnections()
             this, SLOT(ShowAreaLayer(int)));
     connect(pointLayerComboBox, SIGNAL(currentIndexChanged(int)),
             this, SLOT(ShowPointLayer(int)));
-    connect(connectDbButton, SIGNAL(clicked()),
-            this, SLOT(ConnectToDB()));
     connect(mapSimpleIdentifyTool,
             SIGNAL(SimpleIdentify(QList<QgsMapToolIdentify::IdentifyResult>)),
             this, SLOT(Identify(QList<QgsMapToolIdentify::IdentifyResult>)));
@@ -1028,7 +1026,7 @@ int OmffrMainWindow::SimulateIRS()
         poDA->WriteCartFile(pszOutput, "fires.csv");
     }
     */
-    tabWidget->setCurrentIndex(6);
+    tabWidget->setCurrentIndex(5);
     newIRSRun = true;
     currentResultsFile = outputFile;
     return 0;
