@@ -1615,15 +1615,18 @@ void OmffrMainWindow::LoadResultsFile()
 
         //dataPath = OMFFR_DB_DBG;
 #ifdef WIN32
-        dataPath = "c:/Users/ksshannon/Documents/GitHub/build/data/omffr.sqlite";
+	dataPath = "c:/Users/ksshannon/Documents/GitHub/build/data/omffr.sqlite";
 #else
-        dataPath = "/home/kyle/src/omffr/trunk/data/omffr.sqlite";
+	dataPath = "/home/kyle/src/omffr/trunk/data/omffr.sqlite";
 #endif
-	results = new IRSResult(currentResultsFile.toStdString().c_str(), dataPath.toStdString().c_str(), 1, FALSE, TRUE, NULL);
-
-        apResults = results->GetResultArray(NULL, IRS_NEXT_RUN_DIR);
-        if( apResults.size() < 1 )
-            return;
+	const char *pszCurResult = sqlite3_mprintf( "%s", currentResultsFile.toLocal8Bit().data() );
+	const char *pszDataPath = sqlite3_mprintf( "%s", dataPath.toLocal8Bit().data() );
+	results = new IRSResult(pszCurResult, pszDataPath, 1, FALSE, TRUE, NULL);
+	sqlite3_free( (void*)pszCurResult );
+	sqlite3_free( (void*)pszDataPath );
+	apResults = results->GetResultArray(NULL, IRS_NEXT_RUN_DIR);
+	if( apResults.size() < 1 )
+		return;
 
 	
 	//Enable results plot buttons
