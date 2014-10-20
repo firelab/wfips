@@ -79,6 +79,11 @@ void WfipsMainWindow::SetStackIndex( QTreeWidgetItem *current,
         i++;
     }
     qDebug() << "tree widget index: " << i;
+    /*
+    ** Set the correct page for the stack widget.  If there is no map on the
+    ** page, disable the map tool frame.
+    */
+    ui->mapToolFrame->setDisabled( true );
     switch( i )
     {
         case 1:
@@ -88,6 +93,7 @@ void WfipsMainWindow::SetStackIndex( QTreeWidgetItem *current,
         case 5:
         case 6:
             ui->stackedWidget->setCurrentIndex( 0 );
+            ui->mapToolFrame->setEnabled( true );
             break;
         case 7:
             ui->stackedWidget->setCurrentIndex( 1 );
@@ -117,6 +123,7 @@ void WfipsMainWindow::SetStackIndex( QTreeWidgetItem *current,
         case 22:
         case 23:
             ui->stackedWidget->setCurrentIndex( 6 );
+            ui->mapToolFrame->setEnabled( true );
             break;
         /* 0 is the 'invisible root' */
         case 0:
@@ -124,3 +131,4 @@ void WfipsMainWindow::SetStackIndex( QTreeWidgetItem *current,
             qDebug() << "Shouldn't ever get here, you messed up";
     }
 }
+

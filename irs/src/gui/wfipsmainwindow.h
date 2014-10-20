@@ -61,6 +61,9 @@ private:
     void ConstructAnalysisAreaWidgets();
     void LoadAnalysisAreaLayers();
 
+
+    /* Fuel treatment related */
+
 private slots:
     /* Tree and stack widget slots */
     void SetStackIndex( QTreeWidgetItem *current,
