@@ -2,6 +2,8 @@
 #define WFIPSMAINWINDOW_H
 
 #include <QMainWindow>
+#include <QTreeWidget>
+#include <QTreeWidgetItem>
 #include <QVBoxLayout>
 
 /*
@@ -33,8 +35,17 @@ public:
 private:
     Ui::WfipsMainWindow *ui;
 
-    /* Tool buttons */
+    /* Tree and stack widget handling */
+    void ConstructTreeWidget();
+    void AssignTreeWidgetIndices( QTreeWidgetItem *item );
+    /*
+    ** Litte structure to know where to go when the tree is clicked().  If you
+    ** add an item to the tree widget or the main stack widget (or sub stack
+    ** widgets), it needs to be added in the map and AssignTreeWidgetIndices().
+    */
+    QList<QTreeWidgetItem*>treeWidgetList;
 
+    /* Tool buttons */
     void ConstructToolButtons();
 
     /* Analysis area */
@@ -49,6 +60,11 @@ private:
 
     void ConstructAnalysisAreaWidgets();
     void LoadAnalysisAreaLayers();
+
+private slots:
+    /* Tree and stack widget slots */
+    void SetStackIndex( QTreeWidgetItem *current,
+                        QTreeWidgetItem *previous );
 
 };
 

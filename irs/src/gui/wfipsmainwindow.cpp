@@ -11,6 +11,10 @@ WfipsMainWindow::WfipsMainWindow(QWidget *parent) :
     ConstructToolButtons();
     ConstructAnalysisAreaWidgets();
 
+    ConstructTreeWidget();
+    AssignTreeWidgetIndices( ui->treeWidget->invisibleRootItem() );
+    qDebug() << "Found " << treeWidgetList.size() << " tree widget items.";
+
 }
 
 WfipsMainWindow::~WfipsMainWindow()
@@ -45,4 +49,78 @@ void WfipsMainWindow::ConstructAnalysisAreaWidgets()
 void WfipsMainWindow::LoadAnalysisAreaLayers()
 {
     return;
+}
+
+void WfipsMainWindow::ConstructTreeWidget()
+{
+    connect( ui->treeWidget,
+             SIGNAL( currentItemChanged( QTreeWidgetItem *, QTreeWidgetItem * ) ),
+             this,
+             SLOT( SetStackIndex( QTreeWidgetItem *, QTreeWidgetItem * ) ) );
+}
+
+void WfipsMainWindow::AssignTreeWidgetIndices( QTreeWidgetItem *item )
+{
+    treeWidgetList << item;
+    for( int i = 0; i < item->childCount(); i++ )
+        AssignTreeWidgetIndices( item->child( i ) );
+}
+
+void WfipsMainWindow::SetStackIndex( QTreeWidgetItem *current,
+                                     QTreeWidgetItem *previous )
+{
+    if( current == previous )
+        return;
+    int i = 0;
+    while( i < treeWidgetList.size() )
+    {
+        if( current == treeWidgetList[i] )
+            break;
+        i++;
+    }
+    qDebug() << "tree widget index: " << i;
+    switch( i )
+    {
+        case 1:
+        case 2:
+        case 3:
+        case 4:
+        case 5:
+        case 6:
+            ui->stackedWidget->setCurrentIndex( 0 );
+            break;
+        case 7:
+            ui->stackedWidget->setCurrentIndex( 1 );
+            break;
+        case 8:
+            ui->stackedWidget->setCurrentIndex( 2 );
+            break;
+        case 9:
+        case 10:
+        case 11:
+        case 12:
+        case 13:
+            ui->stackedWidget->setCurrentIndex( 3 );
+            break;
+        case 14:
+        case 15:
+        case 16:
+            ui->stackedWidget->setCurrentIndex( 4 );
+            break;
+        case 17:
+            ui->stackedWidget->setCurrentIndex( 5 );
+            break;
+        case 18:
+        case 19:
+        case 20:
+        case 21:
+        case 22:
+        case 23:
+            ui->stackedWidget->setCurrentIndex( 6 );
+            break;
+        /* 0 is the 'invisible root' */
+        case 0:
+        default:
+            qDebug() << "Shouldn't ever get here, you messed up";
+    }
 }
