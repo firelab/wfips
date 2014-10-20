@@ -212,11 +212,11 @@ SET(LINK_LIBS ${QT_LIBS}
 
 OPTION(BUILD_GUI_V2 "Build the new interface dummy project" OFF)
 IF(BUILD_GUI_V2)
-
     ADD_DEFINITIONS(-DWFIPS_GUI_V2)
     ADD_EXECUTABLE(wfips wfipsmainwindow.cpp
                          ${WFIPS_GUI_UI_H}
                          ${WFIPS_GUI_MOC}
+                         ${OMFFR_GUI_RCC_SRCS}
                          main.cpp)
     TARGET_LINK_LIBRARIES(wfips ${LINK_LIBS})
     IF(NOT USE_INTERNAL_SQLITE)

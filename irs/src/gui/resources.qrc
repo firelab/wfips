@@ -1,11 +1,11 @@
 <RCC>
-    <qresource prefix="/" >
-        <file>mActionSelect.png</file>
-        <file>mActionIdentify.png</file>
-        <file>mActionPan.png</file>
-        <file>mActionZoomIn.png</file>
-        <file>mActionZoomOut.png</file>
-        <file>mActionZoomToLayer.png</file>
-        <file>mActionSelectRectangle.png</file>
+    <qresource prefix="/">
+        <file alias="select">mActionSelect.png</file>
+        <file alias="identify">mActionIdentify.png</file>
+        <file alias="pan">mActionPan.png</file>
+        <file alias="zoom_in">mActionZoomIn.png</file>
+        <file alias="zoom_out">mActionZoomOut.png</file>
+        <file alias="zoom_layer">mActionZoomToLayer.png</file>
+        <file alias="select_rect">mActionSelectRectangle.png</file>
     </qresource>
 </RCC>
