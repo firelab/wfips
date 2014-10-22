@@ -283,7 +283,7 @@
          <enum>QFrame::Plain</enum>
         </property>
         <property name="currentIndex">
-         <number>4</number>
+         <number>6</number>
         </property>
         <widget class="QWidget" name="analysisAreaPage">
          <layout class="QVBoxLayout" name="verticalLayout_2">
@@ -528,7 +528,7 @@
              <bool>true</bool>
             </property>
             <property name="checked">
-             <bool>false</bool>
+             <bool>true</bool>
             </property>
             <layout class="QVBoxLayout" name="verticalLayout_12">
              <item>
@@ -548,7 +548,7 @@
              <item>
               <widget class="QStackedWidget" name="fuelTreatStackWidget">
                <property name="currentIndex">
-                <number>0</number>
+                <number>1</number>
                </property>
                <widget class="QWidget" name="page">
                 <layout class="QVBoxLayout" name="verticalLayout_14">
@@ -600,10 +600,6 @@
                   </spacer>
                  </item>
                 </layout>
-                <zorder>fuelTreatSpinBox</zorder>
-                <zorder>label_8</zorder>
-                <zorder>horizontalSpacer_6</zorder>
-                <zorder>horizontalLayoutWidget_4</zorder>
                 <zorder>verticalSpacer_6</zorder>
                </widget>
                <widget class="QWidget" name="fuelTreatSpatialPage">
@@ -668,17 +664,35 @@
                   </layout>
                  </item>
                  <item>
-                  <spacer name="verticalSpacer_5">
-                   <property name="orientation">
-                    <enum>Qt::Vertical</enum>
-                   </property>
-                   <property name="sizeHint" stdset="0">
-                    <size>
-                     <width>20</width>
-                     <height>40</height>
-                    </size>
-                   </property>
-                  </spacer>
+                  <layout class="QHBoxLayout" name="horizontalLayout_5">
+                   <item>
+                    <widget class="QLabel" name="label_12">
+                     <property name="text">
+                      <string>Treatment Probability Source</string>
+                     </property>
+                    </widget>
+                   </item>
+                   <item>
+                    <widget class="QComboBox" name="comboBox_3">
+                     <item>
+                      <property name="text">
+                       <string>Layer Attribute</string>
+                      </property>
+                     </item>
+                     <item>
+                      <property name="text">
+                       <string>Fixed</string>
+                      </property>
+                     </item>
+                    </widget>
+                   </item>
+                   <item>
+                    <widget class="QStackedWidget" name="stackedWidget_3">
+                     <widget class="QWidget" name="page_2"/>
+                     <widget class="QWidget" name="page_3"/>
+                    </widget>
+                   </item>
+                  </layout>
                  </item>
                 </layout>
                </widget>
