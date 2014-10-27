@@ -1,6 +1,7 @@
 #ifndef WFIPSMAINWINDOW_H
 #define WFIPSMAINWINDOW_H
 
+#include <QFileDialog>
 #include <QMainWindow>
 #include <QTreeWidget>
 #include <QTreeWidgetItem>
@@ -10,15 +11,28 @@
 ** QGIS includes.  Try to keep these semi-organized for easier maintenance.
 */
 
+/* Main QGIS stuff */
+#include <qgsapplication.h>
+#include <qgsmaplayerregistry.h>
+#include <qgsproviderregistry.h>
+
+/* Renderers and symbols */
+#include <qgsgraduatedsymbolrendererv2.h>
+#include <qgssinglesymbolrendererv2.h>
+#include <qgscategorizedsymbolrendererv2.h>
+#include <qgssymbolv2.h>
+
 /* QGIS Map Canvas */
 #include <qgsmapcanvas.h>
+
+/* QGIS layers */
+#include <qgsvectorlayer.h>
 
 /* QGIS Map Tools */
 #include <qgsmaptool.h>
 #include <qgsmaptoolidentify.h>
 #include <qgsmaptoolpan.h>
 #include <qgsmaptoolzoom.h>
-#include <qgsmaptoolemitpoint.h>
 
 namespace Ui {
 class WfipsMainWindow;
@@ -35,6 +49,12 @@ public:
 private:
     Ui::WfipsMainWindow *ui;
 
+    /* WFIPS root/default path */
+    QString wfipsPath;
+
+    /* Database paths */
+    QStringList analysisAreaLayers;
+
     /* Tree and stack widget handling */
     void ConstructTreeWidget();
     void AssignTreeWidgetIndices( QTreeWidgetItem *item );
@@ -45,29 +65,47 @@ private:
     */
     QList<QTreeWidgetItem*>treeWidgetList;
 
+    /*
+    ** Miscillaneous Connections.  If you don't have a home for a connection,
+    ** put it in here.  This is called after all other construction.  The
+    ** PostConstructionActions() is called after CreateConnections().
+    */
+    void CreateConnections();
+    void PostConstructionActions();
+
     /* Tool buttons */
     void ConstructToolButtons();
 
     /* Analysis area */
     QgsMapCanvas *analysisAreaMapCanvas;
+    QList<QgsMapCanvasLayer> mapCanvasLayers;
+    QgsVectorLayer *analysisLayer;
+    QgsSingleSymbolRendererV2 *analysisRenderer;
+    QgsSymbolV2 *analysisSymbol;
 
     QgsMapTool *analysisPanTool;
     QgsMapTool *analysisZoomInTool;
     QgsMapTool *analysisZoomOutTool;
-    QgsMapTool *analysisMapSelectTool;
+    QgsMapTool *analysisSelectTool;
 
     QVBoxLayout *analysisAreaMapLayout;
 
     void ConstructAnalysisAreaWidgets();
     void LoadAnalysisAreaLayers();
 
-
     /* Fuel treatment related */
 
 private slots:
+    /* Main path designation */
+    void OpenWfipsPath();
     /* Tree and stack widget slots */
     void SetStackIndex( QTreeWidgetItem *current,
                         QTreeWidgetItem *previous );
+
+    /* Slot for tool button to map tool mapping */
+    void UpdateMapToolType();
+    /* Zoom to layer extent */
+    void ZoomToLayerExtent();
 
 };
 
