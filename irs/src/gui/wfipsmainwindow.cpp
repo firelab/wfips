@@ -219,7 +219,7 @@ void WfipsMainWindow::AddCustomAnalysisArea()
     }
     QStringList layers;
     int i = 0;
-    while( i < GDALDatasetGetLayerCount( hDS ) )
+    while( i < OGR_DS_GetLayerCount( hDS ) )
     {
         layers << OGR_L_GetName( GDALDatasetGetLayer( hDS, i ) );
         i++;
