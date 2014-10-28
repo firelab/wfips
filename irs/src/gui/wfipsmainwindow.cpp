@@ -208,9 +208,7 @@ void WfipsMainWindow::AddCustomAnalysisArea()
         return;
     }
     const char *pszFilename = QStringToCString( layerFile );
-    GDALDatasetH hDS = GDALOpenEx( pszFilename,
-                                   GDAL_OF_VECTOR | GDAL_OF_READONLY,
-                                   NULL, NULL, NULL );
+    OGRDataSourceH hDS = OGROpen( pszFilename, FALSE, NULL );
     free( (void*)pszFilename );
     if( hDS == NULL )
     {
@@ -234,7 +232,7 @@ void WfipsMainWindow::AddCustomAnalysisArea()
         return;
     }
     ui->customAnalysisAreaLayerComboBox->addItems( layers );
-    GDALClose( hDS );
+    OGR_DS_Destroy( hDS );
     ui->customAnalysisAreaAddLayerToolButton->setEnabled( true );
 }
 

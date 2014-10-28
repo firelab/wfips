@@ -66,6 +66,7 @@
 
 /* GDAL for layer sniffing */
 #include "gdal.h"
+#include "ogr_api.h"
 
 namespace Ui {
 class WfipsMainWindow;
