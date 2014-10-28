@@ -1,5 +1,40 @@
+/******************************************************************************
+ *
+ * Project:  Wildland Fire Investment Planning System
+ * Purpose:  Graphical User Interface
+ * Author:   Kyle Shannon <kyle at pobox dot com>
+ *
+ ******************************************************************************
+ *
+ * THIS SOFTWARE WAS DEVELOPED AT THE ROCKY MOUNTAIN RESEARCH STATION (RMRS)
+ * MISSOULA FIRE SCIENCES LABORATORY BY EMPLOYEES OF THE FEDERAL GOVERNMENT 
+ * IN THE COURSE OF THEIR OFFICIAL DUTIES. PURSUANT TO TITLE 17 SECTION 105 
+ * OF THE UNITED STATES CODE, THIS SOFTWARE IS NOT SUBJECT TO COPYRIGHT 
+ * PROTECTION AND IS IN THE PUBLIC DOMAIN. RMRS MISSOULA FIRE SCIENCES 
+ * LABORATORY ASSUMES NO RESPONSIBILITY WHATSOEVER FOR ITS USE BY OTHER 
+ * PARTIES,  AND MAKES NO GUARANTEES, EXPRESSED OR IMPLIED, ABOUT ITS QUALITY, 
+ * RELIABILITY, OR ANY OTHER CHARACTERISTIC.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
+ * OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
+ * THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+ * FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+ * DEALINGS IN THE SOFTWARE.
+ *
+ *****************************************************************************/
+
 #include "wfipsmainwindow.h"
 #include "ui_wfipsmainwindow.h"
+
+static char * QStringToCString( const QString &s )
+{
+    int n = s.size() + 1;
+    char *p = (char*)malloc( sizeof( char ) * n );
+    strncpy( p, s.toLocal8Bit().data(), n );
+    return p;
+}
 
 WfipsMainWindow::WfipsMainWindow(QWidget *parent) :
     QMainWindow(parent),
@@ -42,14 +77,16 @@ void WfipsMainWindow::CreateConnections()
     /* Update the analysis layer based on the combo box choice */
     connect( ui->analysisAreaComboBox, SIGNAL( currentIndexChanged( int ) ),
              this, SLOT( UpdateAnalysisAreaMap( int ) ) );
-
-    /* Load custom layers for analysis */
+    /* Open and load custom layers for analysis */
     connect( ui->customAnalysisAreaOpenToolButton, SIGNAL( clicked() ),
              this, SLOT( AddCustomAnalysisArea() ) );
+    connect( ui->customAnalysisAreaAddLayerToolButton, SIGNAL( clicked() ),
+             this, SLOT( LoadCustomAnalysisArea() ) );
 }
 
 void WfipsMainWindow::PostConstructionActions()
 {
+    /* Make sure one of the map tools gets initialized */
     ui->mapPanToolButton->click();
 }
 
@@ -89,6 +126,16 @@ void WfipsMainWindow::ConstructAnalysisAreaWidgets()
     //analysisSelectTool = new QgsMapToolSelect( analysisAreaMapCanvas, TRUE);
 }
 
+/*
+** Add one layer to the analysis area widget.  The path to the file and the
+** name of the layer are needed.  If the layer name is not provided, the fx
+** attempts to find a layer that is the same as the basename of the file (eg,
+** /abc/def/ghi.xyz -> ghi).  The base name is also added to the combo box that
+** allows the user to select which layer to display.
+**
+** The created layers use default symbology/rendering and ownership is passed
+** to the map layer registry.
+*/
 void WfipsMainWindow::AddAnalysisAreaLayer( QString path, QString layerName )
 {
     if( path == "" )
@@ -96,7 +143,6 @@ void WfipsMainWindow::AddAnalysisAreaLayer( QString path, QString layerName )
         qDebug() << "Invalid layer";
         return;
     }
-    QString dataSource = path;
     path += "|layername=";
     if( layerName == "" )
     {
@@ -104,18 +150,24 @@ void WfipsMainWindow::AddAnalysisAreaLayer( QString path, QString layerName )
     }
     path += layerName;
     qDebug() << "Loading layer: " << layerName;
-    analysisLayer = new QgsVectorLayer( dataSource, "", "ogr", true );
+    analysisLayer = new QgsVectorLayer( path, "", "ogr", true );
     if( !analysisLayer->isValid() )
     {
+        delete analysisLayer;
         qDebug() << "Invalid layer";
         return;
     }
     analysisLayer->setReadOnly( true );
-    QgsMapLayerRegistry::instance()->addMapLayer( analysisLayer, false, false );
+    QgsMapLayerRegistry::instance()->addMapLayer( analysisLayer, false );
     analysisMapCanvasLayers.append( QgsMapCanvasLayer( analysisLayer, false ) );
     ui->analysisAreaComboBox->addItem( layerName.toUpper() );
 }
 
+/*
+** Load the default analysis area related map layers.  These are admin layers
+** from the base wfips directory.  Various USFS admin boundaries are available
+** including geographic areas, forests and districts.
+*/
 void WfipsMainWindow::LoadAnalysisAreaLayers()
 {
     if( wfipsPath == "" )
@@ -132,27 +184,64 @@ void WfipsMainWindow::LoadAnalysisAreaLayers()
     analysisAreaMapCanvas->setLayerSet( analysisMapCanvasLayers );
     analysisAreaMapCanvas->setExtent( QgsRectangle( -129.0, 22.0, -93.0, 52.0 ) );
     analysisAreaMapCanvas->refresh();
-    return;
 }
 
+/*
+** Allow the user to add a custom layer to run the simulation.  This may be any
+** OGR supported datasource, and one layer may be selected.
+*/
 void WfipsMainWindow::AddCustomAnalysisArea()
 {
     QString layerFile =
         QFileDialog::getOpenFileName( this, tr( "Open GIS file" ), "", "" );
     ui->customAnalysisAreaLineEdit->setText( layerFile );
-    if( layerFile == "" )
+    ui->customAnalysisAreaLayerComboBox->clear();
+    if( layerFile == "" ) 
     {
         return;
     }
-    QgsMapLayer *layer = new QgsVectorLayer( layerFile, "", "ogr", false );
-    if( !layer->isValid() )
+    const char *pszFilename = QStringToCString( layerFile );
+    GDALDatasetH hDS = GDALOpenEx( pszFilename,
+                                   GDAL_OF_VECTOR | GDAL_OF_READONLY,
+                                   NULL, NULL, NULL );
+    free( (void*)pszFilename );
+    if( hDS == NULL )
     {
         qDebug() << "Could not identify layer file";
+        ui->customAnalysisAreaAddLayerToolButton->setDisabled( true );
+        ui->customAnalysisAreaLineEdit->setText( "" );
         return;
     }
-    QStringList layers = layer->subLayers();
+    QStringList layers;
+    int i = 0;
+    while( i < GDALDatasetGetLayerCount( hDS ) )
+    {
+        layers << OGR_L_GetName( GDALDatasetGetLayer( hDS, i ) );
+        i++;
+    }
+    if( layers.size() < 1 )
+    {
+        ui->customAnalysisAreaAddLayerToolButton->setDisabled( true );
+        ui->customAnalysisAreaLineEdit->setText( "" );
+        GDALClose( hDS );
+        return;
+    }
     ui->customAnalysisAreaLayerComboBox->addItems( layers );
-    delete layer;
+    GDALClose( hDS );
+    ui->customAnalysisAreaAddLayerToolButton->setEnabled( true );
+}
+
+void WfipsMainWindow::LoadCustomAnalysisArea()
+{
+    if( ui->customAnalysisAreaLineEdit->text() == "" ||
+        ui->customAnalysisAreaLayerComboBox->count() < 1 )
+    {
+        qDebug() << "No datasource or layer selected";
+        return;
+    }
+    AddAnalysisAreaLayer( ui->customAnalysisAreaLineEdit->text(),
+                          ui->customAnalysisAreaLayerComboBox->currentText() );
+    analysisAreaMapCanvas->refresh();
 }
 
 void WfipsMainWindow::UpdateAnalysisAreaMap( int index )
