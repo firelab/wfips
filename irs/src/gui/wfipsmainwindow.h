@@ -32,6 +32,7 @@
 
 #include <QFileDialog>
 #include <QMainWindow>
+#include <QMessageBox>
 #include <QTreeWidget>
 #include <QTreeWidgetItem>
 #include <QVBoxLayout>
@@ -143,6 +144,11 @@ private slots:
     void AddCustomAnalysisArea();
     void LoadCustomAnalysisArea();
     void UpdateAnalysisAreaMap( int index );
+
+    /* Emit a warning or an error to a dialog or just qDebug() */
+    void ShowMessage( const int messageType,
+                      const int messageFlags,
+                      const QString &message );
 
 };
 

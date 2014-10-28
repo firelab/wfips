@@ -28,6 +28,10 @@
 #include "wfipsmainwindow.h"
 #include "ui_wfipsmainwindow.h"
 
+/*
+** Helper to bounce between QStrings and C style strings.  Please free the
+** results with free(), as the return value is owned by you, the caller.
+*/
 static char * QStringToCString( const QString &s )
 {
     int n = s.size() + 1;
@@ -62,10 +66,13 @@ WfipsMainWindow::WfipsMainWindow(QWidget *parent) :
 
 WfipsMainWindow::~WfipsMainWindow()
 {
-    //QgsMapLayerRegistry::instance()->removeAllMapLayers();
-    //delete analysisLayer;
-    //delete analysisSymbol;
-    //delete analysisRenderer;
+    /*
+    ** We may need to clean up a little for QGIS, but I don't think so.
+    QgsMapLayerRegistry::instance()->removeAllMapLayers();
+    delete analysisLayer;
+    delete analysisSymbol;
+    delete analysisRenderer;
+    */
     delete ui;
 }
 
@@ -399,5 +406,28 @@ void WfipsMainWindow::UpdateMapToolType()
 void WfipsMainWindow::ZoomToLayerExtent()
 {
     qDebug() << "Zoom to layer extent";
+}
+
+void WfipsMainWindow::ShowWarning( const int messageType,
+                                   const int messageFlags,
+                                   const QString &message )
+{
+#define WFIPS_CONSOLE_ERR
+#ifdef WFIPS_CONSOLE_ERR
+    QString s;
+    if( messageType == QMessageBox::Question )
+        s += "QUESTION: ";
+    else if( messageType == QMessageBox::Information )
+        s += "MESSAGE: ";
+    else if( messageType == QMessageBox::Warning )
+        s += "WARNING: ";
+    else if( messageType == QMessageBox::Critical )
+        s += "CRITICAL: ";
+    s += message;
+    qDebug() << s;
+
+#else /* WFIPS_CONSOLE_ERR */
+    QMessageBox msgBox;
+#endif /* WFIPS_CONSOLE_ERR */
 }
 
