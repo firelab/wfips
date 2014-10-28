@@ -221,7 +221,7 @@ void WfipsMainWindow::AddCustomAnalysisArea()
     int i = 0;
     while( i < OGR_DS_GetLayerCount( hDS ) )
     {
-        layers << OGR_L_GetName( GDALDatasetGetLayer( hDS, i ) );
+        layers << OGR_L_GetName( OGR_DS_GetLayer( hDS, i ) );
         i++;
     }
     if( layers.size() < 1 )
