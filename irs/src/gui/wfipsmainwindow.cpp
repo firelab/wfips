@@ -408,7 +408,7 @@ void WfipsMainWindow::ZoomToLayerExtent()
     qDebug() << "Zoom to layer extent";
 }
 
-void WfipsMainWindow::ShowWarning( const int messageType,
+void WfipsMainWindow::ShowMessage( const int messageType,
                                    const int messageFlags,
                                    const QString &message )
 {
