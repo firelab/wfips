@@ -39,6 +39,13 @@ void WfipsMainWindow::CreateConnections()
     /* Open the root path to most of the data */
     connect( ui->openWfipsPathToolButton, SIGNAL( clicked() ),
              this, SLOT( OpenWfipsPath() ) );
+    /* Update the analysis layer based on the combo box choice */
+    connect( ui->analysisAreaComboBox, SIGNAL( currentIndexChanged( int ) ),
+             this, SLOT( UpdateAnalysisAreaMap( int ) ) );
+
+    /* Load custom layers for analysis */
+    connect( ui->customAnalysisAreaOpenToolButton, SIGNAL( clicked() ),
+             this, SLOT( AddCustomAnalysisArea() ) );
 }
 
 void WfipsMainWindow::PostConstructionActions()
@@ -82,6 +89,33 @@ void WfipsMainWindow::ConstructAnalysisAreaWidgets()
     //analysisSelectTool = new QgsMapToolSelect( analysisAreaMapCanvas, TRUE);
 }
 
+void WfipsMainWindow::AddAnalysisAreaLayer( QString path, QString layerName )
+{
+    if( path == "" )
+    {
+        qDebug() << "Invalid layer";
+        return;
+    }
+    QString dataSource = path;
+    path += "|layername=";
+    if( layerName == "" )
+    {
+        layerName = QFileInfo( path ).baseName();
+    }
+    path += layerName;
+    qDebug() << "Loading layer: " << layerName;
+    analysisLayer = new QgsVectorLayer( dataSource, "", "ogr", true );
+    if( !analysisLayer->isValid() )
+    {
+        qDebug() << "Invalid layer";
+        return;
+    }
+    analysisLayer->setReadOnly( true );
+    QgsMapLayerRegistry::instance()->addMapLayer( analysisLayer, false, false );
+    analysisMapCanvasLayers.append( QgsMapCanvasLayer( analysisLayer, false ) );
+    ui->analysisAreaComboBox->addItem( layerName.toUpper() );
+}
+
 void WfipsMainWindow::LoadAnalysisAreaLayers()
 {
     if( wfipsPath == "" )
@@ -89,21 +123,50 @@ void WfipsMainWindow::LoadAnalysisAreaLayers()
         qDebug() << "The data path has not been provided, no layers";
         return;
     }
-    QString layerName = wfipsPath + "/gacc.db|layername=gacc";
-    qDebug() << "Loading layer: " << layerName;
-    analysisLayer = new QgsVectorLayer( layerName, "", "ogr" );
-    analysisSymbol = QgsSymbolV2::defaultSymbol( analysisLayer->geometryType() );
-    analysisRenderer = (QgsSingleSymbolRendererV2*)QgsSingleSymbolRendererV2::defaultRenderer( analysisLayer->geometryType() );
-    analysisRenderer->setSymbol( analysisSymbol );
-    QgsMapLayerRegistry::instance()->addMapLayer( analysisLayer, false, true );
-
-    mapCanvasLayers.append( QgsMapCanvasLayer( analysisLayer, true ) );
-    analysisAreaMapCanvas->setLayerSet( mapCanvasLayers );
-    //analysisAreaMapCanvas->setCurrentLayer( analysisLayer );
+    QStringList layerNames;
+    layerNames << "gacc" << "forest" << "district";
+    for( int i = 0; i < layerNames.size(); i++ )
+    {
+        AddAnalysisAreaLayer( wfipsPath + "/" + layerNames[i] + ".db" );
+    }
+    analysisAreaMapCanvas->setLayerSet( analysisMapCanvasLayers );
     analysisAreaMapCanvas->setExtent( QgsRectangle( -129.0, 22.0, -93.0, 52.0 ) );
     analysisAreaMapCanvas->refresh();
-
     return;
+}
+
+void WfipsMainWindow::AddCustomAnalysisArea()
+{
+    QString layerFile =
+        QFileDialog::getOpenFileName( this, tr( "Open GIS file" ), "", "" );
+    ui->customAnalysisAreaLineEdit->setText( layerFile );
+    if( layerFile == "" )
+    {
+        return;
+    }
+    QgsMapLayer *layer = new QgsVectorLayer( layerFile, "", "ogr", false );
+    if( !layer->isValid() )
+    {
+        qDebug() << "Could not identify layer file";
+        return;
+    }
+    QStringList layers = layer->subLayers();
+    ui->customAnalysisAreaLayerComboBox->addItems( layers );
+    delete layer;
+}
+
+void WfipsMainWindow::UpdateAnalysisAreaMap( int index )
+{
+    assert( index < analysisMapCanvasLayers.size() );
+    QgsRectangle extent = analysisAreaMapCanvas->extent();
+    for( int i = 0; i < analysisMapCanvasLayers.size(); i++ )
+    {
+        analysisMapCanvasLayers[i].setVisible( false );
+    }
+    analysisMapCanvasLayers[index].setVisible( true );
+    analysisAreaMapCanvas->setExtent( extent );
+    analysisAreaMapCanvas->setLayerSet( analysisMapCanvasLayers );
+    analysisAreaMapCanvas->refresh();
 }
 
 void WfipsMainWindow::ConstructTreeWidget()
@@ -195,6 +258,7 @@ void WfipsMainWindow::SetStackIndex( QTreeWidgetItem *current,
             qDebug() << "Shouldn't ever get here, you messed up";
             break;
     }
+    analysisAreaMapCanvas->refresh();
 }
 
 /*

@@ -1,6 +1,8 @@
 #ifndef WFIPSMAINWINDOW_H
 #define WFIPSMAINWINDOW_H
 
+#define QGISDEBUG 1
+
 #include <QFileDialog>
 #include <QMainWindow>
 #include <QTreeWidget>
@@ -48,6 +50,7 @@ public:
 
 private:
     Ui::WfipsMainWindow *ui;
+    QString qgisPluginPath;
 
     /* WFIPS root/default path */
     QString wfipsPath;
@@ -78,10 +81,8 @@ private:
 
     /* Analysis area */
     QgsMapCanvas *analysisAreaMapCanvas;
-    QList<QgsMapCanvasLayer> mapCanvasLayers;
+    QList<QgsMapCanvasLayer> analysisMapCanvasLayers;
     QgsVectorLayer *analysisLayer;
-    QgsSingleSymbolRendererV2 *analysisRenderer;
-    QgsSymbolV2 *analysisSymbol;
 
     QgsMapTool *analysisPanTool;
     QgsMapTool *analysisZoomInTool;
@@ -91,6 +92,7 @@ private:
     QVBoxLayout *analysisAreaMapLayout;
 
     void ConstructAnalysisAreaWidgets();
+    void AddAnalysisAreaLayer( QString path, QString layerName="" );
     void LoadAnalysisAreaLayers();
 
     /* Fuel treatment related */
@@ -106,6 +108,10 @@ private slots:
     void UpdateMapToolType();
     /* Zoom to layer extent */
     void ZoomToLayerExtent();
+
+    /* Analysis Area */
+    void AddCustomAnalysisArea();
+    void UpdateAnalysisAreaMap( int index );
 
 };
 
