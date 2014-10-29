@@ -130,7 +130,8 @@ void WfipsMainWindow::ConstructAnalysisAreaWidgets()
 ** The created layers use default symbology/rendering and ownership is passed
 ** to the map layer registry.
 */
-void WfipsMainWindow::AddAnalysisAreaLayer( QString path, QString layerName )
+void WfipsMainWindow::AddAnalysisAreaLayer( QString path, QString layerName,
+                                            bool useExtent )
 {
     if( path == "" )
     {
@@ -155,6 +156,10 @@ void WfipsMainWindow::AddAnalysisAreaLayer( QString path, QString layerName )
     QgsMapLayerRegistry::instance()->addMapLayer( analysisLayer, false );
     analysisMapCanvasLayers.append( QgsMapCanvasLayer( analysisLayer, false ) );
     ui->analysisAreaComboBox->addItem( layerName.toUpper() );
+    if( useExtent )
+    {
+        analysisAreaMapCanvas->setExtent( analysisLayer->extent() );
+    }
 }
 
 /*
@@ -171,12 +176,13 @@ void WfipsMainWindow::LoadAnalysisAreaLayers()
     }
     QStringList layerNames;
     layerNames << "gacc" << "forest" << "district";
+    bool useExtent = false;
     for( int i = 0; i < layerNames.size(); i++ )
     {
         AddAnalysisAreaLayer( wfipsPath + "/" + layerNames[i] + ".db" );
     }
     analysisAreaMapCanvas->setLayerSet( analysisMapCanvasLayers );
-    analysisAreaMapCanvas->setExtent( QgsRectangle( -129.0, 22.0, -93.0, 52.0 ) );
+    analysisAreaMapCanvas->setExtent( ((QgsVectorLayer*)(QgsMapLayerRegistry::instance()->mapLayers().values().last()))->extent() );
     analysisAreaMapCanvas->refresh();
 }
 
@@ -194,7 +200,9 @@ void WfipsMainWindow::AddCustomAnalysisArea()
         qDebug() << "Invalid Layer file or layer name!";
         return;
     }
-    AddAnalysisAreaLayer( dialog.GetFilePath(), dialog.GetLayerName() );
+    AddAnalysisAreaLayer( dialog.GetFilePath(), dialog.GetLayerName(), true );
+    if( analysisMapCanvasLayers.size() == 1 )
+        analysisAreaMapCanvas->setLayerSet( analysisMapCanvasLayers );
     analysisAreaMapCanvas->refresh();
 }
 

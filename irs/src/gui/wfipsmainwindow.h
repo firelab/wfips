@@ -125,7 +125,8 @@ private:
     QVBoxLayout *analysisAreaMapLayout;
 
     void ConstructAnalysisAreaWidgets();
-    void AddAnalysisAreaLayer( QString path, QString layerName="" );
+    void AddAnalysisAreaLayer( QString path, QString layerName="",
+                               bool useExtent=false );
     void LoadAnalysisAreaLayers();
 
     /* Fuel treatment related */
