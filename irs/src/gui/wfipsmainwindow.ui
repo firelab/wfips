@@ -38,44 +38,16 @@
        <property name="text">
         <string>Data</string>
        </property>
-       <item>
-        <property name="text">
-         <string>Path</string>
-        </property>
-       </item>
       </item>
       <item>
        <property name="text">
         <string>Analysis Area</string>
        </property>
-       <item>
-        <property name="text">
-         <string>National</string>
-        </property>
-        <item>
-         <property name="text">
-          <string>GACC</string>
-         </property>
-        </item>
-       </item>
-       <item>
-        <property name="text">
-         <string>Geographic Area</string>
-        </property>
-        <item>
-         <property name="text">
-          <string> Forest</string>
-         </property>
-        </item>
-       </item>
-       <item>
-        <property name="text">
-         <string>Local</string>
-        </property>
-        <property name="flags">
-         <set>ItemIsSelectable|ItemIsDragEnabled|ItemIsUserCheckable</set>
-        </property>
-       </item>
+      </item>
+      <item>
+       <property name="text">
+        <string>Agencies</string>
+       </property>
       </item>
       <item>
        <property name="text">
@@ -245,6 +217,19 @@
           </widget>
          </item>
          <item>
+          <widget class="QToolButton" name="mapIdentifyToolButton">
+           <property name="text">
+            <string/>
+           </property>
+           <property name="checkable">
+            <bool>true</bool>
+           </property>
+           <property name="autoExclusive">
+            <bool>true</bool>
+           </property>
+          </widget>
+         </item>
+         <item>
           <widget class="QToolButton" name="mapSelectToolButton">
            <property name="toolTip">
             <string>Select</string>
@@ -298,7 +283,7 @@
          <enum>QFrame::Plain</enum>
         </property>
         <property name="currentIndex">
-         <number>1</number>
+         <number>6</number>
         </property>
         <widget class="QWidget" name="dataPage">
          <layout class="QVBoxLayout" name="verticalLayout_13">
@@ -412,6 +397,7 @@
           </item>
          </layout>
         </widget>
+        <widget class="QWidget" name="page_2"/>
         <widget class="QWidget" name="figPage">
          <layout class="QVBoxLayout" name="verticalLayout_9">
           <item>

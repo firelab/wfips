@@ -25,12 +25,12 @@
  *
  *****************************************************************************/
 
-#include "addanalysisareadialog.h"
-#include "ui_addanalysisareadialog.h"
+#include "wfipsaddlayerdialog.h"
+#include "ui_wfipsaddlayerdialog.h"
 
-AddAnalysisAreaDialog::AddAnalysisAreaDialog(QWidget *parent) :
+WfipsAddLayerDialog::WfipsAddLayerDialog(QWidget *parent) :
     QDialog(parent),
-    ui(new Ui::AddAnalysisAreaDialog)
+    ui(new Ui::WfipsAddLayerDialog)
 {
     ui->setupUi(this);
     /* Connections */
@@ -42,23 +42,23 @@ AddAnalysisAreaDialog::AddAnalysisAreaDialog(QWidget *parent) :
              this, SLOT( Cancel() ) );
 }
 
-AddAnalysisAreaDialog::~AddAnalysisAreaDialog()
+WfipsAddLayerDialog::~WfipsAddLayerDialog()
 {
     delete ui;
 }
 
-QString AddAnalysisAreaDialog::GetFilePath()
+QString WfipsAddLayerDialog::GetFilePath()
 {
     return filePath;
 }
 
-QString AddAnalysisAreaDialog::GetLayerName()
+QString WfipsAddLayerDialog::GetLayerName()
 {
     layerName = ui->addLayerComboBox->currentText();
     return layerName;
 }
 
-void AddAnalysisAreaDialog::OpenAreaLayerFile()
+void WfipsAddLayerDialog::OpenAreaLayerFile()
 {
     filePath =
         QFileDialog::getOpenFileName( this, tr( "Open GIS file" ), "", "" );
@@ -102,12 +102,12 @@ void AddAnalysisAreaDialog::OpenAreaLayerFile()
     OGR_DS_Destroy( hDS );
 }
 
-void AddAnalysisAreaDialog::Accept()
+void WfipsAddLayerDialog::Accept()
 {
     this->close();
 }
 
-void AddAnalysisAreaDialog::Cancel()
+void WfipsAddLayerDialog::Cancel()
 {
     filePath = "";
     layerName = "";

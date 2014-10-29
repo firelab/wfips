@@ -151,8 +151,13 @@ SET(OMFFR_GUI_RCCS resources.qrc)
 
 OPTION(BUILD_GUI_V2 "Build the new interface dummy project" OFF)
 IF(BUILD_GUI_V2)
-    QT4_WRAP_UI(WFIPS_GUI_UI_H wfipsmainwindow.ui addanalysisareadialog.ui)
-    QT4_WRAP_CPP(WFIPS_GUI_MOC wfipsmainwindow.h addanalysisareadialog.h)
+    QT4_WRAP_UI(WFIPS_GUI_UI_H wfipsmainwindow.ui
+                               wfipsaddlayerdialog.ui
+                               wfipsidentifydialog.ui)
+    QT4_WRAP_CPP(WFIPS_GUI_MOC wfipsmainwindow.h
+                               wfipsaddlayerdialog.h
+                               wfipsidentifydialog.h
+                               wfipsidentifymaptool.h)
 ENDIF(BUILD_GUI_V2)
 
 INCLUDE(${QT_USE_FILE})
@@ -214,8 +219,10 @@ OPTION(BUILD_GUI_V2 "Build the new interface dummy project" OFF)
 IF(BUILD_GUI_V2)
     ADD_DEFINITIONS(-DWFIPS_GUI_V2)
     ADD_EXECUTABLE(wfips wfipsmainwindow.cpp
-                         addanalysisareadialog.cpp
+                         wfipsaddlayerdialog.cpp
                          wfipsguiutil.cpp
+                         wfipsidentifydialog.cpp
+                         wfipsidentifymaptool.cpp
                          ${WFIPS_GUI_UI_H}
                          ${WFIPS_GUI_MOC}
                          ${OMFFR_GUI_RCC_SRCS}

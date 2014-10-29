@@ -48,6 +48,8 @@ WfipsMainWindow::WfipsMainWindow(QWidget *parent) :
     AssignTreeWidgetIndices( ui->treeWidget->invisibleRootItem() );
     qDebug() << "Found " << treeWidgetList.size() << " tree widget items.";
 
+    identifyDialog = new WfipsIdentifyDialog( this );
+
     /* Call *after* construction */
     CreateConnections();
     PostConstructionActions();
@@ -63,6 +65,7 @@ WfipsMainWindow::~WfipsMainWindow()
     delete analysisRenderer;
     */
     delete ui;
+    delete identifyDialog;
 }
 
 void WfipsMainWindow::CreateConnections()
@@ -98,6 +101,9 @@ void WfipsMainWindow::ConstructToolButtons()
     ui->mapZoomToLayerToolButton->setIcon( QIcon( ":/select" ) );
     connect( ui->mapSelectToolButton, SIGNAL( clicked() ),
              this, SLOT( UpdateMapToolType() ) );
+    ui->mapIdentifyToolButton->setIcon( QIcon( ":/identify" ) );
+    connect( ui->mapIdentifyToolButton, SIGNAL( clicked() ),
+             this, SLOT( UpdateMapToolType() ) );
     ui->mapZoomToLayerToolButton->setIcon( QIcon( ":/zoom_layer" ) );
     connect( ui->mapZoomToLayerToolButton, SIGNAL( clicked() ),
              this, SLOT( ZoomToLayerExtent() ) );
@@ -117,6 +123,9 @@ void WfipsMainWindow::ConstructAnalysisAreaWidgets()
     analysisPanTool = new QgsMapToolPan( analysisAreaMapCanvas );
     analysisZoomInTool = new QgsMapToolZoom( analysisAreaMapCanvas, FALSE );
     analysisZoomOutTool = new QgsMapToolZoom( analysisAreaMapCanvas, TRUE);
+    analysisIdentifyTool= new WfipsIdentifyMapTool( analysisAreaMapCanvas );
+    connect( analysisIdentifyTool, SIGNAL( WfipsIdentify( QList<QgsMapToolIdentify::IdentifyResult> ) ),
+             this, SLOT( Identify( QList<QgsMapToolIdentify::IdentifyResult> ) ) );
     //analysisSelectTool = new QgsMapToolSelect( analysisAreaMapCanvas, TRUE);
 }
 
@@ -192,7 +201,7 @@ void WfipsMainWindow::LoadAnalysisAreaLayers()
 */
 void WfipsMainWindow::AddCustomAnalysisArea()
 {
-    AddAnalysisAreaDialog dialog( this );
+    WfipsAddLayerDialog dialog( this );
     dialog.exec();
     qDebug() << "Loading " << dialog.GetFilePath() << ", " << dialog.GetLayerName();
     if( dialog.GetFilePath() == "" || dialog.GetLayerName() == "" )
@@ -203,6 +212,7 @@ void WfipsMainWindow::AddCustomAnalysisArea()
     AddAnalysisAreaLayer( dialog.GetFilePath(), dialog.GetLayerName(), true );
     if( analysisMapCanvasLayers.size() == 1 )
         analysisAreaMapCanvas->setLayerSet( analysisMapCanvasLayers );
+    ui->analysisAreaComboBox->setCurrentIndex( ui->analysisAreaComboBox->count() - 1 );
     analysisAreaMapCanvas->refresh();
 }
 
@@ -351,10 +361,24 @@ void WfipsMainWindow::UpdateMapToolType()
         qDebug() << "Setting map tool to zoom out";
         analysisAreaMapCanvas->setMapTool( analysisZoomOutTool );
     }
+    else if( ui->mapIdentifyToolButton->isChecked() )
+    {
+        qDebug() << "Setting map tool to identify";
+        analysisAreaMapCanvas->setMapTool( analysisIdentifyTool );
+    }
     else if( ui->mapZoomOutToolButton->isChecked() )
     {
         qDebug() << "Setting map tool to select";
         analysisAreaMapCanvas->setMapTool( analysisSelectTool );
+    }
+}
+
+void WfipsMainWindow::Identify( QList<QgsMapToolIdentify::IdentifyResult> results )
+{
+    qDebug() << results.size();
+    if( results.size() > 0 )
+    {
+        identifyDialog->ShowIdentifyResults( results );
     }
 }
 

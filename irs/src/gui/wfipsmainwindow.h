@@ -36,7 +36,10 @@
 #include <QVBoxLayout>
 
 /* Our custom widgets and such */
-#include "addanalysisareadialog.h"
+#include "wfipsaddlayerdialog.h"
+
+#include "wfipsidentifymaptool.h"
+#include "wfipsidentifydialog.h"
 
 /*
 ** QGIS includes.  Try to keep these semi-organized for easier maintenance.
@@ -120,6 +123,7 @@ private:
     QgsMapTool *analysisPanTool;
     QgsMapTool *analysisZoomInTool;
     QgsMapTool *analysisZoomOutTool;
+    QgsMapTool *analysisIdentifyTool;
     QgsMapTool *analysisSelectTool;
 
     QVBoxLayout *analysisAreaMapLayout;
@@ -129,7 +133,8 @@ private:
                                bool useExtent=false );
     void LoadAnalysisAreaLayers();
 
-    /* Fuel treatment related */
+    /* Identify results viewer */
+    WfipsIdentifyDialog *identifyDialog;
 
 private slots:
     /* Main path designation */
@@ -142,6 +147,9 @@ private slots:
     void UpdateMapToolType();
     /* Zoom to layer extent */
     void ZoomToLayerExtent();
+
+    /* Identify a map layer feature */
+    void Identify( QList<QgsMapToolIdentify::IdentifyResult> result );
 
     /* Analysis Area */
     void AddCustomAnalysisArea();

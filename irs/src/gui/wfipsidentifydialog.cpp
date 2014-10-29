@@ -25,43 +25,39 @@
  *
  *****************************************************************************/
 
-#ifndef ADDANALYSISAREADIALOG_H
-#define ADDANALYSISAREADIALOG_H
+#include "wfipsidentifydialog.h"
+#include "ui_wfipsidentifydialog.h"
 
-#include <QDebug>
-#include <QDialog>
-#include <QFileDialog>
-#include <QString>
-
-#include "wfipsguiutil.h"
-
-#include "gdal.h"
-#include "ogr_api.h"
-
-namespace Ui {
-class AddAnalysisAreaDialog;
+WfipsIdentifyDialog::WfipsIdentifyDialog(QWidget *parent) :
+    QDialog(parent),
+    ui(new Ui::WfipsIdentifyDialog)
+{
+    ui->setupUi(this);
 }
 
-class AddAnalysisAreaDialog : public QDialog
+WfipsIdentifyDialog::~WfipsIdentifyDialog()
 {
-    Q_OBJECT
+    delete ui;
+}
 
-public:
-    explicit AddAnalysisAreaDialog(QWidget *parent = 0);
-    ~AddAnalysisAreaDialog();
-
-    QString GetFilePath();
-    QString GetLayerName();
-
-private:
-    Ui::AddAnalysisAreaDialog *ui;
-
-    QString filePath, layerName;
-
-private slots:
-    void OpenAreaLayerFile();
-    void Accept();
-    void Cancel();
-};
-
-#endif /* ADDANALYSISAREADIALOG_H */
+void WfipsIdentifyDialog::ShowIdentifyResults( QList<QgsMapToolIdentify::IdentifyResult> results )
+{
+    ui->treeWidget->clear();
+    for( int i = 0; i < results.size(); i++ )
+    {
+        /*
+        ** Results have a variety of data lets just display the label and the
+        ** attributes.  Below is the layout of the result struct
+        **
+        ** QgsMapLayer * mLayer
+        ** QString mLabel
+        ** QgsFields mFields
+        ** QgsFeature mFeature
+        ** QMap<QString, QString> mAttributes
+        ** QMap<QString, QString> mDerivedAttributes
+        ** QMap<QString, QVariant> mParams
+        */
+        qDebug() << results[i].mLabel;
+        qDebug() << results[i].mAttributes;
+    }
+}
