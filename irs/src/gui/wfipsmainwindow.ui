@@ -331,54 +331,6 @@
            </layout>
           </item>
           <item>
-           <layout class="QHBoxLayout" name="horizontalLayout_15">
-            <item>
-             <widget class="QLabel" name="label_15">
-              <property name="text">
-               <string>Custom Analysis Area</string>
-              </property>
-             </widget>
-            </item>
-            <item>
-             <widget class="QLineEdit" name="customAnalysisAreaLineEdit"/>
-            </item>
-            <item>
-             <widget class="QToolButton" name="customAnalysisAreaOpenToolButton">
-              <property name="text">
-               <string>Open</string>
-              </property>
-             </widget>
-            </item>
-            <item>
-             <widget class="QLabel" name="label_16">
-              <property name="text">
-               <string>Layer Name</string>
-              </property>
-             </widget>
-            </item>
-            <item>
-             <widget class="QComboBox" name="customAnalysisAreaLayerComboBox">
-              <property name="sizePolicy">
-               <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
-                <horstretch>0</horstretch>
-                <verstretch>0</verstretch>
-               </sizepolicy>
-              </property>
-             </widget>
-            </item>
-            <item>
-             <widget class="QToolButton" name="customAnalysisAreaAddLayerToolButton">
-              <property name="enabled">
-               <bool>false</bool>
-              </property>
-              <property name="text">
-               <string>Add Layer</string>
-              </property>
-             </widget>
-            </item>
-           </layout>
-          </item>
-          <item>
            <spacer name="verticalSpacer_7">
             <property name="orientation">
              <enum>Qt::Vertical</enum>
@@ -430,6 +382,13 @@
                 <horstretch>0</horstretch>
                 <verstretch>0</verstretch>
                </sizepolicy>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QToolButton" name="customAnalysisAreaOpenToolButton">
+              <property name="text">
+               <string>...</string>
               </property>
              </widget>
             </item>

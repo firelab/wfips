@@ -28,17 +28,6 @@
 #include "wfipsmainwindow.h"
 #include "ui_wfipsmainwindow.h"
 
-/*
-** Helper to bounce between QStrings and C style strings.  Please free the
-** results with free(), as the return value is owned by you, the caller.
-*/
-static char * QStringToCString( const QString &s )
-{
-    int n = s.size() + 1;
-    char *p = (char*)malloc( sizeof( char ) * n );
-    strncpy( p, s.toLocal8Bit().data(), n );
-    return p;
-}
 
 WfipsMainWindow::WfipsMainWindow(QWidget *parent) :
     QMainWindow(parent),
@@ -199,41 +188,15 @@ void WfipsMainWindow::LoadAnalysisAreaLayers()
 */
 void WfipsMainWindow::AddCustomAnalysisArea()
 {
-    QString layerFile =
-        QFileDialog::getOpenFileName( this, tr( "Open GIS file" ), "", "" );
-    ui->customAnalysisAreaLineEdit->setText( layerFile );
-    ui->customAnalysisAreaLayerComboBox->clear();
-    if( layerFile == "" ) 
+    AddAnalysisAreaDialog dialog( this );
+    dialog.exec();
+    qDebug() << "Loading " << dialog.GetFilePath() << ", " << dialog.GetLayerName();
+    if( dialog.GetFilePath() == "" || dialog.GetLayerName() == "" )
     {
+        qDebug() << "Invalid Layer file or layer name!";
         return;
     }
-    const char *pszFilename = QStringToCString( layerFile );
-    OGRDataSourceH hDS = OGROpen( pszFilename, FALSE, NULL );
-    free( (void*)pszFilename );
-    if( hDS == NULL )
-    {
-        qDebug() << "Could not identify layer file";
-        ui->customAnalysisAreaAddLayerToolButton->setDisabled( true );
-        ui->customAnalysisAreaLineEdit->setText( "" );
-        return;
-    }
-    QStringList layers;
-    int i = 0;
-    while( i < OGR_DS_GetLayerCount( hDS ) )
-    {
-        layers << OGR_L_GetName( OGR_DS_GetLayer( hDS, i ) );
-        i++;
-    }
-    if( layers.size() < 1 )
-    {
-        ui->customAnalysisAreaAddLayerToolButton->setDisabled( true );
-        ui->customAnalysisAreaLineEdit->setText( "" );
-        GDALClose( hDS );
-        return;
-    }
-    ui->customAnalysisAreaLayerComboBox->addItems( layers );
-    OGR_DS_Destroy( hDS );
-    ui->customAnalysisAreaAddLayerToolButton->setEnabled( true );
+    AddAnalysisAreaLayer( dialog.GetFilePath(), dialog.GetLayerName() );
 }
 
 void WfipsMainWindow::LoadCustomAnalysisArea()

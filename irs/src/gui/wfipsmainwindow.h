@@ -28,14 +28,15 @@
 #ifndef WFIPSMAINWINDOW_H
 #define WFIPSMAINWINDOW_H
 
-#define QGISDEBUG 1
-
 #include <QFileDialog>
 #include <QMainWindow>
 #include <QMessageBox>
 #include <QTreeWidget>
 #include <QTreeWidgetItem>
 #include <QVBoxLayout>
+
+/* Our custom widgets and such */
+#include "addanalysisareadialog.h"
 
 /*
 ** QGIS includes.  Try to keep these semi-organized for easier maintenance.
