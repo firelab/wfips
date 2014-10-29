@@ -76,8 +76,6 @@ void WfipsMainWindow::CreateConnections()
     /* Open and load custom layers for analysis */
     connect( ui->customAnalysisAreaOpenToolButton, SIGNAL( clicked() ),
              this, SLOT( AddCustomAnalysisArea() ) );
-    connect( ui->customAnalysisAreaAddLayerToolButton, SIGNAL( clicked() ),
-             this, SLOT( LoadCustomAnalysisArea() ) );
 }
 
 void WfipsMainWindow::PostConstructionActions()
@@ -197,18 +195,6 @@ void WfipsMainWindow::AddCustomAnalysisArea()
         return;
     }
     AddAnalysisAreaLayer( dialog.GetFilePath(), dialog.GetLayerName() );
-}
-
-void WfipsMainWindow::LoadCustomAnalysisArea()
-{
-    if( ui->customAnalysisAreaLineEdit->text() == "" ||
-        ui->customAnalysisAreaLayerComboBox->count() < 1 )
-    {
-        qDebug() << "No datasource or layer selected";
-        return;
-    }
-    AddAnalysisAreaLayer( ui->customAnalysisAreaLineEdit->text(),
-                          ui->customAnalysisAreaLayerComboBox->currentText() );
     analysisAreaMapCanvas->refresh();
 }
 

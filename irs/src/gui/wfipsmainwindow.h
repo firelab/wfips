@@ -144,7 +144,6 @@ private slots:
 
     /* Analysis Area */
     void AddCustomAnalysisArea();
-    void LoadCustomAnalysisArea();
     void UpdateAnalysisAreaMap( int index );
 
     /* Emit a warning or an error to a dialog or just qDebug() */
