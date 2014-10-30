@@ -150,15 +150,13 @@ SET(OMFFR_GUI_MOC_HDRS ${PROJECT_SOURCE_DIR}/irs/src/data_load.h
 SET(OMFFR_GUI_RCCS resources.qrc)
 
 OPTION(BUILD_GUI_V2 "Build the new interface dummy project" OFF)
-IF(BUILD_GUI_V2)
-    QT4_WRAP_UI(WFIPS_GUI_UI_H wfipsmainwindow.ui
-                               wfipsaddlayerdialog.ui
-                               wfipsidentifydialog.ui)
-    QT4_WRAP_CPP(WFIPS_GUI_MOC wfipsmainwindow.h
-                               wfipsaddlayerdialog.h
-                               wfipsidentifydialog.h
-                               wfipsidentifymaptool.h)
-ENDIF(BUILD_GUI_V2)
+QT4_WRAP_UI(WFIPS_GUI_UI_H wfipsmainwindow.ui
+                           wfipsaddlayerdialog.ui
+                           wfipsidentifydialog.ui)
+QT4_WRAP_CPP(WFIPS_GUI_MOC wfipsmainwindow.h
+                           wfipsaddlayerdialog.h
+                           wfipsidentifydialog.h
+                           wfipsidentifymaptool.h)
 
 INCLUDE(${QT_USE_FILE})
 ########################################################
@@ -215,36 +213,32 @@ SET(LINK_LIBS ${QT_LIBS}
               ${QWT_LIBRARY}
               ${GDAL_LIBRARY})
 
-OPTION(BUILD_GUI_V2 "Build the new interface dummy project" OFF)
-IF(BUILD_GUI_V2)
-    ADD_DEFINITIONS(-DWFIPS_GUI_V2)
-    ADD_EXECUTABLE(wfips wfipsmainwindow.cpp
-                         wfipsaddlayerdialog.cpp
-                         wfipsguiutil.cpp
-                         wfipsidentifydialog.cpp
-                         wfipsidentifymaptool.cpp
-                         ${WFIPS_GUI_UI_H}
-                         ${WFIPS_GUI_MOC}
-                         ${OMFFR_GUI_RCC_SRCS}
-                         main.cpp)
-    TARGET_LINK_LIBRARIES(wfips ${LINK_LIBS})
-    IF(NOT USE_INTERNAL_SQLITE)
-        TARGET_LINK_LIBRARIES(wfips ${SQLITE3_LIBRARY})
-    ENDIF(NOT USE_INTERNAL_SQLITE)
-ELSE(BUILD_GUI_V2)
-    ADD_EXECUTABLE (omffr_gui ${GUI_TYPE}
-                    ${OMFFR_GUI_SRCS}
-                    ${OMFFR_GUI_MOC_SRCS}
-                    ${OMFFR_GUI_RCC_SRCS}
-                    ${OMFFR_GUI_UIS_H})
-    TARGET_LINK_LIBRARIES(omffr_gui ${CMAKE_BINARY_DIR}/irs/src/${CMAKE_CFG_INTDIR}/${CMAKE_STATIC_LIBRARY_PREFIX}irs${CMAKE_STATIC_LIBRARY_SUFFIX})
-    IF (MSVC)
-        TARGET_LINK_LIBRARIES(omffr_gui ${QT_QTMAIN_LIBRARY_RELEASE})
-    ENDIF (MSVC)
-    IF(NOT USE_INTERNAL_SQLITE)
-        TARGET_LINK_LIBRARIES(omffr_gui ${SQLITE3_LIBRARY})
-    ENDIF(NOT USE_INTERNAL_SQLITE)
-    TARGET_LINK_LIBRARIES(omffr_gui ${LINK_LIBS})
-    ADD_DEPENDENCIES(omffr_gui irs)
-ENDIF(BUILD_GUI_V2)
+ADD_DEFINITIONS(-DWFIPS_GUI_V2)
+ADD_EXECUTABLE(wfips wfipsmainwindow.cpp
+                     wfipsaddlayerdialog.cpp
+                     wfipsguiutil.cpp
+                     wfipsidentifydialog.cpp
+                     wfipsidentifymaptool.cpp
+                     ${WFIPS_GUI_UI_H}
+                     ${WFIPS_GUI_MOC}
+                     ${OMFFR_GUI_RCC_SRCS}
+                     main2.cpp)
+TARGET_LINK_LIBRARIES(wfips ${LINK_LIBS})
+IF(NOT USE_INTERNAL_SQLITE)
+    TARGET_LINK_LIBRARIES(wfips ${SQLITE3_LIBRARY})
+ENDIF(NOT USE_INTERNAL_SQLITE)
 
+ADD_EXECUTABLE (omffr_gui ${GUI_TYPE}
+                ${OMFFR_GUI_SRCS}
+                ${OMFFR_GUI_MOC_SRCS}
+                ${OMFFR_GUI_RCC_SRCS}
+                ${OMFFR_GUI_UIS_H})
+TARGET_LINK_LIBRARIES(omffr_gui ${CMAKE_BINARY_DIR}/irs/src/${CMAKE_CFG_INTDIR}/${CMAKE_STATIC_LIBRARY_PREFIX}irs${CMAKE_STATIC_LIBRARY_SUFFIX})
+IF (MSVC)
+    TARGET_LINK_LIBRARIES(omffr_gui ${QT_QTMAIN_LIBRARY_RELEASE})
+ENDIF (MSVC)
+IF(NOT USE_INTERNAL_SQLITE)
+    TARGET_LINK_LIBRARIES(omffr_gui ${SQLITE3_LIBRARY})
+ENDIF(NOT USE_INTERNAL_SQLITE)
+TARGET_LINK_LIBRARIES(omffr_gui ${LINK_LIBS})
+ADD_DEPENDENCIES(omffr_gui irs)

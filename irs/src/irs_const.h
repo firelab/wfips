@@ -33,6 +33,10 @@
 #ifndef OMFFR_DB_DBG
 #ifdef WIN32
 #define OMFFR_DB_DBG "C:/Users/ksshannon/Documents/GitHub/build/data/omffr.sqlite"
+#ifdef IRS_DIANE_BUILD
+#undef OMFFR_DB_DBG
+#define OMFFR_DB_DBG "C:/src/omffr/data/omffr.sqlite"
+#endif
 #else
 #define OMFFR_DB_DBG "/home/kyle/src/omffr/trunk/data/omffr.sqlite"
 #endif
@@ -40,8 +44,8 @@
 
 #ifndef SPATIALITE_EXTENSION
 #ifdef WIN32
-#define SPATIALITE_EXTENSION "C:/OSGeo4W64/bin/spatialite.dll"
-//#define SPATIALITE_EXTENSION "spatialite.dll"
+//#define SPATIALITE_EXTENSION "C:/OSGeo4W64/bin/spatialite.dll"
+#define SPATIALITE_EXTENSION "spatialite.dll"
 #else
 #define SPATIALITE_EXTENSION "libspatialite.so"
 #endif
