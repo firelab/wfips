@@ -76,9 +76,6 @@ void WfipsMainWindow::CreateConnections()
     /* Update the analysis layer based on the combo box choice */
     connect( ui->analysisAreaComboBox, SIGNAL( currentIndexChanged( int ) ),
              this, SLOT( UpdateAnalysisAreaMap( int ) ) );
-    /* Open and load custom layers for analysis */
-    connect( ui->customAnalysisAreaOpenToolButton, SIGNAL( clicked() ),
-             this, SLOT( AddCustomAnalysisArea() ) );
 }
 
 void WfipsMainWindow::PostConstructionActions()
@@ -89,6 +86,7 @@ void WfipsMainWindow::PostConstructionActions()
 
 void WfipsMainWindow::ConstructToolButtons()
 {
+    /* Map navigation tool buttons */
     ui->mapPanToolButton->setIcon( QIcon( ":/pan" ) );
     connect( ui->mapPanToolButton, SIGNAL( clicked() ),
              this, SLOT( UpdateMapToolType() ) );
@@ -107,6 +105,11 @@ void WfipsMainWindow::ConstructToolButtons()
     ui->mapZoomToLayerToolButton->setIcon( QIcon( ":/zoom_layer" ) );
     connect( ui->mapZoomToLayerToolButton, SIGNAL( clicked() ),
              this, SLOT( ZoomToLayerExtent() ) );
+
+    /* Add custom analysis layer tool button */
+    ui->customAnalysisAreaOpenToolButton->setIcon( QIcon( ":/add_layer" ) );
+    connect( ui->customAnalysisAreaOpenToolButton, SIGNAL( clicked() ),
+             this, SLOT( AddCustomAnalysisArea() ) );
 }
 
 void WfipsMainWindow::ConstructAnalysisAreaWidgets()

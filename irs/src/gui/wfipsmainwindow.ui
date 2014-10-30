@@ -357,8 +357,11 @@
             </item>
             <item>
              <widget class="QToolButton" name="customAnalysisAreaOpenToolButton">
+              <property name="toolTip">
+               <string>Add custom map layer.</string>
+              </property>
               <property name="text">
-               <string>...</string>
+               <string/>
               </property>
              </widget>
             </item>
