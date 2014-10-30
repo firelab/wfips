@@ -2192,14 +2192,14 @@
    </hints>
   </connection>
   <connection>
-   <sender>enginePPSpinBox</sender>
+   <sender>exhaustedSpinBox</sender>
    <signal>valueChanged(int)</signal>
    <receiver>exhaustedSlider</receiver>
    <slot>setValue(int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>1156</x>
-     <y>169</y>
+     <x>1152</x>
+     <y>243</y>
     </hint>
     <hint type="destinationlabel">
      <x>906</x>
