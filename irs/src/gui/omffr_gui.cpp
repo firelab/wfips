@@ -945,9 +945,11 @@ int OmffrMainWindow::SimulateIRS()
     qDebug() << outputFile;
 
     QString osWkt = mapSimpleAreaTool->GetWkt();
+    const char *pszSpFilt = NULL;
     if(osWkt != "")
     {
-        poSuite->SetSpatialFilter(osWkt.toStdString().c_str());
+        pszSpFilt = (const char *)strdup( osWkt.toStdString().c_str() );
+        poSuite->SetSpatialFilter(pszSpFilt);
     }
     /* Check for selection */
     else
@@ -963,16 +965,23 @@ int OmffrMainWindow::SimulateIRS()
                 QString placename;
                 place = featureList[0].attribute("fpu_code");
                 if(place.isValid())
-                    poSuite->SetFpuFilter( place.toString().toStdString().c_str() );
+                {
+                    pszSpFilt = strdup(place.toString().toStdString().c_str());
+                    poSuite->SetFpuFilter( pszSpFilt );
+                }
                 else
                 {
                     place = featureList[0].attribute("ga_abbr");
+                    pszSpFilt = strdup(place.toString().toStdString().c_str());
                     if(place.isValid())
-                        poSuite->SetFpuFilter( place.toString().toStdString().c_str() );
+                    {
+                        poSuite->SetFpuFilter( pszSpFilt );
+                    }
                 }
             }
         }
     }
+    free( (void*)pszSpFilt );
 
     qDebug() << "Running IRS";
     qDebug() << "Filter: " << mapSimpleAreaTool->GetWkt();
