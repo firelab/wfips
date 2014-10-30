@@ -70,7 +70,7 @@
        </item>
        <item>
         <property name="text">
-         <string>Agency</string>
+         <string>Large Air Tankers</string>
         </property>
        </item>
        <item>
@@ -86,26 +86,11 @@
          <set>ItemIsSelectable|ItemIsDragEnabled|ItemIsUserCheckable</set>
         </property>
        </item>
-       <item>
-        <property name="text">
-         <string>Large Air Tankers</string>
-        </property>
-       </item>
       </item>
       <item>
        <property name="text">
         <string>Fuel Treatment</string>
        </property>
-       <item>
-        <property name="text">
-         <string>Probablility</string>
-        </property>
-       </item>
-       <item>
-        <property name="text">
-         <string>Mask</string>
-        </property>
-       </item>
       </item>
       <item>
        <property name="text">
@@ -283,7 +268,7 @@
          <enum>QFrame::Plain</enum>
         </property>
         <property name="currentIndex">
-         <number>6</number>
+         <number>11</number>
         </property>
         <widget class="QWidget" name="dataPage">
          <layout class="QVBoxLayout" name="verticalLayout_13">
@@ -397,7 +382,127 @@
           </item>
          </layout>
         </widget>
-        <widget class="QWidget" name="page_2"/>
+        <widget class="QWidget" name="page_2">
+         <layout class="QVBoxLayout" name="verticalLayout_16">
+          <item>
+           <widget class="QGroupBox" name="groupBox">
+            <property name="title">
+             <string>Igninition Ownership</string>
+            </property>
+            <layout class="QHBoxLayout" name="horizontalLayout_15">
+             <item>
+              <widget class="QCheckBox" name="agencyIgnUsfsCheckBox">
+               <property name="text">
+                <string>USFS</string>
+               </property>
+               <property name="checked">
+                <bool>true</bool>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QCheckBox" name="agencyIgnDoiCheckBox">
+               <property name="text">
+                <string>DOI</string>
+               </property>
+               <property name="checked">
+                <bool>true</bool>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QCheckBox" name="agencyIgnStateCheckBox">
+               <property name="text">
+                <string>State/Local</string>
+               </property>
+               <property name="checked">
+                <bool>true</bool>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <spacer name="horizontalSpacer_10">
+               <property name="orientation">
+                <enum>Qt::Horizontal</enum>
+               </property>
+               <property name="sizeHint" stdset="0">
+                <size>
+                 <width>40</width>
+                 <height>20</height>
+                </size>
+               </property>
+              </spacer>
+             </item>
+            </layout>
+           </widget>
+          </item>
+          <item>
+           <widget class="QGroupBox" name="groupBox_3">
+            <property name="title">
+             <string>Dispatch Location/Resource Ownership</string>
+            </property>
+            <layout class="QHBoxLayout" name="horizontalLayout_16">
+             <item>
+              <widget class="QCheckBox" name="agencyRescUsfsCheckBox">
+               <property name="text">
+                <string>USFS</string>
+               </property>
+               <property name="checked">
+                <bool>true</bool>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QCheckBox" name="agencyRescDoiCheckBox">
+               <property name="text">
+                <string>DOI</string>
+               </property>
+               <property name="checked">
+                <bool>true</bool>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QCheckBox" name="agencyRescStateCheckBox">
+               <property name="text">
+                <string>State/Local</string>
+               </property>
+               <property name="checked">
+                <bool>true</bool>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <spacer name="horizontalSpacer_11">
+               <property name="orientation">
+                <enum>Qt::Horizontal</enum>
+               </property>
+               <property name="sizeHint" stdset="0">
+                <size>
+                 <width>40</width>
+                 <height>20</height>
+                </size>
+               </property>
+              </spacer>
+             </item>
+            </layout>
+           </widget>
+          </item>
+          <item>
+           <spacer name="verticalSpacer_8">
+            <property name="orientation">
+             <enum>Qt::Vertical</enum>
+            </property>
+            <property name="sizeHint" stdset="0">
+             <size>
+              <width>20</width>
+              <height>40</height>
+             </size>
+            </property>
+           </spacer>
+          </item>
+         </layout>
+        </widget>
         <widget class="QWidget" name="figPage">
          <layout class="QVBoxLayout" name="verticalLayout_9">
           <item>
@@ -525,7 +630,13 @@
                   <bool>true</bool>
                  </property>
                  <property name="suffix">
-                  <string> years</string>
+                  <string/>
+                 </property>
+                 <property name="minimum">
+                  <number>1</number>
+                 </property>
+                 <property name="maximum">
+                  <number>26</number>
                  </property>
                 </widget>
                </item>
@@ -559,17 +670,33 @@
            </widget>
           </item>
           <item>
-           <spacer name="verticalSpacer_3">
-            <property name="orientation">
-             <enum>Qt::Vertical</enum>
+           <widget class="QFrame" name="frame">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Preferred" vsizetype="MinimumExpanding">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
             </property>
-            <property name="sizeHint" stdset="0">
-             <size>
-              <width>20</width>
-              <height>40</height>
-             </size>
+            <property name="frameShape">
+             <enum>QFrame::StyledPanel</enum>
             </property>
-           </spacer>
+            <property name="frameShadow">
+             <enum>QFrame::Raised</enum>
+            </property>
+            <widget class="QLabel" name="label_15">
+             <property name="geometry">
+              <rect>
+               <x>130</x>
+               <y>340</y>
+               <width>351</width>
+               <height>17</height>
+              </rect>
+             </property>
+             <property name="text">
+              <string>Another Map Canvas will go here...</string>
+             </property>
+            </widget>
+           </widget>
           </item>
          </layout>
         </widget>
@@ -648,6 +775,538 @@
           </item>
           <item>
            <spacer name="verticalSpacer">
+            <property name="orientation">
+             <enum>Qt::Vertical</enum>
+            </property>
+            <property name="sizeHint" stdset="0">
+             <size>
+              <width>20</width>
+              <height>40</height>
+             </size>
+            </property>
+           </spacer>
+          </item>
+         </layout>
+        </widget>
+        <widget class="QWidget" name="page_3">
+         <layout class="QVBoxLayout" name="verticalLayout_17">
+          <item>
+           <widget class="QLabel" name="label_17">
+            <property name="text">
+             <string>Edit Resources by Dispatch Location</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QFrame" name="frame_3">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Preferred" vsizetype="MinimumExpanding">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
+            <property name="frameShape">
+             <enum>QFrame::StyledPanel</enum>
+            </property>
+            <property name="frameShadow">
+             <enum>QFrame::Raised</enum>
+            </property>
+            <widget class="QLabel" name="label_16">
+             <property name="geometry">
+              <rect>
+               <x>130</x>
+               <y>340</y>
+               <width>351</width>
+               <height>17</height>
+              </rect>
+             </property>
+             <property name="text">
+              <string>Another Map Canvas will go here...</string>
+             </property>
+            </widget>
+           </widget>
+          </item>
+         </layout>
+        </widget>
+        <widget class="QWidget" name="page_10">
+         <layout class="QVBoxLayout" name="verticalLayout_37">
+          <item>
+           <layout class="QHBoxLayout" name="horizontalLayout_46">
+            <item>
+             <widget class="QLabel" name="label_52">
+              <property name="text">
+               <string>Number of Large Airtankers</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <spacer name="horizontalSpacer_22">
+              <property name="orientation">
+               <enum>Qt::Horizontal</enum>
+              </property>
+              <property name="sizeHint" stdset="0">
+               <size>
+                <width>40</width>
+                <height>20</height>
+               </size>
+              </property>
+             </spacer>
+            </item>
+            <item>
+             <widget class="QSpinBox" name="spinBox"/>
+            </item>
+           </layout>
+          </item>
+          <item>
+           <spacer name="verticalSpacer_18">
+            <property name="orientation">
+             <enum>Qt::Vertical</enum>
+            </property>
+            <property name="sizeHint" stdset="0">
+             <size>
+              <width>20</width>
+              <height>40</height>
+             </size>
+            </property>
+           </spacer>
+          </item>
+         </layout>
+        </widget>
+        <widget class="QWidget" name="page_4">
+         <layout class="QVBoxLayout" name="verticalLayout_18">
+          <item>
+           <widget class="QLabel" name="label_19">
+            <property name="text">
+             <string>Prepositioning</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <layout class="QHBoxLayout" name="horizontalLayout_17">
+            <item>
+             <widget class="QLabel" name="label_18">
+              <property name="sizePolicy">
+               <sizepolicy hsizetype="MinimumExpanding" vsizetype="Preferred">
+                <horstretch>0</horstretch>
+                <verstretch>0</verstretch>
+               </sizepolicy>
+              </property>
+              <property name="text">
+               <string>Air Tankers</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QSlider" name="tankerPPSlider">
+              <property name="toolTip">
+               <string>Likelyhood of movement (0=no movement, 100=very likely)</string>
+              </property>
+              <property name="orientation">
+               <enum>Qt::Horizontal</enum>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QSpinBox" name="tankerPPSpinBox">
+              <property name="toolTip">
+               <string>Likelyhood of movement (0=no movement, 100=very likely)</string>
+              </property>
+              <property name="accelerated">
+               <bool>true</bool>
+              </property>
+              <property name="maximum">
+               <number>100</number>
+              </property>
+             </widget>
+            </item>
+           </layout>
+          </item>
+          <item>
+           <layout class="QHBoxLayout" name="horizontalLayout_22">
+            <item>
+             <widget class="QLabel" name="label_24">
+              <property name="sizePolicy">
+               <sizepolicy hsizetype="MinimumExpanding" vsizetype="Preferred">
+                <horstretch>0</horstretch>
+                <verstretch>0</verstretch>
+               </sizepolicy>
+              </property>
+              <property name="text">
+               <string>Engines</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QSlider" name="enginePPSlider">
+              <property name="toolTip">
+               <string>Likelyhood of movement (0=no movement, 100=very likely)</string>
+              </property>
+              <property name="orientation">
+               <enum>Qt::Horizontal</enum>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QSpinBox" name="enginePPSpinBox">
+              <property name="toolTip">
+               <string>Likelyhood of movement (0=no movement, 100=very likely)</string>
+              </property>
+              <property name="accelerated">
+               <bool>true</bool>
+              </property>
+              <property name="maximum">
+               <number>100</number>
+              </property>
+             </widget>
+            </item>
+           </layout>
+          </item>
+          <item>
+           <layout class="QHBoxLayout" name="horizontalLayout_20">
+            <item>
+             <widget class="QLabel" name="label_22">
+              <property name="sizePolicy">
+               <sizepolicy hsizetype="MinimumExpanding" vsizetype="Preferred">
+                <horstretch>0</horstretch>
+                <verstretch>0</verstretch>
+               </sizepolicy>
+              </property>
+              <property name="text">
+               <string>Crews</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QSlider" name="crewsPPSlider">
+              <property name="toolTip">
+               <string>Likelyhood of movement (0=no movement, 100=very likely)</string>
+              </property>
+              <property name="orientation">
+               <enum>Qt::Horizontal</enum>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QSpinBox" name="crewsPPSpinBox">
+              <property name="toolTip">
+               <string>Likelyhood of movement (0=no movement, 100=very likely)</string>
+              </property>
+              <property name="accelerated">
+               <bool>true</bool>
+              </property>
+              <property name="maximum">
+               <number>100</number>
+              </property>
+             </widget>
+            </item>
+           </layout>
+          </item>
+          <item>
+           <layout class="QHBoxLayout" name="horizontalLayout_21">
+            <item>
+             <widget class="QLabel" name="label_23">
+              <property name="sizePolicy">
+               <sizepolicy hsizetype="MinimumExpanding" vsizetype="Preferred">
+                <horstretch>0</horstretch>
+                <verstretch>0</verstretch>
+               </sizepolicy>
+              </property>
+              <property name="text">
+               <string>Helicopter</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QSlider" name="helicopterPPSlider">
+              <property name="toolTip">
+               <string>Likelyhood of movement (0=no movement, 100=very likely)</string>
+              </property>
+              <property name="orientation">
+               <enum>Qt::Horizontal</enum>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QSpinBox" name="helicopterPPSpinBox">
+              <property name="toolTip">
+               <string>Likelyhood of movement (0=no movement, 100=very likely)</string>
+              </property>
+              <property name="accelerated">
+               <bool>true</bool>
+              </property>
+              <property name="maximum">
+               <number>100</number>
+              </property>
+             </widget>
+            </item>
+           </layout>
+          </item>
+          <item>
+           <layout class="QHBoxLayout" name="horizontalLayout_18">
+            <item>
+             <widget class="QLabel" name="label_20">
+              <property name="sizePolicy">
+               <sizepolicy hsizetype="MinimumExpanding" vsizetype="Preferred">
+                <horstretch>0</horstretch>
+                <verstretch>0</verstretch>
+               </sizepolicy>
+              </property>
+              <property name="text">
+               <string>Helitack</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QSlider" name="helitackPPSlider">
+              <property name="toolTip">
+               <string>Likelyhood of movement (0=no movement, 100=very likely)</string>
+              </property>
+              <property name="orientation">
+               <enum>Qt::Horizontal</enum>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QSpinBox" name="helitackPPSpinBox">
+              <property name="toolTip">
+               <string>Likelyhood of movement (0=no movement, 100=very likely)</string>
+              </property>
+              <property name="accelerated">
+               <bool>true</bool>
+              </property>
+              <property name="maximum">
+               <number>100</number>
+              </property>
+             </widget>
+            </item>
+           </layout>
+          </item>
+          <item>
+           <spacer name="verticalSpacer_3">
+            <property name="orientation">
+             <enum>Qt::Vertical</enum>
+            </property>
+            <property name="sizeHint" stdset="0">
+             <size>
+              <width>20</width>
+              <height>40</height>
+             </size>
+            </property>
+           </spacer>
+          </item>
+         </layout>
+        </widget>
+        <widget class="QWidget" name="page_5">
+         <layout class="QVBoxLayout" name="verticalLayout_36">
+          <item>
+           <widget class="QLabel" name="label_50">
+            <property name="text">
+             <string>Drawdown</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <layout class="QHBoxLayout" name="horizontalLayout_44">
+            <item>
+             <widget class="QLabel" name="label_49">
+              <property name="sizePolicy">
+               <sizepolicy hsizetype="MinimumExpanding" vsizetype="Preferred">
+                <horstretch>0</horstretch>
+                <verstretch>0</verstretch>
+               </sizepolicy>
+              </property>
+              <property name="text">
+               <string>Air Tankers</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QSlider" name="tankerDDSlider">
+              <property name="toolTip">
+               <string>Likelyhood of movement (0=no movement, 100=very likely)</string>
+              </property>
+              <property name="orientation">
+               <enum>Qt::Horizontal</enum>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QSpinBox" name="tankerDDSpinBox">
+              <property name="toolTip">
+               <string>Likelyhood of movement (0=no movement, 100=very likely)</string>
+              </property>
+              <property name="accelerated">
+               <bool>true</bool>
+              </property>
+              <property name="maximum">
+               <number>100</number>
+              </property>
+             </widget>
+            </item>
+           </layout>
+          </item>
+          <item>
+           <layout class="QHBoxLayout" name="horizontalLayout_42">
+            <item>
+             <widget class="QLabel" name="label_47">
+              <property name="sizePolicy">
+               <sizepolicy hsizetype="MinimumExpanding" vsizetype="Preferred">
+                <horstretch>0</horstretch>
+                <verstretch>0</verstretch>
+               </sizepolicy>
+              </property>
+              <property name="text">
+               <string>Engines</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QSlider" name="engineDDSlider">
+              <property name="toolTip">
+               <string>Likelyhood of movement (0=no movement, 100=very likely)</string>
+              </property>
+              <property name="orientation">
+               <enum>Qt::Horizontal</enum>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QSpinBox" name="engineDDSpinBox">
+              <property name="toolTip">
+               <string>Likelyhood of movement (0=no movement, 100=very likely)</string>
+              </property>
+              <property name="accelerated">
+               <bool>true</bool>
+              </property>
+              <property name="maximum">
+               <number>100</number>
+              </property>
+             </widget>
+            </item>
+           </layout>
+          </item>
+          <item>
+           <layout class="QHBoxLayout" name="horizontalLayout_43">
+            <item>
+             <widget class="QLabel" name="label_48">
+              <property name="sizePolicy">
+               <sizepolicy hsizetype="MinimumExpanding" vsizetype="Preferred">
+                <horstretch>0</horstretch>
+                <verstretch>0</verstretch>
+               </sizepolicy>
+              </property>
+              <property name="text">
+               <string>Crews</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QSlider" name="crewsDDSlider">
+              <property name="toolTip">
+               <string>Likelyhood of movement (0=no movement, 100=very likely)</string>
+              </property>
+              <property name="orientation">
+               <enum>Qt::Horizontal</enum>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QSpinBox" name="crewsDDSpinBox">
+              <property name="toolTip">
+               <string>Likelyhood of movement (0=no movement, 100=very likely)</string>
+              </property>
+              <property name="accelerated">
+               <bool>true</bool>
+              </property>
+              <property name="maximum">
+               <number>100</number>
+              </property>
+             </widget>
+            </item>
+           </layout>
+          </item>
+          <item>
+           <layout class="QHBoxLayout" name="horizontalLayout_45">
+            <item>
+             <widget class="QLabel" name="label_51">
+              <property name="sizePolicy">
+               <sizepolicy hsizetype="MinimumExpanding" vsizetype="Preferred">
+                <horstretch>0</horstretch>
+                <verstretch>0</verstretch>
+               </sizepolicy>
+              </property>
+              <property name="text">
+               <string>Helicopter</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QSlider" name="helicopterDDSlider">
+              <property name="toolTip">
+               <string>Likelyhood of movement (0=no movement, 100=very likely)</string>
+              </property>
+              <property name="orientation">
+               <enum>Qt::Horizontal</enum>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QSpinBox" name="helicopterDDSpinBox">
+              <property name="toolTip">
+               <string>Likelyhood of movement (0=no movement, 100=very likely)</string>
+              </property>
+              <property name="accelerated">
+               <bool>true</bool>
+              </property>
+              <property name="maximum">
+               <number>100</number>
+              </property>
+             </widget>
+            </item>
+           </layout>
+          </item>
+          <item>
+           <layout class="QHBoxLayout" name="horizontalLayout_41">
+            <item>
+             <widget class="QLabel" name="label_46">
+              <property name="sizePolicy">
+               <sizepolicy hsizetype="MinimumExpanding" vsizetype="Preferred">
+                <horstretch>0</horstretch>
+                <verstretch>0</verstretch>
+               </sizepolicy>
+              </property>
+              <property name="text">
+               <string>Helitack</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QSlider" name="helitackDDSlider">
+              <property name="toolTip">
+               <string>Likelyhood of movement (0=no movement, 100=very likely)</string>
+              </property>
+              <property name="orientation">
+               <enum>Qt::Horizontal</enum>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QSpinBox" name="helitackDDComboBox">
+              <property name="toolTip">
+               <string>Likelyhood of movement (0=no movement, 100=very likely)</string>
+              </property>
+              <property name="accelerated">
+               <bool>true</bool>
+              </property>
+              <property name="maximum">
+               <number>100</number>
+              </property>
+             </widget>
+            </item>
+           </layout>
+          </item>
+          <item>
+           <spacer name="verticalSpacer_17">
             <property name="orientation">
              <enum>Qt::Vertical</enum>
             </property>
@@ -879,6 +1538,178 @@
            </widget>
           </item>
           <item>
+           <layout class="QHBoxLayout" name="horizontalLayout_50">
+            <item>
+             <widget class="QLabel" name="label_56">
+              <property name="sizePolicy">
+               <sizepolicy hsizetype="MinimumExpanding" vsizetype="Preferred">
+                <horstretch>0</horstretch>
+                <verstretch>0</verstretch>
+               </sizepolicy>
+              </property>
+              <property name="text">
+               <string>No Resources Sent</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QSlider" name="noRescSentSlider">
+              <property name="toolTip">
+               <string>Percent of escapes sent to large fire simulation</string>
+              </property>
+              <property name="orientation">
+               <enum>Qt::Horizontal</enum>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QSpinBox" name="noRescSentSpinBox">
+              <property name="toolTip">
+               <string>Percent of escapes sent to large fire simulation</string>
+              </property>
+              <property name="accelerated">
+               <bool>true</bool>
+              </property>
+              <property name="suffix">
+               <string>%</string>
+              </property>
+              <property name="maximum">
+               <number>100</number>
+              </property>
+             </widget>
+            </item>
+           </layout>
+          </item>
+          <item>
+           <layout class="QHBoxLayout" name="horizontalLayout_49">
+            <item>
+             <widget class="QLabel" name="label_55">
+              <property name="sizePolicy">
+               <sizepolicy hsizetype="MinimumExpanding" vsizetype="Preferred">
+                <horstretch>0</horstretch>
+                <verstretch>0</verstretch>
+               </sizepolicy>
+              </property>
+              <property name="text">
+               <string>Time Limit Exceeded</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QSlider" name="timeLimitSlider">
+              <property name="toolTip">
+               <string>Percent of escapes sent to large fire simulation</string>
+              </property>
+              <property name="orientation">
+               <enum>Qt::Horizontal</enum>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QSpinBox" name="timeLimitSpinBox">
+              <property name="toolTip">
+               <string>Percent of escapes sent to large fire simulation</string>
+              </property>
+              <property name="accelerated">
+               <bool>true</bool>
+              </property>
+              <property name="suffix">
+               <string>%</string>
+              </property>
+              <property name="maximum">
+               <number>100</number>
+              </property>
+             </widget>
+            </item>
+           </layout>
+          </item>
+          <item>
+           <layout class="QHBoxLayout" name="horizontalLayout_48">
+            <item>
+             <widget class="QLabel" name="label_54">
+              <property name="sizePolicy">
+               <sizepolicy hsizetype="MinimumExpanding" vsizetype="Preferred">
+                <horstretch>0</horstretch>
+                <verstretch>0</verstretch>
+               </sizepolicy>
+              </property>
+              <property name="text">
+               <string>Size Limit Exceeded</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QSlider" name="sizeLimitSlider">
+              <property name="toolTip">
+               <string>Percent of escapes sent to large fire simulation</string>
+              </property>
+              <property name="orientation">
+               <enum>Qt::Horizontal</enum>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QSpinBox" name="sizeLimitSpinBox">
+              <property name="toolTip">
+               <string>Percent of escapes sent to large fire simulation</string>
+              </property>
+              <property name="accelerated">
+               <bool>true</bool>
+              </property>
+              <property name="suffix">
+               <string>%</string>
+              </property>
+              <property name="maximum">
+               <number>100</number>
+              </property>
+             </widget>
+            </item>
+           </layout>
+          </item>
+          <item>
+           <layout class="QHBoxLayout" name="horizontalLayout_47">
+            <item>
+             <widget class="QLabel" name="label_53">
+              <property name="sizePolicy">
+               <sizepolicy hsizetype="MinimumExpanding" vsizetype="Preferred">
+                <horstretch>0</horstretch>
+                <verstretch>0</verstretch>
+               </sizepolicy>
+              </property>
+              <property name="text">
+               <string>Resources Exhausted</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QSlider" name="exhaustedSlider">
+              <property name="toolTip">
+               <string>Percent of escapes sent to large fire simulation</string>
+              </property>
+              <property name="orientation">
+               <enum>Qt::Horizontal</enum>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QSpinBox" name="exhaustedSpinBox">
+              <property name="toolTip">
+               <string>Percent of escapes sent to large fire simulation</string>
+              </property>
+              <property name="accelerated">
+               <bool>true</bool>
+              </property>
+              <property name="suffix">
+               <string>%</string>
+              </property>
+              <property name="maximum">
+               <number>100</number>
+              </property>
+             </widget>
+            </item>
+           </layout>
+          </item>
+          <item>
            <spacer name="verticalSpacer_2">
             <property name="orientation">
              <enum>Qt::Vertical</enum>
@@ -1085,6 +1916,294 @@
     <hint type="destinationlabel">
      <x>738</x>
      <y>452</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>tankerPPSlider</sender>
+   <signal>valueChanged(int)</signal>
+   <receiver>tankerPPSpinBox</receiver>
+   <slot>setValue(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>741</x>
+     <y>132</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>1156</x>
+     <y>132</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>tankerPPSpinBox</sender>
+   <signal>valueChanged(int)</signal>
+   <receiver>tankerPPSlider</receiver>
+   <slot>setValue(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>1156</x>
+     <y>132</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>741</x>
+     <y>132</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>enginePPSlider</sender>
+   <signal>valueChanged(int)</signal>
+   <receiver>enginePPSpinBox</receiver>
+   <slot>setValue(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>730</x>
+     <y>169</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>1156</x>
+     <y>169</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>enginePPSpinBox</sender>
+   <signal>valueChanged(int)</signal>
+   <receiver>enginePPSlider</receiver>
+   <slot>setValue(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>1156</x>
+     <y>169</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>730</x>
+     <y>169</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>crewsPPSlider</sender>
+   <signal>valueChanged(int)</signal>
+   <receiver>crewsPPSpinBox</receiver>
+   <slot>setValue(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>724</x>
+     <y>206</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>1156</x>
+     <y>206</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>crewsPPSpinBox</sender>
+   <signal>valueChanged(int)</signal>
+   <receiver>crewsPPSlider</receiver>
+   <slot>setValue(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>1156</x>
+     <y>206</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>724</x>
+     <y>206</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>helitackPPSlider</sender>
+   <signal>valueChanged(int)</signal>
+   <receiver>helitackPPSpinBox</receiver>
+   <slot>setValue(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>732</x>
+     <y>280</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>1156</x>
+     <y>280</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>helitackPPSpinBox</sender>
+   <signal>valueChanged(int)</signal>
+   <receiver>helitackPPSlider</receiver>
+   <slot>setValue(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>1156</x>
+     <y>280</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>732</x>
+     <y>280</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>helicopterPPSlider</sender>
+   <signal>valueChanged(int)</signal>
+   <receiver>helicopterPPSpinBox</receiver>
+   <slot>setValue(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>740</x>
+     <y>243</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>1156</x>
+     <y>243</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>helicopterPPSpinBox</sender>
+   <signal>valueChanged(int)</signal>
+   <receiver>helicopterPPSlider</receiver>
+   <slot>setValue(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>1156</x>
+     <y>243</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>740</x>
+     <y>243</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>noRescSentSlider</sender>
+   <signal>valueChanged(int)</signal>
+   <receiver>noRescSentSpinBox</receiver>
+   <slot>setValue(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>906</x>
+     <y>132</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>1152</x>
+     <y>132</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>noRescSentSpinBox</sender>
+   <signal>valueChanged(int)</signal>
+   <receiver>noRescSentSlider</receiver>
+   <slot>setValue(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>1152</x>
+     <y>132</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>906</x>
+     <y>132</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>timeLimitSlider</sender>
+   <signal>valueChanged(int)</signal>
+   <receiver>timeLimitSpinBox</receiver>
+   <slot>setValue(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>906</x>
+     <y>169</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>1152</x>
+     <y>169</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>timeLimitSpinBox</sender>
+   <signal>valueChanged(int)</signal>
+   <receiver>timeLimitSlider</receiver>
+   <slot>setValue(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>1152</x>
+     <y>169</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>906</x>
+     <y>169</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>sizeLimitSlider</sender>
+   <signal>valueChanged(int)</signal>
+   <receiver>sizeLimitSpinBox</receiver>
+   <slot>setValue(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>906</x>
+     <y>206</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>1152</x>
+     <y>206</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>sizeLimitSpinBox</sender>
+   <signal>valueChanged(int)</signal>
+   <receiver>sizeLimitSlider</receiver>
+   <slot>setValue(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>1152</x>
+     <y>206</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>906</x>
+     <y>206</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>exhaustedSlider</sender>
+   <signal>valueChanged(int)</signal>
+   <receiver>exhaustedSpinBox</receiver>
+   <slot>setValue(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>906</x>
+     <y>243</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>1152</x>
+     <y>243</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>enginePPSpinBox</sender>
+   <signal>valueChanged(int)</signal>
+   <receiver>exhaustedSlider</receiver>
+   <slot>setValue(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>1156</x>
+     <y>169</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>906</x>
+     <y>243</y>
     </hint>
    </hints>
   </connection>
