@@ -945,43 +945,46 @@ int OmffrMainWindow::SimulateIRS()
     qDebug() << outputFile;
 
     QString osWkt = mapSimpleAreaTool->GetWkt();
+    QString sSpFilt;
+    QgsFeatureList featureList;
+    QVariant place;
+    QString placename;
+    QgsVectorLayer *layer;
     const char *pszSpFilt = NULL;
     if(osWkt != "")
     {
-        pszSpFilt = (const char *)strdup( osWkt.toStdString().c_str() );
+        pszSpFilt = strdup( osWkt.toLocal8Bit().data() );
         poSuite->SetSpatialFilter(pszSpFilt);
     }
     /* Check for selection */
     else
     {
-        QgsVectorLayer *layer;
         layer = dynamic_cast<QgsVectorLayer*>(mapCanvas->currentLayer());
+        featureList = layer->selectedFeatures();
         if(layer)
         {
-            QgsFeatureList featureList = layer->selectedFeatures();
             if(featureList.size() > 0)
             {
-                QVariant place;
-                QString placename;
                 place = featureList[0].attribute("fpu_code");
                 if(place.isValid())
                 {
-                    pszSpFilt = strdup(place.toString().toStdString().c_str());
-                    poSuite->SetFpuFilter( pszSpFilt );
+                    sSpFilt = place.toString();
                 }
                 else
                 {
                     place = featureList[0].attribute("ga_abbr");
-                    pszSpFilt = strdup(place.toString().toStdString().c_str());
                     if(place.isValid())
                     {
-                        poSuite->SetFpuFilter( pszSpFilt );
+                        sSpFilt = place.toString();
                     }
                 }
+                qDebug() << sSpFilt;
+                pszSpFilt = strdup(sSpFilt.toLocal8Bit().data());
+                poSuite->SetFpuFilter( pszSpFilt );
             }
         }
     }
-    free( (void*)pszSpFilt );
+    //free( (void*)pszSpFilt );
 
     qDebug() << "Running IRS";
     qDebug() << "Filter: " << mapSimpleAreaTool->GetWkt();
