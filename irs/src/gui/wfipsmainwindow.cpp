@@ -96,7 +96,7 @@ void WfipsMainWindow::ConstructToolButtons()
     ui->mapZoomOutToolButton->setIcon( QIcon( ":/zoom_out" ) );
     connect( ui->mapZoomOutToolButton, SIGNAL( clicked() ),
              this, SLOT( UpdateMapToolType() ) );
-    ui->mapZoomToLayerToolButton->setIcon( QIcon( ":/select" ) );
+    ui->mapSelectToolButton->setIcon( QIcon( ":/select" ) );
     connect( ui->mapSelectToolButton, SIGNAL( clicked() ),
              this, SLOT( UpdateMapToolType() ) );
     ui->mapIdentifyToolButton->setIcon( QIcon( ":/identify" ) );
@@ -129,7 +129,9 @@ void WfipsMainWindow::ConstructAnalysisAreaWidgets()
     analysisIdentifyTool = new WfipsIdentifyMapTool( analysisAreaMapCanvas );
     connect( analysisIdentifyTool, SIGNAL( WfipsIdentify( QList<QgsMapToolIdentify::IdentifyResult> ) ),
              this, SLOT( Identify( QList<QgsMapToolIdentify::IdentifyResult> ) ) );
-    //analysisSelectTool = new QgsMapToolSelect( analysisAreaMapCanvas, TRUE);
+    analysisSelectTool = new QgsMapToolEmitPoint( analysisAreaMapCanvas );
+    connect( analysisSelectTool, SIGNAL( canvasClicked( QgsPoint, Qt::MouseButton ) ),
+             this, SLOT( SelectPoint( QgsPoint, Qt::MouseButton ) ) );
 }
 
 /*
@@ -385,7 +387,7 @@ void WfipsMainWindow::UpdateMapToolType()
         qDebug() << "Setting map tool to identify";
         analysisAreaMapCanvas->setMapTool( analysisIdentifyTool );
     }
-    else if( ui->mapZoomOutToolButton->isChecked() )
+    else if( ui->mapSelectToolButton->isChecked() )
     {
         qDebug() << "Setting map tool to select";
         analysisAreaMapCanvas->setMapTool( analysisSelectTool );
@@ -394,11 +396,15 @@ void WfipsMainWindow::UpdateMapToolType()
 
 void WfipsMainWindow::Identify( QList<QgsMapToolIdentify::IdentifyResult> results )
 {
-    qDebug() << results.size();
     if( results.size() > 0 )
     {
         identifyDialog->ShowIdentifyResults( results );
     }
+}
+
+void WfipsMainWindow::SelectPoint( QgsPoint point, Qt::MouseButton button )
+{
+    qDebug() << "X: " << point.x() << " Y: " << point.y();
 }
 
 void WfipsMainWindow::ZoomToLayerExtent()

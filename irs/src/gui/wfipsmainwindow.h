@@ -67,6 +67,7 @@
 #include <qgsmaptoolidentify.h>
 #include <qgsmaptoolpan.h>
 #include <qgsmaptoolzoom.h>
+#include <qgsmaptoolemitpoint.h>
 
 /* GDAL for layer sniffing */
 #include "gdal.h"
@@ -151,6 +152,7 @@ private slots:
 
     /* Identify a map layer feature */
     void Identify( QList<QgsMapToolIdentify::IdentifyResult> result );
+    void SelectPoint( QgsPoint point, Qt::MouseButton button );
 
     /* Analysis Area */
     void AddCustomAnalysisArea();
