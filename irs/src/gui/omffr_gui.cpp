@@ -1049,13 +1049,16 @@ void OmffrMainWindow::WriteResourceDatabase(QString file)
     int rc = 0;
     sqlite3 *db;
     sqlite3_stmt *stmt;
-    poDA->CreateGeneralResourceDb(file.toStdString().c_str(), &db);
+    const char *pszDb = strdup( file.toLocal8Bit().data() );
+    poDA->CreateGeneralResourceDb(pszDb, &db);
+    free( (void*)pszDb );
     rc = sqlite3_prepare_v2(db, "UPDATE general_resc set count=? "
                                 "WHERE gacc=? AND type=?", -1, &stmt, NULL);
 
     int i = 0;
     QList<QString> keys = rescTypeMap.keys();
     int nCount;
+    const char *pszKey;
     while(GaccMap[i].pszCode != NULL)
     {
         for(int j = 0;j < keys.size();j++)
@@ -1063,8 +1066,10 @@ void OmffrMainWindow::WriteResourceDatabase(QString file)
             nCount = regionRescMap[GaccMap[i].nRegion][keys[j]];
             rc = sqlite3_bind_int(stmt, 1, nCount);
             rc = sqlite3_bind_text(stmt, 2, GaccMap[i].pszCode, -1, NULL);
-            rc = sqlite3_bind_text(stmt, 3, keys[j].toStdString().c_str(), -1,
+            pszKey = strdup( keys[j].toLocal8Bit().data() );
+            rc = sqlite3_bind_text(stmt, 3, pszKey, -1,
                                    SQLITE_TRANSIENT);
+            free( (void*)pszKey );
             rc = sqlite3_step(stmt);
             sqlite3_reset(stmt);
         }
@@ -1107,7 +1112,7 @@ void OmffrMainWindow::PlotFigGraph()
         qDebug() << wkt;
         if(wkt != "")
         {
-            pszGeometry = strdup(wkt.toStdString().c_str());
+            pszGeometry = strdup(wkt.toLocal8Bit().data());
         }
         else
         {
@@ -1226,6 +1231,7 @@ int OmffrMainWindow::ConnectToDB()
     const char *pszInputDb = strdup( osTmp.c_str() );
     qDebug() << pszInputDb;
     poDA = IRSDataAccess::Create(0, pszInputDb);
+    free( (void*)pszInputDb );
     //poDA = new SpatialiteDataAccess(inputDbFile.toStdString().c_str());
     if(poDA == NULL)
     {
@@ -1397,7 +1403,7 @@ void OmffrMainWindow::ReadFwaSummaryResults(QString inputFile)
     {
         return;
     }
-    const char *pszFile = strdup(inputFile.toStdString().c_str());
+    const char *pszFile = strdup(inputFile.toLocal8Bit().data());
     int rc = 0;
     sqlite3 *db;
     sqlite3_stmt *stmt;
@@ -1602,6 +1608,7 @@ void OmffrMainWindow::ShowCartDiagram()
     {
         return;
     }
+    const char *pszTmp = strdup( currentResultsFile.toLocal8Bit().data() );
     poDA->WriteCartFile(currentResultsFile.toStdString().c_str(), "fires.csv");
 #ifndef WIN32
     system("R --no-save < /home/kyle/src/omffr/trunk/irs/scripts/fig-tree.r");
@@ -1611,6 +1618,7 @@ void OmffrMainWindow::ShowCartDiagram()
     QPixmap pixMap("fig-tree.png");
     imageLabel->setPixmap(pixMap);
     displayTabWidget->setCurrentIndex(2);
+    free( (void*)pszTmp );
 }
 
 void OmffrMainWindow::LoadResultsFile()
@@ -1687,7 +1695,7 @@ void OmffrMainWindow::PlotFireResults()
     sqlite3 *db;
     sqlite3_stmt *stmt;
     int rc;
-    const char *pszDbFile = strdup(currentResultsFile.toStdString().c_str());
+    const char *pszDbFile = strdup(currentResultsFile.toLocal8Bit().data());
     rc = sqlite3_open_v2(pszDbFile, &db, SQLITE_OPEN_READONLY, NULL);
     rc = sqlite3_prepare(db, "SELECT COUNT(DISTINCT(year)) FROM full_results",
                          -1, &stmt, NULL);
