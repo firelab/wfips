@@ -57,7 +57,12 @@ void WfipsIdentifyDialog::ShowIdentifyResults( QList<QgsMapToolIdentify::Identif
     const QgsFields *fields;
     QgsField field;
     QgsAttributes attributes;
+    QgsVectorLayer *layer;
+    QgsFeatureIds fids;
     Clear();
+
+    /* Can we just grab one layer for all results?  I think so */
+    layer = reinterpret_cast<QgsVectorLayer*>( results[0].mLayer );
     for( int i = 0; i < results.size(); i++ )
     {
         /*
@@ -97,6 +102,14 @@ void WfipsIdentifyDialog::ShowIdentifyResults( QList<QgsMapToolIdentify::Identif
             subitem->setText( 2, attribute );
             item->addChild( subitem );
         }
+        /* Get the feature id from the derived attributes for selection display */
+        fids.insert( results[i].mDerivedAttributes["feature id"].toLongLong() );
+    }
+
+    if( layer != NULL && results.size() > 0 )
+    {
+        layer->removeSelection();
+        layer->select( fids );
     }
     ui->treeWidget->expandAll();
     this->show();

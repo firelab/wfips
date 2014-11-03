@@ -33,6 +33,7 @@
 #include <QTreeWidgetItem>
 
 #include <qgsmaptoolidentify.h>
+#include <qgsvectorlayer.h>
 
 namespace Ui {
 class WfipsIdentifyDialog;
