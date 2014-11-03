@@ -33,6 +33,7 @@ WfipsIdentifyDialog::WfipsIdentifyDialog(QWidget *parent) :
     ui(new Ui::WfipsIdentifyDialog)
 {
     ui->setupUi(this);
+    ui->treeWidget->setAlternatingRowColors( true );
 }
 
 WfipsIdentifyDialog::~WfipsIdentifyDialog()
@@ -40,9 +41,23 @@ WfipsIdentifyDialog::~WfipsIdentifyDialog()
     delete ui;
 }
 
-void WfipsIdentifyDialog::ShowIdentifyResults( QList<QgsMapToolIdentify::IdentifyResult> results )
+void WfipsIdentifyDialog::Clear()
 {
     ui->treeWidget->clear();
+    for( int i = 0; i < items.size(); i++ )
+    {
+        delete items[i];
+    }
+}
+
+void WfipsIdentifyDialog::ShowIdentifyResults( QList<QgsMapToolIdentify::IdentifyResult> results )
+{
+    QString s, attribute;
+    QTreeWidgetItem *item, *subitem;
+    const QgsFields *fields;
+    QgsField field;
+    QgsAttributes attributes;
+    Clear();
     for( int i = 0; i < results.size(); i++ )
     {
         /*
@@ -56,8 +71,33 @@ void WfipsIdentifyDialog::ShowIdentifyResults( QList<QgsMapToolIdentify::Identif
         ** QMap<QString, QString> mAttributes
         ** QMap<QString, QString> mDerivedAttributes
         ** QMap<QString, QVariant> mParams
+        **
+        ** In order to use this properly, grab the feature and use it to access
+        ** the data, not the mAttributes member.
         */
-        qDebug() << results[i].mLabel;
-        qDebug() << results[i].mAttributes;
+        item = new QTreeWidgetItem( QTreeWidgetItem::Type );
+        s = results[i].mLabel;
+        if( s == "" )
+        {
+            s = "Feature " + QString::number( i );
+        }
+        item->setText( 0, s );
+        ui->treeWidget->addTopLevelItem( item );
+        qDebug() << results[i].mDerivedAttributes;
+        QVariant var;
+        fields = results[i].mFeature.fields();
+        attributes = results[i].mFeature.attributes();
+        for( int j = 0;j < results[i].mFeature.attributes().size(); j++ )
+        {
+            field = fields->at( j );
+            attribute = attributes[j].toString();
+            qDebug() << "Field: " << field.name() << ". Attribute: " << attribute;
+            subitem = new QTreeWidgetItem( QTreeWidgetItem::Type );
+            subitem->setText( 1, field.name() );
+            subitem->setText( 2, attribute );
+            item->addChild( subitem );
+        }
     }
+    ui->treeWidget->expandAll();
+    this->show();
 }

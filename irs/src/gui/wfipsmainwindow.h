@@ -118,6 +118,7 @@ private:
     /* Analysis area */
     QgsMapCanvas *analysisAreaMapCanvas;
     QList<QgsMapCanvasLayer> analysisMapCanvasLayers;
+    QList<QgsMapLayer*> analysisLayers;
     QgsVectorLayer *analysisLayer;
 
     QgsMapTool *analysisPanTool;

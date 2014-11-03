@@ -126,7 +126,7 @@ void WfipsMainWindow::ConstructAnalysisAreaWidgets()
     analysisPanTool = new QgsMapToolPan( analysisAreaMapCanvas );
     analysisZoomInTool = new QgsMapToolZoom( analysisAreaMapCanvas, FALSE );
     analysisZoomOutTool = new QgsMapToolZoom( analysisAreaMapCanvas, TRUE);
-    analysisIdentifyTool= new WfipsIdentifyMapTool( analysisAreaMapCanvas );
+    analysisIdentifyTool = new WfipsIdentifyMapTool( analysisAreaMapCanvas );
     connect( analysisIdentifyTool, SIGNAL( WfipsIdentify( QList<QgsMapToolIdentify::IdentifyResult> ) ),
              this, SLOT( Identify( QList<QgsMapToolIdentify::IdentifyResult> ) ) );
     //analysisSelectTool = new QgsMapToolSelect( analysisAreaMapCanvas, TRUE);
@@ -157,7 +157,7 @@ void WfipsMainWindow::AddAnalysisAreaLayer( QString path, QString layerName,
     }
     path += layerName;
     qDebug() << "Loading layer: " << layerName;
-    analysisLayer = new QgsVectorLayer( path, "", "ogr", true );
+    analysisLayer = new QgsVectorLayer( path, layerName, "ogr", true );
     if( !analysisLayer->isValid() )
     {
         delete analysisLayer;
@@ -166,6 +166,7 @@ void WfipsMainWindow::AddAnalysisAreaLayer( QString path, QString layerName,
     }
     analysisLayer->setReadOnly( true );
     QgsMapLayerRegistry::instance()->addMapLayer( analysisLayer, false );
+    analysisLayers.append( analysisLayer );
     analysisMapCanvasLayers.append( QgsMapCanvasLayer( analysisLayer, false ) );
     ui->analysisAreaComboBox->addItem( layerName.toUpper() );
     if( useExtent )
@@ -228,6 +229,7 @@ void WfipsMainWindow::UpdateAnalysisAreaMap( int index )
         analysisMapCanvasLayers[i].setVisible( false );
     }
     analysisMapCanvasLayers[index].setVisible( true );
+    analysisAreaMapCanvas->setCurrentLayer( analysisLayers[index] );
     analysisAreaMapCanvas->setExtent( extent );
     analysisAreaMapCanvas->setLayerSet( analysisMapCanvasLayers );
     analysisAreaMapCanvas->refresh();

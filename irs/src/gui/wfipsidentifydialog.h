@@ -30,6 +30,7 @@
 
 #include <QDebug>
 #include <QDialog>
+#include <QTreeWidgetItem>
 
 #include <qgsmaptoolidentify.h>
 
@@ -49,6 +50,9 @@ public:
 
 private:
     Ui::WfipsIdentifyDialog *ui;
+    QList<QTreeWidgetItem*>items;
+
+    void Clear();
 };
 
 #endif // WFIPSIDENTIFYDIALOG_H
