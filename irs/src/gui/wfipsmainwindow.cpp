@@ -367,6 +367,18 @@ void WfipsMainWindow::OpenWfipsPath()
 
 void WfipsMainWindow::UpdateMapToolType()
 {
+    /*
+    ** Clear our selections on current layer
+    ** XXX: Should we clear all layers?
+    ** XXX: Should we add a fx that does this, it is probably worth it.
+    */
+    QgsVectorLayer *layer;
+    layer =
+        reinterpret_cast<QgsVectorLayer*>( analysisAreaMapCanvas->currentLayer() );
+    if( layer != NULL )
+    {
+        layer->removeSelection();
+    }
     if( ui->mapPanToolButton->isChecked() )
     {
         qDebug() << "Setting map tool to pan";
