@@ -48,6 +48,8 @@ WfipsMainWindow::WfipsMainWindow(QWidget *parent) :
     AssignTreeWidgetIndices( ui->treeWidget->invisibleRootItem() );
     qDebug() << "Found " << treeWidgetList.size() << " tree widget items.";
 
+    selectedFid = -1;
+
     identifyDialog = new WfipsIdentifyDialog( this );
 
     /* Call *after* construction */
@@ -76,6 +78,10 @@ void WfipsMainWindow::CreateConnections()
     /* Update the analysis layer based on the combo box choice */
     connect( ui->analysisAreaComboBox, SIGNAL( currentIndexChanged( int ) ),
              this, SLOT( UpdateAnalysisAreaMap( int ) ) );
+
+    /* Set Analysis Area */
+    connect( ui->setAnalysisAreaToolButton, SIGNAL( clicked() ),
+             this, SLOT( SetAnalysisArea() ) );
 }
 
 void WfipsMainWindow::PostConstructionActions()
@@ -129,9 +135,9 @@ void WfipsMainWindow::ConstructAnalysisAreaWidgets()
     analysisIdentifyTool = new WfipsIdentifyMapTool( analysisAreaMapCanvas );
     connect( analysisIdentifyTool, SIGNAL( WfipsIdentify( QList<QgsMapToolIdentify::IdentifyResult> ) ),
              this, SLOT( Identify( QList<QgsMapToolIdentify::IdentifyResult> ) ) );
-    analysisSelectTool = new QgsMapToolEmitPoint( analysisAreaMapCanvas );
-    connect( analysisSelectTool, SIGNAL( canvasClicked( QgsPoint, Qt::MouseButton ) ),
-             this, SLOT( SelectPoint( QgsPoint, Qt::MouseButton ) ) );
+    analysisSelectTool = new WfipsSelectMapTool( analysisAreaMapCanvas );
+    connect( analysisSelectTool, SIGNAL( WfipsSelect( qint64 ) ),
+             this, SLOT( SelectPoint( qint64 ) ) );
 }
 
 /*
@@ -378,6 +384,7 @@ void WfipsMainWindow::UpdateMapToolType()
     if( layer != NULL )
     {
         layer->removeSelection();
+        selectedFid = -1;
     }
     if( ui->mapPanToolButton->isChecked() )
     {
@@ -414,14 +421,58 @@ void WfipsMainWindow::Identify( QList<QgsMapToolIdentify::IdentifyResult> result
     }
 }
 
-void WfipsMainWindow::SelectPoint( QgsPoint point, Qt::MouseButton button )
+void WfipsMainWindow::SelectPoint( qint64 fid )
 {
-    qDebug() << "X: " << point.x() << " Y: " << point.y();
+    qDebug() << "Selecting fid: " << fid;
+    QgsVectorLayer *layer;
+    layer =
+        reinterpret_cast<QgsVectorLayer*>( analysisAreaMapCanvas->currentLayer() );
+    if( layer == NULL )
+    {
+        selectedFid = -1;
+        return;
+    }
+    layer->removeSelection();
+    layer->select( fid );
+    selectedFid = fid;
 }
 
 void WfipsMainWindow::ZoomToLayerExtent()
 {
     qDebug() << "Zoom to layer extent";
+}
+
+/*
+** Use the selected feature and set the other maps.
+*/
+void WfipsMainWindow::SetAnalysisArea()
+{
+    if( selectedFid < 0 )
+    {
+        return;
+    }
+    qDebug() << "Setting analysis area using fid: " << selectedFid;
+    QgsVectorLayer *layer;
+    layer =
+        reinterpret_cast<QgsVectorLayer*>( analysisAreaMapCanvas->currentLayer() );
+    if( layer == NULL )
+    {
+        qDebug() << "Invalid layer in SetAnalysisArea()";
+        return;
+    }
+    QgsFeatureList features;
+    features = layer->selectedFeatures();
+    if( features.size() < 1 )
+    {
+        qDebug() << "No selected features";
+        return;
+    }
+    QgsFeature feature = features[0];
+    layer->setSubsetString( QString( "FID=" ) + QString::number( selectedFid ) );
+    QgsRectangle extent = feature.geometry()->boundingBox();
+    extent.scale( 1.1 );
+    analysisAreaMapCanvas->setExtent( extent );
+    analysisAreaMapCanvas->refresh();
 }
 
 void WfipsMainWindow::ShowMessage( const int messageType,

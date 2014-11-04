@@ -156,6 +156,7 @@ QT4_WRAP_UI(WFIPS_GUI_UI_H wfipsmainwindow.ui
 QT4_WRAP_CPP(WFIPS_GUI_MOC wfipsmainwindow.h
                            wfipsaddlayerdialog.h
                            wfipsidentifydialog.h
+                           wfipsselectmaptool.h
                            wfipsidentifymaptool.h)
 
 INCLUDE(${QT_USE_FILE})
@@ -218,6 +219,7 @@ ADD_EXECUTABLE(wfips wfipsmainwindow.cpp
                      wfipsaddlayerdialog.cpp
                      wfipsguiutil.cpp
                      wfipsidentifydialog.cpp
+                     wfipsselectmaptool.cpp
                      wfipsidentifymaptool.cpp
                      ${WFIPS_GUI_UI_H}
                      ${WFIPS_GUI_MOC}

@@ -40,6 +40,7 @@
 
 #include "wfipsidentifymaptool.h"
 #include "wfipsidentifydialog.h"
+#include "wfipsselectmaptool.h"
 
 /*
 ** QGIS includes.  Try to keep these semi-organized for easier maintenance.
@@ -49,6 +50,10 @@
 #include <qgsapplication.h>
 #include <qgsmaplayerregistry.h>
 #include <qgsproviderregistry.h>
+
+/* QGIS feature and related */
+#include <qgsfeature.h>
+#include <qgsgeometry.h>
 
 /* Renderers and symbols */
 #include <qgsgraduatedsymbolrendererv2.h>
@@ -135,6 +140,9 @@ private:
                                bool useExtent=false );
     void LoadAnalysisAreaLayers();
 
+    qint64 selectedFid;
+    QgsFeature selectedFeature;
+
     /* Identify results viewer */
     WfipsIdentifyDialog *identifyDialog;
 
@@ -152,11 +160,13 @@ private slots:
 
     /* Identify a map layer feature */
     void Identify( QList<QgsMapToolIdentify::IdentifyResult> result );
-    void SelectPoint( QgsPoint point, Qt::MouseButton button );
+    void SelectPoint( qint64 fid );
 
     /* Analysis Area */
     void AddCustomAnalysisArea();
     void UpdateAnalysisAreaMap( int index );
+
+    void SetAnalysisArea();
 
     /* Emit a warning or an error to a dialog or just qDebug() */
     void ShowMessage( const int messageType,

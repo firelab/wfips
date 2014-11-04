@@ -36,7 +36,6 @@ void WfipsIdentifyMapTool::canvasReleaseEvent( QMouseEvent *e )
 {
     QList<QgsMapToolIdentify::IdentifyResult> results;
     qDebug() << "Identify point(" << e->x() << ", " << e->y() << ")";
-    //results = identify( e->x(), e->y(), TopDownStopAtFirst );
     results = identify( e->x(), e->y(), ActiveLayer );
     emit WfipsIdentify( results );
 }
