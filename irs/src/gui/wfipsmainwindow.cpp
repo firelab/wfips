@@ -68,6 +68,15 @@ WfipsMainWindow::~WfipsMainWindow()
     */
     delete ui;
     delete identifyDialog;
+
+    delete analysisAreaMapCanvas;
+    delete analysisAreaMapLayout;
+
+    delete analysisPanTool;
+    delete analysisZoomInTool;
+    delete analysisZoomOutTool;
+    delete analysisIdentifyTool;
+    delete analysisSelectTool;
 }
 
 void WfipsMainWindow::CreateConnections()
@@ -186,7 +195,7 @@ void WfipsMainWindow::AddAnalysisAreaLayer( QString path, QString layerName,
     analysisLayer->setReadOnly( true );
     QgsMapLayerRegistry::instance()->addMapLayer( analysisLayer, false );
     analysisLayers.append( analysisLayer );
-    analysisMapCanvasLayers.append( QgsMapCanvasLayer( analysisLayer, false ) );
+    analysisMapCanvasLayers.append( QgsMapCanvasLayer( analysisLayer, true ) );
     ui->analysisAreaComboBox->addItem( layerName.toUpper() );
     if( useExtent )
     {
