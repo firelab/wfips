@@ -74,6 +74,9 @@
 #include <qgsmaptoolzoom.h>
 #include <qgsmaptoolemitpoint.h>
 
+/* CRS for QGIS */
+#include <qgscoordinatereferencesystem.h>
+
 /* GDAL for layer sniffing */
 #include "gdal.h"
 #include "ogr_api.h"

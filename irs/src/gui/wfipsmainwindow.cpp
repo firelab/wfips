@@ -125,6 +125,10 @@ void WfipsMainWindow::ConstructAnalysisAreaWidgets()
     analysisAreaMapCanvas->setCanvasColor( Qt::white );
     analysisAreaMapCanvas->freeze( false );
     analysisAreaMapCanvas->setVisible( true );
+    QgsCoordinateReferenceSystem crs;
+    crs.createFromSrid( 4269 );
+    analysisAreaMapCanvas->setDestinationCrs( crs );
+    analysisAreaMapCanvas->setCrsTransformEnabled( true );
     analysisAreaMapCanvas->refresh();
     analysisAreaMapLayout = new QVBoxLayout( ui->analysisAreaMapFrame );
     analysisAreaMapLayout->addWidget( analysisAreaMapCanvas );
@@ -433,7 +437,13 @@ void WfipsMainWindow::SelectPoint( qint64 fid )
         return;
     }
     layer->removeSelection();
-    layer->select( fid );
+    /* 
+    ** fid -1 if results are invalid, but we still want to clear the selection
+    */
+    if( fid > -1 )
+    {
+        layer->select( fid );
+    }
     selectedFid = fid;
 }
 
@@ -478,6 +488,7 @@ void WfipsMainWindow::SetAnalysisArea()
         return;
     }
     QgsFeature feature = features[0];
+    layer->setSubsetString( "" );
     layer->setSubsetString( QString( "FID=" ) + QString::number( selectedFid ) );
     QgsRectangle extent = feature.geometry()->boundingBox();
     extent.scale( 1.1 );

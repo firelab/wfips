@@ -38,12 +38,15 @@ void WfipsSelectMapTool::canvasReleaseEvent( QMouseEvent *e )
     QList<QgsMapToolIdentify::IdentifyResult> results;
     qDebug() << "Identify point(" << e->x() << ", " << e->y() << ")";
     results = identify( e->x(), e->y(), ActiveLayer );
+    qint64 fid;
     if( results.size() < 1 )
     {
-        return;
+        fid = -1;
     }
-    qint64 fid;
-    fid = STRING_TO_FID( results[0].mDerivedAttributes["feature id"] );
+    else
+    {
+        fid = STRING_TO_FID( results[0].mDerivedAttributes["feature id"] );
+    }
     emit WfipsSelect( fid );
 }
 
