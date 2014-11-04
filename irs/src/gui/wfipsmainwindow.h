@@ -79,6 +79,9 @@
 
 /* GDAL for layer sniffing */
 #include "gdal.h"
+#include "cpl_string.h"
+#include "cpl_conv.h"
+#include "cpl_port.h"
 #include "ogr_api.h"
 
 namespace Ui {

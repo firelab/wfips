@@ -193,9 +193,9 @@ void WfipsMainWindow::AddAnalysisAreaLayer( QString path, QString layerName,
         return;
     }
     analysisLayer->setReadOnly( true );
-    QgsMapLayerRegistry::instance()->addMapLayer( analysisLayer, false );
+    QgsMapLayerRegistry::instance()->addMapLayer( analysisLayer, true );
     analysisLayers.append( analysisLayer );
-    analysisMapCanvasLayers.append( QgsMapCanvasLayer( analysisLayer, true ) );
+    analysisMapCanvasLayers.append( QgsMapCanvasLayer( analysisLayer, false ) );
     ui->analysisAreaComboBox->addItem( layerName.toUpper() );
     if( useExtent )
     {
@@ -478,16 +478,58 @@ void WfipsMainWindow::ZoomToLayerExtent()
     analysisAreaMapCanvas->refresh();
 }
 
+static const char * OGRGetFIDColumn( const char *pszUrl )
+{
+    char **papszTokens =
+        CSLTokenizeString2( pszUrl, "|=", CSLT_STRIPENDSPACES | CSLT_STRIPLEADSPACES );
+    int n = CSLCount( papszTokens );
+    if( n < 1 )
+    {
+        return NULL;
+    }
+    OGRDataSourceH hDS;
+    OGRLayerH hLayer;
+
+    hDS = OGROpen( papszTokens[0], FALSE, NULL );
+    if( hDS == NULL )
+    {
+        CSLDestroy( papszTokens );
+        return NULL;
+    }
+    if( n > 2 && EQUAL( "layername", papszTokens[1] ) )
+    {
+        hLayer = OGR_DS_GetLayerByName( hDS, papszTokens[2] );
+    }
+    else
+    {
+        hLayer = OGR_DS_GetLayer( hDS, 0 );
+    }
+    if( hLayer == NULL )
+    {
+        CSLDestroy( papszTokens );
+        return NULL;
+    }
+    CSLDestroy( papszTokens );
+    const char *pszFidCol = OGR_L_GetFIDColumn( hLayer );
+    if( !EQUAL( pszFidCol, "" ) )
+    {
+        pszFidCol = CPLStrdup( pszFidCol );
+    }
+    else
+    {
+        /* For now, default to OGC_FID */
+        pszFidCol = CPLStrdup( "OGC_FID" );
+    }
+    OGR_DS_Destroy( hDS );
+    /* To be free'd, ahole */
+    return pszFidCol;
+}
+
 /*
 ** Use the selected feature and set the other maps.
 */
 void WfipsMainWindow::SetAnalysisArea()
 {
-    if( selectedFid < 0 )
-    {
-        return;
-    }
-    qDebug() << "Setting analysis area using fid: " << selectedFid;
     QgsVectorLayer *layer;
     layer =
         reinterpret_cast<QgsVectorLayer*>( analysisAreaMapCanvas->currentLayer() );
@@ -496,6 +538,17 @@ void WfipsMainWindow::SetAnalysisArea()
         qDebug() << "Invalid layer in SetAnalysisArea()";
         return;
     }
+    if( !ui->setAnalysisAreaToolButton->isChecked() )
+    {
+        layer->setSubsetString( "" );
+        layer->removeSelection();
+        return;
+    }
+    if( selectedFid < 0 )
+    {
+        return;
+    }
+    qDebug() << "Setting analysis area using fid: " << selectedFid;
     QgsFeatureList features;
     features = layer->selectedFeatures();
     if( features.size() < 1 )
@@ -505,7 +558,16 @@ void WfipsMainWindow::SetAnalysisArea()
     }
     QgsFeature feature = features[0];
     layer->setSubsetString( "" );
-    layer->setSubsetString( QString( "FID=" ) + QString::number( selectedFid ) );
+    const char *pszUrl = QStringToCString( layer->source() );
+    const char *pszFidCol = OGRGetFIDColumn( pszUrl );
+    if( pszFidCol != NULL )
+    {
+        qDebug() << "Setting filter using col: " << pszFidCol;
+        layer->setSubsetString( QString( pszFidCol ) + "=" + QString::number( selectedFid ) );
+    }
+    /* XXX: Gross, use one free() */
+    free( (void*)pszUrl );
+    CPLFree( (void*)pszFidCol );
     QgsRectangle extent = feature.geometry()->boundingBox();
     extent.scale( 1.1 );
     analysisAreaMapCanvas->setExtent( extent );
