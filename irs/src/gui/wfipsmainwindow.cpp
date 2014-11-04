@@ -440,6 +440,15 @@ void WfipsMainWindow::SelectPoint( qint64 fid )
 void WfipsMainWindow::ZoomToLayerExtent()
 {
     qDebug() << "Zoom to layer extent";
+    QgsVectorLayer *layer;
+    layer =
+        reinterpret_cast<QgsVectorLayer*>( analysisAreaMapCanvas->currentLayer() );
+    if( layer == NULL )
+    {
+        return;
+    }
+    QgsRectangle rectangle = layer->extent();
+    analysisAreaMapCanvas->setExtent( rectangle );
 }
 
 /*
