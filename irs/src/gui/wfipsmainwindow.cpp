@@ -449,6 +449,7 @@ void WfipsMainWindow::ZoomToLayerExtent()
     }
     QgsRectangle rectangle = layer->extent();
     analysisAreaMapCanvas->setExtent( rectangle );
+    analysisAreaMapCanvas->refresh();
 }
 
 /*
