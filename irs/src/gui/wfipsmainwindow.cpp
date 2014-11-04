@@ -125,10 +125,17 @@ void WfipsMainWindow::ConstructAnalysisAreaWidgets()
     analysisAreaMapCanvas->setCanvasColor( Qt::white );
     analysisAreaMapCanvas->freeze( false );
     analysisAreaMapCanvas->setVisible( true );
+    /*
+    ** XXX: Need to set dst crs for warping on the fly, but this may mess with
+    ** how we handle extents and zoom and selection.
+    */
+    /*
     QgsCoordinateReferenceSystem crs;
     crs.createFromSrid( 4269 );
+    qDebug() << "CRS valid: " << crs.isValid();
     analysisAreaMapCanvas->setDestinationCrs( crs );
     analysisAreaMapCanvas->setCrsTransformEnabled( true );
+    */
     analysisAreaMapCanvas->refresh();
     analysisAreaMapLayout = new QVBoxLayout( ui->analysisAreaMapFrame );
     analysisAreaMapLayout->addWidget( analysisAreaMapCanvas );

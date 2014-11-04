@@ -35,6 +35,7 @@
 int main(int argc, char *argv[])
 {
   QgsApplication app(argc, argv, TRUE);
+  qDebug() << "SRS DB path: " << app.srsDbFilePath();
   WfipsMainWindow *mainWindow = new WfipsMainWindow();
   mainWindow->show();
   return app.exec();
