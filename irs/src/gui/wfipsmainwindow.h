@@ -146,8 +146,8 @@ private:
                                bool useExtent=false );
     void LoadAnalysisAreaLayers();
 
-    qint64 selectedFid;
-    QgsFeature selectedFeature;
+    QgsFeatureIds selectedFids;
+    QgsFeatureList selectedFeatures;
 
     /* Identify results viewer */
     WfipsIdentifyDialog *identifyDialog;
@@ -166,7 +166,7 @@ private slots:
 
     /* Identify a map layer feature */
     void Identify( QList<QgsMapToolIdentify::IdentifyResult> result );
-    void SelectPoint( qint64 fid );
+    void Select( QgsFeatureIds fids );
 
     /* Analysis Area */
     void AddCustomAnalysisArea();

@@ -386,6 +386,35 @@
           <item>
            <layout class="QHBoxLayout" name="horizontalLayout_19">
             <item>
+             <widget class="QCheckBox" name="bufferAnalysisCheckBox">
+              <property name="enabled">
+               <bool>false</bool>
+              </property>
+              <property name="toolTip">
+               <string>NOT TRIVIAL TO BE IMPLEMENTED</string>
+              </property>
+              <property name="text">
+               <string>Buffer Analysis Feature</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QSpinBox" name="bufferAnalyisSpinBox">
+              <property name="enabled">
+               <bool>false</bool>
+              </property>
+              <property name="toolTip">
+               <string>NOT TRIVIAL TO BE IMPLEMENTED</string>
+              </property>
+              <property name="suffix">
+               <string> miles</string>
+              </property>
+              <property name="maximum">
+               <number>200</number>
+              </property>
+             </widget>
+            </item>
+            <item>
              <spacer name="horizontalSpacer_12">
               <property name="orientation">
                <enum>Qt::Horizontal</enum>
@@ -2237,6 +2266,22 @@
     <hint type="destinationlabel">
      <x>906</x>
      <y>243</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>bufferAnalysisCheckBox</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>bufferAnalyisSpinBox</receiver>
+   <slot>setEnabled(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>375</x>
+     <y>749</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>521</x>
+     <y>750</y>
     </hint>
    </hints>
   </connection>

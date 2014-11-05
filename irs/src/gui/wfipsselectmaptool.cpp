@@ -47,6 +47,11 @@ void WfipsSelectMapTool::canvasReleaseEvent( QMouseEvent *e )
     {
         fid = STRING_TO_FID( results[0].mDerivedAttributes["feature id"] );
     }
-    emit WfipsSelect( fid );
+    if( !(e->modifiers() & Qt::ControlModifier ) )
+    {
+        fids.clear();
+    }
+    fids.insert( fid );
+    emit WfipsSelect( fids );
 }
 

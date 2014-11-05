@@ -39,8 +39,10 @@ class WfipsSelectMapTool : public QgsMapToolIdentify
 public:
     WfipsSelectMapTool( QgsMapCanvas *mapCanvas );
     void canvasReleaseEvent( QMouseEvent *e );
+private:
+    QgsFeatureIds fids;
 signals:
-    void WfipsSelect( qint64 fid );
+    void WfipsSelect( QgsFeatureIds fids );
 };
 
 #endif /* WFIPS_SELECT_MAP_TOOL_H_ */

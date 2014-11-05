@@ -48,8 +48,6 @@ WfipsMainWindow::WfipsMainWindow(QWidget *parent) :
     AssignTreeWidgetIndices( ui->treeWidget->invisibleRootItem() );
     qDebug() << "Found " << treeWidgetList.size() << " tree widget items.";
 
-    selectedFid = -1;
-
     identifyDialog = new WfipsIdentifyDialog( this );
 
     /* Call *after* construction */
@@ -156,8 +154,8 @@ void WfipsMainWindow::ConstructAnalysisAreaWidgets()
     connect( analysisIdentifyTool, SIGNAL( WfipsIdentify( QList<QgsMapToolIdentify::IdentifyResult> ) ),
              this, SLOT( Identify( QList<QgsMapToolIdentify::IdentifyResult> ) ) );
     analysisSelectTool = new WfipsSelectMapTool( analysisAreaMapCanvas );
-    connect( analysisSelectTool, SIGNAL( WfipsSelect( qint64 ) ),
-             this, SLOT( SelectPoint( qint64 ) ) );
+    connect( analysisSelectTool, SIGNAL( WfipsSelect( QgsFeatureIds ) ),
+             this, SLOT( Select( QgsFeatureIds ) ) );
 }
 
 /*
@@ -404,7 +402,7 @@ void WfipsMainWindow::UpdateMapToolType()
     if( layer != NULL )
     {
         layer->removeSelection();
-        selectedFid = -1;
+        selectedFids.clear();
     }
     if( ui->mapPanToolButton->isChecked() )
     {
@@ -441,26 +439,31 @@ void WfipsMainWindow::Identify( QList<QgsMapToolIdentify::IdentifyResult> result
     }
 }
 
-void WfipsMainWindow::SelectPoint( qint64 fid )
+void WfipsMainWindow::Select( QgsFeatureIds fids )
 {
-    qDebug() << "Selecting fid: " << fid;
+    qDebug() << "Selecting fids: " << fids;
     QgsVectorLayer *layer;
     layer =
         reinterpret_cast<QgsVectorLayer*>( analysisAreaMapCanvas->currentLayer() );
     if( layer == NULL )
     {
-        selectedFid = -1;
+        selectedFids.clear();
         return;
     }
     layer->removeSelection();
     /* 
     ** fid -1 if results are invalid, but we still want to clear the selection
     */
-    if( fid > -1 )
+    if( fids.size() > 0 )
     {
-        layer->select( fid );
+        layer->select( fids );
+        ui->setAnalysisAreaToolButton->setEnabled( true );
     }
-    selectedFid = fid;
+    else
+    {
+        ui->setAnalysisAreaToolButton->setDisabled( true );
+    }
+    selectedFids = fids;
 }
 
 void WfipsMainWindow::ZoomToLayerExtent()
@@ -536,24 +539,32 @@ void WfipsMainWindow::SetAnalysisArea()
     if( layer == NULL )
     {
         qDebug() << "Invalid layer in SetAnalysisArea()";
+        ui->setAnalysisAreaToolButton->setText( "Set Analysis Area" );
+        ui->setAnalysisAreaToolButton->setChecked( false );
         return;
     }
     if( !ui->setAnalysisAreaToolButton->isChecked() )
     {
         layer->setSubsetString( "" );
         layer->removeSelection();
+        analysisAreaMapCanvas->refresh();
+        ui->setAnalysisAreaToolButton->setText( "Set Analysis Area" );
+        ui->setAnalysisAreaToolButton->setChecked( false );
         return;
     }
-    if( selectedFid < 0 )
+    if( selectedFids.size() < 1 )
     {
         return;
     }
-    qDebug() << "Setting analysis area using fid: " << selectedFid;
+    qDebug() << "Setting analysis area using fids: " << selectedFids;
     QgsFeatureList features;
     features = layer->selectedFeatures();
     if( features.size() < 1 )
     {
         qDebug() << "No selected features";
+        ui->setAnalysisAreaToolButton->setText( "Set Analysis Area" );
+        ui->setAnalysisAreaToolButton->setChecked( false );
+        selectedFids.clear();
         return;
     }
     QgsFeature feature = features[0];
@@ -563,15 +574,35 @@ void WfipsMainWindow::SetAnalysisArea()
     if( pszFidCol != NULL )
     {
         qDebug() << "Setting filter using col: " << pszFidCol;
-        layer->setSubsetString( QString( pszFidCol ) + "=" + QString::number( selectedFid ) );
+        QString fidset = " IN (";
+        QSetIterator<qint64>it( selectedFids );
+        while( it.hasNext() )
+        {
+            fidset += FID_TO_STRING( it.next() );
+            if( it.hasNext()  )
+            {
+                fidset += ",";
+            }
+        }
+        fidset += ")";
+        QString subset = QString( pszFidCol ) + fidset;
+        qDebug() << "Subsetting layer: " << subset;
+        layer->setSubsetString( subset );
     }
     /* XXX: Gross, use one free() */
     free( (void*)pszUrl );
     CPLFree( (void*)pszFidCol );
     QgsRectangle extent = feature.geometry()->boundingBox();
+    QgsRectangle rectangle;
+    for( int i = 0; i < features.size(); i++ )
+    {
+        rectangle = features[i].geometry()->boundingBox();
+        extent.combineExtentWith( &rectangle );
+    }
     extent.scale( 1.1 );
     analysisAreaMapCanvas->setExtent( extent );
     analysisAreaMapCanvas->refresh();
+    ui->setAnalysisAreaToolButton->setText( "Clear Analysis Area" );
 }
 
 void WfipsMainWindow::ShowMessage( const int messageType,
