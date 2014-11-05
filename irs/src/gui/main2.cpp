@@ -41,5 +41,6 @@ int main(int argc, char *argv[])
   int rc = app.exec();
   GDALDestroyDriverManager();
   OGRCleanupAll();
+  return rc;
 }
 
