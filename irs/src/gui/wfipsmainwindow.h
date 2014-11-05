@@ -31,6 +31,7 @@
 #include <QFileDialog>
 #include <QMainWindow>
 #include <QMessageBox>
+#include <QSettings>
 #include <QTreeWidget>
 #include <QTreeWidgetItem>
 #include <QVBoxLayout>
@@ -174,10 +175,15 @@ private slots:
 
     void SetAnalysisArea();
 
+    void ReadSettings();
+    void WriteSettings();
+
     /* Emit a warning or an error to a dialog or just qDebug() */
     void ShowMessage( const int messageType,
                       const int messageFlags,
                       const QString &message );
+protected:
+    void closeEvent( QCloseEvent *event );
 
 };
 

@@ -53,6 +53,7 @@ WfipsMainWindow::WfipsMainWindow(QWidget *parent) :
     /* Call *after* construction */
     CreateConnections();
     PostConstructionActions();
+    ReadSettings();
 }
 
 WfipsMainWindow::~WfipsMainWindow()
@@ -75,6 +76,32 @@ WfipsMainWindow::~WfipsMainWindow()
     delete analysisZoomOutTool;
     delete analysisIdentifyTool;
     delete analysisSelectTool;
+}
+
+void WfipsMainWindow::WriteSettings()
+{
+    QSettings settings( QSettings::NativeFormat, QSettings::UserScope,  "firelab", "wfips" );
+    settings.setValue( "wfipsdatapath", wfipsPath );
+}
+
+void WfipsMainWindow::ReadSettings()
+{
+    QSettings settings( QSettings::NativeFormat, QSettings::UserScope,  "firelab", "wfips" );
+    if( settings.contains( "wfipsdatapath" ) )
+    {
+        wfipsPath = settings.value( "wfipsdatapath" ).toString();
+        if( wfipsPath != "" )
+        {
+            ui->openWfipsPathLineEdit->setText( wfipsPath );
+            LoadAnalysisAreaLayers();
+        }
+    }
+}
+
+
+void WfipsMainWindow::closeEvent( QCloseEvent *event )
+{
+    WriteSettings();
 }
 
 void WfipsMainWindow::CreateConnections()
@@ -223,6 +250,8 @@ void WfipsMainWindow::LoadAnalysisAreaLayers()
     analysisAreaMapCanvas->setLayerSet( analysisMapCanvasLayers );
     analysisAreaMapCanvas->setExtent( ((QgsVectorLayer*)(QgsMapLayerRegistry::instance()->mapLayers().values().last()))->extent() );
     analysisAreaMapCanvas->refresh();
+    /* XXX: Touchy */
+    ui->treeWidget->setCurrentItem( ui->treeWidget->itemBelow( ui->treeWidget->currentItem() ) );
 }
 
 /*
@@ -374,7 +403,7 @@ void WfipsMainWindow::SetStackIndex( QTreeWidgetItem *current,
 
 void WfipsMainWindow::OpenWfipsPath()
 {
-    wfipsPath = 
+    wfipsPath =
         QFileDialog::getExistingDirectory( this, tr("Open wfips data path"),
                                            "", QFileDialog::ShowDirsOnly |
                                                QFileDialog::DontResolveSymlinks );
@@ -554,6 +583,8 @@ void WfipsMainWindow::SetAnalysisArea()
     }
     if( selectedFids.size() < 1 )
     {
+        ui->setAnalysisAreaToolButton->setText( "Set Analysis Area" );
+        ui->setAnalysisAreaToolButton->setChecked( false );
         return;
     }
     qDebug() << "Setting analysis area using fids: " << selectedFids;
@@ -587,7 +618,11 @@ void WfipsMainWindow::SetAnalysisArea()
         fidset += ")";
         QString subset = QString( pszFidCol ) + fidset;
         qDebug() << "Subsetting layer: " << subset;
-        layer->setSubsetString( subset );
+        if( !layer->setSubsetString( subset ) )
+        {
+            qDebug() << "Failed to subset layer, probably invalid fid column: " 
+                     << pszFidCol;
+        }
     }
     /* XXX: Gross, use one free() */
     free( (void*)pszUrl );
