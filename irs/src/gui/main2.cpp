@@ -38,6 +38,8 @@ int main(int argc, char *argv[])
   qDebug() << "SRS DB path: " << app.srsDbFilePath();
   WfipsMainWindow *mainWindow = new WfipsMainWindow();
   mainWindow->show();
-  return app.exec();
+  int rc = app.exec();
+  GDALDestroyDriverManager();
+  OGRCleanupAll();
 }
 
