@@ -58,13 +58,7 @@ WfipsMainWindow::WfipsMainWindow(QWidget *parent) :
 
 WfipsMainWindow::~WfipsMainWindow()
 {
-    /*
-    ** We may need to clean up a little for QGIS, but I don't think so.
-    QgsMapLayerRegistry::instance()->removeAllMapLayers();
-    delete analysisLayer;
-    delete analysisSymbol;
-    delete analysisRenderer;
-    */
+    //QgsMapLayerRegistry::instance()->removeAllMapLayers();
     delete ui;
     delete identifyDialog;
 

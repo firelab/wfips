@@ -153,6 +153,9 @@ private:
     /* Identify results viewer */
     WfipsIdentifyDialog *identifyDialog;
 
+    /* Handle to current mapcanvas */
+    QgsMapCanvas *currentMapCanvas;
+
 private slots:
     /* Main path designation */
     void OpenWfipsPath();
