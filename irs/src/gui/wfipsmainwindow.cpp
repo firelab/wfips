@@ -240,6 +240,16 @@ void WfipsMainWindow::LoadAnalysisAreaLayers()
         qDebug() << "The data path has not been provided, no layers";
         return;
     }
+    ui->analysisAreaComboBox->clear();
+    /* Clean up and remove existing layers */
+    QString layerId;
+    for( int i = 0; i < analysisMapCanvasLayers.size(); i++ )
+    {
+        layerId = analysisMapCanvasLayers[i].layer()->id();
+        QgsMapLayerRegistry::instance()->removeMapLayer( layerId );
+    }
+    analysisLayers.clear();
+    analysisMapCanvasLayers.clear();
     QStringList layerNames;
     layerNames << "gacc" << "forest" << "district";
     bool useExtent = false;
@@ -277,6 +287,10 @@ void WfipsMainWindow::AddCustomAnalysisArea()
 
 void WfipsMainWindow::UpdateAnalysisAreaMap( int index )
 {
+    if( index < 0 )
+    {
+        return;
+    }
     assert( index < analysisMapCanvasLayers.size() );
     QgsRectangle extent = analysisAreaMapCanvas->extent();
     for( int i = 0; i < analysisMapCanvasLayers.size(); i++ )
