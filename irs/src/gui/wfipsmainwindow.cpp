@@ -255,6 +255,7 @@ void WfipsMainWindow::LoadAnalysisAreaLayers()
     if( analysisMapCanvasLayers.size() > 0 )
     {
         analysisAreaMapCanvas->setExtent( ((QgsVectorLayer*)(QgsMapLayerRegistry::instance()->mapLayers().values().last()))->extent() );
+        /* XXX: Touchy */
         ui->treeWidget->setCurrentItem( ui->treeWidget->itemBelow( ui->treeWidget->currentItem() ) );
     }
     else
@@ -262,7 +263,6 @@ void WfipsMainWindow::LoadAnalysisAreaLayers()
         qDebug() << "Failed to load any layers from: " << wfipsPath;
         wfipsPath = "";
     }
-    /* XXX: Touchy */
     analysisAreaMapCanvas->refresh();
 }
 
