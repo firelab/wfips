@@ -252,10 +252,18 @@ void WfipsMainWindow::LoadAnalysisAreaLayers()
         AddAnalysisAreaLayer( wfipsPath + "/" + layerNames[i] + ".db" );
     }
     analysisAreaMapCanvas->setLayerSet( analysisMapCanvasLayers );
-    analysisAreaMapCanvas->setExtent( ((QgsVectorLayer*)(QgsMapLayerRegistry::instance()->mapLayers().values().last()))->extent() );
-    analysisAreaMapCanvas->refresh();
+    if( analysisMapCanvasLayers.size() > 0 )
+    {
+        analysisAreaMapCanvas->setExtent( ((QgsVectorLayer*)(QgsMapLayerRegistry::instance()->mapLayers().values().last()))->extent() );
+        ui->treeWidget->setCurrentItem( ui->treeWidget->itemBelow( ui->treeWidget->currentItem() ) );
+    }
+    else
+    {
+        qDebug() << "Failed to load any layers from: " << wfipsPath;
+        wfipsPath = "";
+    }
     /* XXX: Touchy */
-    ui->treeWidget->setCurrentItem( ui->treeWidget->itemBelow( ui->treeWidget->currentItem() ) );
+    analysisAreaMapCanvas->refresh();
 }
 
 /*
