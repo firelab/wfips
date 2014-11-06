@@ -245,7 +245,7 @@ void WfipsMainWindow::LoadAnalysisAreaLayers()
     analysisLayers.clear();
     analysisMapCanvasLayers.clear();
     QStringList layerNames;
-    layerNames << "gacc" << "forest" << "district";
+    layerNames << "gacc" << "forest" << "district" << "us_state" << "us_county";
     bool useExtent = false;
     for( int i = 0; i < layerNames.size(); i++ )
     {
@@ -439,7 +439,7 @@ void WfipsMainWindow::UpdateMapToolType()
     if( layer != NULL )
     {
         layer->removeSelection();
-        selectedFids.clear();
+        ((WfipsSelectMapTool*)analysisSelectTool)->clear();
     }
     if( ui->mapPanToolButton->isChecked() )
     {
@@ -484,13 +484,10 @@ void WfipsMainWindow::Select( QgsFeatureIds fids )
         reinterpret_cast<QgsVectorLayer*>( analysisAreaMapCanvas->currentLayer() );
     if( layer == NULL )
     {
-        selectedFids.clear();
+        ((WfipsSelectMapTool*)analysisSelectTool)->clear();
         return;
     }
     layer->removeSelection();
-    /* 
-    ** fid -1 if results are invalid, but we still want to clear the selection
-    */
     if( fids.size() > 0 )
     {
         layer->select( fids );
@@ -584,6 +581,7 @@ void WfipsMainWindow::SetAnalysisArea()
     {
         layer->setSubsetString( "" );
         layer->removeSelection();
+        ((WfipsSelectMapTool*)analysisSelectTool)->clear();
         analysisAreaMapCanvas->refresh();
         ui->setAnalysisAreaToolButton->setText( "Set Analysis Area" );
         ui->setAnalysisAreaToolButton->setChecked( false );
@@ -593,6 +591,8 @@ void WfipsMainWindow::SetAnalysisArea()
     {
         ui->setAnalysisAreaToolButton->setText( "Set Analysis Area" );
         ui->setAnalysisAreaToolButton->setChecked( false );
+        ((WfipsSelectMapTool*)analysisSelectTool)->clear();
+        layer->removeSelection();
         return;
     }
     qDebug() << "Setting analysis area using fids: " << selectedFids;
@@ -603,7 +603,8 @@ void WfipsMainWindow::SetAnalysisArea()
         qDebug() << "No selected features";
         ui->setAnalysisAreaToolButton->setText( "Set Analysis Area" );
         ui->setAnalysisAreaToolButton->setChecked( false );
-        selectedFids.clear();
+        ((WfipsSelectMapTool*)analysisSelectTool)->clear();
+        layer->removeSelection();
         return;
     }
     QgsFeature feature = features[0];

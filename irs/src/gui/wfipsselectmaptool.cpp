@@ -55,3 +55,8 @@ void WfipsSelectMapTool::canvasReleaseEvent( QMouseEvent *e )
     emit WfipsSelect( fids );
 }
 
+void WfipsSelectMapTool::clear()
+{
+    fids.clear();
+}
+
