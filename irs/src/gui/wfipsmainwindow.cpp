@@ -692,7 +692,6 @@ void WfipsMainWindow::SetAnalysisArea()
             }
         }
     }
-    /* XXX: Gross, use one free() */
     free( (void*)pszUrl );
     free( (void*)pszFidCol );
     transform.setSourceCrs( analysisLayer->crs() );
