@@ -47,7 +47,8 @@ class WfipsAddLayerDialog : public QDialog
     Q_OBJECT
 
 public:
-    explicit WfipsAddLayerDialog(QWidget *parent = 0);
+    explicit WfipsAddLayerDialog( QWidget *parent = 0 );
+    WfipsAddLayerDialog( QString initPath, QWidget *parent = 0);
     ~WfipsAddLayerDialog();
 
     QString GetFilePath();
@@ -56,7 +57,10 @@ public:
 private:
     Ui::WfipsAddLayerDialog *ui;
 
+    void Setup();
+
     QString filePath, layerName;
+    QString initPath;
 
 private slots:
     void OpenAreaLayerFile();

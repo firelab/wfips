@@ -28,9 +28,22 @@
 #include "wfipsaddlayerdialog.h"
 #include "ui_wfipsaddlayerdialog.h"
 
-WfipsAddLayerDialog::WfipsAddLayerDialog(QWidget *parent) :
-    QDialog(parent),
-    ui(new Ui::WfipsAddLayerDialog)
+WfipsAddLayerDialog::WfipsAddLayerDialog( QWidget *parent ) :
+    QDialog( parent ),
+    ui( new Ui::WfipsAddLayerDialog )
+{
+    Setup();
+}
+
+WfipsAddLayerDialog::WfipsAddLayerDialog( QString initPath, QWidget *parent) :
+    QDialog( parent ),
+    ui( new Ui::WfipsAddLayerDialog )
+{
+    this->initPath = initPath;
+    Setup();
+}
+
+void WfipsAddLayerDialog::Setup()
 {
     ui->setupUi(this);
     /* Connections */
@@ -61,7 +74,7 @@ QString WfipsAddLayerDialog::GetLayerName()
 void WfipsAddLayerDialog::OpenAreaLayerFile()
 {
     filePath =
-        QFileDialog::getOpenFileName( this, tr( "Open GIS file" ), "", "" );
+        QFileDialog::getOpenFileName( this, tr( "Open GIS file" ), initPath, "" );
     ui->addLayerLineEdit->setText( filePath );
     ui->addLayerComboBox->clear();
     if( filePath== "" ) 
