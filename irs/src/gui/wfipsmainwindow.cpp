@@ -583,12 +583,12 @@ static const char * OGRGetFIDColumn( const char *pszUrl )
     const char *pszFidCol = OGR_L_GetFIDColumn( hLayer );
     if( !EQUAL( pszFidCol, "" ) )
     {
-        pszFidCol = CPLStrdup( pszFidCol );
+        pszFidCol = strdup( pszFidCol );
     }
     else
     {
         /* For now, default to OGC_FID */
-        pszFidCol = CPLStrdup( "OGC_FID" );
+        pszFidCol = strdup( "OGC_FID" );
     }
     OGR_DS_Destroy( hDS );
     /* To be free'd, ahole */
@@ -694,7 +694,7 @@ void WfipsMainWindow::SetAnalysisArea()
     }
     /* XXX: Gross, use one free() */
     free( (void*)pszUrl );
-    CPLFree( (void*)pszFidCol );
+    free( (void*)pszFidCol );
     transform.setSourceCrs( analysisLayer->crs() );
     QgsRectangle extent = feature.geometry()->boundingBox();
     if( layer->crs() != crs )
