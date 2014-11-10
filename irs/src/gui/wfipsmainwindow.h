@@ -108,6 +108,7 @@ private:
 
     /* WFIPS root/default path */
     QString wfipsPath;
+    QString customLayerPath;
 
     /* Database paths */
     QStringList analysisAreaLayers;
@@ -196,6 +197,7 @@ private slots:
     void UpdateAnalysisAreaMap( int index );
 
     void SetAnalysisArea();
+    void ClearAnalysisAreaSelection();
 
     void ReadSettings();
     void WriteSettings();

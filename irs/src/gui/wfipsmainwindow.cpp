@@ -77,6 +77,7 @@ void WfipsMainWindow::WriteSettings()
 {
     QSettings settings( QSettings::NativeFormat, QSettings::UserScope,  "firelab", "wfips" );
     settings.setValue( "wfipsdatapath", wfipsPath );
+    settings.setValue( "customlayerpath", customLayerPath );
 }
 
 void WfipsMainWindow::ReadSettings()
@@ -91,8 +92,11 @@ void WfipsMainWindow::ReadSettings()
             LoadAnalysisAreaLayers();
         }
     }
+    if( settings.contains( "customlayerpath" ) )
+    {
+        customLayerPath = settings.value( "customlayerpath" ).toString();
+    }
 }
-
 
 void WfipsMainWindow::closeEvent( QCloseEvent *event )
 {
@@ -273,7 +277,7 @@ void WfipsMainWindow::LoadAnalysisAreaLayers()
 */
 void WfipsMainWindow::AddCustomAnalysisArea()
 {
-    WfipsAddLayerDialog dialog( this );
+    WfipsAddLayerDialog dialog( customLayerPath, this );
     dialog.exec();
     qDebug() << "Loading " << dialog.GetFilePath() << ", " << dialog.GetLayerName();
     if( dialog.GetFilePath() == "" || dialog.GetLayerName() == "" )
@@ -281,10 +285,15 @@ void WfipsMainWindow::AddCustomAnalysisArea()
         qDebug() << "Invalid Layer file or layer name!";
         return;
     }
+    customLayerPath = QFileInfo( dialog.GetFilePath() ).absolutePath();
     AddAnalysisAreaLayer( dialog.GetFilePath(), dialog.GetLayerName(), true );
     if( analysisMapCanvasLayers.size() == 1 )
         analysisAreaMapCanvas->setLayerSet( analysisMapCanvasLayers );
     ui->analysisAreaComboBox->setCurrentIndex( ui->analysisAreaComboBox->count() - 1 );
+    if( ui->setAnalysisAreaToolButton->isChecked() )
+    {
+        SetAnalysisArea();
+    }
     analysisAreaMapCanvas->refresh();
 }
 
@@ -302,8 +311,12 @@ void WfipsMainWindow::UpdateAnalysisAreaMap( int index )
     }
     analysisMapCanvasLayers[index].setVisible( true );
     analysisAreaMapCanvas->setCurrentLayer( analysisLayers[index] );
+
     analysisAreaMapCanvas->setExtent( extent );
+
     analysisAreaMapCanvas->setLayerSet( analysisMapCanvasLayers );
+    /* Unselect, clear, etc. */
+    SetAnalysisArea();
     analysisAreaMapCanvas->refresh();
 }
 
@@ -459,8 +472,7 @@ void WfipsMainWindow::UpdateMapToolType()
         reinterpret_cast<QgsVectorLayer*>( analysisAreaMapCanvas->currentLayer() );
     if( layer != NULL )
     {
-        layer->removeSelection();
-        ((WfipsSelectMapTool*)analysisSelectTool)->clear();
+        ClearAnalysisAreaSelection();
     }
     if( ui->mapPanToolButton->isChecked() )
     {
@@ -505,7 +517,7 @@ void WfipsMainWindow::Select( QgsFeatureIds fids )
         reinterpret_cast<QgsVectorLayer*>( analysisAreaMapCanvas->currentLayer() );
     if( layer == NULL )
     {
-        ((WfipsSelectMapTool*)analysisSelectTool)->clear();
+        ClearAnalysisAreaSelection();
         return;
     }
     layer->removeSelection();
@@ -531,8 +543,8 @@ void WfipsMainWindow::ZoomToLayerExtent()
     {
         return;
     }
-    QgsRectangle rectangle = layer->extent();
-    analysisAreaMapCanvas->setExtent( rectangle );
+    transform.setSourceCrs( analysisLayer->crs() );
+    analysisAreaMapCanvas->setExtent( transform.transformBoundingBox( analysisLayer->extent() ) );
     analysisAreaMapCanvas->refresh();
 }
 
@@ -583,6 +595,38 @@ static const char * OGRGetFIDColumn( const char *pszUrl )
     return pszFidCol;
 }
 
+static QString BuildFidSet( const char *pszFidCol, QgsFeatureIds fids )
+{
+    qDebug() << "Setting filter using col: " << pszFidCol;
+    QString fidset = QString( pszFidCol ) + " IN (";
+    QSetIterator<qint64>it( fids );
+    while( it.hasNext() )
+    {
+        fidset += FID_TO_STRING( it.next() );
+        if( it.hasNext()  )
+        {
+            fidset += ",";
+        }
+    }
+    fidset += ")";
+    return fidset;
+}
+
+void WfipsMainWindow::ClearAnalysisAreaSelection()
+{
+    QgsVectorLayer *layer;
+    for( int i = 0; i < analysisMapCanvasLayers.size(); i++ )
+    {
+        layer = reinterpret_cast<QgsVectorLayer*>( analysisMapCanvasLayers[i].layer() );
+        if( layer != NULL )
+        {
+            layer->removeSelection();
+            layer->setSubsetString( "" );
+        }
+    }
+    ((WfipsSelectMapTool*)analysisSelectTool)->clear();
+}
+
 /*
 ** Use the selected feature and set the other maps.
 */
@@ -601,8 +645,7 @@ void WfipsMainWindow::SetAnalysisArea()
     if( !ui->setAnalysisAreaToolButton->isChecked() )
     {
         layer->setSubsetString( "" );
-        layer->removeSelection();
-        ((WfipsSelectMapTool*)analysisSelectTool)->clear();
+        ClearAnalysisAreaSelection();
         analysisAreaMapCanvas->refresh();
         ui->setAnalysisAreaToolButton->setText( "Set Analysis Area" );
         ui->setAnalysisAreaToolButton->setChecked( false );
@@ -612,8 +655,7 @@ void WfipsMainWindow::SetAnalysisArea()
     {
         ui->setAnalysisAreaToolButton->setText( "Set Analysis Area" );
         ui->setAnalysisAreaToolButton->setChecked( false );
-        ((WfipsSelectMapTool*)analysisSelectTool)->clear();
-        layer->removeSelection();
+        ClearAnalysisAreaSelection();
         return;
     }
     qDebug() << "Setting analysis area using fids: " << selectedFids;
@@ -624,8 +666,7 @@ void WfipsMainWindow::SetAnalysisArea()
         qDebug() << "No selected features";
         ui->setAnalysisAreaToolButton->setText( "Set Analysis Area" );
         ui->setAnalysisAreaToolButton->setChecked( false );
-        ((WfipsSelectMapTool*)analysisSelectTool)->clear();
-        layer->removeSelection();
+        ClearAnalysisAreaSelection();
         return;
     }
     QgsFeature feature = features[0];
@@ -634,30 +675,32 @@ void WfipsMainWindow::SetAnalysisArea()
     const char *pszFidCol = OGRGetFIDColumn( pszUrl );
     if( pszFidCol != NULL )
     {
-        qDebug() << "Setting filter using col: " << pszFidCol;
-        QString fidset = " IN (";
-        QSetIterator<qint64>it( selectedFids );
-        while( it.hasNext() )
-        {
-            fidset += FID_TO_STRING( it.next() );
-            if( it.hasNext()  )
-            {
-                fidset += ",";
-            }
-        }
-        fidset += ")";
-        QString subset = QString( pszFidCol ) + fidset;
+        QString subset = BuildFidSet( pszFidCol, selectedFids );
         qDebug() << "Subsetting layer: " << subset;
         if( !layer->setSubsetString( subset ) )
         {
-            qDebug() << "Failed to subset layer, probably invalid fid column: " 
-                     << pszFidCol;
+            /* Just try FID */
+            if( !EQUAL( pszFidCol, "FID" ) )
+            {
+                subset = BuildFidSet( "FID", selectedFids );
+                qDebug() << "Using FID as fid col and subsetting: " << subset;
+                if( !layer->setSubsetString( subset ) )
+                {
+                    qDebug() << "Failed to subset layer, probably invalid fid column: " 
+                             << pszFidCol;
+                }
+            }
         }
     }
     /* XXX: Gross, use one free() */
     free( (void*)pszUrl );
     CPLFree( (void*)pszFidCol );
+    transform.setSourceCrs( analysisLayer->crs() );
     QgsRectangle extent = feature.geometry()->boundingBox();
+    if( layer->crs() != crs )
+    {
+        extent = transform.transformBoundingBox( extent );
+    }
     QgsRectangle rectangle;
     analysisAreaMemLayer = new QgsVectorLayer( "MultiPolygon", "", "memory", true );
     assert( analysisAreaMemLayer->isValid() );
@@ -665,8 +708,23 @@ void WfipsMainWindow::SetAnalysisArea()
     provider = analysisAreaMemLayer->dataProvider();
     for( int i = 0; i < features.size(); i++ )
     {
-        rectangle = features[i].geometry()->boundingBox();
+        if( layer->crs() != crs )
+        {
+            rectangle = transform.transformBoundingBox( features[i].geometry()->boundingBox() );
+        }
+        else
+        {
+            rectangle = features[i].geometry()->boundingBox();
+        }
+        qDebug() << "Reading bounds of: " << rectangle.xMinimum()
+                                          << "," << rectangle.xMaximum()
+                                          << "," << rectangle.yMinimum()
+                                          << "," << rectangle.yMaximum();
         extent.combineExtentWith( &rectangle );
+        qDebug() << "New extent: " << extent.xMinimum()
+                                   << "," << extent.xMaximum()
+                                   << "," << extent.yMinimum()
+                                   << "," << extent.yMaximum();
     }
     QgsFields fields = layer->dataProvider()->fields();
     provider->addAttributes( fields.toList() );

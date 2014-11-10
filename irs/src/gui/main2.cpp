@@ -34,13 +34,13 @@
 
 int main(int argc, char *argv[])
 {
-  QgsApplication app(argc, argv, TRUE);
-  qDebug() << "SRS DB path: " << app.srsDbFilePath();
-  WfipsMainWindow *mainWindow = new WfipsMainWindow();
-  mainWindow->show();
-  int rc = app.exec();
-  GDALDestroyDriverManager();
-  OGRCleanupAll();
-  return rc;
+    QgsApplication app(argc, argv, TRUE);
+    qDebug() << "SRS DB path: " << app.srsDbFilePath();
+    WfipsMainWindow *mainWindow = new WfipsMainWindow();
+    mainWindow->show();
+    int rc = app.exec();
+    GDALDestroyDriverManager();
+    OGRCleanupAll();
+    return rc;
 }
 
