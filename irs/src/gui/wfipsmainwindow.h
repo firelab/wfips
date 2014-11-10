@@ -51,6 +51,7 @@
 #include <qgsapplication.h>
 #include <qgsmaplayerregistry.h>
 #include <qgsproviderregistry.h>
+#include <qgsvectordataprovider.h>
 
 /* QGIS feature and related */
 #include <qgsfeature.h>
@@ -101,6 +102,10 @@ private:
     Ui::WfipsMainWindow *ui;
     QString qgisPluginPath;
 
+    /* CRS for map canvases */
+    QgsCoordinateReferenceSystem crs;
+    QgsCoordinateTransform transform;
+
     /* WFIPS root/default path */
     QString wfipsPath;
 
@@ -150,6 +155,20 @@ private:
     QgsFeatureIds selectedFids;
     QgsFeatureList selectedFeatures;
 
+    /*
+    ** Mutable layer for our buffering and editing, and displaying in other
+    ** canvases
+    */
+    QgsVectorLayer *analysisAreaMemLayer;
+
+    /* Dispatch location canvas */
+    QVBoxLayout *dispatchMapLayout;
+    QgsMapCanvas *dispatchMapCanvas;
+    QList<QgsMapCanvasLayer> dispatchMapCanvasLayers;
+    QList<QgsMapLayer*> dispatchLayers;
+
+    void ConstructDispatchWidgets();
+
     /* Identify results viewer */
     WfipsIdentifyDialog *identifyDialog;
 
@@ -185,6 +204,7 @@ private slots:
     void ShowMessage( const int messageType,
                       const int messageFlags,
                       const QString &message );
+
 protected:
     void closeEvent( QCloseEvent *event );
 

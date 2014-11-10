@@ -268,7 +268,7 @@
          <enum>QFrame::Plain</enum>
         </property>
         <property name="currentIndex">
-         <number>1</number>
+         <number>3</number>
         </property>
         <widget class="QWidget" name="dataPage">
          <layout class="QVBoxLayout" name="verticalLayout_13">
@@ -572,7 +572,7 @@
            </widget>
           </item>
           <item>
-           <widget class="QFrame" name="frame">
+           <widget class="QFrame" name="dispatchMapFrame">
             <property name="sizePolicy">
              <sizepolicy hsizetype="Preferred" vsizetype="MinimumExpanding">
               <horstretch>0</horstretch>
@@ -585,19 +585,6 @@
             <property name="frameShadow">
              <enum>QFrame::Raised</enum>
             </property>
-            <widget class="QLabel" name="label_15">
-             <property name="geometry">
-              <rect>
-               <x>130</x>
-               <y>340</y>
-               <width>351</width>
-               <height>17</height>
-              </rect>
-             </property>
-             <property name="text">
-              <string>Another Map Canvas will go here...</string>
-             </property>
-            </widget>
            </widget>
           </item>
          </layout>

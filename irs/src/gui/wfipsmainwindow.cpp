@@ -43,6 +43,7 @@ WfipsMainWindow::WfipsMainWindow(QWidget *parent) :
 
     ConstructToolButtons();
     ConstructAnalysisAreaWidgets();
+    ConstructDispatchWidgets();
 
     ConstructTreeWidget();
     AssignTreeWidgetIndices( ui->treeWidget->invisibleRootItem() );
@@ -116,6 +117,7 @@ void WfipsMainWindow::PostConstructionActions()
 {
     /* Make sure one of the map tools gets initialized */
     ui->mapPanToolButton->click();
+    ui->treeWidget->setCurrentItem( ui->treeWidget->topLevelItem( 0 ) );
 }
 
 void WfipsMainWindow::ConstructToolButtons()
@@ -157,13 +159,11 @@ void WfipsMainWindow::ConstructAnalysisAreaWidgets()
     ** XXX: Need to set dst crs for warping on the fly, but this may mess with
     ** how we handle extents and zoom and selection.
     */
-    /*
-    QgsCoordinateReferenceSystem crs;
     crs.createFromSrid( 4269 );
     qDebug() << "CRS valid: " << crs.isValid();
+    transform.setDestCRS( crs );
     analysisAreaMapCanvas->setDestinationCrs( crs );
     analysisAreaMapCanvas->setCrsTransformEnabled( true );
-    */
     analysisAreaMapCanvas->refresh();
     analysisAreaMapLayout = new QVBoxLayout( ui->analysisAreaMapFrame );
     analysisAreaMapLayout->addWidget( analysisAreaMapCanvas );
@@ -218,7 +218,8 @@ void WfipsMainWindow::AddAnalysisAreaLayer( QString path, QString layerName,
     ui->analysisAreaComboBox->addItem( layerName.toUpper() );
     if( useExtent )
     {
-        analysisAreaMapCanvas->setExtent( analysisLayer->extent() );
+        transform.setSourceCrs( analysisLayer->crs() );
+        analysisAreaMapCanvas->setExtent( transform.transformBoundingBox( analysisLayer->extent() ) );
     }
 }
 
@@ -304,6 +305,18 @@ void WfipsMainWindow::UpdateAnalysisAreaMap( int index )
     analysisAreaMapCanvas->setExtent( extent );
     analysisAreaMapCanvas->setLayerSet( analysisMapCanvasLayers );
     analysisAreaMapCanvas->refresh();
+}
+
+void WfipsMainWindow::ConstructDispatchWidgets()
+{
+    dispatchMapCanvas = new QgsMapCanvas( 0, 0 );
+    dispatchMapCanvas->enableAntiAliasing( true );
+    dispatchMapCanvas->setCanvasColor( Qt::white );
+    dispatchMapCanvas->freeze( false );
+    dispatchMapCanvas->setVisible( true );
+    dispatchMapCanvas->refresh();
+    dispatchMapLayout = new QVBoxLayout( ui->dispatchMapFrame );
+    dispatchMapLayout->addWidget( dispatchMapCanvas );
 }
 
 void WfipsMainWindow::ConstructTreeWidget()
@@ -646,14 +659,27 @@ void WfipsMainWindow::SetAnalysisArea()
     CPLFree( (void*)pszFidCol );
     QgsRectangle extent = feature.geometry()->boundingBox();
     QgsRectangle rectangle;
+    analysisAreaMemLayer = new QgsVectorLayer( "MultiPolygon", "", "memory", true );
+    assert( analysisAreaMemLayer->isValid() );
+    QgsVectorDataProvider *provider;
+    provider = analysisAreaMemLayer->dataProvider();
     for( int i = 0; i < features.size(); i++ )
     {
         rectangle = features[i].geometry()->boundingBox();
         extent.combineExtentWith( &rectangle );
     }
+    QgsFields fields = layer->dataProvider()->fields();
+    provider->addAttributes( fields.toList() );
+    provider->addFeatures( features );
+    analysisAreaMemLayer->updateExtents();
+    QgsMapLayerRegistry::instance()->addMapLayer( analysisAreaMemLayer, true );
+    dispatchMapCanvasLayers.append( QgsMapCanvasLayer( analysisAreaMemLayer, false ) );
+    dispatchMapCanvas->setLayerSet( dispatchMapCanvasLayers );
     extent.scale( 1.1 );
     analysisAreaMapCanvas->setExtent( extent );
+    //dispatchMapCanvas->setExtent( extent );
     analysisAreaMapCanvas->refresh();
+    //dispatchMapCanvas->refresh();
     ui->setAnalysisAreaToolButton->setText( "Clear Analysis Area" );
 }
 
