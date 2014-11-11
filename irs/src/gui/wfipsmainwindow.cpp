@@ -55,12 +55,18 @@ WfipsMainWindow::WfipsMainWindow(QWidget *parent) :
     CreateConnections();
     PostConstructionActions();
     ReadSettings();
+    this->setWindowIcon( QIcon( ":/osu" ) );
+    statusProgress = new QProgressBar( this );
+    statusProgress->setRange( 0, 100 );
+    this->statusBar()->addWidget( statusProgress );
+    this->statusBar()->showMessage( "Welcome to WFIPS...", 5000 );
 }
 
 WfipsMainWindow::~WfipsMainWindow()
 {
     //QgsMapLayerRegistry::instance()->removeAllMapLayers();
     delete ui;
+    delete statusProgress;
     delete identifyDialog;
 
     delete analysisAreaMapCanvas;
@@ -78,6 +84,7 @@ void WfipsMainWindow::WriteSettings()
     QSettings settings( QSettings::NativeFormat, QSettings::UserScope,  "firelab", "wfips" );
     settings.setValue( "wfipsdatapath", wfipsPath );
     settings.setValue( "customlayerpath", customLayerPath );
+    settings.setValue( "analysisbuffer", ui->bufferAnalysisSpinBox->value() );
 }
 
 void WfipsMainWindow::ReadSettings()
@@ -95,6 +102,10 @@ void WfipsMainWindow::ReadSettings()
     if( settings.contains( "customlayerpath" ) )
     {
         customLayerPath = settings.value( "customlayerpath" ).toString();
+    }
+    if( settings.contains( "analysisbuffer" ) )
+    {
+        ui->bufferAnalysisSpinBox->setValue( settings.value( "analysisbuffer" ).toDouble() );
     }
 }
 
@@ -325,6 +336,7 @@ void WfipsMainWindow::ConstructDispatchWidgets()
     dispatchMapCanvas = new QgsMapCanvas( 0, 0 );
     dispatchMapCanvas->enableAntiAliasing( true );
     dispatchMapCanvas->setCanvasColor( Qt::white );
+    dispatchMapCanvas->setDestinationCrs( crs );
     dispatchMapCanvas->freeze( false );
     dispatchMapCanvas->setVisible( true );
     dispatchMapCanvas->refresh();
@@ -383,10 +395,10 @@ void WfipsMainWindow::SetStackIndex( QTreeWidgetItem *current,
             break;
         case 4:
             ui->stackedWidget->setCurrentIndex( 3 );
+            ui->mapToolFrame->setEnabled( true );
             break;
         case 5:
             ui->stackedWidget->setCurrentIndex( 4 );
-            ui->mapToolFrame->setEnabled( true );
             break;
         case 6:
             ui->stackedWidget->setCurrentIndex( 5 );
@@ -470,10 +482,6 @@ void WfipsMainWindow::UpdateMapToolType()
     QgsVectorLayer *layer;
     layer =
         reinterpret_cast<QgsVectorLayer*>( analysisAreaMapCanvas->currentLayer() );
-    if( layer != NULL )
-    {
-        ClearAnalysisAreaSelection();
-    }
     if( ui->mapPanToolButton->isChecked() )
     {
         qDebug() << "Setting map tool to pan";
@@ -545,9 +553,16 @@ void WfipsMainWindow::ZoomToLayerExtent()
     }
     transform.setSourceCrs( analysisLayer->crs() );
     analysisAreaMapCanvas->setExtent( transform.transformBoundingBox( analysisLayer->extent() ) );
+    dispatchMapCanvas->setExtent( ((QgsVectorLayer*)dispatchMapCanvas->currentLayer())->extent() );
     analysisAreaMapCanvas->refresh();
+    dispatchMapCanvas->refresh();
 }
 
+/*
+** Couldn't find a way to try to get this in QGIS, so we have an OGR stub.
+** This apparently doesn't work all the time, although I am unclear on why OGR
+** Drivers don't usually reture a valid column.
+*/
 static const char * OGRGetFIDColumn( const char *pszUrl )
 {
     char **papszTokens =
@@ -625,6 +640,20 @@ void WfipsMainWindow::ClearAnalysisAreaSelection()
         }
     }
     ((WfipsSelectMapTool*)analysisSelectTool)->clear();
+
+    /* Dispatch Layer */
+    if( dispatchMapCanvasLayers.size() > 0 )
+    {
+        dispatchMapCanvasLayers.clear();
+        QgsMapLayerRegistry::instance()->removeMapLayer( analysisAreaMemLayer->id() );
+        dispatchMapCanvas->refresh();
+    }
+}
+
+static QgsGeometry* BufferGeomConcurrent( QgsGeometry *geometry, const double buf,
+                                  int segmentApprox )
+{
+    return geometry->buffer( buf, segmentApprox );
 }
 
 /*
@@ -701,12 +730,22 @@ void WfipsMainWindow::SetAnalysisArea()
         extent = transform.transformBoundingBox( extent );
     }
     QgsRectangle rectangle;
-    analysisAreaMemLayer = new QgsVectorLayer( "MultiPolygon", "", "memory", true );
+    analysisAreaMemLayer = new QgsVectorLayer( "MultiPolygon?crs=EPSG:4269", "test", "memory", true );
+    //analysisAreaMemLayer = new QgsVectorLayer( "gacc.db|layername=gacc", "test", "ogr", true );
     assert( analysisAreaMemLayer->isValid() );
     QgsVectorDataProvider *provider;
     provider = analysisAreaMemLayer->dataProvider();
+    analysisAreaMemLayer->setReadOnly( true );
+    QgsGeometry *multi = QgsGeometry::fromWkt( "MULTIPOLYGON EMPTY" );
+    assert( multi != NULL );
+    QgsFeature newFeature( feature );
+    QList<QgsGeometry*>newGeometries;
+    int rc;
     for( int i = 0; i < features.size(); i++ )
     {
+        newGeometries.append( features[i].geometry() );
+        //rc = multi->addPart( features[i].geometry() );
+        //assert( rc == 0 );
         if( layer->crs() != crs )
         {
             rectangle = transform.transformBoundingBox( features[i].geometry()->boundingBox() );
@@ -725,19 +764,52 @@ void WfipsMainWindow::SetAnalysisArea()
                                    << "," << extent.yMinimum()
                                    << "," << extent.yMaximum();
     }
+    multi = QgsGeometry::unaryUnion( newGeometries );
+    QgsGeometry *buffered = multi;
+    QFuture<QgsGeometry*>future;
+    if( ui->bufferAnalysisCheckBox->isChecked() && ui->bufferAnalysisSpinBox->value() > 0 )
+    {
+        this->statusBar()->showMessage( "Buffering  geometries..." );
+        /* Just busy */
+        statusProgress->setRange( 0, 0 );
+        statusProgress->setValue( 1 );
+        future = QtConcurrent::run( BufferGeomConcurrent, multi, ui->bufferAnalysisSpinBox->value(), 2 );
+        //BufferGeomConcurrent( multi, ui->bufferAnalysisSpinBox->value(), 2 );
+        //buffered = multi->buffer( ui->bufferAnalysisSpinBox->value(), 2 );
+        future.waitForFinished();
+        buffered = future.results()[0];
+        statusProgress->setRange( 0, 100 );
+        statusProgress->setValue( 0 );
+        this->statusBar()->showMessage( "Buffering finished.", 1500 );
+    }
+
+    newFeature.setGeometry( buffered );
+    QgsFeatureList newFeatures;
+    newFeatures.append( newFeature );
+    extent.scale( 1.1 );
     QgsFields fields = layer->dataProvider()->fields();
     provider->addAttributes( fields.toList() );
-    provider->addFeatures( features );
+    provider->addFeatures( newFeatures );
     analysisAreaMemLayer->updateExtents();
     QgsMapLayerRegistry::instance()->addMapLayer( analysisAreaMemLayer, true );
-    dispatchMapCanvasLayers.append( QgsMapCanvasLayer( analysisAreaMemLayer, false ) );
-    dispatchMapCanvas->setLayerSet( dispatchMapCanvasLayers );
-    extent.scale( 1.1 );
+    AddAnalysisLayerToCanvases();
+
     analysisAreaMapCanvas->setExtent( extent );
-    //dispatchMapCanvas->setExtent( extent );
     analysisAreaMapCanvas->refresh();
-    //dispatchMapCanvas->refresh();
+
     ui->setAnalysisAreaToolButton->setText( "Clear Analysis Area" );
+}
+
+void WfipsMainWindow::AddAnalysisLayerToCanvases()
+{
+    dispatchMapCanvasLayers.append( QgsMapCanvasLayer( analysisAreaMemLayer, true ) );
+    dispatchMapCanvas->setLayerSet( dispatchMapCanvasLayers );
+
+    QgsRectangle extent = analysisAreaMemLayer->extent();
+    extent.scale( 1.1 );
+    dispatchMapCanvas->setExtent( extent );
+    dispatchMapCanvas->setCurrentLayer( dispatchMapCanvasLayers[0].layer() );
+    dispatchMapCanvas->refresh();
 }
 
 void WfipsMainWindow::ShowMessage( const int messageType,

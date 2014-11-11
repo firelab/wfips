@@ -268,7 +268,7 @@
          <enum>QFrame::Plain</enum>
         </property>
         <property name="currentIndex">
-         <number>3</number>
+         <number>1</number>
         </property>
         <widget class="QWidget" name="dataPage">
          <layout class="QVBoxLayout" name="verticalLayout_13">
@@ -388,10 +388,10 @@
             <item>
              <widget class="QCheckBox" name="bufferAnalysisCheckBox">
               <property name="enabled">
-               <bool>false</bool>
+               <bool>true</bool>
               </property>
               <property name="toolTip">
-               <string>NOT TRIVIAL TO BE IMPLEMENTED</string>
+               <string>Not really miles yet...</string>
               </property>
               <property name="text">
                <string>Buffer Analysis Feature</string>
@@ -399,18 +399,21 @@
              </widget>
             </item>
             <item>
-             <widget class="QSpinBox" name="bufferAnalyisSpinBox">
+             <widget class="QDoubleSpinBox" name="bufferAnalysisSpinBox">
               <property name="enabled">
-               <bool>false</bool>
+               <bool>true</bool>
               </property>
               <property name="toolTip">
-               <string>NOT TRIVIAL TO BE IMPLEMENTED</string>
+               <string>Not really miles yet...</string>
+              </property>
+              <property name="accelerated">
+               <bool>true</bool>
               </property>
               <property name="suffix">
-               <string> miles</string>
+               <string> mi</string>
               </property>
               <property name="maximum">
-               <number>200</number>
+               <double>50.000000000000000</double>
               </property>
              </widget>
             </item>
@@ -2253,22 +2256,6 @@
     <hint type="destinationlabel">
      <x>906</x>
      <y>243</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>bufferAnalysisCheckBox</sender>
-   <signal>toggled(bool)</signal>
-   <receiver>bufferAnalyisSpinBox</receiver>
-   <slot>setEnabled(bool)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>375</x>
-     <y>749</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>521</x>
-     <y>750</y>
     </hint>
    </hints>
   </connection>

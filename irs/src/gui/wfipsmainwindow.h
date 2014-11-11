@@ -28,9 +28,11 @@
 #ifndef WFIPSMAINWINDOW_H
 #define WFIPSMAINWINDOW_H
 
+#include <QtConcurrentRun>
 #include <QFileDialog>
 #include <QMainWindow>
 #include <QMessageBox>
+#include <QProgressBar>
 #include <QSettings>
 #include <QTreeWidget>
 #include <QTreeWidgetItem>
@@ -100,6 +102,7 @@ public:
 
 private:
     Ui::WfipsMainWindow *ui;
+    QProgressBar *statusProgress;
     QString qgisPluginPath;
 
     /* CRS for map canvases */
@@ -152,6 +155,8 @@ private:
     void AddAnalysisAreaLayer( QString path, QString layerName="",
                                bool useExtent=false );
     void LoadAnalysisAreaLayers();
+
+    void AddAnalysisLayerToCanvases();
 
     QgsFeatureIds selectedFids;
     QgsFeatureList selectedFeatures;
