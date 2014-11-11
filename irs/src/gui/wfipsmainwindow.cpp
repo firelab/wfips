@@ -85,6 +85,7 @@ void WfipsMainWindow::WriteSettings()
     settings.setValue( "wfipsdatapath", wfipsPath );
     settings.setValue( "customlayerpath", customLayerPath );
     settings.setValue( "analysisbuffer", ui->bufferAnalysisSpinBox->value() );
+    settings.setValue( "useanalysisbuffer", ui->bufferAnalysisCheckBox->isChecked() );
 }
 
 void WfipsMainWindow::ReadSettings()
@@ -106,6 +107,10 @@ void WfipsMainWindow::ReadSettings()
     if( settings.contains( "analysisbuffer" ) )
     {
         ui->bufferAnalysisSpinBox->setValue( settings.value( "analysisbuffer" ).toDouble() );
+    }
+    if( settings.contains( "useanalysisbuffer" ) )
+    {
+        ui->bufferAnalysisCheckBox->setChecked( settings.value( "useanalysisbuffer" ).toBool() );
     }
 }
 
