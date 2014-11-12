@@ -666,34 +666,13 @@ static QgsGeometry * BufferGeomConcurrent( QgsGeometry *geometry, const double b
     return geometry->buffer( buf, segmentApprox );
 }
 
-static QgsVectorLayer * CopyToMemLayer( QgsVectorLayer *layer )
+static QgsVectorLayer * CopyToMemLayer( QgsVectorLayer *layer, QgsFeatureIds fids )
 {
     if( !layer->isValid() )
     {
         return NULL;
     }
     QString uri = "Point";
-    /*
-    QGis::WkbType type = layer->wkbType();
-    switch( type )
-    {
-        case QGis::WkbPoint:
-            uri = "Point";
-            break;
-        case WkbMultiPoint:
-            uri = "MultiPoint";
-            break;
-        case WkbPolygon:
-        case WkbMultiPolygon:
-            uri = "MultiPolygon";
-            break;
-        case WkbLine:
-        case WkbLineString:
-            uri = "MultiLineString";
-            break;
-    }
-    uri += "?crs=EPSG:4269&index=yes&field=id:integer";
-    */
     uri += "?crs=EPSG:4269&index=yes";
     QgsFields fields = layer->dataProvider()->fields();
     for( int i = 0; i < fields.size(); i++ )
@@ -705,9 +684,14 @@ static QgsVectorLayer * CopyToMemLayer( QgsVectorLayer *layer )
     QgsVectorLayer *memLayer = new QgsVectorLayer( uri, layer->name(), "memory", true );
     QgsVectorDataProvider *provider = memLayer->dataProvider();
     provider->addAttributes( fields.toList() );
-    QgsFeature feature, newFeature;
+    QgsFeature feature;
     QgsFeatureList features;
-    QgsFeatureIterator fit = layer->getFeatures();
+    QgsFeatureRequest request;
+    if( fids.size() > 0 )
+    {
+        request.setFilterFids( fids );
+    }
+    QgsFeatureIterator fit = layer->getFeatures( request );
     while( fit.nextFeature( feature ) )
     {
         features.append( feature );
@@ -858,19 +842,16 @@ void WfipsMainWindow::SetAnalysisArea()
     /* Dispatch Location mem layer */
     QString dlUri = wfipsPath + "/disploc.db|layername=disploc";
     layer = new QgsVectorLayer( dlUri, "disploc", "ogr", true );
-    dispatchLocationMemLayer = CopyToMemLayer( layer );
-    assert( dispatchLocationMemLayer->isValid() );
-    QgsMapLayerRegistry::instance()->addMapLayer( dispatchLocationMemLayer, true );
-    delete layer;
+    layer->setReadOnly( true );
 
     /*
     ** Subset the dispatch locations.  We may have to do this by hand?  Iterate
     ** through the features and grab the FIDs of the contained locations.
     */
-    QgsFeatureIterator fit = dispatchLocationMemLayer->getFeatures();
+    QgsFeatureIterator fit = layer->getFeatures();
     QgsFeatureIds fids;
     int i, n;
-    i = 0; n = dispatchLocationMemLayer->featureCount();
+    i = 0; n = layer->featureCount();
     this->statusBar()->showMessage( "Searching for dispatch locations..." );
     while( fit.nextFeature( feature ) )
     {
@@ -888,16 +869,12 @@ void WfipsMainWindow::SetAnalysisArea()
     ui->progressBar->reset();
     this->statusBar()->showMessage( "Found " + fids.size() + QString( " locations." ), 3000 );
     qDebug() << "Found " << fids.size() << " dispatch locations within the analysis area";
-    QString fidCol;
-    QgsAttributeList attributes = dispatchLocationMemLayer->dataProvider()->pkAttributeIndexes();
-    fields = dispatchLocationMemLayer->dataProvider()->fields();
-    //fidCol = fields[attributes[0]];
-    //pszFidCol = QStringToCString( fidCol );
-    //QString sub = BuildFidSet( pszFidCol, fids );
-    //free( pszFidCol );
-    //qDebug() << "Using OGC_FID as fid col and subsetting: " << sub;
-    //dispatchLocationMemLayer->setSubsetString( sub );
- 
+
+    dispatchLocationMemLayer = CopyToMemLayer( layer, fids );
+    assert( dispatchLocationMemLayer->isValid() );
+    QgsMapLayerRegistry::instance()->addMapLayer( dispatchLocationMemLayer, true );
+    delete layer;
+
     AddAnalysisLayerToCanvases();
 
     analysisAreaMapCanvas->setExtent( extent );

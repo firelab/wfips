@@ -57,6 +57,7 @@
 
 /* QGIS feature and related */
 #include <qgsfeature.h>
+#include <qgsfeaturerequest.h>
 #include <qgsgeometry.h>
 
 /* Renderers and symbols */
