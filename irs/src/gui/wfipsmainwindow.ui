@@ -16,118 +16,135 @@
   <widget class="QWidget" name="centralwidget">
    <layout class="QHBoxLayout" name="horizontalLayout">
     <item>
-     <widget class="QTreeWidget" name="treeWidget">
-      <property name="sizePolicy">
-       <sizepolicy hsizetype="Maximum" vsizetype="Expanding">
-        <horstretch>0</horstretch>
-        <verstretch>0</verstretch>
-       </sizepolicy>
-      </property>
-      <property name="alternatingRowColors">
-       <bool>true</bool>
-      </property>
-      <property name="animated">
-       <bool>true</bool>
-      </property>
-      <column>
-       <property name="text">
-        <string>WFIPS</string>
-       </property>
-      </column>
+     <layout class="QVBoxLayout" name="verticalLayout_21">
       <item>
-       <property name="text">
-        <string>Data</string>
-       </property>
-      </item>
-      <item>
-       <property name="text">
-        <string>Analysis Area</string>
-       </property>
-      </item>
-      <item>
-       <property name="text">
-        <string>Agencies</string>
-       </property>
-      </item>
-      <item>
-       <property name="text">
-        <string>Dispatch Locations</string>
-       </property>
-      </item>
-      <item>
-       <property name="text">
-        <string>Resources</string>
-       </property>
-       <item>
-        <property name="text">
-         <string>Dispatch Location</string>
+       <widget class="QTreeWidget" name="treeWidget">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Maximum" vsizetype="Expanding">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
         </property>
-       </item>
-       <item>
-        <property name="text">
-         <string>Large Air Tankers</string>
+        <property name="alternatingRowColors">
+         <bool>true</bool>
         </property>
-       </item>
-       <item>
-        <property name="text">
-         <string>Prepositioning</string>
+        <property name="animated">
+         <bool>true</bool>
         </property>
-       </item>
-       <item>
-        <property name="text">
-         <string>Drawdown</string>
-        </property>
-        <property name="flags">
-         <set>ItemIsSelectable|ItemIsDragEnabled|ItemIsUserCheckable</set>
-        </property>
-       </item>
-      </item>
-      <item>
-       <property name="text">
-        <string>Fuel Treatment</string>
-       </property>
-      </item>
-      <item>
-       <property name="text">
-        <string>Large Fire Simulation</string>
-       </property>
-      </item>
-      <item>
-       <property name="text">
-        <string>Simulation Parameters</string>
-       </property>
-      </item>
-      <item>
-       <property name="text">
-        <string>Results</string>
-       </property>
-       <item>
-        <property name="text">
-         <string>Initial Attack Success</string>
-        </property>
-       </item>
-       <item>
-        <property name="text">
-         <string>Large Fire Outcome</string>
-        </property>
+        <column>
+         <property name="text">
+          <string>WFIPS</string>
+         </property>
+        </column>
         <item>
          <property name="text">
-          <string>Acreage</string>
+          <string>Data</string>
          </property>
         </item>
         <item>
          <property name="text">
-          <string>Cost</string>
+          <string>Analysis Area</string>
          </property>
         </item>
         <item>
          <property name="text">
-          <string>Population Affected</string>
+          <string>Agencies</string>
          </property>
         </item>
-       </item>
+        <item>
+         <property name="text">
+          <string>Dispatch Locations</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>Resources</string>
+         </property>
+         <item>
+          <property name="text">
+           <string>Dispatch Location</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>Large Air Tankers</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>Prepositioning</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>Drawdown</string>
+          </property>
+          <property name="flags">
+           <set>ItemIsSelectable|ItemIsDragEnabled|ItemIsUserCheckable</set>
+          </property>
+         </item>
+        </item>
+        <item>
+         <property name="text">
+          <string>Fuel Treatment</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>Large Fire Simulation</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>Simulation Parameters</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>Results</string>
+         </property>
+         <item>
+          <property name="text">
+           <string>Initial Attack Success</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>Large Fire Outcome</string>
+          </property>
+          <item>
+           <property name="text">
+            <string>Acreage</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>Cost</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>Population Affected</string>
+           </property>
+          </item>
+         </item>
+        </item>
+       </widget>
       </item>
-     </widget>
+      <item>
+       <widget class="QProgressBar" name="progressBar">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
+        <property name="value">
+         <number>24</number>
+        </property>
+       </widget>
+      </item>
+     </layout>
     </item>
     <item>
      <layout class="QVBoxLayout" name="verticalLayout">
@@ -268,7 +285,7 @@
          <enum>QFrame::Plain</enum>
         </property>
         <property name="currentIndex">
-         <number>1</number>
+         <number>12</number>
         </property>
         <widget class="QWidget" name="dataPage">
          <layout class="QVBoxLayout" name="verticalLayout_13">
@@ -1246,7 +1263,7 @@
              <item>
               <widget class="QStackedWidget" name="fuelTreatStackWidget">
                <property name="currentIndex">
-                <number>1</number>
+                <number>0</number>
                </property>
                <widget class="QWidget" name="page">
                 <layout class="QVBoxLayout" name="verticalLayout_14">
@@ -1285,7 +1302,7 @@
                   </layout>
                  </item>
                  <item>
-                  <spacer name="verticalSpacer_6">
+                  <spacer name="verticalSpacer_4">
                    <property name="orientation">
                     <enum>Qt::Vertical</enum>
                    </property>
@@ -1298,7 +1315,6 @@
                   </spacer>
                  </item>
                 </layout>
-                <zorder>verticalSpacer_6</zorder>
                </widget>
                <widget class="QWidget" name="fuelTreatSpatialPage">
                 <layout class="QVBoxLayout" name="verticalLayout_15">

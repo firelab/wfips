@@ -51,14 +51,17 @@ WfipsMainWindow::WfipsMainWindow(QWidget *parent) :
 
     identifyDialog = new WfipsIdentifyDialog( this );
 
+    /* Initialize global mem layers for free */
+    analysisAreaMemLayer = NULL;
+    dispatchLocationMemLayer = NULL;
+
     /* Call *after* construction */
     CreateConnections();
     PostConstructionActions();
     ReadSettings();
     this->setWindowIcon( QIcon( ":/osu" ) );
-    statusProgress = new QProgressBar( this );
-    statusProgress->setRange( 0, 100 );
-    this->statusBar()->addWidget( statusProgress );
+    ui->progressBar->setRange( 0, 100 );
+    ui->progressBar->setValue( 0 );
     this->statusBar()->showMessage( "Welcome to WFIPS...", 5000 );
 }
 
@@ -66,7 +69,6 @@ WfipsMainWindow::~WfipsMainWindow()
 {
     //QgsMapLayerRegistry::instance()->removeAllMapLayers();
     delete ui;
-    delete statusProgress;
     delete identifyDialog;
 
     delete analysisAreaMapCanvas;
@@ -77,6 +79,9 @@ WfipsMainWindow::~WfipsMainWindow()
     delete analysisZoomOutTool;
     delete analysisIdentifyTool;
     delete analysisSelectTool;
+
+    delete analysisAreaMemLayer;
+    delete dispatchLocationMemLayer;
 }
 
 void WfipsMainWindow::WriteSettings()
@@ -655,10 +660,62 @@ void WfipsMainWindow::ClearAnalysisAreaSelection()
     }
 }
 
-static QgsGeometry* BufferGeomConcurrent( QgsGeometry *geometry, const double buf,
-                                  int segmentApprox )
+static QgsGeometry * BufferGeomConcurrent( QgsGeometry *geometry, const double buf,
+                                           int segmentApprox )
 {
     return geometry->buffer( buf, segmentApprox );
+}
+
+static QgsVectorLayer * CopyToMemLayer( QgsVectorLayer *layer )
+{
+    if( !layer->isValid() )
+    {
+        return NULL;
+    }
+    QString uri = "Point";
+    /*
+    QGis::WkbType type = layer->wkbType();
+    switch( type )
+    {
+        case QGis::WkbPoint:
+            uri = "Point";
+            break;
+        case WkbMultiPoint:
+            uri = "MultiPoint";
+            break;
+        case WkbPolygon:
+        case WkbMultiPolygon:
+            uri = "MultiPolygon";
+            break;
+        case WkbLine:
+        case WkbLineString:
+            uri = "MultiLineString";
+            break;
+    }
+    uri += "?crs=EPSG:4269&index=yes&field=id:integer";
+    */
+    uri += "?crs=EPSG:4269&index=yes";
+    QgsFields fields = layer->dataProvider()->fields();
+    for( int i = 0; i < fields.size(); i++ )
+    {
+        //uri += "&field=" + fields[i].name() + ":" + fields[i].typeName;
+        qDebug() << "Copying field: " << fields[i].name();
+    }
+
+    QgsVectorLayer *memLayer = new QgsVectorLayer( uri, layer->name(), "memory", true );
+    QgsVectorDataProvider *provider = memLayer->dataProvider();
+    provider->addAttributes( fields.toList() );
+    QgsFeature feature, newFeature;
+    QgsFeatureList features;
+    QgsFeatureIterator fit = layer->getFeatures();
+    while( fit.nextFeature( feature ) )
+    {
+        features.append( feature );
+    }
+    qDebug() << "Fetched " << features.size() << " features from " << layer->name();
+    provider->addFeatures( features );
+    memLayer->updateExtents();
+    return memLayer;
 }
 
 /*
@@ -776,15 +833,15 @@ void WfipsMainWindow::SetAnalysisArea()
     {
         this->statusBar()->showMessage( "Buffering  geometries..." );
         /* Just busy */
-        statusProgress->setRange( 0, 0 );
-        statusProgress->setValue( 1 );
+        ui->progressBar->setRange( 0, 0 );
+        ui->progressBar->setValue( 1 );
         future = QtConcurrent::run( BufferGeomConcurrent, multi, ui->bufferAnalysisSpinBox->value(), 2 );
         //BufferGeomConcurrent( multi, ui->bufferAnalysisSpinBox->value(), 2 );
         //buffered = multi->buffer( ui->bufferAnalysisSpinBox->value(), 2 );
         future.waitForFinished();
         buffered = future.results()[0];
-        statusProgress->setRange( 0, 100 );
-        statusProgress->setValue( 0 );
+        ui->progressBar->setRange( 0, 100 );
+        ui->progressBar->setValue( 0 );
         this->statusBar()->showMessage( "Buffering finished.", 1500 );
     }
 
@@ -797,6 +854,50 @@ void WfipsMainWindow::SetAnalysisArea()
     provider->addFeatures( newFeatures );
     analysisAreaMemLayer->updateExtents();
     QgsMapLayerRegistry::instance()->addMapLayer( analysisAreaMemLayer, true );
+
+    /* Dispatch Location mem layer */
+    QString dlUri = wfipsPath + "/disploc.db|layername=disploc";
+    layer = new QgsVectorLayer( dlUri, "disploc", "ogr", true );
+    dispatchLocationMemLayer = CopyToMemLayer( layer );
+    assert( dispatchLocationMemLayer->isValid() );
+    QgsMapLayerRegistry::instance()->addMapLayer( dispatchLocationMemLayer, true );
+    delete layer;
+
+    /*
+    ** Subset the dispatch locations.  We may have to do this by hand?  Iterate
+    ** through the features and grab the FIDs of the contained locations.
+    */
+    QgsFeatureIterator fit = dispatchLocationMemLayer->getFeatures();
+    QgsFeatureIds fids;
+    int i, n;
+    i = 0; n = dispatchLocationMemLayer->featureCount();
+    this->statusBar()->showMessage( "Searching for dispatch locations..." );
+    while( fit.nextFeature( feature ) )
+    {
+        if( buffered->boundingBox().contains( feature.geometry()->asPoint() ) )
+        {
+            if( buffered->contains( feature.geometry() ) )
+            {
+                fids.insert( feature.id() );
+            }
+        }
+        i++;
+        ui->progressBar->setValue( (int)((float)i / n) * 100 );
+        QCoreApplication::processEvents();
+    }
+    ui->progressBar->reset();
+    this->statusBar()->showMessage( "Found " + fids.size() + QString( " locations." ), 3000 );
+    qDebug() << "Found " << fids.size() << " dispatch locations within the analysis area";
+    QString fidCol;
+    QgsAttributeList attributes = dispatchLocationMemLayer->dataProvider()->pkAttributeIndexes();
+    fields = dispatchLocationMemLayer->dataProvider()->fields();
+    //fidCol = fields[attributes[0]];
+    //pszFidCol = QStringToCString( fidCol );
+    //QString sub = BuildFidSet( pszFidCol, fids );
+    //free( pszFidCol );
+    //qDebug() << "Using OGC_FID as fid col and subsetting: " << sub;
+    //dispatchLocationMemLayer->setSubsetString( sub );
+ 
     AddAnalysisLayerToCanvases();
 
     analysisAreaMapCanvas->setExtent( extent );
@@ -807,6 +908,7 @@ void WfipsMainWindow::SetAnalysisArea()
 
 void WfipsMainWindow::AddAnalysisLayerToCanvases()
 {
+    dispatchMapCanvasLayers.append( QgsMapCanvasLayer( dispatchLocationMemLayer, true ) );
     dispatchMapCanvasLayers.append( QgsMapCanvasLayer( analysisAreaMemLayer, true ) );
     dispatchMapCanvas->setLayerSet( dispatchMapCanvasLayers );
 

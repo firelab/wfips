@@ -102,7 +102,6 @@ public:
 
 private:
     Ui::WfipsMainWindow *ui;
-    QProgressBar *statusProgress;
     QString qgisPluginPath;
 
     /* CRS for map canvases */
@@ -166,6 +165,7 @@ private:
     ** canvases
     */
     QgsVectorLayer *analysisAreaMemLayer;
+    QgsVectorLayer *dispatchLocationMemLayer;
 
     /* Dispatch location canvas */
     QVBoxLayout *dispatchMapLayout;
