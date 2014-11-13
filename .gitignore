@@ -5,3 +5,5 @@
 # semi-standard build directory
 build
 
+# qt creator autosave
+*.autosave
