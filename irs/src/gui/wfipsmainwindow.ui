@@ -285,7 +285,7 @@
          <enum>QFrame::Plain</enum>
         </property>
         <property name="currentIndex">
-         <number>12</number>
+         <number>7</number>
         </property>
         <widget class="QWidget" name="dataPage">
          <layout class="QVBoxLayout" name="verticalLayout_13">
@@ -813,6 +813,9 @@
               <property name="toolTip">
                <string>Likelyhood of movement (0=no movement, 100=very likely)</string>
               </property>
+              <property name="maximum">
+               <number>100</number>
+              </property>
               <property name="orientation">
                <enum>Qt::Horizontal</enum>
               </property>
@@ -852,6 +855,9 @@
              <widget class="QSlider" name="enginePPSlider">
               <property name="toolTip">
                <string>Likelyhood of movement (0=no movement, 100=very likely)</string>
+              </property>
+              <property name="maximum">
+               <number>100</number>
               </property>
               <property name="orientation">
                <enum>Qt::Horizontal</enum>
@@ -893,6 +899,9 @@
               <property name="toolTip">
                <string>Likelyhood of movement (0=no movement, 100=very likely)</string>
               </property>
+              <property name="maximum">
+               <number>100</number>
+              </property>
               <property name="orientation">
                <enum>Qt::Horizontal</enum>
               </property>
@@ -933,6 +942,9 @@
               <property name="toolTip">
                <string>Likelyhood of movement (0=no movement, 100=very likely)</string>
               </property>
+              <property name="maximum">
+               <number>100</number>
+              </property>
               <property name="orientation">
                <enum>Qt::Horizontal</enum>
               </property>
@@ -972,6 +984,9 @@
              <widget class="QSlider" name="helitackPPSlider">
               <property name="toolTip">
                <string>Likelyhood of movement (0=no movement, 100=very likely)</string>
+              </property>
+              <property name="maximum">
+               <number>100</number>
               </property>
               <property name="orientation">
                <enum>Qt::Horizontal</enum>
@@ -1037,6 +1052,9 @@
               <property name="toolTip">
                <string>Likelyhood of movement (0=no movement, 100=very likely)</string>
               </property>
+              <property name="maximum">
+               <number>100</number>
+              </property>
               <property name="orientation">
                <enum>Qt::Horizontal</enum>
               </property>
@@ -1076,6 +1094,9 @@
              <widget class="QSlider" name="engineDDSlider">
               <property name="toolTip">
                <string>Likelyhood of movement (0=no movement, 100=very likely)</string>
+              </property>
+              <property name="maximum">
+               <number>100</number>
               </property>
               <property name="orientation">
                <enum>Qt::Horizontal</enum>
@@ -1117,6 +1138,9 @@
               <property name="toolTip">
                <string>Likelyhood of movement (0=no movement, 100=very likely)</string>
               </property>
+              <property name="maximum">
+               <number>100</number>
+              </property>
               <property name="orientation">
                <enum>Qt::Horizontal</enum>
               </property>
@@ -1157,6 +1181,9 @@
               <property name="toolTip">
                <string>Likelyhood of movement (0=no movement, 100=very likely)</string>
               </property>
+              <property name="maximum">
+               <number>100</number>
+              </property>
               <property name="orientation">
                <enum>Qt::Horizontal</enum>
               </property>
@@ -1196,6 +1223,9 @@
              <widget class="QSlider" name="helitackDDSlider">
               <property name="toolTip">
                <string>Likelyhood of movement (0=no movement, 100=very likely)</string>
+              </property>
+              <property name="maximum">
+               <number>100</number>
               </property>
               <property name="orientation">
                <enum>Qt::Horizontal</enum>
