@@ -174,7 +174,11 @@ private:
     QList<QgsMapCanvasLayer> dispatchMapCanvasLayers;
     QList<QgsMapLayer*> dispatchLayers;
 
+    QgsMapTool *dispatchPanTool;
+    QgsMapTool *dispatchZoomInTool;
+    QgsMapTool *dispatchZoomOutTool;
     QgsMapTool *dispatchIdentifyTool;
+    QgsMapTool *dispatchSelectTool;
 
     void ConstructDispatchWidgets();
 

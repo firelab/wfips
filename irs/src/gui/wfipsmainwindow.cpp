@@ -354,9 +354,15 @@ void WfipsMainWindow::ConstructDispatchWidgets()
     dispatchMapLayout->addWidget( dispatchMapCanvas );
 
     /* Map tools */
+    dispatchPanTool = new QgsMapToolPan( dispatchMapCanvas );
+    dispatchZoomInTool = new QgsMapToolZoom( dispatchMapCanvas, FALSE );
+    dispatchZoomOutTool = new QgsMapToolZoom( dispatchMapCanvas, TRUE);
     dispatchIdentifyTool = new WfipsIdentifyMapTool( dispatchMapCanvas );
     connect( dispatchIdentifyTool, SIGNAL( WfipsIdentify( QList<QgsMapToolIdentify::IdentifyResult> ) ),
              this, SLOT( Identify( QList<QgsMapToolIdentify::IdentifyResult> ) ) );
+    dispatchSelectTool = new WfipsSelectMapTool( dispatchMapCanvas );
+    //connect( dispatchSelectTool, SIGNAL( WfipsSelect( QgsFeatureIds ) ),
+             //this, SLOT( Select( QgsFeatureIds ) ) );
 }
 
 void WfipsMainWindow::ConstructTreeWidget()
@@ -501,16 +507,19 @@ void WfipsMainWindow::UpdateMapToolType()
     {
         qDebug() << "Setting map tool to pan";
         analysisAreaMapCanvas->setMapTool( analysisPanTool );
+        dispatchMapCanvas->setMapTool( dispatchPanTool );
     }
     else if( ui->mapZoomInToolButton->isChecked() )
     {
         qDebug() << "Setting map tool to zoom in";
         analysisAreaMapCanvas->setMapTool( analysisZoomInTool );
+        dispatchMapCanvas->setMapTool( dispatchZoomInTool );
     }
     else if( ui->mapZoomOutToolButton->isChecked() )
     {
         qDebug() << "Setting map tool to zoom out";
         analysisAreaMapCanvas->setMapTool( analysisZoomOutTool );
+        dispatchMapCanvas->setMapTool( dispatchZoomOutTool );
     }
     else if( ui->mapIdentifyToolButton->isChecked() )
     {
@@ -522,6 +531,7 @@ void WfipsMainWindow::UpdateMapToolType()
     {
         qDebug() << "Setting map tool to select";
         analysisAreaMapCanvas->setMapTool( analysisSelectTool );
+        dispatchMapCanvas->setMapTool( dispatchSelectTool );
     }
 }
 
