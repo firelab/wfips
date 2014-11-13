@@ -690,22 +690,23 @@ static QgsVectorLayer * WfipsCopyToMemLayer( QgsVectorLayer *layer,
     /*
     ** XXX: Handle different geometry types.  Map from wkb to memory provider
     */
+    int rc;
     QString uri = "Point";
     /* crs is our NAD 83, index for the hell of it */
     uri += "?crs=EPSG:4269&index=yes";
     /* Copy the fields */
     QgsFields fields = layer->dataProvider()->fields();
-    for( int i = 0; i < fields.size(); i++ )
-    {
-        //uri += "&field=" + fields[i].name() + ":" + fields[i].typeName;
-        qDebug() << "Copying field: " << fields[i].name();
-    }
 
     QgsVectorLayer *memLayer = new QgsVectorLayer( uri, layer->name(), "memory", true );
     assert( memLayer->isValid() );
     QgsVectorDataProvider *provider = memLayer->dataProvider();
+    rc = provider->addAttributes( fields.toList() );
+    for( int i = 0; i < fields.size(); i++ )
+    {
+        qDebug() << "Copying field: " << fields[i].name();
+    }
 
-    provider->addAttributes( fields.toList() );
+    memLayer->commitChanges();
     QgsFeature feature;
     QgsFeatureList features;
     QgsFeatureRequest request;
@@ -722,6 +723,7 @@ static QgsVectorLayer * WfipsCopyToMemLayer( QgsVectorLayer *layer,
     qDebug() << "Fetched " << features.size() << " features from " << layer->name();
     provider->addFeatures( features );
     memLayer->updateExtents();
+    memLayer->commitChanges();
     return memLayer;
 }
 
@@ -799,7 +801,7 @@ void WfipsMainWindow::SetAnalysisArea()
         extent = transform.transformBoundingBox( extent );
     }
     QgsRectangle rectangle;
-    analysisAreaMemLayer = new QgsVectorLayer( "MultiPolygon?crs=EPSG:4269", "test", "memory", true );
+    analysisAreaMemLayer = new QgsVectorLayer( "MultiPolygon?crs=EPSG:4269", "Analysis Area", "memory", true );
     assert( analysisAreaMemLayer->isValid() );
     QgsVectorDataProvider *provider;
     provider = analysisAreaMemLayer->dataProvider();
@@ -861,7 +863,7 @@ void WfipsMainWindow::SetAnalysisArea()
 
     /* Dispatch Location mem layer */
     QString dlUri = wfipsPath + "/disploc.db|layername=disploc";
-    layer = new QgsVectorLayer( dlUri, "disploc", "ogr", true );
+    layer = new QgsVectorLayer( dlUri, "Dispatch Locations", "ogr", true );
     assert( layer->isValid() );
     layer->setReadOnly( true );
 
