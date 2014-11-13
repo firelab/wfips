@@ -672,14 +672,28 @@ static QgsGeometry * BufferGeomConcurrent( QgsGeometry *geometry, const double b
     return geometry->buffer( buf, segmentApprox );
 }
 
-static QgsVectorLayer * CopyToMemLayer( QgsVectorLayer *layer, QgsFeatureIds fids )
+/*
+** Copy a layer or a subset of a layer to an in memory datasource.  Currently
+** we only use this for the dispatch location layer, so we only use it for
+** Point layers.  Some logic needs to be added for other layers, if needed.
+**
+** Subsetting is done by supplying feature ids to be selected.
+*/
+
+static QgsVectorLayer * WfipsCopyToMemLayer( QgsVectorLayer *layer,
+                                             QgsFeatureIds fids )
 {
     if( !layer->isValid() )
     {
         return NULL;
     }
+    /*
+    ** XXX: Handle different geometry types.  Map from wkb to memory provider
+    */
     QString uri = "Point";
+    /* crs is our NAD 83, index for the hell of it */
     uri += "?crs=EPSG:4269&index=yes";
+    /* Copy the fields */
     QgsFields fields = layer->dataProvider()->fields();
     for( int i = 0; i < fields.size(); i++ )
     {
@@ -688,7 +702,9 @@ static QgsVectorLayer * CopyToMemLayer( QgsVectorLayer *layer, QgsFeatureIds fid
     }
 
     QgsVectorLayer *memLayer = new QgsVectorLayer( uri, layer->name(), "memory", true );
+    assert( memLayer->isValid() );
     QgsVectorDataProvider *provider = memLayer->dataProvider();
+
     provider->addAttributes( fields.toList() );
     QgsFeature feature;
     QgsFeatureList features;
@@ -697,6 +713,7 @@ static QgsVectorLayer * CopyToMemLayer( QgsVectorLayer *layer, QgsFeatureIds fid
     {
         request.setFilterFids( fids );
     }
+    /* request default is QgsFeatureRequest(), so we should be good here */
     QgsFeatureIterator fit = layer->getFeatures( request );
     while( fit.nextFeature( feature ) )
     {
@@ -783,7 +800,6 @@ void WfipsMainWindow::SetAnalysisArea()
     }
     QgsRectangle rectangle;
     analysisAreaMemLayer = new QgsVectorLayer( "MultiPolygon?crs=EPSG:4269", "test", "memory", true );
-    //analysisAreaMemLayer = new QgsVectorLayer( "gacc.db|layername=gacc", "test", "ogr", true );
     assert( analysisAreaMemLayer->isValid() );
     QgsVectorDataProvider *provider;
     provider = analysisAreaMemLayer->dataProvider();
@@ -796,8 +812,6 @@ void WfipsMainWindow::SetAnalysisArea()
     for( int i = 0; i < features.size(); i++ )
     {
         newGeometries.append( features[i].geometry() );
-        //rc = multi->addPart( features[i].geometry() );
-        //assert( rc == 0 );
         if( layer->crs() != crs )
         {
             rectangle = transform.transformBoundingBox( features[i].geometry()->boundingBox() );
@@ -848,6 +862,7 @@ void WfipsMainWindow::SetAnalysisArea()
     /* Dispatch Location mem layer */
     QString dlUri = wfipsPath + "/disploc.db|layername=disploc";
     layer = new QgsVectorLayer( dlUri, "disploc", "ogr", true );
+    assert( layer->isValid() );
     layer->setReadOnly( true );
 
     /*
@@ -876,7 +891,7 @@ void WfipsMainWindow::SetAnalysisArea()
     this->statusBar()->showMessage( "Found " + fids.size() + QString( " locations." ), 3000 );
     qDebug() << "Found " << fids.size() << " dispatch locations within the analysis area";
 
-    dispatchLocationMemLayer = CopyToMemLayer( layer, fids );
+    dispatchLocationMemLayer = WfipsCopyToMemLayer( layer, fids );
     assert( dispatchLocationMemLayer->isValid() );
     QgsMapLayerRegistry::instance()->addMapLayer( dispatchLocationMemLayer, true );
     delete layer;
