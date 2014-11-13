@@ -87,7 +87,7 @@ void WfipsIdentifyDialog::ShowIdentifyResults( QList<QgsMapToolIdentify::Identif
         s = results[i].mLabel;
         if( s == "" )
         {
-            s = "Feature " + QString::number( i );
+            s = "FID " + results[i].mDerivedAttributes["feature id"];
         }
         qDebug() << results[i].mDerivedAttributes;
         fields = results[i].mFeature.fields();

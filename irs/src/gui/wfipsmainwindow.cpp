@@ -818,9 +818,7 @@ void WfipsMainWindow::SetAnalysisArea()
         return;
     }
     qDebug() << "Setting analysis area using fids: " << selectedFids;
-    QgsFeatureList features;
-    features = layer->selectedFeatures();
-    if( features.size() < 1 )
+    if( selectedFids.size() < 1 )
     {
         qDebug() << "No selected features";
         ui->setAnalysisAreaToolButton->setText( "Set Analysis Area" );
@@ -828,72 +826,20 @@ void WfipsMainWindow::SetAnalysisArea()
         ClearAnalysisAreaSelection();
         return;
     }
-    QgsFeature feature = features[0];
-    layer->setSubsetString( "" );
-    const char *pszUrl = QStringToCString( layer->source() );
-    const char *pszFidCol = OGRGetFIDColumn( pszUrl );
-    if( pszFidCol != NULL )
-    {
-        QString subset = BuildFidSet( pszFidCol, selectedFids );
-        qDebug() << "Subsetting layer: " << subset;
-        if( !layer->setSubsetString( subset ) )
-        {
-            /* Just try FID */
-            if( !EQUAL( pszFidCol, "FID" ) )
-            {
-                subset = BuildFidSet( "FID", selectedFids );
-                qDebug() << "Using FID as fid col and subsetting: " << subset;
-                if( !layer->setSubsetString( subset ) )
-                {
-                    qDebug() << "Failed to subset layer, probably invalid fid column: " 
-                             << pszFidCol;
-                }
-            }
-        }
-    }
-    free( (void*)pszUrl );
-    free( (void*)pszFidCol );
-    transform.setSourceCrs( analysisLayer->crs() );
-    QgsRectangle extent = feature.geometry()->boundingBox();
-    if( layer->crs() != crs )
-    {
-        extent = transform.transformBoundingBox( extent );
-    }
-    QgsRectangle rectangle;
-    analysisAreaMemLayer = new QgsVectorLayer( "MultiPolygon?crs=EPSG:4269", "Analysis Area", "memory", true );
-    assert( analysisAreaMemLayer->isValid() );
-    QgsVectorDataProvider *provider;
-    provider = analysisAreaMemLayer->dataProvider();
-    analysisAreaMemLayer->setReadOnly( true );
-    QgsGeometry *multi = QgsGeometry::fromWkt( "MULTIPOLYGON EMPTY" );
-    assert( multi != NULL );
-    QgsFeature newFeature( feature );
+
+    QgsFeatureList features;
+    QgsFeatureRequest request;
+    request.setFilterFids( selectedFids );
+    QgsFeatureIterator fit = layer->getFeatures( request );
     QList<QgsGeometry*>newGeometries;
-    int rc;
-    for( int i = 0; i < features.size(); i++ )
+    QgsFeature feature;
+    while( fit.nextFeature( feature ) )
     {
-        newGeometries.append( features[i].geometry() );
-        if( layer->crs() != crs )
-        {
-            rectangle = transform.transformBoundingBox( features[i].geometry()->boundingBox() );
-        }
-        else
-        {
-            rectangle = features[i].geometry()->boundingBox();
-        }
-        qDebug() << "Reading bounds of: " << rectangle.xMinimum()
-                                          << "," << rectangle.xMaximum()
-                                          << "," << rectangle.yMinimum()
-                                          << "," << rectangle.yMaximum();
-        extent.combineExtentWith( &rectangle );
-        qDebug() << "New extent: " << extent.xMinimum()
-                                   << "," << extent.xMaximum()
-                                   << "," << extent.yMinimum()
-                                   << "," << extent.yMaximum();
+        newGeometries.append( new QgsGeometry( *(feature.geometry()) ) );
     }
-    multi = QgsGeometry::unaryUnion( newGeometries );
-    QgsGeometry *buffered = multi;
+    QgsGeometry *multi = QgsGeometry::unaryUnion( newGeometries );
     QFuture<QgsGeometry*>future;
+    QgsFeature analysisFeature;
     if( ui->bufferAnalysisCheckBox->isChecked() && ui->bufferAnalysisSpinBox->value() > 0 )
     {
         this->statusBar()->showMessage( "Buffering  geometries..." );
@@ -904,19 +850,27 @@ void WfipsMainWindow::SetAnalysisArea()
         //BufferGeomConcurrent( multi, ui->bufferAnalysisSpinBox->value(), 2 );
         //buffered = multi->buffer( ui->bufferAnalysisSpinBox->value(), 2 );
         future.waitForFinished();
-        buffered = future.results()[0];
         ui->progressBar->setRange( 0, 100 );
         ui->progressBar->setValue( 0 );
         this->statusBar()->showMessage( "Buffering finished.", 1500 );
+        analysisFeature.setGeometry( future.results()[0] );
     }
+    else
+    {
+        analysisFeature.setGeometry( multi );
+    }
+    QgsGeometry *analisysAreaGeometry = new QgsGeometry( *(analysisFeature.geometry()) );
+    features.append( analysisFeature );
 
-    newFeature.setGeometry( buffered );
-    QgsFeatureList newFeatures;
-    newFeatures.append( newFeature );
-    extent.scale( 1.1 );
-    QgsFields fields = layer->dataProvider()->fields();
-    provider->addAttributes( fields.toList() );
-    provider->addFeatures( newFeatures );
+    analysisAreaMemLayer = new QgsVectorLayer( "MultiPolygon?crs=EPSG:4269", "Analysis Area", "memory", true );
+    assert( analysisAreaMemLayer->isValid() );
+    QgsVectorDataProvider *provider;
+    provider = analysisAreaMemLayer->dataProvider();
+    analysisAreaMemLayer->setReadOnly( true );
+
+    //QgsFields fields = layer->dataProvider()->fields();
+    //provider->addAttributes( fields.toList() );
+    provider->addFeatures( features );
     analysisAreaMemLayer->updateExtents();
     QgsMapLayerRegistry::instance()->addMapLayer( analysisAreaMemLayer, true );
 
@@ -930,16 +884,16 @@ void WfipsMainWindow::SetAnalysisArea()
     ** Subset the dispatch locations.  We may have to do this by hand?  Iterate
     ** through the features and grab the FIDs of the contained locations.
     */
-    QgsFeatureIterator fit = layer->getFeatures();
+    fit = layer->getFeatures();
     QgsFeatureIds fids;
     int i, n;
     i = 0; n = layer->featureCount();
     this->statusBar()->showMessage( "Searching for dispatch locations..." );
     while( fit.nextFeature( feature ) )
     {
-        if( buffered->boundingBox().contains( feature.geometry()->asPoint() ) )
+        if( analisysAreaGeometry->boundingBox().contains( feature.geometry()->asPoint() ) )
         {
-            if( buffered->contains( feature.geometry() ) )
+            if( analisysAreaGeometry->contains( feature.geometry() ) )
             {
                 fids.insert( feature.id() );
             }
@@ -955,9 +909,22 @@ void WfipsMainWindow::SetAnalysisArea()
     dispatchLocationMemLayer = WfipsCopyToMemLayer( layer, fids );
     assert( dispatchLocationMemLayer->isValid() );
     QgsMapLayerRegistry::instance()->addMapLayer( dispatchLocationMemLayer, true );
+    delete analisysAreaGeometry;
     delete layer;
+    for( int i = 0; i < newGeometries.size(); i++ )
+    {
+        delete newGeometries[i];
+    }
 
     AddAnalysisLayerToCanvases();
+
+    QgsRectangle extent = analysisAreaMemLayer->extent();
+    if( layer->crs() != crs )
+    {
+        transform.setSourceCrs( layer->crs() );
+        extent = transform.transformBoundingBox( analisysAreaGeometry->boundingBox() );
+    }
+    extent.scale( 1.1 );
 
     analysisAreaMapCanvas->setExtent( extent );
     analysisAreaMapCanvas->refresh();
