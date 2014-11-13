@@ -410,6 +410,7 @@ void WfipsMainWindow::SetStackIndex( QTreeWidgetItem *current,
         case 2:
             ui->stackedWidget->setCurrentIndex( 1 );
             ui->mapToolFrame->setEnabled( true );
+            currentMapCanvas = analysisAreaMapCanvas;
             break;
         case 3:
             ui->stackedWidget->setCurrentIndex( 2 );
@@ -417,6 +418,7 @@ void WfipsMainWindow::SetStackIndex( QTreeWidgetItem *current,
         case 4:
             ui->stackedWidget->setCurrentIndex( 3 );
             ui->mapToolFrame->setEnabled( true );
+            currentMapCanvas = dispatchMapCanvas;
             break;
         case 5:
             ui->stackedWidget->setCurrentIndex( 4 );
@@ -567,21 +569,66 @@ void WfipsMainWindow::Select( QgsFeatureIds fids )
     selectedFids = fids;
 }
 
+int WfipsMainWindow::WfipsIsVisible( QgsMapLayer *layer )
+{
+    int i = 0;
+    if( currentMapCanvas == analysisAreaMapCanvas )
+    {
+        qDebug() << "Checking for visible layers in analysis area canvas";
+        for( i = 0; i < analysisMapCanvasLayers.size(); i++ )
+        {
+            if( layer == analysisMapCanvasLayers[i].layer() )
+            {
+                qDebug() << "Found layer: " << layer->name();
+                return 1;
+            }
+        }
+    }
+    else if( currentMapCanvas == dispatchMapCanvas )
+    {
+        qDebug() << "Checking for visible layers in dispatch canvas";
+        for( i = 0; i < dispatchMapCanvasLayers.size(); i++ )
+        {
+            if( layer == dispatchMapCanvasLayers[i].layer() )
+            {
+                qDebug() << "Found layer: " << layer->name();
+                return 1;
+            }
+        }
+    }
+    return 0;
+}
+
 void WfipsMainWindow::ZoomToLayerExtent()
 {
     qDebug() << "Zoom to layer extent";
     QgsVectorLayer *layer;
-    layer =
-        reinterpret_cast<QgsVectorLayer*>( analysisAreaMapCanvas->currentLayer() );
-    if( layer == NULL )
+    QgsMapLayer *mapLayer;
+    QgsRectangle lextent;
+    QgsRectangle extent;
+    QList<QgsMapLayer*>mapLayers = currentMapCanvas->layers();
+    for( int i = 0; i < mapLayers.size(); i++ )
     {
-        return;
+        layer = reinterpret_cast<QgsVectorLayer*>( mapLayers[i] );
+        mapLayer = reinterpret_cast<QgsMapLayer*>( mapLayers[i] );
+        if( !WfipsIsVisible( mapLayer ) )
+        {
+            continue;
+        }
+        if( layer->crs() != crs )
+        {
+            transform.setSourceCrs( layer->crs() );
+            lextent = transform.transformBoundingBox( layer->extent() );
+        }
+        else
+        {
+            lextent = layer->extent();
+        }
+        extent.combineExtentWith( &lextent );
     }
-    transform.setSourceCrs( analysisLayer->crs() );
-    analysisAreaMapCanvas->setExtent( transform.transformBoundingBox( analysisLayer->extent() ) );
-    dispatchMapCanvas->setExtent( ((QgsVectorLayer*)dispatchMapCanvas->currentLayer())->extent() );
-    analysisAreaMapCanvas->refresh();
-    dispatchMapCanvas->refresh();
+    extent.scale( 1.1 );
+    currentMapCanvas->setExtent( extent );
+    currentMapCanvas->refresh();
 }
 
 /*
@@ -697,10 +744,10 @@ static QgsVectorLayer * WfipsCopyToMemLayer( QgsVectorLayer *layer,
     {
         return NULL;
     }
+    int rc;
     /*
     ** XXX: Handle different geometry types.  Map from wkb to memory provider
     */
-    int rc;
     QString uri = "Point";
     /* crs is our NAD 83, index for the hell of it */
     uri += "?crs=EPSG:4269&index=yes";
@@ -711,6 +758,7 @@ static QgsVectorLayer * WfipsCopyToMemLayer( QgsVectorLayer *layer,
     assert( memLayer->isValid() );
     QgsVectorDataProvider *provider = memLayer->dataProvider();
     rc = provider->addAttributes( fields.toList() );
+    assert( rc == true );
     for( int i = 0; i < fields.size(); i++ )
     {
         qDebug() << "Copying field: " << fields[i].name();
@@ -734,6 +782,7 @@ static QgsVectorLayer * WfipsCopyToMemLayer( QgsVectorLayer *layer,
     provider->addFeatures( features );
     memLayer->updateExtents();
     memLayer->commitChanges();
+
     return memLayer;
 }
 

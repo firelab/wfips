@@ -137,6 +137,7 @@ private:
     /* Tool buttons */
     void ConstructToolButtons();
 
+    int WfipsIsVisible( QgsMapLayer *layer );
     /* Analysis area */
     QgsMapCanvas *analysisAreaMapCanvas;
     QList<QgsMapCanvasLayer> analysisMapCanvasLayers;
