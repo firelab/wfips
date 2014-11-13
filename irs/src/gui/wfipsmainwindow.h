@@ -174,6 +174,8 @@ private:
     QList<QgsMapCanvasLayer> dispatchMapCanvasLayers;
     QList<QgsMapLayer*> dispatchLayers;
 
+    QgsMapTool *dispatchIdentifyTool;
+
     void ConstructDispatchWidgets();
 
     /* Identify results viewer */

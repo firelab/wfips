@@ -84,21 +84,36 @@ void WfipsIdentifyDialog::ShowIdentifyResults( QList<QgsMapToolIdentify::Identif
         ** In order to use this properly, grab the feature and use it to access
         ** the data, not the mAttributes member.
         */
-        item = new QTreeWidgetItem( QTreeWidgetItem::Type );
         s = results[i].mLabel;
         if( s == "" )
         {
             s = "Feature " + QString::number( i );
         }
-        item->setText( 0, s );
-        ui->treeWidget->addTopLevelItem( item );
         qDebug() << results[i].mDerivedAttributes;
-        QVariant var;
         fields = results[i].mFeature.fields();
         attributes = results[i].mFeature.attributes();
-        for( int j = 0;j < results[i].mFeature.attributes().size(); j++ )
+        if( fields->toList().size() != attributes.size() )
         {
-            field = fields->at( j );
+            qDebug() << "Mismatch in size of fields and attributes";
+        }
+
+        if( attributes.size() < 1 )
+        {
+            continue;
+        }
+        item = new QTreeWidgetItem( QTreeWidgetItem::Type );
+        item->setText( 0, s );
+        ui->treeWidget->addTopLevelItem( item );
+        for( int j = 0;j < attributes.size(); j++ )
+        {
+            if( fields->size() > 0 )
+            {
+                field = fields->at( j );
+            }
+            else
+            {
+                field = "Field " + QString::number( j );
+            }
             attribute = attributes[j].toString();
             qDebug() << "Field: " << field.name() << ". Attribute: " << attribute;
             subitem = new QTreeWidgetItem( QTreeWidgetItem::Type );

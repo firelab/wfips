@@ -352,6 +352,11 @@ void WfipsMainWindow::ConstructDispatchWidgets()
     dispatchMapCanvas->refresh();
     dispatchMapLayout = new QVBoxLayout( ui->dispatchMapFrame );
     dispatchMapLayout->addWidget( dispatchMapCanvas );
+
+    /* Map tools */
+    dispatchIdentifyTool = new WfipsIdentifyMapTool( dispatchMapCanvas );
+    connect( dispatchIdentifyTool, SIGNAL( WfipsIdentify( QList<QgsMapToolIdentify::IdentifyResult> ) ),
+             this, SLOT( Identify( QList<QgsMapToolIdentify::IdentifyResult> ) ) );
 }
 
 void WfipsMainWindow::ConstructTreeWidget()
@@ -511,6 +516,7 @@ void WfipsMainWindow::UpdateMapToolType()
     {
         qDebug() << "Setting map tool to identify";
         analysisAreaMapCanvas->setMapTool( analysisIdentifyTool );
+        dispatchMapCanvas->setMapTool( dispatchIdentifyTool );
     }
     else if( ui->mapSelectToolButton->isChecked() )
     {
