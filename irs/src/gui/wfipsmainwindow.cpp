@@ -300,14 +300,14 @@ void WfipsMainWindow::AddCustomAnalysisArea()
 {
     WfipsAddLayerDialog dialog( customLayerPath, this );
     dialog.exec();
-    qDebug() << "Loading " << dialog.GetFilePath() << ", " << dialog.GetLayerName();
-    if( dialog.GetFilePath() == "" || dialog.GetLayerName() == "" )
+    qDebug() << "Loading " << dialog.GetFilePath() << ", " << dialog.GetCurrentLayer();
+    if( dialog.GetFilePath() == "" || dialog.GetCurrentLayer() == "" )
     {
         qDebug() << "Invalid Layer file or layer name!";
         return;
     }
     customLayerPath = QFileInfo( dialog.GetFilePath() ).absolutePath();
-    AddAnalysisAreaLayer( dialog.GetFilePath(), dialog.GetLayerName(), true );
+    AddAnalysisAreaLayer( dialog.GetFilePath(), dialog.GetCurrentLayer(), true );
     if( analysisMapCanvasLayers.size() == 1 )
         analysisAreaMapCanvas->setLayerSet( analysisMapCanvasLayers );
     ui->analysisAreaComboBox->setCurrentIndex( ui->analysisAreaComboBox->count() - 1 );

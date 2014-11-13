@@ -36,10 +36,10 @@
          </widget>
         </item>
         <item>
-         <widget class="QLineEdit" name="addLayerLineEdit"/>
+         <widget class="QLineEdit" name="lineEdit"/>
         </item>
         <item>
-         <widget class="QToolButton" name="openLayerFileToolButton">
+         <widget class="QToolButton" name="openToolButton">
           <property name="text">
            <string>Open</string>
           </property>
@@ -82,7 +82,7 @@
          </spacer>
         </item>
         <item>
-         <widget class="QComboBox" name="addLayerComboBox">
+         <widget class="QComboBox" name="comboBox">
           <property name="sizePolicy">
            <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
             <horstretch>0</horstretch>
@@ -132,7 +132,7 @@
       </widget>
      </item>
      <item>
-      <widget class="QToolButton" name="addLayerToolButton">
+      <widget class="QToolButton" name="addToolButton">
        <property name="enabled">
         <bool>true</bool>
        </property>

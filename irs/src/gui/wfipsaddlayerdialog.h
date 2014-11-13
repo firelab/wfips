@@ -52,18 +52,23 @@ public:
     ~WfipsAddLayerDialog();
 
     QString GetFilePath();
-    QString GetLayerName();
+    QString GetCurrentLayer();
+    QStringList GetLayers();
+    QStringList GetAttributes();
 
 private:
     Ui::WfipsAddLayerDialog *ui;
 
     void Setup();
 
-    QString filePath, layerName;
+    QString filePath, layer;
+    QStringList layers;
     QString initPath;
+    QStringList attributes;
 
 private slots:
     void OpenAreaLayerFile();
+    void UpdateAttributes( int unused );
     void Accept();
     void Cancel();
 };

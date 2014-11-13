@@ -47,12 +47,14 @@ void WfipsAddLayerDialog::Setup()
 {
     ui->setupUi(this);
     /* Connections */
-    connect( ui->openLayerFileToolButton, SIGNAL( clicked() ),
+    connect( ui->openToolButton, SIGNAL( clicked() ),
              this, SLOT( OpenAreaLayerFile() ) );
-    connect( ui->addLayerToolButton, SIGNAL( clicked() ),
+    connect( ui->addToolButton, SIGNAL( clicked() ),
              this, SLOT( Accept() ) );
     connect( ui->cancelToolButton, SIGNAL( clicked() ),
              this, SLOT( Cancel() ) );
+    connect( ui->comboBox, SIGNAL( currentIndexChanged( int ) ),
+             this, SLOT( UpdateAttributes( int ) ) );
 }
 
 WfipsAddLayerDialog::~WfipsAddLayerDialog()
@@ -65,18 +67,26 @@ QString WfipsAddLayerDialog::GetFilePath()
     return filePath;
 }
 
-QString WfipsAddLayerDialog::GetLayerName()
+QString WfipsAddLayerDialog::GetCurrentLayer()
 {
-    layerName = ui->addLayerComboBox->currentText();
-    return layerName;
+    return layer;
 }
 
+QStringList WfipsAddLayerDialog::GetLayers()
+{
+    return layers;
+}
+
+QStringList WfipsAddLayerDialog::GetAttributes()
+{
+    return attributes;
+}
 void WfipsAddLayerDialog::OpenAreaLayerFile()
 {
     filePath =
         QFileDialog::getOpenFileName( this, tr( "Open GIS file" ), initPath, "" );
-    ui->addLayerLineEdit->setText( filePath );
-    ui->addLayerComboBox->clear();
+    ui->lineEdit->setText( filePath );
+    ui->comboBox->clear();
     if( filePath== "" ) 
     {
         return;
@@ -87,11 +97,11 @@ void WfipsAddLayerDialog::OpenAreaLayerFile()
     if( hDS == NULL )
     {
         qDebug() << "Could not identify layer file";
-        ui->addLayerToolButton->setDisabled( true );
-        ui->addLayerLineEdit->setText( "" );
+        ui->addToolButton->setDisabled( true );
+        ui->lineEdit->setText( "" );
         return;
     }
-    QStringList layers;
+    layers.clear();
     int i = 0;
     OGRLayerH hLyr;
     while( i < OGR_DS_GetLayerCount( hDS ) )
@@ -106,12 +116,54 @@ void WfipsAddLayerDialog::OpenAreaLayerFile()
     }
     if( layers.size() < 1 )
     {
-        ui->addLayerToolButton->setDisabled( true );
-        ui->addLayerLineEdit->setText( "" );
+        ui->addToolButton->setDisabled( true );
+        ui->lineEdit->setText( "" );
         GDALClose( hDS );
         return;
     }
-    ui->addLayerComboBox->addItems( layers );
+    ui->comboBox->addItems( layers );
+    OGR_DS_Destroy( hDS );
+}
+
+void WfipsAddLayerDialog::UpdateAttributes( int unused )
+{
+    (void)unused;
+
+    layer = ui->comboBox->currentText();
+    attributes = QStringList();
+    if( layer == "" || filePath == "" )
+    {
+        return;
+    }
+
+    const char *pszFilename = QStringToCString( filePath );
+    OGRDataSourceH hDS = OGROpen( pszFilename, FALSE, NULL );
+    free( (void*)pszFilename );
+    if( hDS == NULL )
+    {
+        return;
+    }
+    OGRLayerH hLyr;
+    const char *pszLayer = QStringToCString( layer );
+    hLyr = OGR_DS_GetLayerByName( hDS, pszLayer );
+    free( (void*)pszLayer );
+    if( hLyr == NULL )
+    {
+        return;
+    }
+    OGRFeatureDefnH hDefn = OGR_L_GetLayerDefn( hLyr );
+    if( hDefn == NULL )
+    {
+        return;
+    }
+    OGRFieldDefnH hField;
+    int n = OGR_FD_GetFieldCount( hDefn );
+    for( int i = 0; i < n; i++ )
+    {
+        hField = OGR_FD_GetFieldDefn( hDefn, i );
+        attributes.append( QString( OGR_Fld_GetNameRef( hField ) ) );
+    }
+    qDebug() << "Found attributes in addlayer: " << attributes;
     OGR_DS_Destroy( hDS );
 }
 
@@ -123,7 +175,7 @@ void WfipsAddLayerDialog::Accept()
 void WfipsAddLayerDialog::Cancel()
 {
     filePath = "";
-    layerName = "";
+    layer = "";
     this->close();
 }
 
