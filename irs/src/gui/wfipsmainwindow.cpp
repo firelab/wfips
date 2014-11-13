@@ -29,11 +29,11 @@
 #include "ui_wfipsmainwindow.h"
 
 
-WfipsMainWindow::WfipsMainWindow(QWidget *parent) :
-    QMainWindow(parent),
-    ui(new Ui::WfipsMainWindow)
+WfipsMainWindow::WfipsMainWindow( QWidget *parent ) :
+    QMainWindow( parent ),
+    ui( new Ui::WfipsMainWindow )
 {
-    ui->setupUi(this);
+    ui->setupUi( this );
     ui->treeWidget->expandAll();
 
     /* Initialize QGIS registry */
@@ -71,6 +71,7 @@ WfipsMainWindow::~WfipsMainWindow()
     delete ui;
     delete identifyDialog;
 
+    /* Analysis Area */
     delete analysisAreaMapCanvas;
     delete analysisAreaMapLayout;
 
@@ -81,6 +82,15 @@ WfipsMainWindow::~WfipsMainWindow()
     delete analysisSelectTool;
 
     delete analysisAreaMemLayer;
+
+    /* Dispatch Locations */
+    delete dispatchMapCanvas;
+    delete dispatchPanTool;
+    delete dispatchZoomInTool;
+    delete dispatchZoomOutTool;
+    delete dispatchIdentifyTool;
+    delete dispatchSelectTool;
+ 
     delete dispatchLocationMemLayer;
 }
 
