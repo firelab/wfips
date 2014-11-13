@@ -777,7 +777,6 @@ void WfipsMainWindow::SetAnalysisArea()
     }
     QgsRectangle rectangle;
     analysisAreaMemLayer = new QgsVectorLayer( "MultiPolygon?crs=EPSG:4269", "test", "memory", true );
-    //analysisAreaMemLayer = new QgsVectorLayer( "gacc.db|layername=gacc", "test", "ogr", true );
     assert( analysisAreaMemLayer->isValid() );
     QgsVectorDataProvider *provider;
     provider = analysisAreaMemLayer->dataProvider();
@@ -790,8 +789,6 @@ void WfipsMainWindow::SetAnalysisArea()
     for( int i = 0; i < features.size(); i++ )
     {
         newGeometries.append( features[i].geometry() );
-        //rc = multi->addPart( features[i].geometry() );
-        //assert( rc == 0 );
         if( layer->crs() != crs )
         {
             rectangle = transform.transformBoundingBox( features[i].geometry()->boundingBox() );
@@ -842,6 +839,7 @@ void WfipsMainWindow::SetAnalysisArea()
     /* Dispatch Location mem layer */
     QString dlUri = wfipsPath + "/disploc.db|layername=disploc";
     layer = new QgsVectorLayer( dlUri, "disploc", "ogr", true );
+    assert( layer->isValid() );
     layer->setReadOnly( true );
 
     /*
