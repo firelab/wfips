@@ -861,8 +861,8 @@ void WfipsMainWindow::SetAnalysisArea()
         //buffered = multi->buffer( ui->bufferAnalysisSpinBox->value(), 2 );
         future.waitForFinished();
         ui->progressBar->setRange( 0, 100 );
-        ui->progressBar->setValue( 0 );
         this->statusBar()->showMessage( "Buffering finished.", 1500 );
+        ui->progressBar->reset();
         analysisFeature.setGeometry( future.results()[0] );
     }
     else
@@ -896,7 +896,7 @@ void WfipsMainWindow::SetAnalysisArea()
     */
     fit = layer->getFeatures();
     QgsFeatureIds fids;
-    int i, n;
+    int i, n, progress;
     i = 0; n = layer->featureCount();
     this->statusBar()->showMessage( "Searching for dispatch locations..." );
     while( fit.nextFeature( feature ) )
@@ -909,7 +909,8 @@ void WfipsMainWindow::SetAnalysisArea()
             }
         }
         i++;
-        ui->progressBar->setValue( (int)((float)i / n) * 100 );
+        progress = (float)i / n * 100;
+        ui->progressBar->setValue( progress );
         QCoreApplication::processEvents();
     }
     ui->progressBar->reset();
