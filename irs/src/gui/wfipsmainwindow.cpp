@@ -630,10 +630,6 @@ void WfipsMainWindow::ZoomToLayerExtent()
     for( int i = 0; i < mapLayers.size(); i++ )
     {
         layer = reinterpret_cast<QgsVectorLayer*>( mapLayers[i] );
-        if( i == 0 )
-        {
-            extent = layer->extent();
-        }
         mapLayer = reinterpret_cast<QgsMapLayer*>( mapLayers[i] );
         if( !WfipsIsVisible( mapLayer ) )
         {
@@ -648,16 +644,23 @@ void WfipsMainWindow::ZoomToLayerExtent()
         {
             lextent = layer->extent();
         }
-        qDebug() << "Combining: " << extent.xMinimum() << ","
-                                  << extent.xMaximum() << ","
-                                  << extent.yMinimum() << ","
-                                  << extent.yMaximum();
-        qDebug() << "with: " << lextent.xMinimum() << ","
-                             << lextent.xMaximum() << ","
-                             << lextent.yMinimum() << ","
-                             << lextent.yMaximum();
+        if( i == 0 )
+        {
+            extent = lextent;
+        }
+        else
+        {
+            qDebug() << "Combining: " << extent.xMinimum() << ","
+                                      << extent.xMaximum() << ","
+                                      << extent.yMinimum() << ","
+                                      << extent.yMaximum();
+            qDebug() << "with: " << lextent.xMinimum() << ","
+                                 << lextent.xMaximum() << ","
+                                 << lextent.yMinimum() << ","
+                                 << lextent.yMaximum();
 
-        extent.combineExtentWith( &lextent );
+            extent.combineExtentWith( &lextent );
+        }
     }
     extent.scale( 1.1 );
     qDebug() << "Setting extent: " << extent.xMinimum() << ","
@@ -814,6 +817,7 @@ void WfipsMainWindow::SetAnalysisArea()
         return;
     }
 
+    this->setDisabled( true );
     QgsFeatureList features;
     QgsFeatureRequest request;
     request.setFilterFids( selectedFids );
@@ -861,8 +865,6 @@ void WfipsMainWindow::SetAnalysisArea()
     provider = analysisAreaMemLayer->dataProvider();
     analysisAreaMemLayer->setReadOnly( true );
 
-    //QgsFields fields = layer->dataProvider()->fields();
-    //provider->addAttributes( fields.toList() );
     provider->addFeatures( features );
     analysisAreaMemLayer->updateExtents();
     QgsMapLayerRegistry::instance()->addMapLayer( analysisAreaMemLayer, true );
@@ -896,6 +898,7 @@ void WfipsMainWindow::SetAnalysisArea()
         ui->progressBar->setValue( progress );
         QCoreApplication::processEvents();
     }
+    this->statusBar()->showMessage( "Adding new layers to map canvases..." );
     ui->progressBar->reset();
     this->statusBar()->showMessage( "Found " + fids.size() + QString( " locations." ), 3000 );
     qDebug() << "Found " << fids.size() << " dispatch locations within the analysis area";
@@ -925,6 +928,8 @@ void WfipsMainWindow::SetAnalysisArea()
     delete layer;
 
     ui->setAnalysisAreaToolButton->setText( "Clear Analysis Area" );
+    this->statusBar()->showMessage( "Done.", 3000 );
+    this->setEnabled( true );
 }
 
 void WfipsMainWindow::AddAnalysisLayerToCanvases()
