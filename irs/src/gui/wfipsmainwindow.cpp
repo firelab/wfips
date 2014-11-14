@@ -240,6 +240,11 @@ void WfipsMainWindow::AddAnalysisAreaLayer( QString path, QString layerName,
     path += layerName;
     qDebug() << "Loading layer: " << layerName;
     analysisLayer = new QgsVectorLayer( path, layerName, "ogr", true );
+    AddAnalysisAreaLayer( analysisLayer, useExtent );
+}
+
+void WfipsMainWindow::AddAnalysisAreaLayer( QgsVectorLayer *layer, bool useExtent )
+{
     if( !analysisLayer->isValid() )
     {
         delete analysisLayer;
@@ -247,14 +252,14 @@ void WfipsMainWindow::AddAnalysisAreaLayer( QString path, QString layerName,
         return;
     }
     analysisLayer->setReadOnly( true );
-    QgsMapLayerRegistry::instance()->addMapLayer( analysisLayer, true );
-    analysisLayers.append( analysisLayer );
-    analysisMapCanvasLayers.append( QgsMapCanvasLayer( analysisLayer, false ) );
-    ui->analysisAreaComboBox->addItem( layerName.toUpper() );
+    QgsMapLayerRegistry::instance()->addMapLayer( layer, true );
+    analysisLayers.append( layer );
+    analysisMapCanvasLayers.append( QgsMapCanvasLayer( layer, false ) );
+    ui->analysisAreaComboBox->addItem( layer->name().toUpper() );
     if( useExtent )
     {
         transform.setSourceCrs( analysisLayer->crs() );
-        analysisAreaMapCanvas->setExtent( transform.transformBoundingBox( analysisLayer->extent() ) );
+        analysisAreaMapCanvas->setExtent( transform.transformBoundingBox( layer->extent() ) );
     }
 }
 
@@ -641,75 +646,6 @@ void WfipsMainWindow::ZoomToLayerExtent()
     currentMapCanvas->refresh();
 }
 
-/*
-** Couldn't find a way to try to get this in QGIS, so we have an OGR stub.
-** This apparently doesn't work all the time, although I am unclear on why OGR
-** Drivers don't usually reture a valid column.
-*/
-static const char * OGRGetFIDColumn( const char *pszUrl )
-{
-    char **papszTokens =
-        CSLTokenizeString2( pszUrl, "|=", CSLT_STRIPENDSPACES | CSLT_STRIPLEADSPACES );
-    int n = CSLCount( papszTokens );
-    if( n < 1 )
-    {
-        return NULL;
-    }
-    OGRDataSourceH hDS;
-    OGRLayerH hLayer;
-
-    hDS = OGROpen( papszTokens[0], FALSE, NULL );
-    if( hDS == NULL )
-    {
-        CSLDestroy( papszTokens );
-        return NULL;
-    }
-    if( n > 2 && EQUAL( "layername", papszTokens[1] ) )
-    {
-        hLayer = OGR_DS_GetLayerByName( hDS, papszTokens[2] );
-    }
-    else
-    {
-        hLayer = OGR_DS_GetLayer( hDS, 0 );
-    }
-    if( hLayer == NULL )
-    {
-        CSLDestroy( papszTokens );
-        return NULL;
-    }
-    CSLDestroy( papszTokens );
-    const char *pszFidCol = OGR_L_GetFIDColumn( hLayer );
-    if( !EQUAL( pszFidCol, "" ) )
-    {
-        pszFidCol = strdup( pszFidCol );
-    }
-    else
-    {
-        /* For now, default to OGC_FID */
-        pszFidCol = strdup( "OGC_FID" );
-    }
-    OGR_DS_Destroy( hDS );
-    /* To be free'd, ahole */
-    return pszFidCol;
-}
-
-static QString BuildFidSet( const char *pszFidCol, QgsFeatureIds fids )
-{
-    qDebug() << "Setting filter using col: " << pszFidCol;
-    QString fidset = QString( pszFidCol ) + " IN (";
-    QSetIterator<qint64>it( fids );
-    while( it.hasNext() )
-    {
-        fidset += FID_TO_STRING( it.next() );
-        if( it.hasNext()  )
-        {
-            fidset += ",";
-        }
-    }
-    fidset += ")";
-    return fidset;
-}
-
 void WfipsMainWindow::ClearAnalysisAreaSelection()
 {
     QgsVectorLayer *layer;
@@ -954,6 +890,8 @@ void WfipsMainWindow::AddAnalysisLayerToCanvases()
     dispatchMapCanvas->setExtent( extent );
     dispatchMapCanvas->setCurrentLayer( dispatchMapCanvasLayers[0].layer() );
     dispatchMapCanvas->refresh();
+
+    AddAnalysisAreaLayer( analysisAreaMemLayer, true );
 }
 
 void WfipsMainWindow::ShowMessage( const int messageType,

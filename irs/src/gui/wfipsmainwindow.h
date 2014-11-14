@@ -155,6 +155,7 @@ private:
     void ConstructAnalysisAreaWidgets();
     void AddAnalysisAreaLayer( QString path, QString layerName="",
                                bool useExtent=false );
+    void AddAnalysisAreaLayer( QgsVectorLayer *layer, bool useExtent=false );
     void LoadAnalysisAreaLayers();
 
     void AddAnalysisLayerToCanvases();
