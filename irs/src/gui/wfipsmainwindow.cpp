@@ -352,7 +352,7 @@ void WfipsMainWindow::UpdateAnalysisAreaMap( int index )
 
     analysisAreaMapCanvas->setLayerSet( analysisMapCanvasLayers );
     /* Unselect, clear, etc. */
-    SetAnalysisArea();
+    //SetAnalysisArea();
     analysisAreaMapCanvas->refresh();
 }
 
@@ -562,6 +562,11 @@ void WfipsMainWindow::Identify( QList<QgsMapToolIdentify::IdentifyResult> result
 
 void WfipsMainWindow::Select( QgsFeatureIds fids )
 {
+    if( ui->setAnalysisAreaToolButton->isChecked() )
+    {
+        qDebug() << "Clear selection before selecting new analysis area";
+        return;
+    }
     qDebug() << "Selecting fids: " << fids;
     QgsVectorLayer *layer;
     layer =
@@ -625,6 +630,10 @@ void WfipsMainWindow::ZoomToLayerExtent()
     for( int i = 0; i < mapLayers.size(); i++ )
     {
         layer = reinterpret_cast<QgsVectorLayer*>( mapLayers[i] );
+        if( i == 0 )
+        {
+            extent = layer->extent();
+        }
         mapLayer = reinterpret_cast<QgsMapLayer*>( mapLayers[i] );
         if( !WfipsIsVisible( mapLayer ) )
         {
@@ -639,9 +648,22 @@ void WfipsMainWindow::ZoomToLayerExtent()
         {
             lextent = layer->extent();
         }
+        qDebug() << "Combining: " << extent.xMinimum() << ","
+                                  << extent.xMaximum() << ","
+                                  << extent.yMinimum() << ","
+                                  << extent.yMaximum();
+        qDebug() << "with: " << lextent.xMinimum() << ","
+                             << lextent.xMaximum() << ","
+                             << lextent.yMinimum() << ","
+                             << lextent.yMaximum();
+
         extent.combineExtentWith( &lextent );
     }
     extent.scale( 1.1 );
+    qDebug() << "Setting extent: " << extent.xMinimum() << ","
+                                   << extent.xMaximum() << ","
+                                   << extent.yMinimum() << ","
+                                   << extent.yMaximum();
     currentMapCanvas->setExtent( extent );
     currentMapCanvas->refresh();
 }
@@ -658,6 +680,24 @@ void WfipsMainWindow::ClearAnalysisAreaSelection()
             layer->setSubsetString( "" );
         }
     }
+
+    int index = -1;
+    for( int i = 0; i < analysisMapCanvasLayers.size(); i++ )
+    {
+        layer = reinterpret_cast<QgsVectorLayer*>( analysisMapCanvasLayers[i].layer() );
+        if( layer == analysisAreaMemLayer )
+        {
+            index = i;
+        }
+    }
+    if( index != -1 )
+    {
+        analysisMapCanvasLayers.removeAt( index );
+    }
+
+    index = ui->analysisAreaComboBox->findText( "ANALYSIS AREA" );
+    ui->analysisAreaComboBox->removeItem( index );
+
     ((WfipsSelectMapTool*)analysisSelectTool)->clear();
 
     /* Dispatch Layer */
@@ -665,6 +705,7 @@ void WfipsMainWindow::ClearAnalysisAreaSelection()
     {
         dispatchMapCanvasLayers.clear();
         QgsMapLayerRegistry::instance()->removeMapLayer( analysisAreaMemLayer->id() );
+        QgsMapLayerRegistry::instance()->removeMapLayer( dispatchLocationMemLayer->id() );
         dispatchMapCanvas->refresh();
     }
 }
@@ -791,9 +832,8 @@ void WfipsMainWindow::SetAnalysisArea()
         this->statusBar()->showMessage( "Buffering  geometries..." );
         /* Just busy */
         ui->progressBar->setRange( 0, 0 );
-        ui->progressBar->setValue( 1 );
+        ui->progressBar->setValue( 0 );
         future = QtConcurrent::run( BufferGeomConcurrent, multi, ui->bufferAnalysisSpinBox->value(), 2 );
-        //BufferGeomConcurrent( multi, ui->bufferAnalysisSpinBox->value(), 2 );
         //buffered = multi->buffer( ui->bufferAnalysisSpinBox->value(), 2 );
         future.waitForFinished();
         ui->progressBar->setRange( 0, 100 );
@@ -857,7 +897,6 @@ void WfipsMainWindow::SetAnalysisArea()
     assert( dispatchLocationMemLayer->isValid() );
     QgsMapLayerRegistry::instance()->addMapLayer( dispatchLocationMemLayer, true );
     delete analisysAreaGeometry;
-    delete layer;
     for( int i = 0; i < newGeometries.size(); i++ )
     {
         delete newGeometries[i];
@@ -875,6 +914,8 @@ void WfipsMainWindow::SetAnalysisArea()
 
     analysisAreaMapCanvas->setExtent( extent );
     analysisAreaMapCanvas->refresh();
+
+    delete layer;
 
     ui->setAnalysisAreaToolButton->setText( "Clear Analysis Area" );
 }
