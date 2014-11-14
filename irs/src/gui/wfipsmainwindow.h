@@ -89,6 +89,8 @@
 #include "cpl_port.h"
 #include "ogr_api.h"
 
+#include "cpl_multiproc.h"
+
 namespace Ui {
 class WfipsMainWindow;
 }

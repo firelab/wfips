@@ -829,12 +829,19 @@ void WfipsMainWindow::SetAnalysisArea()
     QgsFeature analysisFeature;
     if( ui->bufferAnalysisCheckBox->isChecked() && ui->bufferAnalysisSpinBox->value() > 0 )
     {
+        /* Qt Concurrent */
         this->statusBar()->showMessage( "Buffering  geometries..." );
-        /* Just busy */
         ui->progressBar->setRange( 0, 0 );
         ui->progressBar->setValue( 0 );
         future = QtConcurrent::run( BufferGeomConcurrent, multi, ui->bufferAnalysisSpinBox->value(), 2 );
-        //buffered = multi->buffer( ui->bufferAnalysisSpinBox->value(), 2 );
+        int i = 0;
+        while( !future.isFinished() && i < 1000 )
+        {
+            CPLSleep( 0.1 );
+            ui->progressBar->setValue( 0 );
+            QCoreApplication::processEvents();
+            i++;
+        }
         future.waitForFinished();
         ui->progressBar->setRange( 0, 100 );
         this->statusBar()->showMessage( "Buffering finished.", 1500 );
