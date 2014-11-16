@@ -748,13 +748,13 @@ static QgsVectorLayer * WfipsCopyToMemLayer( QgsVectorLayer *layer,
     QgsVectorLayer *memLayer = new QgsVectorLayer( uri, layer->name(), "memory", true );
     assert( memLayer->isValid() );
     QgsVectorDataProvider *provider = memLayer->dataProvider();
-    assert( rc == true );
     for( int i = 0; i < fields.size(); i++ )
     {
         qDebug() << "Copying field: " << fields[i].name();
         newFields.append( QgsField( fields[i] ) );
     }
     rc = provider->addAttributes( newFields.toList() );
+    assert( rc == true );
 
     memLayer->commitChanges();
     QgsFeature feature;
