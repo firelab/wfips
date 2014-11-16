@@ -743,7 +743,6 @@ static QgsVectorLayer * WfipsCopyToMemLayer( QgsVectorLayer *layer,
     uri += "?crs=EPSG:4269&index=yes";
     /* Copy the fields */
     QgsFields fields = layer->dataProvider()->fields();
-    QgsFields newFields;
 
     QgsVectorLayer *memLayer = new QgsVectorLayer( uri, layer->name(), "memory", true );
     assert( memLayer->isValid() );
@@ -751,9 +750,8 @@ static QgsVectorLayer * WfipsCopyToMemLayer( QgsVectorLayer *layer,
     for( int i = 0; i < fields.size(); i++ )
     {
         qDebug() << "Copying field: " << fields[i].name();
-        newFields.append( QgsField( fields[i] ) );
     }
-    rc = provider->addAttributes( newFields.toList() );
+    rc = provider->addAttributes( fields.toList() );
     assert( rc == true );
 
     memLayer->commitChanges();
