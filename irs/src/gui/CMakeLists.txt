@@ -152,11 +152,13 @@ SET(OMFFR_GUI_RCCS resources.qrc)
 OPTION(BUILD_GUI_V2 "Build the new interface dummy project" OFF)
 QT4_WRAP_UI(WFIPS_GUI_UI_H wfipsmainwindow.ui
                            wfipsaddlayerdialog.ui
+                           wfipsdispatcheditdialog.ui
                            wfipsidentifydialog.ui)
 QT4_WRAP_CPP(WFIPS_GUI_MOC wfipsmainwindow.h
                            wfipsaddlayerdialog.h
                            wfipsidentifydialog.h
                            wfipsselectmaptool.h
+                           wfipsdispatcheditdialog.h
                            wfipsidentifymaptool.h)
 
 INCLUDE(${QT_USE_FILE})
@@ -220,6 +222,7 @@ ADD_EXECUTABLE(wfips wfipsmainwindow.cpp
                      wfipsguiutil.cpp
                      wfipsidentifydialog.cpp
                      wfipsselectmaptool.cpp
+                     wfipsdispatcheditdialog.cpp
                      wfipsidentifymaptool.cpp
                      ${WFIPS_GUI_UI_H}
                      ${WFIPS_GUI_MOC}
