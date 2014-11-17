@@ -746,6 +746,7 @@ static QgsVectorLayer * WfipsCopyToMemLayer( QgsVectorLayer *layer,
 
     QgsVectorLayer *memLayer = new QgsVectorLayer( uri, layer->name(), "memory", true );
     assert( memLayer->isValid() );
+    memLayer->startEditing();
     QgsVectorDataProvider *provider = memLayer->dataProvider();
     rc = provider->addAttributes( fields.toList() );
     assert( rc == true );
