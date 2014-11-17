@@ -40,6 +40,7 @@
 
 /* Our custom widgets and such */
 #include "wfipsaddlayerdialog.h"
+#include "wfipsdispatcheditdialog.h"
 
 #include "wfipsidentifymaptool.h"
 #include "wfipsidentifydialog.h"
@@ -184,6 +185,9 @@ private:
     QgsMapTool *dispatchIdentifyTool;
     QgsMapTool *dispatchSelectTool;
 
+    WfipsDispatchEditDialog *dispatchEditDialog;
+    QMap<qint64, QString>dispatchLocationMap;
+
     void ConstructDispatchWidgets();
 
     /* Identify results viewer */
@@ -211,6 +215,10 @@ private slots:
     /* Analysis Area */
     void AddCustomAnalysisArea();
     void UpdateAnalysisAreaMap( int index );
+
+    /* Dispatch locations */
+    void ShowDispatchEditDialog();
+    void SelectDispatchLocations( QgsFeatureIds fids );
 
     void SetAnalysisArea();
     void ClearAnalysisAreaSelection();

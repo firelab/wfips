@@ -55,6 +55,8 @@ WfipsMainWindow::WfipsMainWindow( QWidget *parent ) :
     analysisAreaMemLayer = NULL;
     dispatchLocationMemLayer = NULL;
 
+    dispatchEditDialog = new WfipsDispatchEditDialog( this );
+
     /* Call *after* construction */
     CreateConnections();
     PostConstructionActions();
@@ -90,8 +92,10 @@ WfipsMainWindow::~WfipsMainWindow()
     delete dispatchZoomOutTool;
     delete dispatchIdentifyTool;
     delete dispatchSelectTool;
- 
+
     delete dispatchLocationMemLayer;
+
+    delete dispatchEditDialog;
 }
 
 void WfipsMainWindow::WriteSettings()
@@ -181,6 +185,11 @@ void WfipsMainWindow::ConstructToolButtons()
     ui->customAnalysisAreaOpenToolButton->setIcon( QIcon( ":/add_layer" ) );
     connect( ui->customAnalysisAreaOpenToolButton, SIGNAL( clicked() ),
              this, SLOT( AddCustomAnalysisArea() ) );
+
+    /* Dispatch location tool buttons */
+    ui->dispatchEditToolButton->setIcon( QIcon( ":/action" ) );
+    connect( ui->dispatchEditToolButton, SIGNAL( clicked() ),
+             this, SLOT( ShowDispatchEditDialog() ) );
 }
 
 void WfipsMainWindow::ConstructAnalysisAreaWidgets()
@@ -376,8 +385,8 @@ void WfipsMainWindow::ConstructDispatchWidgets()
     connect( dispatchIdentifyTool, SIGNAL( WfipsIdentify( QList<QgsMapToolIdentify::IdentifyResult> ) ),
              this, SLOT( Identify( QList<QgsMapToolIdentify::IdentifyResult> ) ) );
     dispatchSelectTool = new WfipsSelectMapTool( dispatchMapCanvas );
-    //connect( dispatchSelectTool, SIGNAL( WfipsSelect( QgsFeatureIds ) ),
-             //this, SLOT( Select( QgsFeatureIds ) ) );
+    connect( dispatchSelectTool, SIGNAL( WfipsSelect( QgsFeatureIds ) ),
+             this, SLOT( SelectDispatchLocations( QgsFeatureIds ) ) );
 }
 
 void WfipsMainWindow::ConstructTreeWidget()
@@ -674,6 +683,7 @@ void WfipsMainWindow::ZoomToLayerExtent()
 void WfipsMainWindow::ClearAnalysisAreaSelection()
 {
     QgsVectorLayer *layer;
+    dispatchLocationMap.clear();
     for( int i = 0; i < analysisMapCanvasLayers.size(); i++ )
     {
         layer = reinterpret_cast<QgsVectorLayer*>( analysisMapCanvasLayers[i].layer() );
@@ -752,22 +762,29 @@ static QgsVectorLayer * WfipsCopyToMemLayer( QgsVectorLayer *layer,
     {
         qDebug() << "Copying field: " << fields[i].name();
     }
+    QgsField dlField( "dlfid", QVariant::LongLong );
+    fields.append( dlField );
     rc = provider->addAttributes( fields.toList() );
     assert( rc == true );
 
     memLayer->commitChanges();
     QgsFeature feature;
+    QgsFeature newFeature;
     QgsFeatureList features;
     QgsFeatureRequest request;
     if( fids.size() > 0 )
     {
         request.setFilterFids( fids );
     }
+    QgsFeatureId fid;
     /* request default is QgsFeatureRequest(), so we should be good here */
     QgsFeatureIterator fit = layer->getFeatures( request );
     while( fit.nextFeature( feature ) )
     {
-        features.append( feature );
+        fid = feature.id();
+        newFeature = QgsFeature( feature );
+        newFeature.setAttribute( "dlfid", fid );
+        features.append( newFeature );
     }
     qDebug() << "Fetched " << features.size() << " features from " << layer->name();
     provider->addFeatures( features );
@@ -885,6 +902,7 @@ void WfipsMainWindow::SetAnalysisArea()
     int i, n, progress;
     i = 0; n = layer->featureCount();
     this->statusBar()->showMessage( "Searching for dispatch locations..." );
+    dispatchLocationMap.clear();
     while( fit.nextFeature( feature ) )
     {
         if( analisysAreaGeometry->boundingBox().contains( feature.geometry()->asPoint() ) )
@@ -892,6 +910,8 @@ void WfipsMainWindow::SetAnalysisArea()
             if( analisysAreaGeometry->contains( feature.geometry() ) )
             {
                 fids.insert( feature.id() );
+                dispatchLocationMap.insert( feature.id(),
+                                            feature.attribute( "name" ).toString() );
             }
         }
         i++;
@@ -948,6 +968,35 @@ void WfipsMainWindow::AddAnalysisLayerToCanvases()
     AddAnalysisAreaLayer( analysisAreaMemLayer, true );
 }
 
+void WfipsMainWindow::ShowDispatchEditDialog()
+{
+    if( !ui->dispatchEditToolButton->isChecked() )
+    {
+        dispatchEditDialog->hide();
+        return;
+    }
+    dispatchEditDialog->SetModel( dispatchLocationMap );
+    dispatchEditDialog->show();
+    return;
+}
+
+void WfipsMainWindow::SelectDispatchLocations( QgsFeatureIds fids )
+{
+    /*
+    QgsFeatureIds dlfids;
+    QgsFeature feature;
+    QgsFeatureRequest request;
+    request.setFilterFids( fids );
+    QgsFeatureIterator fit = dispatchLocationMemLayer->getFeatures( request );
+    while( fit.nextFeature( feature ) )
+    {
+        dlfids.insert( feature.attribute( "dlfid" ).toLongLong() );
+    }
+    dispatchEditDialog->SelectFids( dlfids );
+    */
+    return;
+}
+
 void WfipsMainWindow::ShowMessage( const int messageType,
                                    const int messageFlags,
                                    const QString &message )
@@ -970,4 +1019,3 @@ void WfipsMainWindow::ShowMessage( const int messageType,
     QMessageBox msgBox;
 #endif /* WFIPS_CONSOLE_ERR */
 }
-

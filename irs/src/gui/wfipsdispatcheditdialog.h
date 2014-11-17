@@ -28,7 +28,12 @@
 #ifndef WFIPSDISPATCHEDITDIALOG_H
 #define WFIPSDISPATCHEDITDIALOG_H
 
+#include <QDebug>
 #include <QDialog>
+#include <QString>
+#include <QStringListModel>
+
+#include <qgsfeature.h>
 
 namespace Ui {
 class WfipsDispatchEditDialog;
@@ -40,10 +45,18 @@ class WfipsDispatchEditDialog : public QDialog
 
 public:
     explicit WfipsDispatchEditDialog( QWidget *parent = 0 );
+    WfipsDispatchEditDialog( QStringList stringList, QWidget *parent = 0 );
     ~WfipsDispatchEditDialog();
+
+    void SetModel( const QMap<QgsFeatureId, QString> &map );
+    void SelectFids( QgsFeatureIds fids );
 
 private:
     Ui::WfipsDispatchEditDialog *ui;
+
+    QStringListModel *model;
+    QMap<QgsFeatureId, QString>map;
 };
 
-#endif // WFIPSDISPATCHEDITDIALOG_H
+#endif /* WFIPSDISPATCHEDITDIALOG_H */
+
