@@ -812,7 +812,7 @@ void WfipsMainWindow::SetAnalysisArea()
     QgsVectorLayer *layer;
     layer =
         reinterpret_cast<QgsVectorLayer*>( analysisAreaMapCanvas->currentLayer() );
-    if( layer == NULL )
+    if( layer == NULL || !layer->isValid() )
     {
         qDebug() << "Invalid layer in SetAnalysisArea()";
         ui->setAnalysisAreaToolButton->setText( "Set Analysis Area" );
@@ -960,6 +960,7 @@ void WfipsMainWindow::SetAnalysisArea()
     delete layer;
 
     ui->setAnalysisAreaToolButton->setText( "Clear Analysis Area" );
+    ui->analysisAreaComboBox->setCurrentIndex( ui->analysisAreaComboBox->count() - 1 );
     this->statusBar()->showMessage( "Done.", 3000 );
     this->setEnabled( true );
 }
@@ -1006,6 +1007,10 @@ void WfipsMainWindow::SelectDispatchLocations( QgsFeatureIds fids )
         qDebug() << "Local fid: " << feature.id() << ", original: " << fid;
     }
     dispatchEditDialog->SelectFids( dlfids );
+    if( !ui->dispatchEditToolButton->isChecked() )
+    {
+        ui->dispatchEditToolButton->click();
+    }
     return;
 }
 

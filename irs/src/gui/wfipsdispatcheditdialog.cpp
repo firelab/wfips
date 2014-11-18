@@ -70,10 +70,6 @@ void WfipsDispatchEditDialog::SelectFids( QgsFeatureIds fids )
         ui->listView->setCurrentIndex( model->index( i ) );
         it++;
     }
-    if( !this->isVisible() )
-    {
-        this->show();
-    }
     return;
 }
 
