@@ -56,11 +56,23 @@ void WfipsDispatchEditDialog::SelectFids( QgsFeatureIds fids )
     QString loc;
     QgsFeatureId fid;
     QSet<qint64>::iterator it = fids.begin();
+    int i;
     while( it != fids.end() )
     {
         loc = map.value( *it );
         qDebug() << "Selecting fid: " << *it << ", name; " << loc;
+        i = map.values().indexOf( loc );
+        if( i < 0 )
+        {
+            it++;
+            continue;
+        }
+        ui->listView->setCurrentIndex( model->index( i ) );
         it++;
+    }
+    if( !this->isVisible() )
+    {
+        this->show();
     }
     return;
 }

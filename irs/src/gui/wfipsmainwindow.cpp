@@ -933,6 +933,7 @@ void WfipsMainWindow::SetAnalysisArea()
     ui->progressBar->reset();
     this->statusBar()->showMessage( "Found " + fids.size() + QString( " locations." ), 3000 );
     qDebug() << "Found " << fids.size() << " dispatch locations within the analysis area";
+    dispatchEditDialog->SetModel( dispatchLocationMap );
 
     dispatchLocationMemLayer = WfipsCopyToMemLayer( layer, fids );
     assert( dispatchLocationMemLayer->isValid() );
@@ -985,25 +986,26 @@ void WfipsMainWindow::ShowDispatchEditDialog()
         dispatchEditDialog->hide();
         return;
     }
-    dispatchEditDialog->SetModel( dispatchLocationMap );
+    //dispatchEditDialog->SetModel( dispatchLocationMap );
     dispatchEditDialog->show();
     return;
 }
 
 void WfipsMainWindow::SelectDispatchLocations( QgsFeatureIds fids )
 {
-    /*
     QgsFeatureIds dlfids;
     QgsFeature feature;
     QgsFeatureRequest request;
     request.setFilterFids( fids );
+    QgsFeatureId fid;
     QgsFeatureIterator fit = dispatchLocationMemLayer->getFeatures( request );
     while( fit.nextFeature( feature ) )
     {
-        dlfids.insert( feature.attribute( "dlfid" ).toLongLong() );
+        fid = feature.attribute( "ofid" ).toLongLong();
+        dlfids.insert( fid );
+        qDebug() << "Local fid: " << feature.id() << ", original: " << fid;
     }
     dispatchEditDialog->SelectFids( dlfids );
-    */
     return;
 }
 
