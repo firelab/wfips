@@ -710,6 +710,8 @@ void WfipsMainWindow::ClearAnalysisAreaSelection()
 
     index = ui->analysisAreaComboBox->findText( "ANALYSIS AREA" );
     ui->analysisAreaComboBox->removeItem( index );
+    QgsMapLayerRegistry::instance()->removeMapLayer( analysisAreaMemLayer->id() );
+    analysisAreaMapCanvas->refresh();
 
     ((WfipsSelectMapTool*)analysisSelectTool)->clear();
 
@@ -717,7 +719,6 @@ void WfipsMainWindow::ClearAnalysisAreaSelection()
     if( dispatchMapCanvasLayers.size() > 0 )
     {
         dispatchMapCanvasLayers.clear();
-        QgsMapLayerRegistry::instance()->removeMapLayer( analysisAreaMemLayer->id() );
         QgsMapLayerRegistry::instance()->removeMapLayer( dispatchLocationMemLayer->id() );
         dispatchMapCanvas->refresh();
     }
@@ -815,6 +816,7 @@ void WfipsMainWindow::SetAnalysisArea()
     if( layer == NULL || !layer->isValid() )
     {
         qDebug() << "Invalid layer in SetAnalysisArea()";
+        ClearAnalysisAreaSelection();
         ui->setAnalysisAreaToolButton->setText( "Set Analysis Area" );
         ui->setAnalysisAreaToolButton->setChecked( false );
         return;
