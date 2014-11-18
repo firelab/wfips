@@ -762,12 +762,13 @@ static QgsVectorLayer * WfipsCopyToMemLayer( QgsVectorLayer *layer,
     {
         qDebug() << "Copying field: " << fields[i].name();
     }
-    QgsField dlField( "dlfid", QVariant::LongLong );
-    fields.append( dlField );
+    QgsField oidField( "ofid", QVariant::LongLong );
+    fields.append( oidField );
     rc = provider->addAttributes( fields.toList() );
     assert( rc == true );
+    assert( provider->fields().size() == layer->dataProvider()->fields().size() + 1 );
 
-    memLayer->commitChanges();
+    //memLayer->commitChanges();
     QgsFeature feature;
     QgsFeature newFeature;
     QgsFeatureList features;
@@ -782,8 +783,17 @@ static QgsVectorLayer * WfipsCopyToMemLayer( QgsVectorLayer *layer,
     while( fit.nextFeature( feature ) )
     {
         fid = feature.id();
-        newFeature = QgsFeature( feature );
-        newFeature.setAttribute( "dlfid", fid );
+        newFeature = QgsFeature();
+        newFeature.setFields( &fields, true );
+        /*
+        ** XXX Make sure fields are ordered.
+        */
+        for( int i = 0; i < fields.size() - 1; i++ )
+        {
+            rc = newFeature.setAttribute( i, feature.attribute( i ) );
+        }
+        rc = newFeature.setAttribute( fields.size() - 1, fid );
+        newFeature.setGeometry( new QgsGeometry( *(feature.geometry()) ) );
         features.append( newFeature );
     }
     qDebug() << "Fetched " << features.size() << " features from " << layer->name();
