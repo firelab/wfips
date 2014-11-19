@@ -198,6 +198,7 @@ void WfipsMainWindow::ConstructAnalysisAreaWidgets()
     analysisAreaMapCanvas->enableAntiAliasing( true );
     analysisAreaMapCanvas->setCanvasColor( Qt::white );
     analysisAreaMapCanvas->freeze( false );
+    analysisAreaMapCanvas->setWheelAction( QgsMapCanvas::WheelZoomToMouseCursor );
     analysisAreaMapCanvas->setVisible( true );
     /*
     ** XXX: Need to set dst crs for warping on the fly, but this may mess with
@@ -373,6 +374,7 @@ void WfipsMainWindow::ConstructDispatchWidgets()
     dispatchMapCanvas->setDestinationCrs( crs );
     dispatchMapCanvas->freeze( false );
     dispatchMapCanvas->setVisible( true );
+    dispatchMapCanvas->setWheelAction( QgsMapCanvas::WheelZoomToMouseCursor );
     dispatchMapCanvas->refresh();
     dispatchMapLayout = new QVBoxLayout( ui->dispatchMapFrame );
     dispatchMapLayout->addWidget( dispatchMapCanvas );
