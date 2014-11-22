@@ -285,7 +285,7 @@
          <enum>QFrame::Plain</enum>
         </property>
         <property name="currentIndex">
-         <number>11</number>
+         <number>10</number>
         </property>
         <widget class="QWidget" name="dataPage">
          <layout class="QVBoxLayout" name="verticalLayout_13">
@@ -1515,6 +1515,9 @@
               <property name="toolTip">
                <string>Percent of escapes sent to large fire simulation</string>
               </property>
+              <property name="maximum">
+               <number>100</number>
+              </property>
               <property name="orientation">
                <enum>Qt::Horizontal</enum>
               </property>
@@ -1557,6 +1560,9 @@
              <widget class="QSlider" name="timeLimitSlider">
               <property name="toolTip">
                <string>Percent of escapes sent to large fire simulation</string>
+              </property>
+              <property name="maximum">
+               <number>100</number>
               </property>
               <property name="orientation">
                <enum>Qt::Horizontal</enum>
@@ -1601,6 +1607,9 @@
               <property name="toolTip">
                <string>Percent of escapes sent to large fire simulation</string>
               </property>
+              <property name="maximum">
+               <number>100</number>
+              </property>
               <property name="orientation">
                <enum>Qt::Horizontal</enum>
               </property>
@@ -1643,6 +1652,9 @@
              <widget class="QSlider" name="exhaustedSlider">
               <property name="toolTip">
                <string>Percent of escapes sent to large fire simulation</string>
+              </property>
+              <property name="maximum">
+               <number>100</number>
               </property>
               <property name="orientation">
                <enum>Qt::Horizontal</enum>
