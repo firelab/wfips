@@ -34,6 +34,8 @@ WfipsDispatchEditDialog::WfipsDispatchEditDialog( QWidget *parent ) :
 {
     ui->setupUi( this );
     model = NULL;
+    ui->listView->setSelectionMode( QAbstractItemView::ExtendedSelection );
+    ui->listView->setAlternatingRowColors( true );
 }
 
 WfipsDispatchEditDialog::~WfipsDispatchEditDialog()
@@ -56,6 +58,7 @@ void WfipsDispatchEditDialog::SelectFids( QgsFeatureIds fids )
     QString loc;
     QgsFeatureId fid;
     QSet<qint64>::iterator it = fids.begin();
+    ui->listView->clearSelection();
     int i;
     while( it != fids.end() )
     {

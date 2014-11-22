@@ -30,6 +30,7 @@
 
 #include <QDebug>
 #include <QDialog>
+#include <QMouseEvent>
 #include <QString>
 #include <QStringListModel>
 
@@ -56,6 +57,7 @@ private:
 
     QStringListModel *model;
     QMap<QgsFeatureId, QString>map;
+
 };
 
 #endif /* WFIPSDISPATCHEDITDIALOG_H */

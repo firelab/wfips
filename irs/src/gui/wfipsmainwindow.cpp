@@ -991,7 +991,6 @@ void WfipsMainWindow::ShowDispatchEditDialog()
         dispatchEditDialog->hide();
         return;
     }
-    //dispatchEditDialog->SetModel( dispatchLocationMap );
     dispatchEditDialog->show();
     return;
 }
@@ -1003,7 +1002,10 @@ void WfipsMainWindow::SelectDispatchLocations( QgsFeatureIds fids )
     QgsFeatureRequest request;
     request.setFilterFids( fids );
     QgsFeatureId fid;
-    QgsFeatureIterator fit = dispatchLocationMemLayer->getFeatures( request );
+    QgsFeatureIterator fit;
+    dispatchLocationMemLayer->removeSelection();
+    dispatchLocationMemLayer->select( fids );
+    fit = dispatchLocationMemLayer->getFeatures( request );
     while( fit.nextFeature( feature ) )
     {
         fid = feature.attribute( "ofid" ).toLongLong();
