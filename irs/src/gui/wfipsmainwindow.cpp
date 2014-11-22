@@ -813,8 +813,10 @@ static QgsVectorLayer * WfipsCopyToMemLayer( QgsVectorLayer *layer,
 */
 const static double MilesToDegrees( double miles )
 {
+    static const double kmToDeg = 78.71; /* longitude @ 45N */
+    //static const double kmToDeg = 111.32 /* latitude */
     double km = miles / 0.62;
-    return km / 78.71;
+    return km / kmToDeg;
 }
 
 /*
@@ -883,7 +885,7 @@ void WfipsMainWindow::SetAnalysisArea()
         this->statusBar()->showMessage( "Buffering  geometries..." );
         ui->progressBar->setRange( 0, 0 );
         ui->progressBar->setValue( 0 );
-        future = QtConcurrent::run( BufferGeomConcurrent, multi, dt c, 2 );
+        future = QtConcurrent::run( BufferGeomConcurrent, multi, d, 2 );
         int i = 0;
         while( !future.isFinished() && i < 1000 )
         {
