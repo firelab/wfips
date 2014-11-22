@@ -808,6 +808,16 @@ static QgsVectorLayer * WfipsCopyToMemLayer( QgsVectorLayer *layer,
 }
 
 /*
+** Dummy fx for miles to degrees.  Replace with a projection based system.
+** This uses 78.71 km == 1.0 degrees @ 45N.
+*/
+const static double MilesToDegrees( double miles )
+{
+    double km = miles / 0.62;
+    return km / 78.71;
+}
+
+/*
 ** Use the selected feature and set the other maps.
 */
 void WfipsMainWindow::SetAnalysisArea()
@@ -866,10 +876,14 @@ void WfipsMainWindow::SetAnalysisArea()
     if( ui->bufferAnalysisCheckBox->isChecked() && ui->bufferAnalysisSpinBox->value() > 0 )
     {
         /* Qt Concurrent */
+        double m, d;
+        m = ui->bufferAnalysisSpinBox->value();
+        d = MilesToDegrees( m );
+        qDebug() << "Using " << m << " miles, " << d << " degrees for buffer";
         this->statusBar()->showMessage( "Buffering  geometries..." );
         ui->progressBar->setRange( 0, 0 );
         ui->progressBar->setValue( 0 );
-        future = QtConcurrent::run( BufferGeomConcurrent, multi, ui->bufferAnalysisSpinBox->value(), 2 );
+        future = QtConcurrent::run( BufferGeomConcurrent, multi, d, 2 );
         int i = 0;
         while( !future.isFinished() && i < 1000 )
         {
