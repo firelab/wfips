@@ -105,6 +105,14 @@ void WfipsMainWindow::WriteSettings()
     settings.setValue( "customlayerpath", customLayerPath );
     settings.setValue( "analysisbuffer", ui->bufferAnalysisSpinBox->value() );
     settings.setValue( "useanalysisbuffer", ui->bufferAnalysisCheckBox->isChecked() );
+    if( currentMapCanvas != NULL )
+    {
+        QgsRectangle extent = currentMapCanvas->extent();
+        settings.setValue( "xmin", extent.xMinimum() );
+        settings.setValue( "xmax", extent.xMaximum() );
+        settings.setValue( "ymin", extent.yMinimum() );
+        settings.setValue( "ymax", extent.yMaximum() );
+    }
 }
 
 void WfipsMainWindow::ReadSettings()
@@ -130,6 +138,18 @@ void WfipsMainWindow::ReadSettings()
     if( settings.contains( "useanalysisbuffer" ) )
     {
         ui->bufferAnalysisCheckBox->setChecked( settings.value( "useanalysisbuffer" ).toBool() );
+    }
+    /* last */
+    if( settings.contains( "xmin" ) &&
+        settings.contains( "xmax" ) &&
+        settings.contains( "ymin" ) &&
+        settings.contains( "ymax" ) )
+    {
+        QgsRectangle extent( settings.value( "xmin" ).toDouble(),
+                             settings.value( "ymin" ).toDouble(),
+                             settings.value( "xmax" ).toDouble(),
+                             settings.value( "ymax" ).toDouble() );
+        analysisAreaMapCanvas->setExtent( extent );
     }
 }
 
