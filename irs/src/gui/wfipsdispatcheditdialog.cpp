@@ -26,7 +26,6 @@
  *****************************************************************************/
 
 #include "wfipsdispatcheditdialog.h"
-#include "ui_wfipsdispatcheditdialog.h"
 
 WfipsDispatchEditDialog::WfipsDispatchEditDialog( QWidget *parent ) :
     QDialog( parent ),
@@ -36,6 +35,8 @@ WfipsDispatchEditDialog::WfipsDispatchEditDialog( QWidget *parent ) :
     model = NULL;
     ui->listView->setSelectionMode( QAbstractItemView::ExtendedSelection );
     ui->listView->setAlternatingRowColors( true );
+    connect( ui->listView, SIGNAL( pressed( const QModelIndex & ) ),
+             this, SLOT( SelectionClicked( const QModelIndex & ) ) );
 }
 
 WfipsDispatchEditDialog::~WfipsDispatchEditDialog()
@@ -74,5 +75,31 @@ void WfipsDispatchEditDialog::SelectFids( QgsFeatureIds fids )
         it++;
     }
     return;
+}
+
+/*
+** Get selected fids from the QListView.
+*/
+void WfipsDispatchEditDialog::SelectionClicked( const QModelIndex &unused )
+{
+    QStringList names;
+    foreach( const QModelIndex &index, ui->listView->selectionModel()->selectedIndexes() )
+    {
+        names.append( model->data( index, 0 ).toString() );
+    }
+
+    /* Find the fids.  We should probably fix this */
+    QgsFeatureIds fids;
+    QgsFeatureId fid;
+    for( int i = 0; i < names.size(); i++ )
+    {
+        fid = map.key( names[i], -1 );
+        if( fid < 0 )
+        {
+            continue;
+        }
+        fids.insert( fid );
+    }
+    emit SelectionChanged( fids );
 }
 

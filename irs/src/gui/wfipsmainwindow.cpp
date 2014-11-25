@@ -157,6 +157,11 @@ void WfipsMainWindow::PostConstructionActions()
     /* Make sure one of the map tools gets initialized */
     ui->mapPanToolButton->click();
     ui->treeWidget->setCurrentItem( ui->treeWidget->topLevelItem( 0 ) );
+    /* When we select locations from the list, update the map */
+    connect( dispatchEditDialog,
+             SIGNAL( SelectionChanged( const QgsFeatureIds & ) ),
+             this,
+             SLOT( UpdateSelectedDispatchLocations( const QgsFeatureIds & ) ) );
 }
 
 void WfipsMainWindow::ConstructToolButtons()
@@ -1034,6 +1039,52 @@ void WfipsMainWindow::SelectDispatchLocations( QgsFeatureIds fids )
         ui->dispatchEditToolButton->click();
     }
     return;
+}
+
+static QString JoinFids( QgsFeatureIds fids )
+{
+    QString join;
+    QSet<qint64>::iterator it;
+    for( it = fids.begin(); it != fids.end(); it++ )
+    {
+        join += QString::number( *it ) + ",";
+    }
+    join += "-1";
+    return join;
+}
+
+/*
+** Select the dispatch locations on the map.
+*/
+void WfipsMainWindow::UpdateSelectedDispatchLocations( const QgsFeatureIds &fids )
+{
+    QgsVectorLayer *layer = reinterpret_cast<QgsVectorLayer*>( dispatchLocationMemLayer );
+    if( layer == NULL || !layer->isValid() )
+    {
+        return;
+    }
+    QgsFeatureIterator fit;
+    QgsFeature feature;
+    QgsFeatureRequest request;
+    QgsFeatureId fid;
+    QgsFeatureIds newfids;
+
+    qDebug() << "Selecting OFIDS: " << fids;
+    QString sql = "ofid IN(";
+    sql += JoinFids( fids );
+    sql += ")";
+    qDebug() << "SQL filter: " << sql;
+    int rc;
+    request.setFilterExpression( sql );
+    fit = layer->getFeatures( request );
+    while( fit.nextFeature( feature ) )
+    {
+        fid = feature.id();
+        newfids.insert( fid );
+    }
+    qDebug() << "Found mem fids: " << newfids;
+    layer->removeSelection();
+    layer->select( newfids );
 }
 
 void WfipsMainWindow::ShowMessage( const int messageType,

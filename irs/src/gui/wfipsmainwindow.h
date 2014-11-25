@@ -219,6 +219,7 @@ private slots:
     /* Dispatch locations */
     void ShowDispatchEditDialog();
     void SelectDispatchLocations( QgsFeatureIds fids );
+    void UpdateSelectedDispatchLocations( const QgsFeatureIds &fids );
 
     void SetAnalysisArea();
     void ClearAnalysisAreaSelection();
