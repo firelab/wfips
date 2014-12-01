@@ -708,11 +708,11 @@ void WfipsMainWindow::ClearAnalysisAreaSelection()
     if( index != -1 )
     {
         analysisMapCanvasLayers.removeAt( index );
+        QgsMapLayerRegistry::instance()->removeMapLayer( analysisAreaMemLayer->id() );
     }
 
     index = ui->analysisAreaComboBox->findText( "ANALYSIS AREA" );
     ui->analysisAreaComboBox->removeItem( index );
-    QgsMapLayerRegistry::instance()->removeMapLayer( analysisAreaMemLayer->id() );
     analysisAreaMapCanvas->refresh();
 
     ((WfipsSelectMapTool*)analysisSelectTool)->clear();
