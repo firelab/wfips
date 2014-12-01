@@ -36,6 +36,8 @@
 
 #include <qgsfeature.h>
 
+#include "ui_wfipsdispatcheditdialog.h"
+
 namespace Ui {
 class WfipsDispatchEditDialog;
 }
@@ -57,6 +59,12 @@ private:
 
     QStringListModel *model;
     QMap<QgsFeatureId, QString>map;
+
+private slots:
+    void SelectionClicked( const QModelIndex & );
+
+signals:
+    void SelectionChanged( const QgsFeatureIds &fids );
 
 };
 

@@ -105,6 +105,14 @@ void WfipsMainWindow::WriteSettings()
     settings.setValue( "customlayerpath", customLayerPath );
     settings.setValue( "analysisbuffer", ui->bufferAnalysisSpinBox->value() );
     settings.setValue( "useanalysisbuffer", ui->bufferAnalysisCheckBox->isChecked() );
+    if( currentMapCanvas != NULL )
+    {
+        QgsRectangle extent = currentMapCanvas->extent();
+        settings.setValue( "xmin", extent.xMinimum() );
+        settings.setValue( "xmax", extent.xMaximum() );
+        settings.setValue( "ymin", extent.yMinimum() );
+        settings.setValue( "ymax", extent.yMaximum() );
+    }
 }
 
 void WfipsMainWindow::ReadSettings()
@@ -130,6 +138,18 @@ void WfipsMainWindow::ReadSettings()
     if( settings.contains( "useanalysisbuffer" ) )
     {
         ui->bufferAnalysisCheckBox->setChecked( settings.value( "useanalysisbuffer" ).toBool() );
+    }
+    /* last */
+    if( settings.contains( "xmin" ) &&
+        settings.contains( "xmax" ) &&
+        settings.contains( "ymin" ) &&
+        settings.contains( "ymax" ) )
+    {
+        QgsRectangle extent( settings.value( "xmin" ).toDouble(),
+                             settings.value( "ymin" ).toDouble(),
+                             settings.value( "xmax" ).toDouble(),
+                             settings.value( "ymax" ).toDouble() );
+        analysisAreaMapCanvas->setExtent( extent );
     }
 }
 
@@ -157,6 +177,11 @@ void WfipsMainWindow::PostConstructionActions()
     /* Make sure one of the map tools gets initialized */
     ui->mapPanToolButton->click();
     ui->treeWidget->setCurrentItem( ui->treeWidget->topLevelItem( 0 ) );
+    /* When we select locations from the list, update the map */
+    connect( dispatchEditDialog,
+             SIGNAL( SelectionChanged( const QgsFeatureIds & ) ),
+             this,
+             SLOT( UpdateSelectedDispatchLocations( const QgsFeatureIds & ) ) );
 }
 
 void WfipsMainWindow::ConstructToolButtons()
@@ -1034,6 +1059,52 @@ void WfipsMainWindow::SelectDispatchLocations( QgsFeatureIds fids )
         ui->dispatchEditToolButton->click();
     }
     return;
+}
+
+static QString JoinFids( QgsFeatureIds fids )
+{
+    QString join;
+    QSet<qint64>::iterator it;
+    for( it = fids.begin(); it != fids.end(); it++ )
+    {
+        join += QString::number( *it ) + ",";
+    }
+    join += "-1";
+    return join;
+}
+
+/*
+** Select the dispatch locations on the map.
+*/
+void WfipsMainWindow::UpdateSelectedDispatchLocations( const QgsFeatureIds &fids )
+{
+    QgsVectorLayer *layer = reinterpret_cast<QgsVectorLayer*>( dispatchLocationMemLayer );
+    if( layer == NULL || !layer->isValid() )
+    {
+        return;
+    }
+    QgsFeatureIterator fit;
+    QgsFeature feature;
+    QgsFeatureRequest request;
+    QgsFeatureId fid;
+    QgsFeatureIds newfids;
+
+    qDebug() << "Selecting OFIDS: " << fids;
+    QString sql = "ofid IN(";
+    sql += JoinFids( fids );
+    sql += ")";
+    qDebug() << "SQL filter: " << sql;
+    int rc;
+    request.setFilterExpression( sql );
+    fit = layer->getFeatures( request );
+    while( fit.nextFeature( feature ) )
+    {
+        fid = feature.id();
+        newfids.insert( fid );
+    }
+    qDebug() << "Found mem fids: " << newfids;
+    layer->removeSelection();
+    layer->select( newfids );
 }
 
 void WfipsMainWindow::ShowMessage( const int messageType,
