@@ -904,6 +904,7 @@ void WfipsMainWindow::SetAnalysisArea()
         newGeometries.append( new QgsGeometry( *(feature.geometry()) ) );
     }
     QgsGeometry *multi = QgsGeometry::unaryUnion( newGeometries );
+    QgsGeometry *newGeometry = NULL;
     QFuture<QgsGeometry*>future;
     QgsFeature analysisFeature;
     if( ui->bufferAnalysisCheckBox->isChecked() && ui->bufferAnalysisSpinBox->value() > 0 )
@@ -929,12 +930,18 @@ void WfipsMainWindow::SetAnalysisArea()
         ui->progressBar->setRange( 0, 100 );
         this->statusBar()->showMessage( "Buffering finished.", 1500 );
         ui->progressBar->reset();
-        analysisFeature.setGeometry( future.results()[0] );
+        newGeometry = future.results()[0];
+        //analysisFeature.setGeometry( future.results()[0] );
     }
     else
     {
-        analysisFeature.setGeometry( multi );
+        newGeometry = multi;
     }
+    if( layer->crs() != crs )
+    {
+        newGeometry->transform( transform );
+    }
+    analysisFeature.setGeometry( newGeometry );
     QgsGeometry *analisysAreaGeometry = new QgsGeometry( *(analysisFeature.geometry()) );
     features.append( analysisFeature );
 
