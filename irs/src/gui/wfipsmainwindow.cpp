@@ -182,6 +182,12 @@ void WfipsMainWindow::PostConstructionActions()
              SIGNAL( SelectionChanged( const QgsFeatureIds & ) ),
              this,
              SLOT( UpdateSelectedDispatchLocations( const QgsFeatureIds & ) ) );
+
+    /*
+    ** Toggle tool button for dispatch location editor when we close the dialog
+    */
+    connect( dispatchEditDialog, SIGNAL( Hiding() ),
+             ui->dispatchEditToolButton, SLOT( toggle() ) );
 }
 
 void WfipsMainWindow::ConstructToolButtons()

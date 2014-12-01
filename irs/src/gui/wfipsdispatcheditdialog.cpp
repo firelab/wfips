@@ -103,3 +103,8 @@ void WfipsDispatchEditDialog::SelectionClicked( const QModelIndex &unused )
     emit SelectionChanged( fids );
 }
 
+void WfipsDispatchEditDialog::hideEvent( QHideEvent *event )
+{
+    emit Hiding();
+}
+

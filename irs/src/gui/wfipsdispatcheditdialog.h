@@ -60,11 +60,15 @@ private:
     QStringListModel *model;
     QMap<QgsFeatureId, QString>map;
 
+protected:
+    void hideEvent( QHideEvent *event );
+
 private slots:
     void SelectionClicked( const QModelIndex & );
 
 signals:
     void SelectionChanged( const QgsFeatureIds &fids );
+    void Hiding();
 
 };
 
