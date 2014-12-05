@@ -2046,8 +2046,8 @@ string CRunScenario::RunContain( int Debugging, int f, std::list< CContainValues
         //double feAttackDistance = fire.GetDistance();
         double feAttackDistance = 0;
   	bool simRetry=true;
-  	int simMinSteps = fire.GetMinNumSteps();
-  	int simMaxSteps = fire.GetMaxNumSteps();
+  	int simMinSteps = 250; /* fire.GetMinNumSteps(); */
+  	int simMaxSteps = 10000; /* fire.GetMaxNumSteps(); */
     int fireESL = FWA.GetESLSize(); 
     int maxFireTime = FWA.GetESLTime();
   	//cout << "runsim 2\n";
