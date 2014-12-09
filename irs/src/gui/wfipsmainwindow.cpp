@@ -561,7 +561,7 @@ void WfipsMainWindow::UpdateMapToolType()
     */
     QgsVectorLayer *layer;
     layer =
-        reinterpret_cast<QgsVectorLayer*>( analysisAreaMapCanvas->currentLayer() );
+        dynamic_cast<QgsVectorLayer*>( analysisAreaMapCanvas->currentLayer() );
     if( ui->mapPanToolButton->isChecked() )
     {
         qDebug() << "Setting map tool to pan";
@@ -612,7 +612,7 @@ void WfipsMainWindow::Select( QgsFeatureIds fids )
     qDebug() << "Selecting fids: " << fids;
     QgsVectorLayer *layer;
     layer =
-        reinterpret_cast<QgsVectorLayer*>( analysisAreaMapCanvas->currentLayer() );
+        dynamic_cast<QgsVectorLayer*>( analysisAreaMapCanvas->currentLayer() );
     if( layer == NULL )
     {
         ClearAnalysisAreaSelection();
@@ -671,8 +671,8 @@ void WfipsMainWindow::ZoomToLayerExtent()
     QList<QgsMapLayer*>mapLayers = currentMapCanvas->layers();
     for( int i = 0; i < mapLayers.size(); i++ )
     {
-        layer = reinterpret_cast<QgsVectorLayer*>( mapLayers[i] );
-        mapLayer = reinterpret_cast<QgsMapLayer*>( mapLayers[i] );
+        layer = dynamic_cast<QgsVectorLayer*>( mapLayers[i] );
+        mapLayer = dynamic_cast<QgsMapLayer*>( mapLayers[i] );
         if( !WfipsIsVisible( mapLayer ) )
         {
             continue;
@@ -719,7 +719,7 @@ void WfipsMainWindow::ClearAnalysisAreaSelection()
     dispatchLocationMap.clear();
     for( int i = 0; i < analysisMapCanvasLayers.size(); i++ )
     {
-        layer = reinterpret_cast<QgsVectorLayer*>( analysisMapCanvasLayers[i].layer() );
+        layer = dynamic_cast<QgsVectorLayer*>( analysisMapCanvasLayers[i].layer() );
         if( layer != NULL )
         {
             layer->removeSelection();
@@ -730,7 +730,7 @@ void WfipsMainWindow::ClearAnalysisAreaSelection()
     int index = -1;
     for( int i = 0; i < analysisMapCanvasLayers.size(); i++ )
     {
-        layer = reinterpret_cast<QgsVectorLayer*>( analysisMapCanvasLayers[i].layer() );
+        layer = dynamic_cast<QgsVectorLayer*>( analysisMapCanvasLayers[i].layer() );
         if( layer == analysisAreaMemLayer )
         {
             index = i;
@@ -857,7 +857,7 @@ void WfipsMainWindow::SetAnalysisArea()
 {
     QgsVectorLayer *layer;
     layer =
-        reinterpret_cast<QgsVectorLayer*>( analysisAreaMapCanvas->currentLayer() );
+        dynamic_cast<QgsVectorLayer*>( analysisAreaMapCanvas->currentLayer() );
     if( layer == NULL || !layer->isValid() )
     {
         qDebug() << "Invalid layer in SetAnalysisArea()";
@@ -1091,7 +1091,7 @@ static QString JoinFids( QgsFeatureIds fids )
 */
 void WfipsMainWindow::UpdateSelectedDispatchLocations( const QgsFeatureIds &fids )
 {
-    QgsVectorLayer *layer = reinterpret_cast<QgsVectorLayer*>( dispatchLocationMemLayer );
+    QgsVectorLayer *layer = dynamic_cast<QgsVectorLayer*>( dispatchLocationMemLayer );
     if( layer == NULL || !layer->isValid() )
     {
         return;
