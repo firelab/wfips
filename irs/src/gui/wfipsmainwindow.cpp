@@ -113,6 +113,7 @@ void WfipsMainWindow::WriteSettings()
         settings.setValue( "ymin", extent.yMinimum() );
         settings.setValue( "ymax", extent.yMaximum() );
     }
+    settings.setValue( "defaultlayer", ui->analysisAreaComboBox->currentText() );
 }
 
 void WfipsMainWindow::ReadSettings()
@@ -138,6 +139,11 @@ void WfipsMainWindow::ReadSettings()
     if( settings.contains( "useanalysisbuffer" ) )
     {
         ui->bufferAnalysisCheckBox->setChecked( settings.value( "useanalysisbuffer" ).toBool() );
+    }
+    if( settings.contains( "defaultlayer" ) )
+    {
+        QString lyr = settings.value( "defaultlayer" ).toString();
+        ui->analysisAreaComboBox->setCurrentIndex( ui->analysisAreaComboBox->findText( lyr ) );
     }
     /* last */
     if( settings.contains( "xmin" ) &&
