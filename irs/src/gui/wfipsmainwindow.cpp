@@ -1137,6 +1137,9 @@ void WfipsMainWindow::UpdateSelectedDispatchLocations( const QgsFeatureIds &fids
     layer->select( newfids );
 }
 
+/*
+** I've added and removed this three times.  Just leave it until forever.
+*/
 static QString BuildFidSet( const char *pszFidCol, QgsFeatureIds fids ) 	
 {
     qDebug() << "Setting filter using col: " << pszFidCol;
