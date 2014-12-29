@@ -143,7 +143,12 @@ void WfipsMainWindow::ReadSettings()
     if( settings.contains( "defaultlayer" ) )
     {
         QString lyr = settings.value( "defaultlayer" ).toString();
-        ui->analysisAreaComboBox->setCurrentIndex( ui->analysisAreaComboBox->findText( lyr ) );
+        int i = ui->analysisAreaComboBox->findText( lyr );
+        if( i < 0 )
+        {
+            i = 0;
+        }
+        ui->analysisAreaComboBox->setCurrentIndex( i );
     }
     /* last */
     if( settings.contains( "xmin" ) &&
