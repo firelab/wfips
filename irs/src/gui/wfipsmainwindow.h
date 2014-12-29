@@ -223,6 +223,7 @@ private slots:
 
     void SetAnalysisArea();
     void ClearAnalysisAreaSelection();
+    void HideDispatchLocations( QgsFeatureIds fids );
 
     void ReadSettings();
     void WriteSettings();

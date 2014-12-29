@@ -199,6 +199,12 @@ void WfipsMainWindow::PostConstructionActions()
     */
     connect( dispatchEditDialog, SIGNAL( Hiding() ),
              ui->dispatchEditToolButton, SLOT( toggle() ) );
+    /*
+    ** Hide dispatch locations on the analysis layer if they are omitted from
+    ** the list.
+    */
+    connect( dispatchEditDialog, SIGNAL( HiddenChanged( QgsFeatureIds ) ),
+             this, SLOT( HideDispatchLocations( QgsFeatureIds ) ) );
 }
 
 void WfipsMainWindow::ConstructToolButtons()
@@ -1129,6 +1135,41 @@ void WfipsMainWindow::UpdateSelectedDispatchLocations( const QgsFeatureIds &fids
     qDebug() << "Found mem fids: " << newfids;
     layer->removeSelection();
     layer->select( newfids );
+}
+
+static QString BuildFidSet( const char *pszFidCol, QgsFeatureIds fids ) 	
+{
+    qDebug() << "Setting filter using col: " << pszFidCol;
+    QString fidset = QString( pszFidCol ) + " IN (";
+    QSetIterator<qint64>it( fids );
+    while( it.hasNext() )
+    {
+        fidset += FID_TO_STRING( it.next() );
+        if( it.hasNext() )
+        {
+            fidset += ",";
+        }
+    }
+    fidset += ")";
+    return fidset;
+}
+
+void WfipsMainWindow::HideDispatchLocations( QgsFeatureIds fids )
+{
+    QgsVectorLayer *layer = dynamic_cast<QgsVectorLayer*>( dispatchLocationMemLayer );
+    if( layer == NULL )
+    {
+        return;
+    }
+    if( fids.empty() )
+    {
+        layer->setSubsetString( "" );
+        return;
+    }
+    QString where = BuildFidSet( "ofid", fids );
+    qDebug() << "Limiting location set: " << where;
+    layer->setSubsetString( where );
+    analysisAreaMapCanvas->refresh();
 }
 
 void WfipsMainWindow::ShowMessage( const int messageType,

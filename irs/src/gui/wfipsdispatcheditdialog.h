@@ -59,17 +59,22 @@ private:
 
     QStringListModel *model;
     QMap<QgsFeatureId, QString>map;
+    QList<int> GetSelectedIndices();
+    QgsFeatureIds GetVisibleFids();
+    QgsFeatureIds GetFidsFromNames( QStringList names );
 
 protected:
     void hideEvent( QHideEvent *event );
 
 private slots:
     void SelectionClicked( const QModelIndex & );
+    void Omit();
+    void Unhide();
 
 signals:
     void SelectionChanged( const QgsFeatureIds &fids );
     void Hiding();
-
+    void HiddenChanged( const QgsFeatureIds &fids );
 };
 
 #endif /* WFIPSDISPATCHEDITDIALOG_H */

@@ -20,6 +20,19 @@
    <item>
     <layout class="QHBoxLayout" name="horizontalLayout_2">
      <item>
+      <widget class="QToolButton" name="omitToolButton">
+       <property name="toolTip">
+        <string>Omit Selected Locations.</string>
+       </property>
+       <property name="text">
+        <string>Omit</string>
+       </property>
+       <property name="toolButtonStyle">
+        <enum>Qt::ToolButtonTextBesideIcon</enum>
+       </property>
+      </widget>
+     </item>
+     <item>
       <spacer name="horizontalSpacer">
        <property name="orientation">
         <enum>Qt::Horizontal</enum>
@@ -33,7 +46,7 @@
       </spacer>
      </item>
      <item>
-      <widget class="QToolButton" name="toolButton">
+      <widget class="QToolButton" name="revertToolButton">
        <property name="text">
         <string>Revert</string>
        </property>

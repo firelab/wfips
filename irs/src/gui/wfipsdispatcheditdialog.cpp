@@ -37,6 +37,10 @@ WfipsDispatchEditDialog::WfipsDispatchEditDialog( QWidget *parent ) :
     ui->listView->setAlternatingRowColors( true );
     connect( ui->listView, SIGNAL( pressed( const QModelIndex & ) ),
              this, SLOT( SelectionClicked( const QModelIndex & ) ) );
+    connect( ui->omitToolButton, SIGNAL( clicked() ),
+             this, SLOT( Omit() ) );
+    connect( ui->revertToolButton, SIGNAL( clicked() ),
+             this, SLOT( Unhide() ) );
 }
 
 WfipsDispatchEditDialog::~WfipsDispatchEditDialog()
@@ -78,17 +82,48 @@ void WfipsDispatchEditDialog::SelectFids( QgsFeatureIds fids )
     return;
 }
 
-/*
-** Get selected fids from the QListView.
-*/
-void WfipsDispatchEditDialog::SelectionClicked( const QModelIndex &unused )
+QList<int> WfipsDispatchEditDialog::GetSelectedIndices()
 {
-    QStringList names;
+    QList<int> indices;
     foreach( const QModelIndex &index, ui->listView->selectionModel()->selectedIndexes() )
     {
-        names.append( model->data( index, 0 ).toString() );
+        indices.append( index.row() );
     }
+    qDebug() << "Selected indices: " << indices;
+    return indices;
+}
 
+/*
+** Hide the selected dispatch locations from the list.
+*/
+void WfipsDispatchEditDialog::Omit()
+{
+    QList<int> selectedRows;
+    selectedRows = GetSelectedIndices();
+    for( int i = 0; i < selectedRows.size(); i++ )
+    {
+        ui->listView->setRowHidden( selectedRows[i], true );
+    }
+    QgsFeatureIds fids = GetVisibleFids();
+    ui->listView->clearSelection();
+    emit HiddenChanged( fids );
+}
+
+void WfipsDispatchEditDialog::Unhide()
+{
+    for( int i = 0; i < model->rowCount(); i++ )
+    {
+        ui->listView->setRowHidden( i, false );
+    }
+    ui->listView->clearSelection();
+    emit HiddenChanged( QgsFeatureIds() );
+}
+
+/*
+** Find fids for names from the map.
+*/
+QgsFeatureIds WfipsDispatchEditDialog::GetFidsFromNames( QStringList names )
+{
     /* Find the fids.  We should probably fix this */
     QgsFeatureIds fids;
     QgsFeatureId fid;
@@ -101,7 +136,33 @@ void WfipsDispatchEditDialog::SelectionClicked( const QModelIndex &unused )
         }
         fids.insert( fid );
     }
-    emit SelectionChanged( fids );
+    return fids;
+}
+
+QgsFeatureIds WfipsDispatchEditDialog::GetVisibleFids()
+{
+    QStringList names;
+    for( int i = 0; i < model->rowCount(); i++ )
+    {
+        if( !ui->listView->isRowHidden( i ) )
+        {
+            names.append( model->index( i, 0).data().toString() );
+        }
+    }
+    return GetFidsFromNames( names );
+}
+
+/*
+** Get selected fids from the QListView.
+*/
+void WfipsDispatchEditDialog::SelectionClicked( const QModelIndex &unused )
+{
+    QStringList names;
+    foreach( const QModelIndex &index, ui->listView->selectionModel()->selectedIndexes() )
+    {
+        names.append( model->data( index, 0 ).toString() );
+    }
+    emit SelectionChanged( GetFidsFromNames( names ) );
 }
 
 void WfipsDispatchEditDialog::hideEvent( QHideEvent *event )
