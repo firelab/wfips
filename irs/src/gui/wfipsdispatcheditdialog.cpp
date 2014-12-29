@@ -50,6 +50,7 @@ void WfipsDispatchEditDialog::SetModel( const QMap<qint64, QString> &map )
     delete model;
     model = new QStringListModel( this );
     model->setStringList( this->map.values() );
+    model->sort( 0 );
     ui->listView->setModel( model );
     ui->listView->setEditTriggers( QAbstractItemView::NoEditTriggers );
 }
