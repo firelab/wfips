@@ -250,6 +250,7 @@ void WfipsMainWindow::ConstructToolButtons()
     ui->dispatchEditToolButton->setIcon( QIcon( ":/action" ) );
     connect( ui->dispatchEditToolButton, SIGNAL( clicked() ),
              this, SLOT( ShowDispatchEditDialog() ) );
+    ui->dispatchEditToolButton->setIcon( QIcon( ":/properties" ) );
 
     /* Fuel button */
     ui->fuelMaskToolButton->setIcon( QIcon( ":/add_layer" ) );

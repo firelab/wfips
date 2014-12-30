@@ -8,6 +8,7 @@
         <file alias="zoom_layer">mActionZoomToLayer.png</file>
         <file alias="select_rect">mActionSelectRectangle.png</file>
         <file alias="add_layer">mActionAddLayer.png</file>
+        <file alias="properties">mActionPropertyItem.png</file>
         <file alias="osu">osu.png</file>
     </qresource>
 </RCC>
