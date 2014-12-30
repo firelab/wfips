@@ -205,6 +205,18 @@ void WfipsMainWindow::PostConstructionActions()
     */
     connect( dispatchEditDialog, SIGNAL( HiddenChanged( QgsFeatureIds ) ),
              this, SLOT( HideDispatchLocations( QgsFeatureIds ) ) );
+
+    /*
+    ** Bump the fuel combo to align the enabler.
+    */
+    connect( ui->fuelComboBox, SIGNAL( currentIndexChanged( int ) ),
+             this, SLOT( EnableCustomFuelMask( int ) ) );
+    ui->fuelComboBox->setCurrentIndex( 1 );
+    ui->fuelComboBox->setCurrentIndex( 0 );
+    connect( ui->fuelMaskToolButton, SIGNAL( clicked() ),
+             this, SLOT( SelectFuelMask() ) );
+    connect( ui->fuelAttComboBox, SIGNAL( currentIndexChanged( int ) ),
+             this, SLOT( EnableFuelMaskAttr( int ) ) );
 }
 
 void WfipsMainWindow::ConstructToolButtons()
@@ -238,6 +250,9 @@ void WfipsMainWindow::ConstructToolButtons()
     ui->dispatchEditToolButton->setIcon( QIcon( ":/action" ) );
     connect( ui->dispatchEditToolButton, SIGNAL( clicked() ),
              this, SLOT( ShowDispatchEditDialog() ) );
+
+    /* Fuel button */
+    ui->fuelMaskToolButton->setIcon( QIcon( ":/add_layer" ) );
 }
 
 void WfipsMainWindow::ConstructAnalysisAreaWidgets()
@@ -1166,6 +1181,7 @@ void WfipsMainWindow::HideDispatchLocations( QgsFeatureIds fids )
     }
     if( fids.empty() )
     {
+        layer->removeSelection();
         layer->setSubsetString( "" );
         return;
     }
@@ -1173,6 +1189,54 @@ void WfipsMainWindow::HideDispatchLocations( QgsFeatureIds fids )
     qDebug() << "Limiting location set: " << where;
     layer->setSubsetString( where );
     analysisAreaMapCanvas->refresh();
+}
+
+void WfipsMainWindow::EnableCustomFuelMask( int index )
+{
+    ui->fuelStackWidget->setCurrentIndex( index );
+    bool enable = (bool)index;
+    ui->fuelMaskToolButton->setEnabled( enable );
+}
+
+void WfipsMainWindow::EnableFuelMaskAttr( int index )
+{
+    bool enable = !(bool)index;
+    ui->fuelProbSpinBox->setEnabled( enable );
+}
+
+void WfipsMainWindow::SelectFuelMask()
+{
+    /* Use custom layer path for now, but maybe add a setting */
+    WfipsAddLayerDialog dialog( customLayerPath, this );
+    dialog.exec();
+    qDebug() << "Loading " << dialog.GetFilePath() << ", " << dialog.GetCurrentLayer();
+    if( dialog.GetFilePath() == "" || dialog.GetCurrentLayer() == "" )
+    {
+        qDebug() << "Invalid Layer file or layer name!";
+        ui->fuelMaskSourceLineEdit->setText( "" );
+        ui->fuelMaskLayerLineEdit->setText( "" );
+        return;
+    }
+    QFileInfo info(dialog.GetFilePath() );
+    fuelMaskSource = dialog.GetFilePath();
+    fuelMaskLayer = dialog.GetCurrentLayer();
+    qDebug() << "Using file: " << fuelMaskSource << ", layer: " << fuelMaskLayer;
+    ui->fuelMaskSourceLineEdit->setText( info.baseName() );
+    ui->fuelMaskLayerLineEdit->setText( fuelMaskLayer );
+    customLayerPath = info.absolutePath();
+    QgsVectorLayer layer(fuelMaskSource + "|layername=" + fuelMaskLayer, "", "ogr" );
+    if( !layer.isValid() )
+    {
+        return;
+    }
+    QgsFields fields;
+    fields = layer.pendingFields();
+    for( int i = 0; i < fields.size(); i++ )
+    {
+        qDebug() << fields[i].name();
+        ui->fuelAttComboBox->addItem( fields[i].name() );
+    }
+    return;
 }
 
 void WfipsMainWindow::ShowMessage( const int messageType,

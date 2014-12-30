@@ -190,6 +190,11 @@ private:
 
     void ConstructDispatchWidgets();
 
+    /* Fuel mask related */
+    QString fuelMaskSource;
+    QString fuelMaskLayer;
+    QString fuelMaskAttribute;
+
     /* Identify results viewer */
     WfipsIdentifyDialog *identifyDialog;
 
@@ -225,6 +230,12 @@ private slots:
     void ClearAnalysisAreaSelection();
     void HideDispatchLocations( QgsFeatureIds fids );
 
+    /* Fuel mask related */
+    void EnableCustomFuelMask( int );
+    void SelectFuelMask();
+    void EnableFuelMaskAttr( int index );
+
+    /* Settings */
     void ReadSettings();
     void WriteSettings();
 

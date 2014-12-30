@@ -285,7 +285,7 @@
          <enum>QFrame::Plain</enum>
         </property>
         <property name="currentIndex">
-         <number>10</number>
+         <number>9</number>
         </property>
         <widget class="QWidget" name="dataPage">
          <layout class="QVBoxLayout" name="verticalLayout_13">
@@ -1294,21 +1294,38 @@
             </property>
             <layout class="QVBoxLayout" name="verticalLayout_12">
              <item>
-              <widget class="QComboBox" name="fuelTreatComboBox">
+              <layout class="QHBoxLayout" name="horizontalLayout_8">
                <item>
-                <property name="text">
-                 <string>Random Treatment</string>
-                </property>
+                <widget class="QComboBox" name="fuelComboBox">
+                 <item>
+                  <property name="text">
+                   <string>Random Treatment</string>
+                  </property>
+                 </item>
+                 <item>
+                  <property name="text">
+                   <string>Spatial fuel treatment</string>
+                  </property>
+                 </item>
+                </widget>
                </item>
                <item>
-                <property name="text">
-                 <string>Spatial fuel treatment</string>
-                </property>
+                <widget class="QToolButton" name="fuelMaskToolButton">
+                 <property name="enabled">
+                  <bool>false</bool>
+                 </property>
+                 <property name="toolTip">
+                  <string>Specify spatial fuel treatment layer.</string>
+                 </property>
+                 <property name="text">
+                  <string/>
+                 </property>
+                </widget>
                </item>
-              </widget>
+              </layout>
              </item>
              <item>
-              <widget class="QStackedWidget" name="fuelTreatStackWidget">
+              <widget class="QStackedWidget" name="fuelStackWidget">
                <property name="currentIndex">
                 <number>1</number>
                </property>
@@ -1366,61 +1383,26 @@
                <widget class="QWidget" name="fuelTreatSpatialPage">
                 <layout class="QVBoxLayout" name="verticalLayout_15">
                  <item>
-                  <layout class="QHBoxLayout" name="horizontalLayout_8">
+                  <layout class="QHBoxLayout" name="horizontalLayout_12">
                    <item>
                     <widget class="QLabel" name="label_10">
                      <property name="text">
-                      <string>Mask file</string>
+                      <string>File:</string>
                      </property>
                     </widget>
                    </item>
                    <item>
-                    <widget class="QLineEdit" name="fuelTreatMaskLineEdit">
-                     <property name="readOnly">
-                      <bool>true</bool>
-                     </property>
-                    </widget>
+                    <widget class="QLineEdit" name="fuelMaskSourceLineEdit"/>
                    </item>
-                   <item>
-                    <widget class="QToolButton" name="fuelTreatMaskOpenToolButton">
-                     <property name="text">
-                      <string/>
-                     </property>
-                    </widget>
-                   </item>
-                  </layout>
-                 </item>
-                 <item>
-                  <layout class="QHBoxLayout" name="horizontalLayout_12">
                    <item>
                     <widget class="QLabel" name="label_11">
                      <property name="text">
-                      <string>Layer name</string>
+                      <string>Layer:</string>
                      </property>
                     </widget>
                    </item>
                    <item>
-                    <spacer name="horizontalSpacer_8">
-                     <property name="orientation">
-                      <enum>Qt::Horizontal</enum>
-                     </property>
-                     <property name="sizeHint" stdset="0">
-                      <size>
-                       <width>40</width>
-                       <height>20</height>
-                      </size>
-                     </property>
-                    </spacer>
-                   </item>
-                   <item>
-                    <widget class="QComboBox" name="fuelTreatLayerComboBox">
-                     <property name="sizePolicy">
-                      <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
-                       <horstretch>0</horstretch>
-                       <verstretch>0</verstretch>
-                      </sizepolicy>
-                     </property>
-                    </widget>
+                    <widget class="QLineEdit" name="fuelMaskLayerLineEdit"/>
                    </item>
                   </layout>
                  </item>
@@ -1429,7 +1411,7 @@
                    <item>
                     <widget class="QLabel" name="label_12">
                      <property name="text">
-                      <string>Treatment Probability Source</string>
+                      <string>Treatment Probability Attribute</string>
                      </property>
                     </widget>
                    </item>
@@ -1447,7 +1429,7 @@
                     </spacer>
                    </item>
                    <item>
-                    <widget class="QComboBox" name="fuelTreatAttComboBox">
+                    <widget class="QComboBox" name="fuelAttComboBox">
                      <item>
                       <property name="text">
                        <string>Fixed</string>
@@ -1456,16 +1438,16 @@
                     </widget>
                    </item>
                    <item>
-                    <widget class="QSpinBox" name="fuelTreatProbSpinBox">
+                    <widget class="QSpinBox" name="fuelProbSpinBox">
                      <property name="enabled">
-                      <bool>false</bool>
+                      <bool>true</bool>
                      </property>
                     </widget>
                    </item>
                   </layout>
                  </item>
                  <item>
-                  <spacer name="verticalSpacer_5">
+                  <spacer name="verticalSpacer_2">
                    <property name="orientation">
                     <enum>Qt::Vertical</enum>
                    </property>
@@ -2067,22 +2049,6 @@
     <hint type="destinationlabel">
      <x>390</x>
      <y>259</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>fuelTreatComboBox</sender>
-   <signal>currentIndexChanged(int)</signal>
-   <receiver>fuelTreatStackWidget</receiver>
-   <slot>setCurrentIndex(int)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>738</x>
-     <y>132</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>738</x>
-     <y>452</y>
     </hint>
    </hints>
   </connection>
