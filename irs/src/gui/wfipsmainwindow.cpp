@@ -779,7 +779,6 @@ void WfipsMainWindow::ZoomToLayerExtent()
 void WfipsMainWindow::ClearAnalysisAreaSelection()
 {
     QgsVectorLayer *layer;
-    dispatchLocationMap.clear();
     for( int i = 0; i < analysisMapCanvasLayers.size(); i++ )
     {
         layer = dynamic_cast<QgsVectorLayer*>( analysisMapCanvasLayers[i].layer() );
@@ -815,6 +814,7 @@ void WfipsMainWindow::ClearAnalysisAreaSelection()
     /* Dispatch Layer */
     if( dispatchMapCanvasLayers.size() > 0 )
     {
+        dispatchLocationMap.clear();
         dispatchMapCanvasLayers.clear();
         QgsMapLayerRegistry::instance()->removeMapLayer( dispatchLocationMemLayer->id() );
         dispatchMapCanvas->refresh();
@@ -1097,6 +1097,7 @@ void WfipsMainWindow::AddAnalysisLayerToCanvases()
     /*
     ** Create a layer for the resources, and join it to the dispatch mem layer
     */
+    /*
     QString path = wfipsPath + "resc.db";
     QString layerName = "|layername=resc.db";
     path += layerName;
@@ -1106,6 +1107,7 @@ void WfipsMainWindow::AddAnalysisLayerToCanvases()
     jinfo.targetFieldName = "disploc";
     jinfo.joinLayerId = rescJoinLayer->id();
     dispatchLocationMemLayer->addJoin( jinfo );
+    */
 
     dispatchMapCanvasLayers.append( QgsMapCanvasLayer( dispatchLocationMemLayer, true ) );
     dispatchMapCanvasLayers.append( QgsMapCanvasLayer( analysisAreaMemLayer, true ) );
