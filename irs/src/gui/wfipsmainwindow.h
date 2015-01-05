@@ -190,6 +190,20 @@ private:
 
     void ConstructDispatchWidgets();
 
+    /* Resource editing canvas */
+    QVBoxLayout *resourceMapLayout;
+    QgsMapCanvas *resourceMapCanvas;
+    QList<QgsMapCanvasLayer> resourceMapCanvasLayers;
+    QList<QgsMapLayer*> resourceLayers;
+
+    QgsMapTool *resourcePanTool;
+    QgsMapTool *resourceZoomInTool;
+    QgsMapTool *resourceZoomOutTool;
+    QgsMapTool *resourceIdentifyTool;
+    QgsMapTool *resourceSelectTool;
+
+    void ConstructResourceWidgets();
+
     /* Fuel mask related */
     QString fuelMaskSource;
     QString fuelMaskLayer;
