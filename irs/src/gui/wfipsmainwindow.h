@@ -202,6 +202,8 @@ private:
     QgsMapTool *resourceIdentifyTool;
     QgsMapTool *resourceSelectTool;
 
+    QgsVectorLayer *rescJoinLayer;
+
     void ConstructResourceWidgets();
 
     /* Fuel mask related */

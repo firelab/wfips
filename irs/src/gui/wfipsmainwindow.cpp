@@ -620,9 +620,6 @@ void WfipsMainWindow::UpdateMapToolType()
     ** XXX: Should we clear all layers?
     ** XXX: Should we add a fx that does this, it is probably worth it.
     */
-    QgsVectorLayer *layer;
-    layer =
-        dynamic_cast<QgsVectorLayer*>( analysisAreaMapCanvas->currentLayer() );
     if( ui->mapPanToolButton->isChecked() )
     {
         qDebug() << "Setting map tool to pan";
@@ -800,6 +797,7 @@ void WfipsMainWindow::ClearAnalysisAreaSelection()
         if( layer == analysisAreaMemLayer )
         {
             index = i;
+            break;
         }
     }
     if( index != -1 )
@@ -820,6 +818,12 @@ void WfipsMainWindow::ClearAnalysisAreaSelection()
         dispatchMapCanvasLayers.clear();
         QgsMapLayerRegistry::instance()->removeMapLayer( dispatchLocationMemLayer->id() );
         dispatchMapCanvas->refresh();
+    }
+    if( resourceMapCanvasLayers.size() > 0 )
+    {
+        resourceMapCanvasLayers.clear();
+        QgsMapLayerRegistry::instance()->removeMapLayer( rescJoinLayer->id() );
+        resourceMapCanvas->refresh();
     }
 }
 
@@ -921,6 +925,14 @@ const static double MilesToDegrees( double miles )
 */
 void WfipsMainWindow::SetAnalysisArea()
 {
+    if( !ui->setAnalysisAreaToolButton->isChecked() )
+    {
+        ClearAnalysisAreaSelection();
+        analysisAreaMapCanvas->refresh();
+        ui->setAnalysisAreaToolButton->setText( "Set Analysis Area" );
+        ui->setAnalysisAreaToolButton->setChecked( false );
+        return;
+    }
     QgsVectorLayer *layer;
     layer =
         dynamic_cast<QgsVectorLayer*>( analysisAreaMapCanvas->currentLayer() );
@@ -928,15 +940,6 @@ void WfipsMainWindow::SetAnalysisArea()
     {
         qDebug() << "Invalid layer in SetAnalysisArea()";
         ClearAnalysisAreaSelection();
-        ui->setAnalysisAreaToolButton->setText( "Set Analysis Area" );
-        ui->setAnalysisAreaToolButton->setChecked( false );
-        return;
-    }
-    if( !ui->setAnalysisAreaToolButton->isChecked() )
-    {
-        layer->setSubsetString( "" );
-        ClearAnalysisAreaSelection();
-        analysisAreaMapCanvas->refresh();
         ui->setAnalysisAreaToolButton->setText( "Set Analysis Area" );
         ui->setAnalysisAreaToolButton->setChecked( false );
         return;
@@ -1091,6 +1094,19 @@ void WfipsMainWindow::SetAnalysisArea()
 
 void WfipsMainWindow::AddAnalysisLayerToCanvases()
 {
+    /*
+    ** Create a layer for the resources, and join it to the dispatch mem layer
+    */
+    QString path = wfipsPath + "resc.db";
+    QString layerName = "|layername=resc.db";
+    path += layerName;
+    rescJoinLayer = new QgsVectorLayer( path, layerName, "ogr", true );
+    QgsVectorJoinInfo jinfo;
+    jinfo.joinFieldName = "name";
+    jinfo.targetFieldName = "disploc";
+    jinfo.joinLayerId = rescJoinLayer->id();
+    dispatchLocationMemLayer->addJoin( jinfo );
+
     dispatchMapCanvasLayers.append( QgsMapCanvasLayer( dispatchLocationMemLayer, true ) );
     dispatchMapCanvasLayers.append( QgsMapCanvasLayer( analysisAreaMemLayer, true ) );
     dispatchMapCanvas->setLayerSet( dispatchMapCanvasLayers );
