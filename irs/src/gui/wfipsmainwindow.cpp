@@ -1193,7 +1193,7 @@ void WfipsMainWindow::UpdateSelectedDispatchLocations( const QgsFeatureIds &fids
     layer->removeSelection();
     layer->select( newfids );
     dispatchMapCanvas->refresh();
-    //resourceMapCanvas->refresh();
+    resourceMapCanvas->refresh();
 }
 
 /*
