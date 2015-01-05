@@ -822,7 +822,6 @@ void WfipsMainWindow::ClearAnalysisAreaSelection()
     if( resourceMapCanvasLayers.size() > 0 )
     {
         resourceMapCanvasLayers.clear();
-        QgsMapLayerRegistry::instance()->removeMapLayer( rescJoinLayer->id() );
         resourceMapCanvas->refresh();
     }
 }
