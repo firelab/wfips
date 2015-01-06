@@ -1118,6 +1118,7 @@ void WfipsMainWindow::AddAnalysisLayerToCanvases()
     dispatchMapCanvas->setCurrentLayer( dispatchMapCanvasLayers[0].layer() );
     dispatchMapCanvas->refresh();
 
+    /*
     resourceMapCanvasLayers.append( QgsMapCanvasLayer( dispatchLocationMemLayer, true ) );
     resourceMapCanvasLayers.append( QgsMapCanvasLayer( analysisAreaMemLayer, true ) );
     resourceMapCanvas->setLayerSet( resourceMapCanvasLayers );
@@ -1125,6 +1126,7 @@ void WfipsMainWindow::AddAnalysisLayerToCanvases()
     resourceMapCanvas->setExtent( extent );
     resourceMapCanvas->setCurrentLayer( resourceMapCanvasLayers[0].layer() );
     resourceMapCanvas->refresh();
+    */
 
     AddAnalysisAreaLayer( analysisAreaMemLayer, true );
 }
