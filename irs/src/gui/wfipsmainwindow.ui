@@ -285,7 +285,7 @@
          <enum>QFrame::Plain</enum>
         </property>
         <property name="currentIndex">
-         <number>5</number>
+         <number>10</number>
         </property>
         <widget class="QWidget" name="dataPage">
          <layout class="QVBoxLayout" name="verticalLayout_13">
@@ -1487,7 +1487,18 @@
              </widget>
             </item>
             <item>
-             <widget class="QDateEdit" name="dateEdit_2"/>
+             <widget class="QDateEdit" name="largeFireStartDateEdit">
+              <property name="date">
+               <date>
+                <year>2000</year>
+                <month>6</month>
+                <day>1</day>
+               </date>
+              </property>
+              <property name="displayFormat">
+               <string>d MMM</string>
+              </property>
+             </widget>
             </item>
             <item>
              <spacer name="horizontalSpacer_13">
@@ -1510,7 +1521,18 @@
              </widget>
             </item>
             <item>
-             <widget class="QDateEdit" name="dateEdit"/>
+             <widget class="QDateEdit" name="largeFireEndDateEdit">
+              <property name="date">
+               <date>
+                <year>2000</year>
+                <month>10</month>
+                <day>1</day>
+               </date>
+              </property>
+              <property name="displayFormat">
+               <string>d MMM</string>
+              </property>
+             </widget>
             </item>
            </layout>
           </item>

@@ -361,7 +361,8 @@ void WfipsMainWindow::LoadAnalysisAreaLayers()
     analysisLayers.clear();
     analysisMapCanvasLayers.clear();
     QStringList layerNames;
-    layerNames << "gacc" << "forest" << "district" << "us_state" << "us_county";
+    layerNames << "gacc" << "forest" << "district" << "us_state" << "us_county"
+               << "fpu";
     bool useExtent = false;
     for( int i = 0; i < layerNames.size(); i++ )
     {
@@ -1096,17 +1097,30 @@ void WfipsMainWindow::AddAnalysisLayerToCanvases()
     /*
     ** Create a layer for the resources, and join it to the dispatch mem layer
     */
-    /*
-    QString path = wfipsPath + "resc.db";
-    QString layerName = "|layername=resc.db";
+    QString path = wfipsPath + "/resc.db";
+    QString layerName = "|layername=resource";
     path += layerName;
+    qDebug() << "Resource join layer path: " << path;
     rescJoinLayer = new QgsVectorLayer( path, layerName, "ogr", true );
-    QgsVectorJoinInfo jinfo;
-    jinfo.joinFieldName = "name";
-    jinfo.targetFieldName = "disploc";
-    jinfo.joinLayerId = rescJoinLayer->id();
-    dispatchLocationMemLayer->addJoin( jinfo );
-    */
+    if( rescJoinLayer->isValid() )
+    {
+        QgsVectorJoinInfo jinfo;
+        jinfo.joinFieldName = "name";
+        jinfo.targetFieldName = "disploc";
+        jinfo.joinLayerId = rescJoinLayer->id();
+        if( dispatchLocationMemLayer->addJoin( jinfo ) )
+        {
+            dispatchLocationMemLayer->updateFields();
+        }
+        else
+        {
+            qDebug() << "Join failed!";
+        }
+    }
+    else
+    {
+        qDebug() << "Invalid resource layer. Join will fail.";
+    }
 
     dispatchMapCanvasLayers.append( QgsMapCanvasLayer( dispatchLocationMemLayer, true ) );
     dispatchMapCanvasLayers.append( QgsMapCanvasLayer( analysisAreaMemLayer, true ) );

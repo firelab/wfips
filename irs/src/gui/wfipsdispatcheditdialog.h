@@ -33,6 +33,7 @@
 #include <QMouseEvent>
 #include <QString>
 #include <QStringListModel>
+#include <sqlite3.h>
 
 #include <qgsfeature.h>
 
@@ -62,6 +63,9 @@ private:
     QList<int> GetSelectedIndices();
     QgsFeatureIds GetVisibleFids();
     QgsFeatureIds GetFidsFromNames( QStringList names );
+
+    QMap< QString, QMap<QString, int> > rescAtLocMap;
+    int PopulateRescMap();
 
 protected:
     void hideEvent( QHideEvent *event );

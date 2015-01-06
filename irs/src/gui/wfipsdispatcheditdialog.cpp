@@ -57,6 +57,7 @@ void WfipsDispatchEditDialog::SetModel( const QMap<qint64, QString> &map )
     model->sort( 0 );
     ui->listView->setModel( model );
     ui->listView->setEditTriggers( QAbstractItemView::NoEditTriggers );
+    PopulateRescMap();
 }
 
 void WfipsDispatchEditDialog::SelectFids( QgsFeatureIds fids )
@@ -169,4 +170,52 @@ void WfipsDispatchEditDialog::hideEvent( QHideEvent *event )
 {
     emit Hiding();
 }
+
+int WfipsDispatchEditDialog::PopulateRescMap()
+{
+    const char *pszDispLoc;
+    sqlite3 *db;
+    sqlite3_stmt *stmt;
+    int i, rc;
+    QString dl, type;
+    int n;
+    if( map.size() == 0 )
+    {
+        return 0;
+    }
+    rc = sqlite3_open_v2( "disploc.db", &db, SQLITE_OPEN_READONLY, NULL );
+    rc = sqlite3_exec( db, "ATTACH 'resc.db' as resc", NULL, NULL, NULL );
+    rc = sqlite3_prepare_v2( db, "SELECT resc_type, count(*) FROM disploc " \
+                                 "JOIN resource ON disploc.name=resource.disploc " \
+                                 "WHERE disploc.name=? GROUP BY disploc.name, " \
+                                 "resc_type",
+                             -1, &stmt, NULL );
+
+    rescAtLocMap.clear();
+    QMapIterator<qint64, QString>it( map );
+
+    while( it.hasNext() )
+    {
+        it.next();
+        dl = it.value();
+        rc = sqlite3_bind_text( stmt, 1, (char*)dl.toLocal8Bit().data(), -1,
+                                SQLITE_TRANSIENT );
+        rc = sqlite3_step( stmt );
+        if( rc != SQLITE_ROW )
+        {
+            sqlite3_reset( stmt );
+            continue;
+        }
+        type = (char*)sqlite3_column_text( stmt, 0 );
+        n = sqlite3_column_int( stmt, 1 );
+
+        rescAtLocMap[dl][type] = n;
+        rc = sqlite3_reset( stmt );
+    }
+    rc = sqlite3_finalize( stmt );
+    rc = sqlite3_close( db );
+    qDebug() << "Found resources at " << rescAtLocMap.size() << " dispatch locations.";
+    return rescAtLocMap.size();
+}
+
 
