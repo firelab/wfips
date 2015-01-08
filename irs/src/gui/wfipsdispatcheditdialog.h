@@ -30,6 +30,7 @@
 
 #include <QDebug>
 #include <QDialog>
+#include <QListView>
 #include <QMouseEvent>
 #include <QString>
 #include <QStringListModel>
@@ -42,6 +43,22 @@
 namespace Ui {
 class WfipsDispatchEditDialog;
 }
+
+class WfipsDispatchListView : public QListView
+{
+    Q_OBJECT
+
+public:
+    explicit WfipsDispatchListView( QWidget *parent = 0 );
+    ~WfipsDispatchListView();
+
+protected slots:
+    void mousePressEvent( QMouseEvent *event );
+    void mouseDoubleClickEvent( QMouseEvent *event );
+
+signals:
+    //void RightClick( QModelIndex &index );
+};
 
 class WfipsDispatchEditDialog : public QDialog
 {
@@ -57,6 +74,8 @@ public:
 
 private:
     Ui::WfipsDispatchEditDialog *ui;
+
+    WfipsDispatchListView *listView;
 
     QStringListModel *model;
     QMap<QgsFeatureId, QString>map;

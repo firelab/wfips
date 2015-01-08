@@ -27,15 +27,57 @@
 
 #include "wfipsdispatcheditdialog.h"
 
+WfipsDispatchListView::WfipsDispatchListView( QWidget *parent ) :
+    QListView( parent )
+{
+}
+
+WfipsDispatchListView::~WfipsDispatchListView()
+{
+}
+
+void WfipsDispatchListView::mouseDoubleClickEvent( QMouseEvent *event )
+{
+    if( event->button() == Qt::LeftButton )
+    {
+        qDebug() << event;
+        qDebug() << indexAt( event->pos() );
+
+        //emit RightClick( indexAt( event->pos ) );
+    }
+    else
+    {
+        return QListView::mousePressEvent( event );
+    }
+}
+
+void WfipsDispatchListView::mousePressEvent( QMouseEvent *event )
+{
+    if( event->button() == Qt::RightButton )
+    {
+        qDebug() << event;
+        qDebug() << indexAt( event->pos() );
+
+        //emit RightClick( indexAt( event->pos ) );
+    }
+    else
+    {
+        return QListView::mousePressEvent( event );
+    }
+}
+
+
 WfipsDispatchEditDialog::WfipsDispatchEditDialog( QWidget *parent ) :
     QDialog( parent ),
     ui( new Ui::WfipsDispatchEditDialog )
 {
     ui->setupUi( this );
+    listView = new WfipsDispatchListView( this );
+    ui->verticalLayout->insertWidget( 0, listView );
     model = NULL;
-    ui->listView->setSelectionMode( QAbstractItemView::ExtendedSelection );
-    ui->listView->setAlternatingRowColors( true );
-    connect( ui->listView, SIGNAL( pressed( const QModelIndex & ) ),
+    listView->setSelectionMode( QAbstractItemView::ExtendedSelection );
+    listView->setAlternatingRowColors( true );
+    connect( listView, SIGNAL( pressed( const QModelIndex & ) ),
              this, SLOT( SelectionClicked( const QModelIndex & ) ) );
     connect( ui->omitToolButton, SIGNAL( clicked() ),
              this, SLOT( Omit() ) );
@@ -46,6 +88,7 @@ WfipsDispatchEditDialog::WfipsDispatchEditDialog( QWidget *parent ) :
 WfipsDispatchEditDialog::~WfipsDispatchEditDialog()
 {
     delete ui;
+    delete listView;
 }
 
 void WfipsDispatchEditDialog::SetModel( const QMap<qint64, QString> &map )
@@ -54,9 +97,9 @@ void WfipsDispatchEditDialog::SetModel( const QMap<qint64, QString> &map )
     delete model;
     model = new QStringListModel( this );
     model->setStringList( this->map.values() );
-    model->sort( 0 );
-    ui->listView->setModel( model );
-    ui->listView->setEditTriggers( QAbstractItemView::NoEditTriggers );
+    //model->sort( 0 );
+    listView->setModel( model );
+    listView->setEditTriggers( QAbstractItemView::NoEditTriggers );
     PopulateRescMap();
 }
 
@@ -65,19 +108,21 @@ void WfipsDispatchEditDialog::SelectFids( QgsFeatureIds fids )
     QString loc;
     QgsFeatureId fid;
     QSet<qint64>::iterator it = fids.begin();
-    ui->listView->clearSelection();
+    listView->clearSelection();
     int i;
     while( it != fids.end() )
     {
         loc = map.value( *it );
         qDebug() << "Selecting fid: " << *it << ", name; " << loc;
+        qDebug() << map.values().indexOf( loc );
         i = map.values().indexOf( loc );
         if( i < 0 )
         {
             it++;
             continue;
         }
-        ui->listView->setCurrentIndex( model->index( i ) );
+        listView->setCurrentIndex( model->index( i ) );
+        listView->scrollTo( model->index( i ) );
         it++;
     }
     return;
@@ -86,7 +131,7 @@ void WfipsDispatchEditDialog::SelectFids( QgsFeatureIds fids )
 QList<int> WfipsDispatchEditDialog::GetSelectedIndices()
 {
     QList<int> indices;
-    foreach( const QModelIndex &index, ui->listView->selectionModel()->selectedIndexes() )
+    foreach( const QModelIndex &index, listView->selectionModel()->selectedIndexes() )
     {
         indices.append( index.row() );
     }
@@ -103,10 +148,10 @@ void WfipsDispatchEditDialog::Omit()
     selectedRows = GetSelectedIndices();
     for( int i = 0; i < selectedRows.size(); i++ )
     {
-        ui->listView->setRowHidden( selectedRows[i], true );
+        listView->setRowHidden( selectedRows[i], true );
     }
     QgsFeatureIds fids = GetVisibleFids();
-    ui->listView->clearSelection();
+    listView->clearSelection();
     emit HiddenChanged( fids );
 }
 
@@ -114,9 +159,9 @@ void WfipsDispatchEditDialog::Unhide()
 {
     for( int i = 0; i < model->rowCount(); i++ )
     {
-        ui->listView->setRowHidden( i, false );
+        listView->setRowHidden( i, false );
     }
-    ui->listView->clearSelection();
+    listView->clearSelection();
     emit HiddenChanged( QgsFeatureIds() );
 }
 
@@ -145,7 +190,7 @@ QgsFeatureIds WfipsDispatchEditDialog::GetVisibleFids()
     QStringList names;
     for( int i = 0; i < model->rowCount(); i++ )
     {
-        if( !ui->listView->isRowHidden( i ) )
+        if( !listView->isRowHidden( i ) )
         {
             names.append( model->index( i, 0).data().toString() );
         }
@@ -159,7 +204,7 @@ QgsFeatureIds WfipsDispatchEditDialog::GetVisibleFids()
 void WfipsDispatchEditDialog::SelectionClicked( const QModelIndex &unused )
 {
     QStringList names;
-    foreach( const QModelIndex &index, ui->listView->selectionModel()->selectedIndexes() )
+    foreach( const QModelIndex &index, listView->selectionModel()->selectedIndexes() )
     {
         names.append( model->data( index, 0 ).toString() );
     }
@@ -170,10 +215,14 @@ void WfipsDispatchEditDialog::hideEvent( QHideEvent *event )
 {
     emit Hiding();
 }
-
+/*
+** FIXME:
+** This is semi-temporary.  Note the hard coded paths.  We need a way to set
+** the environment up so wfipsPath is available to sub classes.
+** XXX
+*/
 int WfipsDispatchEditDialog::PopulateRescMap()
 {
-    const char *pszDispLoc;
     sqlite3 *db;
     sqlite3_stmt *stmt;
     int i, rc;
@@ -204,6 +253,7 @@ int WfipsDispatchEditDialog::PopulateRescMap()
         if( rc != SQLITE_ROW )
         {
             sqlite3_reset( stmt );
+            qDebug() << "Found no resources at: " << dl;
             continue;
         }
         type = (char*)sqlite3_column_text( stmt, 0 );
