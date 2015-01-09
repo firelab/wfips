@@ -83,6 +83,8 @@ WfipsDispatchEditDialog::WfipsDispatchEditDialog( QWidget *parent ) :
              this, SLOT( Omit() ) );
     connect( ui->revertToolButton, SIGNAL( clicked() ),
              this, SLOT( Unhide() ) );
+
+    rescTypes = WfipsGetRescTypes();
 }
 
 WfipsDispatchEditDialog::~WfipsDispatchEditDialog()
@@ -247,6 +249,11 @@ int WfipsDispatchEditDialog::PopulateRescMap()
     {
         it.next();
         dl = it.value();
+        /* Initialize counts to 0, we may not need a map here... */
+        for( i = 0; i < rescTypes.size(); i++ )
+        {
+            rescAtLocMap[dl][rescTypes[i]] = 0;
+        }
         rc = sqlite3_bind_text( stmt, 1, (char*)dl.toLocal8Bit().data(), -1,
                                 SQLITE_TRANSIENT );
         rc = sqlite3_step( stmt );

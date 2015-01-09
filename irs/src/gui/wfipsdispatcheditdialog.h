@@ -40,6 +40,8 @@
 
 #include "ui_wfipsdispatcheditdialog.h"
 
+#include "wfipsguiutil.h"
+
 namespace Ui {
 class WfipsDispatchEditDialog;
 }
@@ -58,6 +60,7 @@ protected slots:
 
 signals:
     //void RightClick( QModelIndex &index );
+
 };
 
 class WfipsDispatchEditDialog : public QDialog
@@ -85,6 +88,7 @@ private:
 
     QMap< QString, QMap<QString, int> > rescAtLocMap;
     int PopulateRescMap();
+    QStringList rescTypes;
 
 protected:
     void hideEvent( QHideEvent *event );

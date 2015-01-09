@@ -38,3 +38,23 @@ char * QStringToCString( const QString &s )
     strncpy( p, s.toLocal8Bit().data(), n );
     return p;
 }
+
+QStringList WfipsGetRescTypes()
+{
+    sqlite3 *db;
+    sqlite3_stmt *stmt;
+    int rc;
+
+    rc = sqlite3_open_v2( "resc.db", &db, SQLITE_OPEN_READONLY, NULL );
+    rc = sqlite3_prepare_v2( db, "SELECT DISTINCT(resc_type) FROM resource " \
+                                 "ORDER BY resc_type",
+                             -1, &stmt, NULL );
+    QStringList types;
+
+    while( sqlite3_step( stmt ) == SQLITE_ROW )
+    {
+        types << (const char*)sqlite3_column_text( stmt, 0 );
+    }
+    return types;
+}
+
