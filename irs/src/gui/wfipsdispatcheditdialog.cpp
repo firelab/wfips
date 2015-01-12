@@ -36,14 +36,24 @@ WfipsDispatchListView::~WfipsDispatchListView()
 {
 }
 
+QString WfipsDispatchListView::GetDispLocName( QMouseEvent *event )
+{
+    QModelIndex idx;
+    idx = indexAt( event->pos() );
+    if( !idx.isValid() )
+    {
+        return QString();
+    }
+    QString name = idx.data().toString();
+    return name;
+}
+
 void WfipsDispatchListView::mouseDoubleClickEvent( QMouseEvent *event )
 {
     if( event->button() == Qt::LeftButton )
     {
-        qDebug() << event;
-        qDebug() << indexAt( event->pos() );
-
-        //emit RightClick( indexAt( event->pos ) );
+        QString name = GetDispLocName( event );
+        emit RightClick( name );
     }
     else
     {
@@ -55,10 +65,8 @@ void WfipsDispatchListView::mousePressEvent( QMouseEvent *event )
 {
     if( event->button() == Qt::RightButton )
     {
-        qDebug() << event;
-        qDebug() << indexAt( event->pos() );
-
-        //emit RightClick( indexAt( event->pos ) );
+        QString name = GetDispLocName( event );
+        emit RightClick( name );
     }
     else
     {
@@ -83,7 +91,8 @@ WfipsDispatchEditDialog::WfipsDispatchEditDialog( QWidget *parent ) :
              this, SLOT( Omit() ) );
     connect( ui->revertToolButton, SIGNAL( clicked() ),
              this, SLOT( Unhide() ) );
-
+    connect( listView, SIGNAL( RightClick( QString ) ),
+             this, SLOT( ShowResources( QString ) ) );
     rescTypes = WfipsGetRescTypes();
 }
 
@@ -227,7 +236,7 @@ int WfipsDispatchEditDialog::PopulateRescMap()
 {
     sqlite3 *db;
     sqlite3_stmt *stmt;
-    int i, rc;
+    int i, j, rc;
     QString dl, type;
     int n;
     if( map.size() == 0 )
@@ -256,17 +265,18 @@ int WfipsDispatchEditDialog::PopulateRescMap()
         }
         rc = sqlite3_bind_text( stmt, 1, (char*)dl.toLocal8Bit().data(), -1,
                                 SQLITE_TRANSIENT );
-        rc = sqlite3_step( stmt );
-        if( rc != SQLITE_ROW )
+        j = 0;
+        while( sqlite3_step( stmt ) == SQLITE_ROW )
         {
-            sqlite3_reset( stmt );
-            qDebug() << "Found no resources at: " << dl;
-            continue;
+            type = (char*)sqlite3_column_text( stmt, 0 );
+            n = sqlite3_column_int( stmt, 1 );
+            rescAtLocMap[dl][type] = n;
+            j++;
         }
-        type = (char*)sqlite3_column_text( stmt, 0 );
-        n = sqlite3_column_int( stmt, 1 );
-
-        rescAtLocMap[dl][type] = n;
+        if( j == 0 )
+        {
+            qDebug() << "Found no resources at :" << dl;
+        }
         rc = sqlite3_reset( stmt );
     }
     rc = sqlite3_finalize( stmt );
@@ -275,4 +285,21 @@ int WfipsDispatchEditDialog::PopulateRescMap()
     return rescAtLocMap.size();
 }
 
+void WfipsDispatchEditDialog::ShowResources( QString dispLocName )
+{
+    QMap<QString, int>m;
+    m = rescAtLocMap[dispLocName];
+    qDebug() << "Resources at: " << dispLocName;
+    QString type;
+    int n;
+    for( int i = 0;i < rescTypes.size(); i++ )
+    {
+        type = rescTypes[i];
+        n = m[rescTypes[i]];
+        if( n )
+        {
+            qDebug() << type << ": " << n;
+        }
+    }
+}
 

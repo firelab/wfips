@@ -59,7 +59,10 @@ protected slots:
     void mouseDoubleClickEvent( QMouseEvent *event );
 
 signals:
-    //void RightClick( QModelIndex &index );
+    void RightClick( QString dispLocName );
+
+private:
+    QString GetDispLocName( QMouseEvent *event );
 
 };
 
@@ -97,6 +100,7 @@ private slots:
     void SelectionClicked( const QModelIndex & );
     void Omit();
     void Unhide();
+    void ShowResources( QString dispLocName );
 
 signals:
     void SelectionChanged( const QgsFeatureIds &fids );
