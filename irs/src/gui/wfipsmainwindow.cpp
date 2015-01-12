@@ -114,7 +114,11 @@ void WfipsMainWindow::WriteSettings()
         settings.setValue( "ymin", extent.yMinimum() );
         settings.setValue( "ymax", extent.yMaximum() );
     }
-    settings.setValue( "defaultlayer", ui->analysisAreaComboBox->currentText() );
+    QString lyr = ui->analysisAreaComboBox->currentText();
+    if( lyr != "ANALYSIS AREA" )
+    {
+        settings.setValue( "defaultlayer", lyr );
+    }
 }
 
 void WfipsMainWindow::ReadSettings()

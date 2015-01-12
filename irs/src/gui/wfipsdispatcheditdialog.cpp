@@ -295,7 +295,7 @@ void WfipsDispatchEditDialog::ShowResources( QString dispLocName )
     for( int i = 0;i < rescTypes.size(); i++ )
     {
         type = rescTypes[i];
-        n = m[rescTypes[i]];
+        n = m.value(rescTypes[i]);
         if( n )
         {
             qDebug() << type << ": " << n;
