@@ -235,7 +235,7 @@ int WfipsDispatchEditDialog::PopulateRescMap()
 {
     sqlite3 *db;
     sqlite3_stmt *stmt;
-    int i, j, rc;
+    int j, rc;
     QString dl, name, type;
     int n;
     if( map.size() == 0 )
