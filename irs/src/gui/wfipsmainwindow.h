@@ -168,7 +168,9 @@ private:
 
     /*
     ** Mutable layer for our buffering and editing, and displaying in other
-    ** canvases
+    ** canvases.  Note that these are in memory, but mirror an on disk file.
+    ** Don't write back to disk, if we need to save info, copy it to another
+    ** location in some form.
     */
     QgsVectorLayer *analysisAreaMemLayer;
     QgsVectorLayer *dispatchLocationMemLayer;
