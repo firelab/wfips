@@ -44,7 +44,6 @@ WfipsMainWindow::WfipsMainWindow( QWidget *parent ) :
     ConstructToolButtons();
     ConstructAnalysisAreaWidgets();
     ConstructDispatchWidgets();
-    ConstructResourceWidgets();
 
     ConstructTreeWidget();
     AssignTreeWidgetIndices( ui->treeWidget->invisibleRootItem() );
@@ -462,31 +461,6 @@ void WfipsMainWindow::ConstructDispatchWidgets()
              this, SLOT( SelectDispatchLocations( QgsFeatureIds ) ) );
 }
 
-void WfipsMainWindow::ConstructResourceWidgets()
-{
-    resourceMapCanvas = new QgsMapCanvas( 0, 0 );
-    resourceMapCanvas->enableAntiAliasing( true );
-    resourceMapCanvas->setCanvasColor( Qt::white );
-    resourceMapCanvas->setDestinationCrs( crs );
-    resourceMapCanvas->freeze( false );
-    resourceMapCanvas->setVisible( true );
-    resourceMapCanvas->setWheelAction( QgsMapCanvas::WheelZoomToMouseCursor );
-    resourceMapCanvas->refresh();
-    resourceMapLayout = new QVBoxLayout( ui->resourceMapFrame );
-    resourceMapLayout->addWidget( resourceMapCanvas );
-
-    /* Map tools */
-    resourcePanTool = new QgsMapToolPan( resourceMapCanvas );
-    resourceZoomInTool = new QgsMapToolZoom( resourceMapCanvas, FALSE );
-    resourceZoomOutTool = new QgsMapToolZoom( resourceMapCanvas, TRUE);
-    resourceIdentifyTool = new WfipsIdentifyMapTool( resourceMapCanvas );
-    //connect( resourceIdentifyTool, SIGNAL( WfipsIdentify( QList<QgsMapToolIdentify::IdentifyResult> ) ),
-             //this, SLOT( Identify( QList<QgsMapToolIdentify::IdentifyResult> ) ) );
-    resourceSelectTool = new WfipsSelectMapTool( resourceMapCanvas );
-    //connect( resourceSelectTool, SIGNAL( WfipsSelect( QgsFeatureIds ) ),
-     //        this, SLOT( SelectDispatchLocations( QgsFeatureIds ) ) );
-}
-
 void WfipsMainWindow::ConstructTreeWidget()
 {
     connect( ui->treeWidget,
@@ -537,45 +511,43 @@ void WfipsMainWindow::SetStackIndex( QTreeWidgetItem *current,
         case 3:
             ui->stackedWidget->setCurrentIndex( 2 );
             break;
+        /* Resource map */
         case 4:
+        case 5:
             ui->stackedWidget->setCurrentIndex( 3 );
             ui->mapToolFrame->setEnabled( true );
             currentMapCanvas = dispatchMapCanvas;
             break;
-        case 5:
+        case 6:
             ui->stackedWidget->setCurrentIndex( 4 );
             break;
-        /* Resource map */
-        case 6:
-            ui->stackedWidget->setCurrentIndex( 5 );
-            ui->mapToolFrame->setEnabled( true );
-            currentMapCanvas = resourceMapCanvas;
-            break;
         case 7:
-            ui->stackedWidget->setCurrentIndex( 6 );
+            ui->stackedWidget->setCurrentIndex( 5 );
             break;
         case 8:
-            ui->stackedWidget->setCurrentIndex( 7 );
+            ui->stackedWidget->setCurrentIndex( 6 );
             break;
         case 9:
-            ui->stackedWidget->setCurrentIndex( 8 );
+            ui->stackedWidget->setCurrentIndex( 7 );
             break;
         case 10:
-            ui->stackedWidget->setCurrentIndex( 9 );
+            ui->stackedWidget->setCurrentIndex( 8 );
             break;
         case 11:
-            ui->stackedWidget->setCurrentIndex( 10 );
+            ui->stackedWidget->setCurrentIndex( 9 );
             break;
         case 12:
-            ui->stackedWidget->setCurrentIndex( 11 );
+            ui->stackedWidget->setCurrentIndex( 10 );
             break;
         case 13:
-            ui->stackedWidget->setCurrentIndex( 12 );
+            ui->stackedWidget->setCurrentIndex( 11 );
             break;
         case 14:
-            ui->stackedWidget->setCurrentIndex( 13 );
+            ui->stackedWidget->setCurrentIndex( 12 );
             break;
         case 15:
+            ui->stackedWidget->setCurrentIndex( 13 );
+            break;
         case 16:
         case 17:
         case 18:
@@ -587,7 +559,6 @@ void WfipsMainWindow::SetStackIndex( QTreeWidgetItem *current,
         case 23:
         case 24:
         case 25:
-        case 26:
         /* 0 is the 'invisible root' */
         case 0:
         default:
@@ -632,35 +603,30 @@ void WfipsMainWindow::UpdateMapToolType()
         qDebug() << "Setting map tool to pan";
         analysisAreaMapCanvas->setMapTool( analysisPanTool );
         dispatchMapCanvas->setMapTool( dispatchPanTool );
-        resourceMapCanvas->setMapTool( resourcePanTool );
     }
     else if( ui->mapZoomInToolButton->isChecked() )
     {
         qDebug() << "Setting map tool to zoom in";
         analysisAreaMapCanvas->setMapTool( analysisZoomInTool );
         dispatchMapCanvas->setMapTool( dispatchZoomInTool );
-        resourceMapCanvas->setMapTool( resourceZoomInTool );
     }
     else if( ui->mapZoomOutToolButton->isChecked() )
     {
         qDebug() << "Setting map tool to zoom out";
         analysisAreaMapCanvas->setMapTool( analysisZoomOutTool );
         dispatchMapCanvas->setMapTool( dispatchZoomOutTool );
-        resourceMapCanvas->setMapTool( resourceZoomOutTool );
     }
     else if( ui->mapIdentifyToolButton->isChecked() )
     {
         qDebug() << "Setting map tool to identify";
         analysisAreaMapCanvas->setMapTool( analysisIdentifyTool );
         dispatchMapCanvas->setMapTool( dispatchIdentifyTool );
-        resourceMapCanvas->setMapTool( resourceIdentifyTool );
     }
     else if( ui->mapSelectToolButton->isChecked() )
     {
         qDebug() << "Setting map tool to select";
         analysisAreaMapCanvas->setMapTool( analysisSelectTool );
         dispatchMapCanvas->setMapTool( dispatchSelectTool );
-        resourceMapCanvas->setMapTool( resourceSelectTool );
     }
 }
 
@@ -825,11 +791,6 @@ void WfipsMainWindow::ClearAnalysisAreaSelection()
         dispatchMapCanvasLayers.clear();
         QgsMapLayerRegistry::instance()->removeMapLayer( dispatchLocationMemLayer->id() );
         dispatchMapCanvas->refresh();
-    }
-    if( resourceMapCanvasLayers.size() > 0 )
-    {
-        resourceMapCanvasLayers.clear();
-        resourceMapCanvas->refresh();
     }
 }
 
@@ -1100,27 +1061,6 @@ void WfipsMainWindow::SetAnalysisArea()
 
 void WfipsMainWindow::AddAnalysisLayerToCanvases()
 {
-    /*
-    ** Create a layer for the resources, and join it to the dispatch mem layer
-    */
-    QString path = wfipsPath + "/resc.db";
-    QString layerName = "|layername=resource";
-    path += layerName;
-    qDebug() << "Resource join layer path: " << path;
-    rescJoinLayer = new QgsVectorLayer( path, layerName, "ogr", true );
-    if( rescJoinLayer->isValid() )
-    {
-        QgsVectorJoinInfo jinfo;
-        jinfo.joinFieldName = "name";
-        jinfo.targetFieldName = "disploc";
-        jinfo.joinLayerId = rescJoinLayer->id();
-		dispatchLocationMemLayer->updateFields();
-    }
-    else
-    {
-        qDebug() << "Invalid resource layer. Join will fail.";
-    }
-
     dispatchMapCanvasLayers.append( QgsMapCanvasLayer( dispatchLocationMemLayer, true ) );
     dispatchMapCanvasLayers.append( QgsMapCanvasLayer( analysisAreaMemLayer, true ) );
     dispatchMapCanvas->setLayerSet( dispatchMapCanvasLayers );
@@ -1130,16 +1070,6 @@ void WfipsMainWindow::AddAnalysisLayerToCanvases()
     dispatchMapCanvas->setExtent( extent );
     dispatchMapCanvas->setCurrentLayer( dispatchMapCanvasLayers[0].layer() );
     dispatchMapCanvas->refresh();
-
-    /*
-    resourceMapCanvasLayers.append( QgsMapCanvasLayer( dispatchLocationMemLayer, true ) );
-    resourceMapCanvasLayers.append( QgsMapCanvasLayer( analysisAreaMemLayer, true ) );
-    resourceMapCanvas->setLayerSet( resourceMapCanvasLayers );
-
-    resourceMapCanvas->setExtent( extent );
-    resourceMapCanvas->setCurrentLayer( resourceMapCanvasLayers[0].layer() );
-    resourceMapCanvas->refresh();
-    */
 
     AddAnalysisAreaLayer( analysisAreaMemLayer, true );
 }
@@ -1224,7 +1154,6 @@ void WfipsMainWindow::UpdateSelectedDispatchLocations( const QgsFeatureIds &fids
     layer->removeSelection();
     layer->select( newfids );
     dispatchMapCanvas->refresh();
-    resourceMapCanvas->refresh();
 }
 
 /*

@@ -53,16 +53,11 @@
         </item>
         <item>
          <property name="text">
-          <string>Dispatch Locations</string>
-         </property>
-        </item>
-        <item>
-         <property name="text">
           <string>Resources</string>
          </property>
          <item>
           <property name="text">
-           <string>Dispatch Location</string>
+           <string>Dispatch Locations</string>
           </property>
          </item>
          <item>
@@ -285,7 +280,7 @@
          <enum>QFrame::Plain</enum>
         </property>
         <property name="currentIndex">
-         <number>11</number>
+         <number>10</number>
         </property>
         <widget class="QWidget" name="dataPage">
          <layout class="QVBoxLayout" name="verticalLayout_13">
@@ -625,134 +620,6 @@
             <property name="frameShadow">
              <enum>QFrame::Raised</enum>
             </property>
-           </widget>
-          </item>
-         </layout>
-        </widget>
-        <widget class="QWidget" name="resourcePage">
-         <layout class="QVBoxLayout" name="verticalLayout_6">
-          <item>
-           <widget class="QLabel" name="label_4">
-            <property name="sizePolicy">
-             <sizepolicy hsizetype="Preferred" vsizetype="Maximum">
-              <horstretch>0</horstretch>
-              <verstretch>0</verstretch>
-             </sizepolicy>
-            </property>
-            <property name="text">
-             <string>Resource Editor</string>
-            </property>
-           </widget>
-          </item>
-          <item>
-           <layout class="QHBoxLayout" name="horizontalLayout_10">
-            <item>
-             <widget class="QLabel" name="label_9">
-              <property name="text">
-               <string>Copy Resources</string>
-              </property>
-             </widget>
-            </item>
-            <item>
-             <widget class="QLineEdit" name="copyResourceLineEdit">
-              <property name="readOnly">
-               <bool>true</bool>
-              </property>
-             </widget>
-            </item>
-            <item>
-             <widget class="QToolButton" name="copyResourceToolButton">
-              <property name="toolTip">
-               <string>Copy a resource configuration from another configuration</string>
-              </property>
-              <property name="text">
-               <string>Open</string>
-              </property>
-              <property name="toolButtonStyle">
-               <enum>Qt::ToolButtonTextBesideIcon</enum>
-              </property>
-             </widget>
-            </item>
-           </layout>
-          </item>
-          <item>
-           <layout class="QHBoxLayout" name="horizontalLayout_11">
-            <item>
-             <widget class="QLabel" name="label_13">
-              <property name="text">
-               <string>Load Resources</string>
-              </property>
-             </widget>
-            </item>
-            <item>
-             <widget class="QLineEdit" name="loadResourceLineEdit"/>
-            </item>
-            <item>
-             <widget class="QToolButton" name="loadResourceToolButton">
-              <property name="toolTip">
-               <string>Load a resource configuration from disk.</string>
-              </property>
-              <property name="text">
-               <string>Open</string>
-              </property>
-              <property name="toolButtonStyle">
-               <enum>Qt::ToolButtonTextBesideIcon</enum>
-              </property>
-             </widget>
-            </item>
-           </layout>
-          </item>
-          <item>
-           <spacer name="verticalSpacer">
-            <property name="orientation">
-             <enum>Qt::Vertical</enum>
-            </property>
-            <property name="sizeHint" stdset="0">
-             <size>
-              <width>20</width>
-              <height>40</height>
-             </size>
-            </property>
-           </spacer>
-          </item>
-         </layout>
-        </widget>
-        <widget class="QWidget" name="rescDispatchPage">
-         <layout class="QVBoxLayout" name="verticalLayout_17">
-          <item>
-           <widget class="QLabel" name="label_17">
-            <property name="text">
-             <string>Edit Resources by Dispatch Location</string>
-            </property>
-           </widget>
-          </item>
-          <item>
-           <widget class="QFrame" name="resourceMapFrame">
-            <property name="sizePolicy">
-             <sizepolicy hsizetype="Preferred" vsizetype="MinimumExpanding">
-              <horstretch>0</horstretch>
-              <verstretch>0</verstretch>
-             </sizepolicy>
-            </property>
-            <property name="frameShape">
-             <enum>QFrame::StyledPanel</enum>
-            </property>
-            <property name="frameShadow">
-             <enum>QFrame::Raised</enum>
-            </property>
-            <widget class="QLabel" name="label_16">
-             <property name="geometry">
-              <rect>
-               <x>130</x>
-               <y>340</y>
-               <width>351</width>
-               <height>17</height>
-              </rect>
-             </property>
-             <property name="text">
-              <string>Another Map Canvas will go here...</string>
-             </property>
-            </widget>
            </widget>
           </item>
          </layout>
