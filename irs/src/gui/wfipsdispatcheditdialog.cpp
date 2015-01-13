@@ -306,7 +306,9 @@ void WfipsDispatchEditDialog::ShowResources( QString dispLocName )
     for( int i = 0; i < resources.size(); i++ )
     {
         resource = resources[i];
-        qDebug() << "Resource:" << resource.name << "Type:" << resource.type;
+        qDebug() << "ID:" << resource.rowid
+                 << "Resource:" << resource.name
+                 << "Type:" << resource.type;
     }
 }
 
