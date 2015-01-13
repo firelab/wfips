@@ -102,6 +102,11 @@ WfipsDispatchEditDialog::~WfipsDispatchEditDialog()
     delete listView;
 }
 
+void WfipsDispatchEditDialog::SetDataPath( QString path )
+{
+    wfipsDataPath = path;
+}
+
 void WfipsDispatchEditDialog::SetModel( const QMap<qint64, QString> &map )
 {
     this->map = map;
@@ -225,12 +230,7 @@ void WfipsDispatchEditDialog::hideEvent( QHideEvent *event )
 {
     emit Hiding();
 }
-/*
-** FIXME:
-** This is semi-temporary.  Note the hard coded paths.  We need a way to set
-** the environment up so wfipsPath is available to sub classes.
-** XXX
-*/
+
 int WfipsDispatchEditDialog::PopulateRescMap()
 {
     sqlite3 *db;
@@ -242,20 +242,25 @@ int WfipsDispatchEditDialog::PopulateRescMap()
     {
         return 0;
     }
-    rc = sqlite3_open_v2( "disploc.db", &db, SQLITE_OPEN_READONLY, NULL );
-	if( rc != SQLITE_OK || db == NULL )
-	{
+    char zSql[8192];
+    const char *zDataPath = QStringToCString( wfipsDataPath );
+    sqlite3_snprintf( 8192, zSql, (const char *)"%s/disploc.db", zDataPath );
+    rc = sqlite3_open_v2( zSql, &db, SQLITE_OPEN_READONLY, NULL );
+    if( rc != SQLITE_OK || db == NULL )
+    {
 		qDebug() << "Failed to open disploc.db";
-		return 0;
-	}
-    rc = sqlite3_exec( db, "ATTACH 'resc.db' as resc", NULL, NULL, NULL );
-	if( rc != SQLITE_OK )
-	{
-		sqlite3_close( db );
+        return 0;
+    }
+    sqlite3_snprintf( 8192, zSql, "ATTACH '%s/resc.db' as resc", zDataPath );
+    rc = sqlite3_exec( db, zSql, NULL, NULL, NULL );
+    free( (void*)zDataPath );
+    if( rc != SQLITE_OK )
+    {
 		qDebug() << "Failed to attach resc.db";
-		return 0;
-	}
-	rc = sqlite3_prepare_v2( db, "SELECT resc_type, count(*) FROM disploc " \
+        sqlite3_close( db );
+        return 0;
+    }
+    rc = sqlite3_prepare_v2( db, "SELECT resc_type, count(*) FROM disploc " \
                                  "JOIN resource ON disploc.name=resource.disploc " \
                                  "WHERE disploc.name=? GROUP BY disploc.name, " \
                                  "resc_type",

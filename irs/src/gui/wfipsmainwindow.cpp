@@ -131,6 +131,7 @@ void WfipsMainWindow::ReadSettings()
         {
             ui->openWfipsPathLineEdit->setText( wfipsPath );
             LoadAnalysisAreaLayers();
+            dispatchEditDialog->SetDataPath( wfipsPath );
         }
     }
     if( settings.contains( "customlayerpath" ) )
@@ -608,6 +609,7 @@ void WfipsMainWindow::OpenWfipsPath()
                                            "", QFileDialog::ShowDirsOnly |
                                                QFileDialog::DontResolveSymlinks );
     ui->openWfipsPathLineEdit->setText( wfipsPath );
+    dispatchEditDialog->SetDataPath( wfipsPath );
     if( wfipsPath == "" )
         return;
     qDebug() << "Using " << wfipsPath << " for data path.";
