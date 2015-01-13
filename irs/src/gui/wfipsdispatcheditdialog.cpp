@@ -245,12 +245,14 @@ int WfipsDispatchEditDialog::PopulateRescMap()
     rc = sqlite3_open_v2( "disploc.db", &db, SQLITE_OPEN_READONLY, NULL );
 	if( rc != SQLITE_OK || db == NULL )
 	{
+		qDebug() << "Failed to open disploc.db";
 		return 0;
 	}
     rc = sqlite3_exec( db, "ATTACH 'resc.db' as resc", NULL, NULL, NULL );
 	if( rc != SQLITE_OK )
 	{
 		sqlite3_close( db );
+		qDebug() << "Failed to attach resc.db";
 		return 0;
 	}
 	rc = sqlite3_prepare_v2( db, "SELECT resc_type, count(*) FROM disploc " \
@@ -261,6 +263,7 @@ int WfipsDispatchEditDialog::PopulateRescMap()
 	if( rc != SQLITE_OK )
 	{
 		sqlite3_close( db );
+		qDebug() << "Failed to prep resc statment.";
 		return 0;
 	}
     rescAtLocMap.clear();
