@@ -240,6 +240,7 @@ int WfipsDispatchEditDialog::PopulateRescMap()
     int n;
     if( map.size() == 0 )
     {
+        qDebug() << "Dispatch location map empty";
         return 0;
     }
     char zSql[8192];
