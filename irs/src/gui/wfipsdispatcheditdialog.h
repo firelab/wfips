@@ -78,8 +78,12 @@ public:
     void SetModel( const QMap<QgsFeatureId, QString> &map );
     void SelectFids( QgsFeatureIds fids );
 
+    void SetDataPath( QString path );
+
 private:
     Ui::WfipsDispatchEditDialog *ui;
+
+    QString wfipsDataPath;
 
     WfipsDispatchListView *listView;
 
