@@ -873,7 +873,7 @@ static QgsVectorLayer * WfipsCopyToMemLayer( QgsVectorLayer *layer,
     QgsField oidField( "ofid", QVariant::LongLong );
     fields.append( oidField );
     rc = provider->addAttributes( fields.toList() );
-    assert( rc == true );
+    assert( (bool)rc == true );
     assert( provider->fields().size() == layer->dataProvider()->fields().size() + 1 );
 
     //memLayer->commitChanges();
@@ -1112,14 +1112,7 @@ void WfipsMainWindow::AddAnalysisLayerToCanvases()
         jinfo.joinFieldName = "name";
         jinfo.targetFieldName = "disploc";
         jinfo.joinLayerId = rescJoinLayer->id();
-        if( dispatchLocationMemLayer->addJoin( jinfo ) )
-        {
-            dispatchLocationMemLayer->updateFields();
-        }
-        else
-        {
-            qDebug() << "Join failed!";
-        }
+		dispatchLocationMemLayer->updateFields();
     }
     else
     {
@@ -1218,7 +1211,6 @@ void WfipsMainWindow::UpdateSelectedDispatchLocations( const QgsFeatureIds &fids
     sql += JoinFids( fids );
     sql += ")";
     qDebug() << "SQL filter: " << sql;
-    int rc;
     request.setFilterExpression( sql );
     fit = layer->getFeatures( request );
     while( fit.nextFeature( feature ) )

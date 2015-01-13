@@ -117,7 +117,6 @@ void WfipsDispatchEditDialog::SetModel( const QMap<qint64, QString> &map )
 void WfipsDispatchEditDialog::SelectFids( QgsFeatureIds fids )
 {
     QString loc;
-    QgsFeatureId fid;
     QSet<qint64>::iterator it = fids.begin();
     listView->clearSelection();
     int i;
