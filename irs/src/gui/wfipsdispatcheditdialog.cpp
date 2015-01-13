@@ -283,10 +283,9 @@ int WfipsDispatchEditDialog::PopulateRescMap()
             resource.name = name;
             resource.type = type;
             resourceList.append( resource );
-            rescAtLocMap[dl][name] = type;
             j++;
         }
-        rescAtLocMap2[dl] = resourceList;
+        rescAtLocMap[dl] = resourceList;
         if( j == 0 )
         {
             qDebug() << "Found no resources at :" << dl;
@@ -301,22 +300,9 @@ int WfipsDispatchEditDialog::PopulateRescMap()
 
 void WfipsDispatchEditDialog::ShowResources( QString dispLocName )
 {
-    QMap<QString, QString>m;
-    QString name, type;
-    m = rescAtLocMap[dispLocName];
-    qDebug() << "Resources at: " << dispLocName;
-    QMapIterator<QString, QString> it( m );
-    while( it.hasNext() )
-    {
-        it.next();
-        name = it.key();
-        type = it.value();
-        qDebug() << "Resource:" << name << "Type:" << type;
-    }
-    qDebug() << "TEST##############TEST";
     WfipsResource resource;
     QList<WfipsResource> resources;
-    resources = rescAtLocMap2[dispLocName];
+    resources = rescAtLocMap[dispLocName];
     for( int i = 0; i < resources.size(); i++ )
     {
         resource = resources[i];

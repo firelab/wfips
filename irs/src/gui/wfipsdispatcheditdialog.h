@@ -112,8 +112,7 @@ private:
     QgsFeatureIds GetVisibleFids();
     QgsFeatureIds GetFidsFromNames( QStringList names );
 
-    QMap< QString, QMap<QString, QString> > rescAtLocMap;
-    QMap< QString, QList<WfipsResource> > rescAtLocMap2;
+    QMap< QString, QList<WfipsResource> > rescAtLocMap;
     int PopulateRescMap();
     QStringList rescTypes;
 
