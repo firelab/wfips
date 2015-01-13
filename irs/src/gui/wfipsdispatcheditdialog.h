@@ -34,6 +34,7 @@
 #include <QMouseEvent>
 #include <QString>
 #include <QStringListModel>
+#include <QTreeView>
 #include <sqlite3.h>
 
 #include <qgsfeature.h>
@@ -45,6 +46,23 @@
 namespace Ui {
 class WfipsDispatchEditDialog;
 }
+
+/*
+** Simple struct for resources
+*/
+struct WfipsResource
+{
+    qint64 rowid;
+    QString name;
+    QString type;
+};
+
+class WfipsRescModel : public QAbstractItemModel
+{
+
+private:
+
+};
 
 class WfipsDispatchListView : public QListView
 {
@@ -86,6 +104,7 @@ private:
     QString wfipsDataPath;
 
     WfipsDispatchListView *listView;
+    QTreeView *treeView;
 
     QStringListModel *model;
     QMap<QgsFeatureId, QString>map;
@@ -93,7 +112,8 @@ private:
     QgsFeatureIds GetVisibleFids();
     QgsFeatureIds GetFidsFromNames( QStringList names );
 
-    QMap< QString, QMap<QString, int> > rescAtLocMap;
+    QMap< QString, QMap<QString, QString> > rescAtLocMap;
+    QMap< QString, QList<WfipsResource> > rescAtLocMap2;
     int PopulateRescMap();
     QStringList rescTypes;
 

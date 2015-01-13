@@ -236,7 +236,7 @@ int WfipsDispatchEditDialog::PopulateRescMap()
     sqlite3 *db;
     sqlite3_stmt *stmt;
     int i, j, rc;
-    QString dl, type;
+    QString dl, name, type;
     int n;
     if( map.size() == 0 )
     {
@@ -245,27 +245,15 @@ int WfipsDispatchEditDialog::PopulateRescMap()
     }
     char zSql[8192];
     const char *zDataPath = QStringToCString( wfipsDataPath );
-    sqlite3_snprintf( 8192, zSql, (const char *)"%s/disploc.db", zDataPath );
+    sqlite3_snprintf( 8192, zSql, (const char *)"%s/resc.db", zDataPath );
     rc = sqlite3_open_v2( zSql, &db, SQLITE_OPEN_READONLY, NULL );
     if( rc != SQLITE_OK || db == NULL )
     {
-        qDebug() << "Failed to open disploc.db";
+        qDebug() << "Failed to open resc.db";
         return 0;
     }
-    sqlite3_snprintf( 8192, zSql, "ATTACH '%s/resc.db' as resc", zDataPath );
-    rc = sqlite3_exec( db, zSql, NULL, NULL, NULL );
-    free( (void*)zDataPath );
-    if( rc != SQLITE_OK )
-    {
-        qDebug() << "Failed to attach resc.db";
-        sqlite3_close( db );
-        return 0;
-    }
-    rc = sqlite3_prepare_v2( db, "SELECT resc_type, count(*) FROM disploc " \
-                                 "JOIN resource ON disploc.name=resource.disploc " \
-                                 "WHERE disploc.name=? GROUP BY disploc.name, " \
-                                 "resc_type",
-                             -1, &stmt, NULL );
+    rc = sqlite3_prepare_v2( db, "SELECT ROWID, name, resc_type FROM resource " \
+                                 "WHERE disploc=?", -1, &stmt, NULL );
     if( rc != SQLITE_OK )
     {
         sqlite3_close( db );
@@ -275,25 +263,30 @@ int WfipsDispatchEditDialog::PopulateRescMap()
     rescAtLocMap.clear();
     QMapIterator<qint64, QString>it( map );
 
+    WfipsResource resource;
+    QList<WfipsResource>resourceList;
+
     while( it.hasNext() )
     {
         it.next();
         dl = it.value();
-        /* Initialize counts to 0, we may not need a map here... */
-        for( i = 0; i < rescTypes.size(); i++ )
-        {
-            rescAtLocMap[dl][rescTypes[i]] = 0;
-        }
         rc = sqlite3_bind_text( stmt, 1, (char*)dl.toLocal8Bit().data(), -1,
                                 SQLITE_TRANSIENT );
         j = 0;
+        resourceList.clear();
         while( sqlite3_step( stmt ) == SQLITE_ROW )
         {
-            type = (char*)sqlite3_column_text( stmt, 0 );
-            n = sqlite3_column_int( stmt, 1 );
-            rescAtLocMap[dl][type] = n;
+            n = sqlite3_column_int( stmt, 0 );
+            name = (char*)sqlite3_column_text( stmt, 1 );
+            type = (char*)sqlite3_column_text( stmt, 2 );
+            resource.rowid = n;
+            resource.name = name;
+            resource.type = type;
+            resourceList.append( resource );
+            rescAtLocMap[dl][name] = type;
             j++;
         }
+        rescAtLocMap2[dl] = resourceList;
         if( j == 0 )
         {
             qDebug() << "Found no resources at :" << dl;
@@ -308,19 +301,26 @@ int WfipsDispatchEditDialog::PopulateRescMap()
 
 void WfipsDispatchEditDialog::ShowResources( QString dispLocName )
 {
-    QMap<QString, int>m;
+    QMap<QString, QString>m;
+    QString name, type;
     m = rescAtLocMap[dispLocName];
     qDebug() << "Resources at: " << dispLocName;
-    QString type;
-    int n;
-    for( int i = 0;i < rescTypes.size(); i++ )
+    QMapIterator<QString, QString> it( m );
+    while( it.hasNext() )
     {
-        type = rescTypes[i];
-        n = m.value(rescTypes[i]);
-        if( n )
-        {
-            qDebug() << type << ": " << n;
-        }
+        it.next();
+        name = it.key();
+        type = it.value();
+        qDebug() << "Resource:" << name << "Type:" << type;
+    }
+    qDebug() << "TEST##############TEST";
+    WfipsResource resource;
+    QList<WfipsResource> resources;
+    resources = rescAtLocMap2[dispLocName];
+    for( int i = 0; i < resources.size(); i++ )
+    {
+        resource = resources[i];
+        qDebug() << "Resource:" << resource.name << "Type:" << resource.type;
     }
 }
 
