@@ -39,22 +39,40 @@ char * QStringToCString( const QString &s )
     return p;
 }
 
-QStringList WfipsGetRescTypes()
+QStringList WfipsGetRescTypes( QString path )
 {
     sqlite3 *db;
     sqlite3_stmt *stmt;
     int rc;
 
-    rc = sqlite3_open_v2( "resc.db", &db, SQLITE_OPEN_READONLY, NULL );
+    char zDb[8192];
+    *zDb = '\0';
+
+    char *zDataPath = QStringToCString( path );
+    sqlite3_snprintf( 8192, zDb, "%s/resc.db", zDataPath );
+    free( zDataPath );
+    rc = sqlite3_open_v2( zDb, &db, SQLITE_OPEN_READONLY, NULL );
+    if( rc != SQLITE_OK )
+    {
+        qDebug() << "Failed to open resource db to extract types.";
+        return QStringList();
+    }
     rc = sqlite3_prepare_v2( db, "SELECT DISTINCT(resc_type) FROM resource " \
                                  "ORDER BY resc_type",
                              -1, &stmt, NULL );
+    if( rc != SQLITE_OK )
+    {
+        qDebug() << "Failed to run query on resource db for types.";
+        return QStringList();
+    }
     QStringList types;
 
     while( sqlite3_step( stmt ) == SQLITE_ROW )
     {
         types << (const char*)sqlite3_column_text( stmt, 0 );
     }
+    sqlite3_finalize( stmt );
+    sqlite3_close( db );
     return types;
 }
 

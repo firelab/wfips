@@ -33,11 +33,12 @@
 
 #include "sqlite3.h"
 
+#include <QDebug>
 #include <QString>
 #include <QStringList>
 
 char * QStringToCString( const QString &s );
-QStringList WfipsGetRescTypes();
+QStringList WfipsGetRescTypes( QString path );
 
 #endif /* WFIPS_GUI_UTIL_H_ */
 

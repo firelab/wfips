@@ -93,7 +93,6 @@ WfipsDispatchEditDialog::WfipsDispatchEditDialog( QWidget *parent ) :
              this, SLOT( Unhide() ) );
     connect( listView, SIGNAL( RightClick( QString ) ),
              this, SLOT( ShowResources( QString ) ) );
-    rescTypes = WfipsGetRescTypes();
 }
 
 WfipsDispatchEditDialog::~WfipsDispatchEditDialog()
@@ -105,6 +104,7 @@ WfipsDispatchEditDialog::~WfipsDispatchEditDialog()
 void WfipsDispatchEditDialog::SetDataPath( QString path )
 {
     wfipsDataPath = path;
+    rescTypes = WfipsGetRescTypes( path );
 }
 
 void WfipsDispatchEditDialog::SetModel( const QMap<qint64, QString> &map )
@@ -249,7 +249,7 @@ int WfipsDispatchEditDialog::PopulateRescMap()
     rc = sqlite3_open_v2( zSql, &db, SQLITE_OPEN_READONLY, NULL );
     if( rc != SQLITE_OK || db == NULL )
     {
-		qDebug() << "Failed to open disploc.db";
+        qDebug() << "Failed to open disploc.db";
         return 0;
     }
     sqlite3_snprintf( 8192, zSql, "ATTACH '%s/resc.db' as resc", zDataPath );
@@ -257,7 +257,7 @@ int WfipsDispatchEditDialog::PopulateRescMap()
     free( (void*)zDataPath );
     if( rc != SQLITE_OK )
     {
-		qDebug() << "Failed to attach resc.db";
+        qDebug() << "Failed to attach resc.db";
         sqlite3_close( db );
         return 0;
     }
@@ -266,12 +266,12 @@ int WfipsDispatchEditDialog::PopulateRescMap()
                                  "WHERE disploc.name=? GROUP BY disploc.name, " \
                                  "resc_type",
                              -1, &stmt, NULL );
-	if( rc != SQLITE_OK )
-	{
-		sqlite3_close( db );
-		qDebug() << "Failed to prep resc statment.";
-		return 0;
-	}
+    if( rc != SQLITE_OK )
+    {
+        sqlite3_close( db );
+        qDebug() << "Failed to prep resc statment.";
+        return 0;
+    }
     rescAtLocMap.clear();
     QMapIterator<qint64, QString>it( map );
 
