@@ -243,13 +243,26 @@ int WfipsDispatchEditDialog::PopulateRescMap()
         return 0;
     }
     rc = sqlite3_open_v2( "disploc.db", &db, SQLITE_OPEN_READONLY, NULL );
+	if( rc != SQLITE_OK || db == NULL )
+	{
+		return 0;
+	}
     rc = sqlite3_exec( db, "ATTACH 'resc.db' as resc", NULL, NULL, NULL );
-    rc = sqlite3_prepare_v2( db, "SELECT resc_type, count(*) FROM disploc " \
+	if( rc != SQLITE_OK )
+	{
+		sqlite3_close( db );
+		return 0;
+	}
+	rc = sqlite3_prepare_v2( db, "SELECT resc_type, count(*) FROM disploc " \
                                  "JOIN resource ON disploc.name=resource.disploc " \
                                  "WHERE disploc.name=? GROUP BY disploc.name, " \
                                  "resc_type",
                              -1, &stmt, NULL );
-
+	if( rc != SQLITE_OK )
+	{
+		sqlite3_close( db );
+		return 0;
+	}
     rescAtLocMap.clear();
     QMapIterator<qint64, QString>it( map );
 
