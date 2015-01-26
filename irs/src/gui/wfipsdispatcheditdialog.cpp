@@ -85,6 +85,10 @@ WfipsDispatchEditDialog::WfipsDispatchEditDialog( QWidget *parent ) :
     model = NULL;
     listView->setSelectionMode( QAbstractItemView::ExtendedSelection );
     listView->setAlternatingRowColors( true );
+
+    treeWidget = new QTreeWidget( this );
+    ui->verticalLayout->insertWidget( 1, treeWidget );
+
     connect( listView, SIGNAL( pressed( const QModelIndex & ) ),
              this, SLOT( SelectionClicked( const QModelIndex & ) ) );
     connect( ui->omitToolButton, SIGNAL( clicked() ),
@@ -99,6 +103,7 @@ WfipsDispatchEditDialog::~WfipsDispatchEditDialog()
 {
     delete ui;
     delete listView;
+    delete treeWidget;
 }
 
 void WfipsDispatchEditDialog::SetDataPath( QString path )
@@ -266,6 +271,9 @@ int WfipsDispatchEditDialog::PopulateRescMap()
     WfipsResource resource;
     QList<WfipsResource>resourceList;
 
+    QTreeWidgetItem *item;
+    QTreeWidgetItem *subitem;
+
     while( it.hasNext() )
     {
         it.next();
@@ -274,6 +282,9 @@ int WfipsDispatchEditDialog::PopulateRescMap()
                                 SQLITE_TRANSIENT );
         j = 0;
         resourceList.clear();
+        item = new QTreeWidgetItem( QTreeWidgetItem::Type );
+        item->setText( 0, dl );
+        treeWidget->addTopLevelItem( item );
         while( sqlite3_step( stmt ) == SQLITE_ROW )
         {
             n = sqlite3_column_int( stmt, 0 );
@@ -283,6 +294,10 @@ int WfipsDispatchEditDialog::PopulateRescMap()
             resource.name = name;
             resource.type = type;
             resourceList.append( resource );
+            subitem = new QTreeWidgetItem( QTreeWidgetItem::Type );
+            subitem->setText( 1, name );
+            subitem->setText( 2, type );
+            item->addChild( subitem );
             j++;
         }
         rescAtLocMap[dl] = resourceList;
@@ -295,6 +310,7 @@ int WfipsDispatchEditDialog::PopulateRescMap()
     rc = sqlite3_finalize( stmt );
     rc = sqlite3_close( db );
     qDebug() << "Found resources at " << rescAtLocMap.size() << " dispatch locations.";
+
     return rescAtLocMap.size();
 }
 

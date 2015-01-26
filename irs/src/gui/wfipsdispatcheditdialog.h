@@ -34,7 +34,7 @@
 #include <QMouseEvent>
 #include <QString>
 #include <QStringListModel>
-#include <QTreeView>
+#include <QTreeWidget>
 #include <sqlite3.h>
 
 #include <qgsfeature.h>
@@ -104,7 +104,7 @@ private:
     QString wfipsDataPath;
 
     WfipsDispatchListView *listView;
-    QTreeView *treeView;
+    QTreeWidget *treeWidget;
 
     QStringListModel *model;
     QMap<QgsFeatureId, QString>map;
