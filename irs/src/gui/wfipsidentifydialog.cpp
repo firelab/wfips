@@ -38,6 +38,7 @@ WfipsIdentifyDialog::WfipsIdentifyDialog(QWidget *parent) :
 
 WfipsIdentifyDialog::~WfipsIdentifyDialog()
 {
+    Clear();
     delete ui;
 }
 
