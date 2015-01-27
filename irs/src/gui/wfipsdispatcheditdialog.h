@@ -43,6 +43,10 @@
 
 #include "wfipsguiutil.h"
 
+#define WFIPS_RESC_SUBSET_OMIT      0
+#define WFIPS_RESC_SUBSET_INCLUDE   1
+#define WFIPS_RESC_SUBSET_ALL       2
+
 namespace Ui {
 class WfipsDispatchEditDialog;
 }
@@ -87,6 +91,8 @@ private:
     QMap< QString, QList<WfipsResource> > rescAtLocMap;
     int PopulateRescMap();
     QStringList rescTypes;
+
+    QgsFeatureIds GetResourceFids( int subset );
 
 protected:
     void hideEvent( QHideEvent *event );

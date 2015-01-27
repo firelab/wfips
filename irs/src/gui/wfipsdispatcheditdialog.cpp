@@ -273,3 +273,37 @@ void WfipsDispatchEditDialog::ShowResources( QString dispLocName )
     }
 }
 
+QgsFeatureIds WfipsDispatchEditDialog::GetResourceFids( int subset )
+{
+    QgsFeatureIds fids;
+    QTreeWidgetItemIterator::IteratorFlags flag = QTreeWidgetItemIterator::All;
+    if( subset == WFIPS_RESC_SUBSET_OMIT )
+        flag = QTreeWidgetItemIterator::Hidden;
+    else if( subset == WFIPS_RESC_SUBSET_INCLUDE )
+        flag = QTreeWidgetItemIterator::NotHidden;
+
+    int i, j;
+    QString disploc, resc;
+    QList<WfipsResource> resources;
+    WfipsResource resource;
+    QTreeWidgetItemIterator it( treeWidget, flag );
+    while( *it )
+    {
+        i = 0;
+        disploc = (*it)->data( 0, 0 ).toString();
+        resources = rescAtLocMap[disploc];
+        while( (*it)->child( i ) != NULL )
+        {
+            resc = (*it)->child( i )->data( 1, 0 ).toString();
+            j = 0;
+            while( resources[j].name != resc )
+                j++;
+            fids.insert( resources[j].rowid );
+            i++;
+        }
+        it++;
+    }
+    qDebug() << "Resource FIDs:" << fids;
+    return fids;
+}
+
