@@ -27,82 +27,31 @@
 
 #include "wfipsdispatcheditdialog.h"
 
-WfipsDispatchListView::WfipsDispatchListView( QWidget *parent ) :
-    QListView( parent )
-{
-}
-
-WfipsDispatchListView::~WfipsDispatchListView()
-{
-}
-
-QString WfipsDispatchListView::GetDispLocName( QMouseEvent *event )
-{
-    QModelIndex idx;
-    idx = indexAt( event->pos() );
-    if( !idx.isValid() )
-    {
-        return QString();
-    }
-    QString name = idx.data().toString();
-    return name;
-}
-
-void WfipsDispatchListView::mouseDoubleClickEvent( QMouseEvent *event )
-{
-    if( event->button() == Qt::LeftButton )
-    {
-        QString name = GetDispLocName( event );
-        emit RightClick( name );
-    }
-    else
-    {
-        return QListView::mousePressEvent( event );
-    }
-}
-
-void WfipsDispatchListView::mousePressEvent( QMouseEvent *event )
-{
-    if( event->button() == Qt::RightButton )
-    {
-        QString name = GetDispLocName( event );
-        emit RightClick( name );
-    }
-    else
-    {
-        return QListView::mousePressEvent( event );
-    }
-}
-
-
 WfipsDispatchEditDialog::WfipsDispatchEditDialog( QWidget *parent ) :
     QDialog( parent ),
     ui( new Ui::WfipsDispatchEditDialog )
 {
     ui->setupUi( this );
-    listView = new WfipsDispatchListView( this );
-    ui->verticalLayout->insertWidget( 0, listView );
-    model = NULL;
-    listView->setSelectionMode( QAbstractItemView::ExtendedSelection );
-    listView->setAlternatingRowColors( true );
-
     treeWidget = new QTreeWidget( this );
-    ui->verticalLayout->insertWidget( 1, treeWidget );
+    ui->verticalLayout->insertWidget( 0, treeWidget );
+    model = NULL;
+    treeWidget->setSelectionMode( QAbstractItemView::ExtendedSelection );
+    treeWidget->setAlternatingRowColors( true );
+    treeWidget->setColumnCount( 3 );
 
-    connect( listView, SIGNAL( pressed( const QModelIndex & ) ),
+    connect( treeWidget, SIGNAL( pressed( const QModelIndex & ) ),
              this, SLOT( SelectionClicked( const QModelIndex & ) ) );
     connect( ui->omitToolButton, SIGNAL( clicked() ),
              this, SLOT( Omit() ) );
     connect( ui->revertToolButton, SIGNAL( clicked() ),
              this, SLOT( Unhide() ) );
-    connect( listView, SIGNAL( RightClick( QString ) ),
+    connect( treeWidget, SIGNAL( RightClick( QString ) ),
              this, SLOT( ShowResources( QString ) ) );
 }
 
 WfipsDispatchEditDialog::~WfipsDispatchEditDialog()
 {
     delete ui;
-    delete listView;
     delete treeWidget;
 }
 
@@ -118,9 +67,6 @@ void WfipsDispatchEditDialog::SetModel( const QMap<qint64, QString> &map )
     delete model;
     model = new QStringListModel( this );
     model->setStringList( this->map.values() );
-    //model->sort( 0 );
-    listView->setModel( model );
-    listView->setEditTriggers( QAbstractItemView::NoEditTriggers );
     PopulateRescMap();
 }
 
@@ -128,7 +74,7 @@ void WfipsDispatchEditDialog::SelectFids( QgsFeatureIds fids )
 {
     QString loc;
     QSet<qint64>::iterator it = fids.begin();
-    listView->clearSelection();
+    treeWidget->clearSelection();
     int i;
     while( it != fids.end() )
     {
@@ -141,22 +87,11 @@ void WfipsDispatchEditDialog::SelectFids( QgsFeatureIds fids )
             it++;
             continue;
         }
-        listView->setCurrentIndex( model->index( i ) );
-        listView->scrollTo( model->index( i ) );
+        //treeWidget->setCurrentIndex( model->index( i ) );
+        //treeWidget->scrollTo( model->index( i ) );
         it++;
     }
     return;
-}
-
-QList<int> WfipsDispatchEditDialog::GetSelectedIndices()
-{
-    QList<int> indices;
-    foreach( const QModelIndex &index, listView->selectionModel()->selectedIndexes() )
-    {
-        indices.append( index.row() );
-    }
-    qDebug() << "Selected indices: " << indices;
-    return indices;
 }
 
 /*
@@ -164,24 +99,26 @@ QList<int> WfipsDispatchEditDialog::GetSelectedIndices()
 */
 void WfipsDispatchEditDialog::Omit()
 {
-    QList<int> selectedRows;
-    selectedRows = GetSelectedIndices();
-    for( int i = 0; i < selectedRows.size(); i++ )
+    QList<QTreeWidgetItem*> items;
+    items = treeWidget->selectedItems();
+    for( int i = 0; i < items.size(); i++ )
     {
-        listView->setRowHidden( selectedRows[i], true );
+        items[i]->setHidden( true );
     }
     QgsFeatureIds fids = GetVisibleFids();
-    listView->clearSelection();
+    treeWidget->clearSelection();
     emit HiddenChanged( fids );
 }
 
 void WfipsDispatchEditDialog::Unhide()
 {
-    for( int i = 0; i < model->rowCount(); i++ )
+    QTreeWidgetItemIterator it(treeWidget, QTreeWidgetItemIterator::Hidden );
+    while( *it )
     {
-        listView->setRowHidden( i, false );
+        (*it)->setHidden( false );
+        it++;
     }
-    listView->clearSelection();
+    treeWidget->clearSelection();
     emit HiddenChanged( QgsFeatureIds() );
 }
 
@@ -207,13 +144,15 @@ QgsFeatureIds WfipsDispatchEditDialog::GetFidsFromNames( QStringList names )
 
 QgsFeatureIds WfipsDispatchEditDialog::GetVisibleFids()
 {
+    QTreeWidgetItemIterator it(treeWidget, QTreeWidgetItemIterator::NotHidden );
     QStringList names;
-    for( int i = 0; i < model->rowCount(); i++ )
+    while( *it )
     {
-        if( !listView->isRowHidden( i ) )
+        if( (*it)->data( 0, 0 ) != "" )
         {
-            names.append( model->index( i, 0).data().toString() );
+            names.append( (*it)->data( 0, 0 ).toString() );
         }
+        it++;
     }
     return GetFidsFromNames( names );
 }
@@ -224,9 +163,14 @@ QgsFeatureIds WfipsDispatchEditDialog::GetVisibleFids()
 void WfipsDispatchEditDialog::SelectionClicked( const QModelIndex &unused )
 {
     QStringList names;
-    foreach( const QModelIndex &index, listView->selectionModel()->selectedIndexes() )
+    QTreeWidgetItemIterator it( treeWidget, QTreeWidgetItemIterator::Selected );
+    while( *it )
     {
-        names.append( model->data( index, 0 ).toString() );
+        if( (*it)->data( 0, 0 ) != "" )
+        {
+            names.append( (*it)->data( 0, 0 ).toString() );
+        }
+        it++;
     }
     emit SelectionChanged( GetFidsFromNames( names ) );
 }
@@ -282,9 +226,8 @@ int WfipsDispatchEditDialog::PopulateRescMap()
                                 SQLITE_TRANSIENT );
         j = 0;
         resourceList.clear();
-        item = new QTreeWidgetItem( QTreeWidgetItem::Type );
+        item = new QTreeWidgetItem( treeWidget );
         item->setText( 0, dl );
-        treeWidget->addTopLevelItem( item );
         while( sqlite3_step( stmt ) == SQLITE_ROW )
         {
             n = sqlite3_column_int( stmt, 0 );
@@ -294,7 +237,7 @@ int WfipsDispatchEditDialog::PopulateRescMap()
             resource.name = name;
             resource.type = type;
             resourceList.append( resource );
-            subitem = new QTreeWidgetItem( QTreeWidgetItem::Type );
+            subitem = new QTreeWidgetItem( item );
             subitem->setText( 1, name );
             subitem->setText( 2, type );
             item->addChild( subitem );

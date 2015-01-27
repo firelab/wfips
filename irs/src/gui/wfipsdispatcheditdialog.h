@@ -57,33 +57,6 @@ struct WfipsResource
     QString type;
 };
 
-class WfipsRescModel : public QAbstractItemModel
-{
-
-private:
-
-};
-
-class WfipsDispatchListView : public QListView
-{
-    Q_OBJECT
-
-public:
-    explicit WfipsDispatchListView( QWidget *parent = 0 );
-    ~WfipsDispatchListView();
-
-protected slots:
-    void mousePressEvent( QMouseEvent *event );
-    void mouseDoubleClickEvent( QMouseEvent *event );
-
-signals:
-    void RightClick( QString dispLocName );
-
-private:
-    QString GetDispLocName( QMouseEvent *event );
-
-};
-
 class WfipsDispatchEditDialog : public QDialog
 {
     Q_OBJECT
@@ -103,7 +76,6 @@ private:
 
     QString wfipsDataPath;
 
-    WfipsDispatchListView *listView;
     QTreeWidget *treeWidget;
 
     QStringListModel *model;
