@@ -102,9 +102,8 @@ void WfipsIdentifyDialog::ShowIdentifyResults( QList<QgsMapToolIdentify::Identif
         {
             continue;
         }
-        item = new QTreeWidgetItem( QTreeWidgetItem::Type );
+        item = new QTreeWidgetItem( ui->treeWidget );
         item->setText( 0, s );
-        ui->treeWidget->addTopLevelItem( item );
         for( int j = 0;j < attributes.size(); j++ )
         {
             if( fields->size() > 0 )
@@ -117,10 +116,9 @@ void WfipsIdentifyDialog::ShowIdentifyResults( QList<QgsMapToolIdentify::Identif
             }
             attribute = attributes[j].toString();
             qDebug() << "Field: " << field.name() << ". Attribute: " << attribute;
-            subitem = new QTreeWidgetItem( QTreeWidgetItem::Type );
+            subitem = new QTreeWidgetItem( item );
             subitem->setText( 1, field.name() );
             subitem->setText( 2, attribute );
-            item->addChild( subitem );
         }
         /* Get the feature id from the derived attributes for selection display */
         fids.insert( STRING_TO_FID( results[i].mDerivedAttributes["feature id"] ) );
