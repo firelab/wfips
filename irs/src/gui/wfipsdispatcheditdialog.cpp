@@ -74,6 +74,7 @@ void WfipsDispatchEditDialog::SelectFids( QgsFeatureIds fids )
 {
     QString loc;
     QSet<qint64>::iterator it = fids.begin();
+    QList<QTreeWidgetItem*> items;
     treeWidget->clearSelection();
     int i;
     while( it != fids.end() )
@@ -87,7 +88,8 @@ void WfipsDispatchEditDialog::SelectFids( QgsFeatureIds fids )
             it++;
             continue;
         }
-        //treeWidget->setCurrentIndex( model->index( i ) );
+        items = treeWidget->findItems( loc, Qt::MatchExactly );
+        treeWidget->setCurrentItem( items[0] );
         //treeWidget->scrollTo( model->index( i ) );
         it++;
     }
