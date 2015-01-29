@@ -280,7 +280,7 @@
          <enum>QFrame::Plain</enum>
         </property>
         <property name="currentIndex">
-         <number>10</number>
+         <number>1</number>
         </property>
         <widget class="QWidget" name="dataPage">
          <layout class="QVBoxLayout" name="verticalLayout_13">
@@ -2239,6 +2239,22 @@
     <hint type="destinationlabel">
      <x>906</x>
      <y>243</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>bufferAnalysisCheckBox</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>bufferAnalysisSpinBox</receiver>
+   <slot>setEnabled(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>377</x>
+     <y>749</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>520</x>
+     <y>750</y>
     </hint>
    </hints>
   </connection>
