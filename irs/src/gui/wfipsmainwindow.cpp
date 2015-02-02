@@ -39,7 +39,7 @@ WfipsMainWindow::WfipsMainWindow( QWidget *parent ) :
     /* Initialize QGIS registry */
     QString qgisPluginPath = QGIS_PLUGIN_DIR;
     QgsProviderRegistry::instance( qgisPluginPath );
-    qDebug() << "QGIS plugin path: " << qgisPluginPath;
+    qDebug() << "QGIS plugin path:" << qgisPluginPath;
 
     ConstructToolButtons();
     ConstructAnalysisAreaWidgets();
@@ -47,7 +47,7 @@ WfipsMainWindow::WfipsMainWindow( QWidget *parent ) :
 
     ConstructTreeWidget();
     AssignTreeWidgetIndices( ui->treeWidget->invisibleRootItem() );
-    qDebug() << "Found " << treeWidgetList.size() << " tree widget items.";
+    qDebug() << "Found" << treeWidgetList.size() << "tree widget items.";
 
     identifyDialog = new WfipsIdentifyDialog( this );
 
@@ -274,7 +274,7 @@ void WfipsMainWindow::ConstructAnalysisAreaWidgets()
     ** how we handle extents and zoom and selection.
     */
     crs.createFromSrid( 4269 );
-    qDebug() << "CRS valid: " << crs.isValid();
+    qDebug() << "CRS valid:" << crs.isValid();
     transform.setDestCRS( crs );
     analysisAreaMapCanvas->setDestinationCrs( crs );
     analysisAreaMapCanvas->setCrsTransformEnabled( true );
@@ -317,7 +317,7 @@ void WfipsMainWindow::AddAnalysisAreaLayer( QString path, QString layerName,
         layerName = QFileInfo( path ).baseName();
     }
     path += layerName;
-    qDebug() << "Loading layer: " << layerName;
+    qDebug() << "Loading layer:" << layerName;
     analysisLayer = new QgsVectorLayer( path, layerName, "ogr", true );
     AddAnalysisAreaLayer( analysisLayer, useExtent );
 }
@@ -381,7 +381,7 @@ void WfipsMainWindow::LoadAnalysisAreaLayers()
     }
     else
     {
-        qDebug() << "Failed to load any layers from: " << wfipsPath;
+        qDebug() << "Failed to load any layers from:" << wfipsPath;
         wfipsPath = "";
     }
     analysisAreaMapCanvas->refresh();
@@ -395,7 +395,7 @@ void WfipsMainWindow::AddCustomAnalysisArea()
 {
     WfipsAddLayerDialog dialog( customLayerPath, this );
     dialog.exec();
-    qDebug() << "Loading " << dialog.GetFilePath() << ", " << dialog.GetCurrentLayer();
+    qDebug() << "Loading" << dialog.GetFilePath() << "," << dialog.GetCurrentLayer();
     if( dialog.GetFilePath() == "" || dialog.GetCurrentLayer() == "" )
     {
         qDebug() << "Invalid Layer file or layer name!";
@@ -492,7 +492,7 @@ void WfipsMainWindow::SetStackIndex( QTreeWidgetItem *current,
         }
         i++;
     }
-    qDebug() << "tree widget index: " << i;
+    qDebug() << "tree widget index:" << i;
     /*
     ** Set the correct page for the stack widget.  If there is no map on the
     ** page, disable the map tool frame.
@@ -583,7 +583,7 @@ void WfipsMainWindow::OpenWfipsPath()
     dispatchEditDialog->SetDataPath( wfipsPath );
     if( wfipsPath == "" )
         return;
-    qDebug() << "Using " << wfipsPath << " for data path.";
+    qDebug() << "Using" << wfipsPath << "for data path.";
     /* Find the analysis layers */
     LoadAnalysisAreaLayers();
     /* Find resource layers */
@@ -645,7 +645,7 @@ void WfipsMainWindow::Select( QgsFeatureIds fids )
         qDebug() << "Clear selection before selecting new analysis area";
         return;
     }
-    qDebug() << "Selecting fids: " << fids;
+    qDebug() << "Selecting fids:" << fids;
     QgsVectorLayer *layer;
     layer =
         dynamic_cast<QgsVectorLayer*>( analysisAreaMapCanvas->currentLayer() );
@@ -677,7 +677,7 @@ int WfipsMainWindow::WfipsIsVisible( QgsMapLayer *layer )
         {
             if( layer == analysisMapCanvasLayers[i].layer() )
             {
-                qDebug() << "Found layer: " << layer->name();
+                qDebug() << "Found layer:" << layer->name();
                 return 1;
             }
         }
@@ -689,7 +689,7 @@ int WfipsMainWindow::WfipsIsVisible( QgsMapLayer *layer )
         {
             if( layer == dispatchMapCanvasLayers[i].layer() )
             {
-                qDebug() << "Found layer: " << layer->name();
+                qDebug() << "Found layer:" << layer->name();
                 return 1;
             }
         }
@@ -728,11 +728,11 @@ void WfipsMainWindow::ZoomToLayerExtent()
         }
         else
         {
-            qDebug() << "Combining: " << extent.xMinimum() << ","
+            qDebug() << "Combining:" << extent.xMinimum() << ","
                                       << extent.xMaximum() << ","
                                       << extent.yMinimum() << ","
                                       << extent.yMaximum();
-            qDebug() << "with: " << lextent.xMinimum() << ","
+            qDebug() << "with:" << lextent.xMinimum() << ","
                                  << lextent.xMaximum() << ","
                                  << lextent.yMinimum() << ","
                                  << lextent.yMaximum();
@@ -741,7 +741,7 @@ void WfipsMainWindow::ZoomToLayerExtent()
         }
     }
     extent.scale( 1.1 );
-    qDebug() << "Setting extent: " << extent.xMinimum() << ","
+    qDebug() << "Setting extent:" << extent.xMinimum() << ","
                                    << extent.xMaximum() << ","
                                    << extent.yMinimum() << ","
                                    << extent.yMaximum();
@@ -831,7 +831,7 @@ static QgsVectorLayer * WfipsCopyToMemLayer( QgsVectorLayer *layer,
     QgsVectorDataProvider *provider = memLayer->dataProvider();
     for( int i = 0; i < fields.size(); i++ )
     {
-        qDebug() << "Copying field: " << fields[i].name();
+        qDebug() << "Copying field:" << fields[i].name();
     }
     QgsField oidField( "ofid", QVariant::LongLong );
     fields.append( oidField );
@@ -867,7 +867,7 @@ static QgsVectorLayer * WfipsCopyToMemLayer( QgsVectorLayer *layer,
         newFeature.setGeometry( new QgsGeometry( *(feature.geometry()) ) );
         features.append( newFeature );
     }
-    qDebug() << "Fetched " << features.size() << " features from " << layer->name();
+    qDebug() << "Fetched" << features.size() << "features from" << layer->name();
     provider->addFeatures( features );
     memLayer->updateExtents();
     memLayer->commitChanges();
@@ -898,36 +898,26 @@ void WfipsMainWindow::SetAnalysisArea()
         analysisAreaMapCanvas->refresh();
         ui->setAnalysisAreaToolButton->setText( "Set Analysis Area" );
         ui->setAnalysisAreaToolButton->setChecked( false );
+        ui->bufferAnalysisCheckBox->setEnabled( true );
+        ui->bufferAnalysisSpinBox->setEnabled( true );
+        selectedFids.clear();
         return;
     }
     QgsVectorLayer *layer;
     layer =
         dynamic_cast<QgsVectorLayer*>( analysisAreaMapCanvas->currentLayer() );
-    if( layer == NULL || !layer->isValid() )
+    if( layer == NULL || !layer->isValid() || selectedFids.size() < 1 )
     {
-        qDebug() << "Invalid layer in SetAnalysisArea()";
         ClearAnalysisAreaSelection();
+        analysisAreaMapCanvas->refresh();
         ui->setAnalysisAreaToolButton->setText( "Set Analysis Area" );
         ui->setAnalysisAreaToolButton->setChecked( false );
+        ui->bufferAnalysisCheckBox->setEnabled( true );
+        ui->bufferAnalysisSpinBox->setEnabled( true );
+        selectedFids.clear();
         return;
     }
-    if( selectedFids.size() < 1 )
-    {
-        ui->setAnalysisAreaToolButton->setText( "Set Analysis Area" );
-        ui->setAnalysisAreaToolButton->setChecked( false );
-        ClearAnalysisAreaSelection();
-        return;
-    }
-    qDebug() << "Setting analysis area using fids: " << selectedFids;
-    if( selectedFids.size() < 1 )
-    {
-        qDebug() << "No selected features";
-        ui->setAnalysisAreaToolButton->setText( "Set Analysis Area" );
-        ui->setAnalysisAreaToolButton->setChecked( false );
-        ClearAnalysisAreaSelection();
-        return;
-    }
-
+    qDebug() << "Setting analysis area using fids:" << selectedFids;
     this->setDisabled( true );
     QgsFeatureList features;
     QgsFeatureRequest request;
@@ -949,7 +939,7 @@ void WfipsMainWindow::SetAnalysisArea()
         double m, d;
         m = ui->bufferAnalysisSpinBox->value();
         d = MilesToDegrees( m );
-        qDebug() << "Using " << m << " miles, " << d << " degrees for buffer";
+        qDebug() << "Using" << m << "miles," << d << "degrees for buffer";
         this->statusBar()->showMessage( "Buffering  geometries..." );
         ui->progressBar->setRange( 0, 0 );
         ui->progressBar->setValue( 0 );
@@ -1025,8 +1015,8 @@ void WfipsMainWindow::SetAnalysisArea()
     }
     this->statusBar()->showMessage( "Adding new layers to map canvases..." );
     ui->progressBar->reset();
-    this->statusBar()->showMessage( "Found " + fids.size() + QString( " locations." ), 3000 );
-    qDebug() << "Found " << fids.size() << " dispatch locations within the analysis area";
+    this->statusBar()->showMessage( "Found" + fids.size() + QString( " locations." ), 3000 );
+    qDebug() << "Found" << fids.size() << "dispatch locations within the analysis area";
     dispatchEditDialog->SetModel( dispatchLocationMap );
 
     dispatchLocationMemLayer = WfipsCopyToMemLayer( layer, fids );
@@ -1054,6 +1044,8 @@ void WfipsMainWindow::SetAnalysisArea()
     delete layer;
 
     ui->setAnalysisAreaToolButton->setText( "Clear Analysis Area" );
+    ui->bufferAnalysisCheckBox->setDisabled( true );
+    ui->bufferAnalysisSpinBox->setDisabled( true );
     ui->analysisAreaComboBox->setCurrentIndex( ui->analysisAreaComboBox->count() - 1 );
     this->statusBar()->showMessage( "Done.", 3000 );
     this->setEnabled( true );
@@ -1100,7 +1092,7 @@ void WfipsMainWindow::SelectDispatchLocations( QgsFeatureIds fids )
     {
         fid = feature.attribute( "ofid" ).toLongLong();
         dlfids.insert( fid );
-        qDebug() << "Local fid: " << feature.id() << ", original: " << fid;
+        qDebug() << "Local fid:" << feature.id() << ", original:" << fid;
     }
     dispatchEditDialog->SelectFids( dlfids );
     if( !ui->dispatchEditToolButton->isChecked() )
@@ -1138,11 +1130,11 @@ void WfipsMainWindow::UpdateSelectedDispatchLocations( const QgsFeatureIds &fids
     QgsFeatureId fid;
     QgsFeatureIds newfids;
 
-    qDebug() << "Selecting OFIDS: " << fids;
+    qDebug() << "Selecting OFIDS:" << fids;
     QString sql = "ofid IN(";
     sql += JoinFids( fids );
     sql += ")";
-    qDebug() << "SQL filter: " << sql;
+    qDebug() << "SQL filter:" << sql;
     request.setFilterExpression( sql );
     fit = layer->getFeatures( request );
     while( fit.nextFeature( feature ) )
@@ -1150,7 +1142,7 @@ void WfipsMainWindow::UpdateSelectedDispatchLocations( const QgsFeatureIds &fids
         fid = feature.id();
         newfids.insert( fid );
     }
-    qDebug() << "Found mem fids: " << newfids;
+    qDebug() << "Found mem fids:" << newfids;
     layer->removeSelection();
     layer->select( newfids );
     dispatchMapCanvas->refresh();
@@ -1171,7 +1163,7 @@ void WfipsMainWindow::HideDispatchLocations( QgsFeatureIds fids )
         return;
     }
     QString where = BuildFidSet( "ofid", fids );
-    qDebug() << "Limiting location set: " << where;
+    qDebug() << "Limiting location set:" << where;
     layer->setSubsetString( where );
     analysisAreaMapCanvas->refresh();
 }
@@ -1194,7 +1186,7 @@ void WfipsMainWindow::SelectFuelMask()
     /* Use custom layer path for now, but maybe add a setting */
     WfipsAddLayerDialog dialog( customLayerPath, this );
     dialog.exec();
-    qDebug() << "Loading " << dialog.GetFilePath() << ", " << dialog.GetCurrentLayer();
+    qDebug() << "Loading" << dialog.GetFilePath() << "," << dialog.GetCurrentLayer();
     if( dialog.GetFilePath() == "" || dialog.GetCurrentLayer() == "" )
     {
         qDebug() << "Invalid Layer file or layer name!";
@@ -1205,7 +1197,7 @@ void WfipsMainWindow::SelectFuelMask()
     QFileInfo info(dialog.GetFilePath() );
     fuelMaskSource = dialog.GetFilePath();
     fuelMaskLayer = dialog.GetCurrentLayer();
-    qDebug() << "Using file: " << fuelMaskSource << ", layer: " << fuelMaskLayer;
+    qDebug() << "Using file:" << fuelMaskSource << ", layer:" << fuelMaskLayer;
     ui->fuelMaskSourceLineEdit->setText( info.baseName() );
     ui->fuelMaskLayerLineEdit->setText( fuelMaskLayer );
     customLayerPath = info.absolutePath();

@@ -69,9 +69,6 @@ void WfipsDispatchEditDialog::SetDataPath( QString path )
 void WfipsDispatchEditDialog::SetModel( const QMap<qint64, QString> &map )
 {
     this->map = map;
-    delete model;
-    model = new QStringListModel( this );
-    model->setStringList( this->map.values() );
     PopulateRescMap();
 }
 
