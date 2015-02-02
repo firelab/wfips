@@ -114,6 +114,7 @@ void WfipsDispatchEditDialog::Omit()
     }
     QgsFeatureIds fids = GetVisibleFids();
     treeWidget->clearSelection();
+    UpdateCost();
     emit HiddenChanged( fids );
 }
 
@@ -126,6 +127,7 @@ void WfipsDispatchEditDialog::Unhide()
         it++;
     }
     treeWidget->clearSelection();
+    UpdateCost();
     emit HiddenChanged( QgsFeatureIds() );
 }
 
@@ -264,6 +266,7 @@ int WfipsDispatchEditDialog::PopulateRescMap()
     {
         treeWidget->resizeColumnToContents( j );
     }
+    UpdateCost();
     return rescAtLocMap.size();
 }
 
@@ -302,11 +305,14 @@ QgsFeatureIds WfipsDispatchEditDialog::GetResourceFids( int subset )
         resources = rescAtLocMap[disploc];
         while( (*it)->child( i ) != NULL )
         {
-            resc = (*it)->child( i )->data( 1, 0 ).toString();
-            j = 0;
-            while( resources[j].name != resc )
-                j++;
-            fids.insert( resources[j].rowid );
+            if( !(*it)->child( i )->isHidden() )
+            {
+                resc = (*it)->child( i )->data( 1, 0 ).toString();
+                j = 0;
+                while( resources[j].name != resc )
+                    j++;
+                fids.insert( resources[j].rowid );
+            }
             i++;
         }
         it++;
@@ -334,6 +340,44 @@ void WfipsDispatchEditDialog::ClearEmptyLocations()
         i++;
     }
     QgsFeatureIds fids = GetVisibleFids();
+    UpdateCost();
     emit HiddenChanged( fids );
+}
+
+void WfipsDispatchEditDialog::UpdateCost()
+{
+    int rc = SQLITE_OK;
+    sqlite3 *db;
+    sqlite3_stmt *stmt;
+    QgsFeatureIds fids;
+    fids = GetResourceFids( WFIPS_RESC_SUBSET_INCLUDE );
+    char *pszFidSet = QStringToCString( BuildFidSet( "", fids ) );
+    char *pszPath = QStringToCString( wfipsDataPath );
+    char *pszRescDbPath = sqlite3_mprintf( "%s/resc.db", pszPath );
+    char *pszCostDbPath = sqlite3_mprintf( "%s/cost.db", pszPath );
+    char *pszSql = sqlite3_mprintf( "ATTACH %Q AS cost", pszCostDbPath );
+
+    rc = sqlite3_open_v2( pszRescDbPath, &db, SQLITE_OPEN_READONLY, NULL );
+    rc = sqlite3_exec( db, pszSql, NULL, NULL, NULL );
+    sqlite3_free( pszSql );
+    pszSql = sqlite3_mprintf( "SELECT SUM(nat) FROM resource " \
+                              "LEFT JOIN cost USING(resc_type) " \
+                              "WHERE resource.ROWID%s", pszFidSet );
+
+    qDebug() << "SQL for costs:" << pszSql;
+
+    rc = sqlite3_prepare_v2( db, pszSql, -1, &stmt, NULL );
+    rc = sqlite3_step( stmt );
+    if( rc == SQLITE_ROW )
+    {
+        ui->costSpinBox->setValue( sqlite3_column_int( stmt, 0 ) );
+    }
+    free( pszFidSet );
+    free( pszPath );
+    sqlite3_free( pszSql );
+    sqlite3_free( pszRescDbPath );
+    sqlite3_free( pszCostDbPath );
+    rc = sqlite3_finalize( stmt );
+    rc = sqlite3_close( db );
 }
 

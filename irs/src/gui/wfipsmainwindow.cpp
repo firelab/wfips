@@ -1156,25 +1156,6 @@ void WfipsMainWindow::UpdateSelectedDispatchLocations( const QgsFeatureIds &fids
     dispatchMapCanvas->refresh();
 }
 
-/*
-** I've added and removed this three times.  Just leave it until forever.
-*/
-static QString BuildFidSet( const char *pszFidCol, QgsFeatureIds fids ) 	
-{
-    qDebug() << "Setting filter using col: " << pszFidCol;
-    QString fidset = QString( pszFidCol ) + " IN (";
-    QSetIterator<qint64>it( fids );
-    while( it.hasNext() )
-    {
-        fidset += FID_TO_STRING( it.next() );
-        if( it.hasNext() )
-        {
-            fidset += ",";
-        }
-    }
-    fidset += ")";
-    return fidset;
-}
 
 void WfipsMainWindow::HideDispatchLocations( QgsFeatureIds fids )
 {

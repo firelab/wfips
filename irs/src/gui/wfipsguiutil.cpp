@@ -76,3 +76,20 @@ QStringList WfipsGetRescTypes( QString path )
     return types;
 }
 
+QString BuildFidSet( const char *pszFidCol, QgsFeatureIds fids )
+{
+    qDebug() << "Setting filter using col: " << pszFidCol;
+    QString fidset = QString( pszFidCol ) + " IN (";
+    QSetIterator<qint64>it( fids );
+    while( it.hasNext() )
+    {
+        fidset += FID_TO_STRING( it.next() );
+        if( it.hasNext() )
+        {
+            fidset += ",";
+        }
+    }
+    fidset += ")";
+    return fidset;
+}
+

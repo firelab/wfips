@@ -37,8 +37,11 @@
 #include <QString>
 #include <QStringList>
 
+#include <qgsfeature.h>
+
 char * QStringToCString( const QString &s );
 QStringList WfipsGetRescTypes( QString path );
+QString BuildFidSet( const char *pszFidCol, QgsFeatureIds fids );
 
 #endif /* WFIPS_GUI_UTIL_H_ */
 

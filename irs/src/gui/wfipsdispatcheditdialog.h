@@ -103,6 +103,8 @@ private slots:
     void Unhide();
     void ShowResources( QString dispLocName );
     void ClearEmptyLocations();
+    void UpdateCost();
+
 signals:
     void SelectionChanged( const QgsFeatureIds &fids );
     void Hiding();
