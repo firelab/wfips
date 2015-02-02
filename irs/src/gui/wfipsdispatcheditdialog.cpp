@@ -38,6 +38,9 @@ WfipsDispatchEditDialog::WfipsDispatchEditDialog( QWidget *parent ) :
     treeWidget->setSelectionMode( QAbstractItemView::ExtendedSelection );
     treeWidget->setAlternatingRowColors( true );
     treeWidget->setColumnCount( 3 );
+    QStringList labels;
+    labels << "Dispatch Location" << "Resource" << "Type";
+    treeWidget->setHeaderLabels( labels );
 
     connect( treeWidget, SIGNAL( pressed( const QModelIndex & ) ),
              this, SLOT( SelectionClicked( const QModelIndex & ) ) );
@@ -47,6 +50,8 @@ WfipsDispatchEditDialog::WfipsDispatchEditDialog( QWidget *parent ) :
              this, SLOT( Unhide() ) );
     connect( treeWidget, SIGNAL( RightClick( QString ) ),
              this, SLOT( ShowResources( QString ) ) );
+    connect( ui->removeEmptyButton, SIGNAL( clicked() ),
+             this, SLOT( ClearEmptyLocations() ) );
 }
 
 WfipsDispatchEditDialog::~WfipsDispatchEditDialog()
@@ -255,7 +260,10 @@ int WfipsDispatchEditDialog::PopulateRescMap()
     rc = sqlite3_finalize( stmt );
     rc = sqlite3_close( db );
     qDebug() << "Found resources at " << rescAtLocMap.size() << " dispatch locations.";
-
+    for( j = 0; j < 3; j++ )
+    {
+        treeWidget->resizeColumnToContents( j );
+    }
     return rescAtLocMap.size();
 }
 
@@ -305,5 +313,31 @@ QgsFeatureIds WfipsDispatchEditDialog::GetResourceFids( int subset )
     }
     qDebug() << "Resource FIDs:" << fids;
     return fids;
+}
+
+/*
+** Mark the selected items
+** Clear selection.
+** Find empty locations.
+** Hide the locations.
+** Re-select the non-empty, user selected items.
+*/
+
+void WfipsDispatchEditDialog::ClearEmptyLocations()
+{
+    QTreeWidgetItem *item;
+
+    int i = 0;
+    while( (item = treeWidget->topLevelItem( i )) != NULL )
+    {
+        if( item->childCount() == 0 )
+        {
+            item->setSelected( false );
+            item->setHidden( true );
+        }
+        i++;
+    }
+    QgsFeatureIds fids = GetVisibleFids();
+    emit HiddenChanged( fids );
 }
 
