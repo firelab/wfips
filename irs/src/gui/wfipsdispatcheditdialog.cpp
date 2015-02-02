@@ -316,11 +316,7 @@ QgsFeatureIds WfipsDispatchEditDialog::GetResourceFids( int subset )
 }
 
 /*
-** Mark the selected items
-** Clear selection.
-** Find empty locations.
-** Hide the locations.
-** Re-select the non-empty, user selected items.
+** Iterate through the top level items and remove any childless locations.
 */
 
 void WfipsDispatchEditDialog::ClearEmptyLocations()
