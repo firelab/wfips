@@ -299,7 +299,7 @@
          <enum>QFrame::Plain</enum>
         </property>
         <property name="currentIndex">
-         <number>4</number>
+         <number>5</number>
         </property>
         <widget class="QWidget" name="dataPage">
          <layout class="QVBoxLayout" name="verticalLayout_13">
@@ -704,49 +704,6 @@
            </widget>
           </item>
           <item>
-           <layout class="QHBoxLayout" name="horizontalLayout_17">
-            <item>
-             <widget class="QLabel" name="label_18">
-              <property name="sizePolicy">
-               <sizepolicy hsizetype="MinimumExpanding" vsizetype="Preferred">
-                <horstretch>0</horstretch>
-                <verstretch>0</verstretch>
-               </sizepolicy>
-              </property>
-              <property name="text">
-               <string>Air Tankers</string>
-              </property>
-             </widget>
-            </item>
-            <item>
-             <widget class="QSlider" name="tankerPPSlider">
-              <property name="toolTip">
-               <string>Likelyhood of movement (0=no movement, 100=very likely)</string>
-              </property>
-              <property name="maximum">
-               <number>100</number>
-              </property>
-              <property name="orientation">
-               <enum>Qt::Horizontal</enum>
-              </property>
-             </widget>
-            </item>
-            <item>
-             <widget class="QSpinBox" name="tankerPPSpinBox">
-              <property name="toolTip">
-               <string>Likelyhood of movement (0=no movement, 100=very likely)</string>
-              </property>
-              <property name="accelerated">
-               <bool>true</bool>
-              </property>
-              <property name="maximum">
-               <number>100</number>
-              </property>
-             </widget>
-            </item>
-           </layout>
-          </item>
-          <item>
            <layout class="QHBoxLayout" name="horizontalLayout_22">
             <item>
              <widget class="QLabel" name="label_24">
@@ -819,49 +776,6 @@
             </item>
             <item>
              <widget class="QSpinBox" name="crewsPPSpinBox">
-              <property name="toolTip">
-               <string>Likelyhood of movement (0=no movement, 100=very likely)</string>
-              </property>
-              <property name="accelerated">
-               <bool>true</bool>
-              </property>
-              <property name="maximum">
-               <number>100</number>
-              </property>
-             </widget>
-            </item>
-           </layout>
-          </item>
-          <item>
-           <layout class="QHBoxLayout" name="horizontalLayout_21">
-            <item>
-             <widget class="QLabel" name="label_23">
-              <property name="sizePolicy">
-               <sizepolicy hsizetype="MinimumExpanding" vsizetype="Preferred">
-                <horstretch>0</horstretch>
-                <verstretch>0</verstretch>
-               </sizepolicy>
-              </property>
-              <property name="text">
-               <string>Helicopter</string>
-              </property>
-             </widget>
-            </item>
-            <item>
-             <widget class="QSlider" name="helicopterPPSlider">
-              <property name="toolTip">
-               <string>Likelyhood of movement (0=no movement, 100=very likely)</string>
-              </property>
-              <property name="maximum">
-               <number>100</number>
-              </property>
-              <property name="orientation">
-               <enum>Qt::Horizontal</enum>
-              </property>
-             </widget>
-            </item>
-            <item>
-             <widget class="QSpinBox" name="helicopterPPSpinBox">
               <property name="toolTip">
                <string>Likelyhood of movement (0=no movement, 100=very likely)</string>
               </property>
@@ -1981,38 +1895,6 @@
    </hints>
   </connection>
   <connection>
-   <sender>tankerPPSlider</sender>
-   <signal>valueChanged(int)</signal>
-   <receiver>tankerPPSpinBox</receiver>
-   <slot>setValue(int)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>741</x>
-     <y>132</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>1156</x>
-     <y>132</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>tankerPPSpinBox</sender>
-   <signal>valueChanged(int)</signal>
-   <receiver>tankerPPSlider</receiver>
-   <slot>setValue(int)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>1156</x>
-     <y>132</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>741</x>
-     <y>132</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
    <sender>enginePPSlider</sender>
    <signal>valueChanged(int)</signal>
    <receiver>enginePPSpinBox</receiver>
@@ -2105,38 +1987,6 @@
     <hint type="destinationlabel">
      <x>732</x>
      <y>280</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>helicopterPPSlider</sender>
-   <signal>valueChanged(int)</signal>
-   <receiver>helicopterPPSpinBox</receiver>
-   <slot>setValue(int)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>740</x>
-     <y>243</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>1156</x>
-     <y>243</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>helicopterPPSpinBox</sender>
-   <signal>valueChanged(int)</signal>
-   <receiver>helicopterPPSlider</receiver>
-   <slot>setValue(int)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>1156</x>
-     <y>243</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>740</x>
-     <y>243</y>
     </hint>
    </hints>
   </connection>
