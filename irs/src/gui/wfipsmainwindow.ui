@@ -75,7 +75,7 @@
          </item>
          <item>
           <property name="text">
-           <string>Drawdown</string>
+           <string>Large Fire Drawdown</string>
           </property>
           <property name="flags">
            <set>ItemIsSelectable|ItemIsDragEnabled|ItemIsUserCheckable</set>
@@ -788,6 +788,9 @@
              </widget>
             </item>
            </layout>
+          </item>
+          <item>
+           <layout class="QHBoxLayout" name="horizontalLayout_21"/>
           </item>
           <item>
            <layout class="QHBoxLayout" name="horizontalLayout_18">
