@@ -77,9 +77,6 @@
           <property name="text">
            <string>Large Fire Drawdown</string>
           </property>
-          <property name="flags">
-           <set>ItemIsSelectable|ItemIsDragEnabled|ItemIsUserCheckable</set>
-          </property>
          </item>
         </item>
         <item>
@@ -125,6 +122,11 @@
             <string>Population Affected</string>
            </property>
           </item>
+         </item>
+         <item>
+          <property name="text">
+           <string>Export</string>
+          </property>
          </item>
         </item>
        </widget>
@@ -299,7 +301,7 @@
          <enum>QFrame::Plain</enum>
         </property>
         <property name="currentIndex">
-         <number>5</number>
+         <number>7</number>
         </property>
         <widget class="QWidget" name="dataPage">
          <layout class="QVBoxLayout" name="verticalLayout_13">
@@ -1251,6 +1253,18 @@
                     <widget class="QSpinBox" name="fuelProbSpinBox">
                      <property name="enabled">
                       <bool>true</bool>
+                     </property>
+                     <property name="accelerated">
+                      <bool>true</bool>
+                     </property>
+                     <property name="suffix">
+                      <string>%</string>
+                     </property>
+                     <property name="maximum">
+                      <number>100</number>
+                     </property>
+                     <property name="value">
+                      <number>100</number>
                      </property>
                     </widget>
                    </item>
