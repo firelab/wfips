@@ -53,8 +53,7 @@ endforeach(md ${md_files})
 # Copy some files over for ease of use
 set(copy_files "wfips.css;wfips.qhp;wfips.qhcp")
 foreach(f ${copy_files})
-    file(READ ${f} content)
-    file(WRITE ${CMAKE_BINARY_DIR}/doc/${f} ${content})
+    configure_file(${f} ${CMAKE_BINARY_DIR}/doc/${f} COPY_ONLY)
 endforeach(f ${copy_files})
 
 execute_process(COMMAND qhelpgenerator wfips.qhp -o wfips.qch

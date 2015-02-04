@@ -1,3 +1,31 @@
 
-<style>
-</style>
+body {
+    font-family: "Ubuntu Mono", monospace;
+    color: gray;
+    margin-top: 5%;
+    margin-bottom: 5%;
+    margin-left: 20%;
+    margin-right: 20%;
+}
+
+h1 {
+    font-style: italic;
+    color: gray;
+    text-align: center;
+}
+
+h2 {
+    color: navy;
+    font-weight: bold;
+}
+
+p {
+    color: black;
+}
+
+li {
+    list-style-type: disc;
+    list-style-position: inside;
+    color: gray;
+}
+

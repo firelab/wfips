@@ -7,8 +7,8 @@
          <filterAttribute>0.0.1</filterAttribute>
      </customFilter>
      <filterSection>
-         <filterAttribute>myapp</filterAttribute>
-         <filterAttribute>1.0</filterAttribute>
+         <filterAttribute>wfips</filterAttribute>
+         <filterAttribute>0.0.1</filterAttribute>
          <toc>
              <section title="WFIPS Manual" ref="index.html">
                  <section title="Analysis Area" ref="analysisarea.html"/>
@@ -16,7 +16,7 @@
              </section>
          </toc>
          <keywords>
-             <keyword id="MyApplication::foobar" ref="doc.html#foobar"/>
+             <keyword id="Wfips::Default Analysis Layers" ref="analysisarea.html#"/>
          </keywords>
          <files>
              <file>wfips.css</file>
