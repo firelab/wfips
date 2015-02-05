@@ -210,6 +210,11 @@ private slots:
     void SetStackIndex( QTreeWidgetItem *current,
                         QTreeWidgetItem *previous );
 
+    void FindTreeWidget( int down );
+    QTreeWidgetItem * FindLastVisibleChild( QTreeWidgetItem *item );
+    void NextTreeWidgetItem();
+    void PrevTreeWidgetItem();
+
     /* Slot for tool button to map tool mapping */
     void UpdateMapToolType();
     /* Zoom to layer extent */

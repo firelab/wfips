@@ -10,5 +10,7 @@
         <file alias="add_layer">mActionAddLayer.png</file>
         <file alias="properties">mActionPropertyItem.png</file>
         <file alias="osu">osu.png</file>
+        <file alias="go-next">go-next.png</file>
+        <file alias="go-previous">go-previous.png</file>
     </qresource>
 </RCC>

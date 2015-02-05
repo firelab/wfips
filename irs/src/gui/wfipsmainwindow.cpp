@@ -186,6 +186,15 @@ void WfipsMainWindow::CreateConnections()
     /* Set Analysis Area */
     connect( ui->setAnalysisAreaToolButton, SIGNAL( clicked() ),
              this, SLOT( SetAnalysisArea() ) );
+
+    /* Tree navigation buttons */
+    ui->treeNextButton->setIcon( QIcon( ":/go-next" ) );
+    connect( ui->treeNextButton, SIGNAL( clicked() ),
+             this, SLOT( NextTreeWidgetItem() ) );
+    ui->treePreviousButton->setIcon( QIcon( ":/go-previous" ) );
+    connect( ui->treePreviousButton, SIGNAL( clicked() ),
+             this, SLOT( PrevTreeWidgetItem() ) );
+
 }
 
 void WfipsMainWindow::PostConstructionActions()
@@ -1214,6 +1223,56 @@ void WfipsMainWindow::SelectFuelMask()
         ui->fuelAttComboBox->addItem( fields[i].name() );
     }
     return;
+}
+
+/*
+** XXX: Works when items aren't disabled.  Needs to be checked for disabled
+**      items as well as invisible items.
+*/
+QTreeWidgetItem * WfipsMainWindow::FindLastVisibleChild( QTreeWidgetItem *item )
+{
+
+    if( !item->isHidden() && item->childCount() == 0 )
+    {
+        return item;
+    }
+    return FindLastVisibleChild( item->child( item->childCount() - 1 ) );
+}
+
+void WfipsMainWindow::FindTreeWidget( int down )
+{
+    QTreeWidgetItem *current, *next;
+    current = ui->treeWidget->currentItem();
+    next = current;
+    do
+    {
+        if( down )
+            next = ui->treeWidget->itemBelow( next );
+        else
+            next = ui->treeWidget->itemAbove( next );
+        if( next == NULL )
+        {
+            if( down )
+                next = ui->treeWidget->topLevelItem( 0 );
+            else
+            {
+                next = ui->treeWidget->topLevelItem( ui->treeWidget->topLevelItemCount() - 1 );
+                next = FindLastVisibleChild( next );
+            }
+        }
+    } while( next->isDisabled() );
+
+    ui->treeWidget->setCurrentItem( next );
+}
+
+void WfipsMainWindow::NextTreeWidgetItem()
+{
+    return FindTreeWidget( 1 );
+}
+
+void WfipsMainWindow::PrevTreeWidgetItem()
+{
+    return FindTreeWidget( 0 );
 }
 
 void WfipsMainWindow::ShowMessage( const int messageType,
