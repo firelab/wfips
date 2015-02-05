@@ -301,7 +301,12 @@ QgsFeatureIds WfipsDispatchEditDialog::GetResourceFids( int subset )
     {
         i = 0;
         disploc = (*it)->data( 0, 0 ).toString();
-        resources = rescAtLocMap[disploc];
+        resources = rescAtLocMap.value( disploc );
+        if( resources.size() == 0 )
+        {
+            it++;
+            continue;
+        }
         while( (*it)->child( i ) != NULL )
         {
             if( !(*it)->child( i )->isHidden() )
