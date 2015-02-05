@@ -74,6 +74,8 @@ void WfipsDispatchEditDialog::SetModel( const QMap<qint64, QString> &map )
 
 void WfipsDispatchEditDialog::SelectFids( QgsFeatureIds fids )
 {
+    if( rescAtLocMap.size() == 0 )
+        return;
     QString loc;
     QSet<qint64>::iterator it = fids.begin();
     QList<QTreeWidgetItem*> items;
