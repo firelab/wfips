@@ -311,7 +311,7 @@
          <enum>QFrame::Plain</enum>
         </property>
         <property name="currentIndex">
-         <number>5</number>
+         <number>7</number>
         </property>
         <widget class="QWidget" name="dataPage">
          <layout class="QVBoxLayout" name="verticalLayout_13">
@@ -1588,18 +1588,11 @@
               </widget>
              </item>
              <item>
-              <widget class="QRadioButton" name="figRandomRadioButton">
-               <property name="text">
-                <string>Random years</string>
-               </property>
-              </widget>
-             </item>
-             <item>
               <layout class="QHBoxLayout" name="horizontalLayout_6">
                <item>
-                <widget class="QRadioButton" name="figHighPercRadioButton">
+                <widget class="QRadioButton" name="randomYearsRadioButton">
                  <property name="text">
-                  <string>Random years above</string>
+                  <string>Random years</string>
                  </property>
                 </widget>
                </item>
@@ -1617,23 +1610,67 @@
                 </spacer>
                </item>
                <item>
-                <widget class="QSpinBox" name="figHighPercSpinBox">
-                 <property name="accelerated">
-                  <bool>true</bool>
-                 </property>
-                 <property name="suffix">
-                  <string> % percentile</string>
+                <widget class="QLabel" name="label_9">
+                 <property name="text">
+                  <string>Ignitions per day</string>
                  </property>
                 </widget>
+               </item>
+               <item>
+                <widget class="QComboBox" name="randomIgnPerDayComboBox">
+                 <item>
+                  <property name="text">
+                   <string>Low</string>
+                  </property>
+                 </item>
+                 <item>
+                  <property name="text">
+                   <string>Average</string>
+                  </property>
+                 </item>
+                 <item>
+                  <property name="text">
+                   <string>High</string>
+                  </property>
+                 </item>
+                 <item>
+                  <property name="text">
+                   <string>Any</string>
+                  </property>
+                 </item>
+                </widget>
+               </item>
+               <item>
+                <spacer name="horizontalSpacer_8">
+                 <property name="orientation">
+                  <enum>Qt::Horizontal</enum>
+                 </property>
+                 <property name="sizeHint" stdset="0">
+                  <size>
+                   <width>40</width>
+                   <height>20</height>
+                  </size>
+                 </property>
+                </spacer>
+               </item>
+               <item>
+                <widget class="QLabel" name="label_13">
+                 <property name="text">
+                  <string>Number of years</string>
+                 </property>
+                </widget>
+               </item>
+               <item>
+                <widget class="QSpinBox" name="randomYearsSpinBox"/>
                </item>
               </layout>
              </item>
              <item>
               <layout class="QHBoxLayout" name="horizontalLayout_7">
                <item>
-                <widget class="QRadioButton" name="figLowPercRadioButton">
+                <widget class="QRadioButton" name="singleYearRadioButton">
                  <property name="text">
-                  <string>Random years below</string>
+                  <string>Single Specific Year</string>
                  </property>
                 </widget>
                </item>
@@ -1651,78 +1688,26 @@
                 </spacer>
                </item>
                <item>
-                <widget class="QSpinBox" name="figLowPercSpinBox">
-                 <property name="accelerated">
-                  <bool>true</bool>
-                 </property>
-                 <property name="suffix">
-                  <string>% percentile</string>
-                 </property>
-                </widget>
-               </item>
-              </layout>
-             </item>
-             <item>
-              <layout class="QHBoxLayout" name="horizontalLayout_3">
-               <item>
-                <widget class="QLabel" name="figYearCountLabel">
-                 <property name="enabled">
-                  <bool>false</bool>
-                 </property>
+                <widget class="QLabel" name="label_16">
                  <property name="text">
-                  <string>Number of simulation years</string>
+                  <string>Year</string>
                  </property>
                 </widget>
                </item>
                <item>
-                <spacer name="horizontalSpacer_3">
-                 <property name="orientation">
-                  <enum>Qt::Horizontal</enum>
-                 </property>
-                 <property name="sizeHint" stdset="0">
-                  <size>
-                   <width>40</width>
-                   <height>20</height>
-                  </size>
-                 </property>
-                </spacer>
-               </item>
-               <item>
-                <widget class="QSpinBox" name="figYearCountRadioButton">
-                 <property name="enabled">
-                  <bool>false</bool>
-                 </property>
+                <widget class="QSpinBox" name="singleYearSpinBox">
                  <property name="accelerated">
                   <bool>true</bool>
                  </property>
                  <property name="suffix">
                   <string/>
                  </property>
-                 <property name="minimum">
-                  <number>1</number>
-                 </property>
-                 <property name="maximum">
-                  <number>26</number>
+                 <property name="value">
+                  <number>0</number>
                  </property>
                 </widget>
                </item>
               </layout>
-             </item>
-            </layout>
-           </widget>
-          </item>
-          <item>
-           <widget class="QGroupBox" name="groupBox_4">
-            <property name="title">
-             <string>Computation Parameters</string>
-            </property>
-            <layout class="QVBoxLayout" name="verticalLayout_19">
-             <item>
-              <widget class="QCheckBox" name="checkBox">
-               <property name="text">
-                <string>Run in parallel</string>
-               </property>
-              </widget>
              </item>
             </layout>
            </widget>
@@ -1886,38 +1871,6 @@
     <hint type="destinationlabel">
      <x>603</x>
      <y>402</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>figAllRadioButton</sender>
-   <signal>toggled(bool)</signal>
-   <receiver>figYearCountRadioButton</receiver>
-   <slot>setDisabled(bool)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>738</x>
-     <y>129</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>1134</x>
-     <y>259</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>figAllRadioButton</sender>
-   <signal>toggled(bool)</signal>
-   <receiver>figYearCountLabel</receiver>
-   <slot>setDisabled(bool)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>738</x>
-     <y>129</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>390</x>
-     <y>259</y>
     </hint>
    </hints>
   </connection>
