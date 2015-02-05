@@ -1,5 +1,7 @@
 <link href="wfips.css" rel="stylesheet" type="text/css">
 
+<head><title>WFIPS: Analysis Area</title></head>
+
 Analysis Area
 =============
 

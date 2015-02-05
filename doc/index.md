@@ -8,6 +8,7 @@ Wildland Fire Planning Investment System
 - [Agencies](agencies.html)
 - [Prepositioning](prepositioning.html)
 - [Large Fire Drawdown](largefiredrawdown.html)
+- [Large Fire Simulation](largefire.html)
 - [Management Objectives](managementobjectives.html)
 - [Simulation Parameters](simulationparameters.html)
 - [Results](results.html)

@@ -60,9 +60,11 @@ execute_process(COMMAND qhelpgenerator wfips.qhp -o wfips.qch
                 WORKING_DIRECTORY ${CMAKE_BINARY_DIR}/doc
                 RESULT_VARIABLE qhelprc
                 OUTPUT_VARIABLE qhelpout)
+message(${qhelpout})
 
 execute_process(COMMAND qcollectiongenerator wfips.qhcp -o wfips.qhc
                 WORKING_DIRECTORY ${CMAKE_BINARY_DIR}/doc
                 RESULT_VARIABLE qhelprc
                 OUTPUT_VARIABLE qhelpout)
 
+message(${qhelpout})

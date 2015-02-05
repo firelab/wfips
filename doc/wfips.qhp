@@ -2,27 +2,30 @@
  <QtHelpProject version="1.0">
      <namespace>firelab.org.wfips.0.0.1</namespace>
      <virtualFolder>doc</virtualFolder>
-     <customFilter name="Wildland Fire Investment Planning System">
+     <customFilter name="Wildland Fire Investment Planning System 0.0.1">
          <filterAttribute>wfips</filterAttribute>
+         <filterAttribute>0.0.1</filterAttribute>
      </customFilter>
      <filterSection>
          <filterAttribute>wfips</filterAttribute>
+         <filterAttribute>0.0.1</filterAttribute>
          <toc>
-             <section title="WFIPS Manual" ref="index.html">
-                 <section title="Analysis Area" ref="analysisarea.html"/>
-                 <section title="Agencies" ref="agencies.html"/>
-                 <section title="Fuel Treatments" ref="fueltreatment.html"/>
-                 <section title="Prepositioning" ref="prepositioning.html"/>
-                 <section title="Large Fire Drawdown" ref="largefiredrawdown.html"/>
-                 <section title="Management Objectives" ref="managementobjectives.html"/>
-                 <section title="Simulation Parameters" ref="simulationparameters.html"/>
-                 <section title="Results" ref="results.html"/>
-             </section>
+           <section title="WFIPS Manual" ref="index.html">
+             <section title="Analysis Area" ref="analysisarea.html"/>
+             <section title="Agencies" ref="agencies.html"/>
+             <section title="Fuel Treatments" ref="fueltreatment.html"/>
+             <section title="Prepositioning" ref="prepositioning.html"/>
+             <section title="Large Fire Drawdown" ref="largefiredrawdown.html"/>
+             <section title="Large Fire Simulation" ref="largefire.html"/>
+             <section title="Management Objectives" ref="managementobjectives.html"/>
+             <section title="Simulation Parameters" ref="simulationparameters.html"/>
+             <section title="Results" ref="results.html"/>
+           </section>
          </toc>
          <keywords>
-             <!--
-             <keyword id="Wfips::Default Analysis Layers" ref="analysisarea.html"/>
-             -->
+             <keyword name="foo" id="foo" ref="index.html"/>
+             <keyword name="foo2" id="foo2" ref="analysisarea.html"/>
+             <keyword name="bar" id="bar" ref="results.html"/>
          </keywords>
          <files>
              <file>wfips.css</file>

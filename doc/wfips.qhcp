@@ -1,5 +1,27 @@
 <?xml version="1.0" encoding="utf-8" ?>
  <QHelpCollectionProject version="1.0">
+     <assistant>
+         <title>Wildland Fire Investment Planning System</title>
+         <startPage>qthelp://org.firelab.0_0_1/doc/index.html</startPage>
+         <homePage>qthelp://org.firelab.0_0_1/doc/index.html</homePage>
+         <!--<currentFilter>wfipsfilter</currentFilter>-->
+         <!--<applicationIcon>application.png</applicationIcon>-->
+         <enableFilterFunctionality>false</enableFilterFunctionality>
+         <enableDocumentationManager>false</enableDocumentationManager>
+         <enableAddressBar visible="true">true</enableAddressBar>
+         <cacheDirectory>firelab/wfips</cacheDirectory>
+         <!--
+         <aboutMenuText>
+             <text>About My Application</text>
+             <text language="de">ber meine Applikation...</text>
+         </aboutMenuText>
+         <aboutDialog>
+             <file>about.txt</file>
+             <file language="de">ueber.txt</file>
+             <icon>about.png</icon>
+         </aboutDialog>
+         -->
+     </assistant>
      <docFiles>
          <register>
              <file>wfips.qch</file>
