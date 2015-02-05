@@ -311,7 +311,7 @@
          <enum>QFrame::Plain</enum>
         </property>
         <property name="currentIndex">
-         <number>7</number>
+         <number>5</number>
         </property>
         <widget class="QWidget" name="dataPage">
          <layout class="QVBoxLayout" name="verticalLayout_13">
@@ -719,41 +719,37 @@
            <layout class="QHBoxLayout" name="horizontalLayout_22">
             <item>
              <widget class="QLabel" name="label_24">
-              <property name="sizePolicy">
-               <sizepolicy hsizetype="MinimumExpanding" vsizetype="Preferred">
-                <horstretch>0</horstretch>
-                <verstretch>0</verstretch>
-               </sizepolicy>
-              </property>
               <property name="text">
                <string>Engines</string>
               </property>
              </widget>
             </item>
             <item>
-             <widget class="QSlider" name="enginePPSlider">
-              <property name="toolTip">
-               <string>Likelyhood of movement (0=no movement, 100=very likely)</string>
+             <widget class="QComboBox" name="enginePPComboBox">
+              <property name="sizePolicy">
+               <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+                <horstretch>0</horstretch>
+                <verstretch>0</verstretch>
+               </sizepolicy>
               </property>
-              <property name="maximum">
-               <number>100</number>
+              <property name="layoutDirection">
+               <enum>Qt::LeftToRight</enum>
               </property>
-              <property name="orientation">
-               <enum>Qt::Horizontal</enum>
-              </property>
-             </widget>
-            </item>
-            <item>
-             <widget class="QSpinBox" name="enginePPSpinBox">
-              <property name="toolTip">
-               <string>Likelyhood of movement (0=no movement, 100=very likely)</string>
-              </property>
-              <property name="accelerated">
-               <bool>true</bool>
-              </property>
-              <property name="maximum">
-               <number>100</number>
-              </property>
+              <item>
+               <property name="text">
+                <string>Average</string>
+               </property>
+              </item>
+              <item>
+               <property name="text">
+                <string>Above Average</string>
+               </property>
+              </item>
+              <item>
+               <property name="text">
+                <string>Extreme</string>
+               </property>
+              </item>
              </widget>
             </item>
            </layout>
@@ -762,87 +758,76 @@
            <layout class="QHBoxLayout" name="horizontalLayout_20">
             <item>
              <widget class="QLabel" name="label_22">
-              <property name="sizePolicy">
-               <sizepolicy hsizetype="MinimumExpanding" vsizetype="Preferred">
-                <horstretch>0</horstretch>
-                <verstretch>0</verstretch>
-               </sizepolicy>
-              </property>
               <property name="text">
                <string>Crews</string>
               </property>
              </widget>
             </item>
             <item>
-             <widget class="QSlider" name="crewsPPSlider">
-              <property name="toolTip">
-               <string>Likelyhood of movement (0=no movement, 100=very likely)</string>
+             <widget class="QComboBox" name="crewPPComboBox">
+              <property name="sizePolicy">
+               <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+                <horstretch>0</horstretch>
+                <verstretch>0</verstretch>
+               </sizepolicy>
               </property>
-              <property name="maximum">
-               <number>100</number>
+              <property name="layoutDirection">
+               <enum>Qt::LeftToRight</enum>
               </property>
-              <property name="orientation">
-               <enum>Qt::Horizontal</enum>
-              </property>
-             </widget>
-            </item>
-            <item>
-             <widget class="QSpinBox" name="crewsPPSpinBox">
-              <property name="toolTip">
-               <string>Likelyhood of movement (0=no movement, 100=very likely)</string>
-              </property>
-              <property name="accelerated">
-               <bool>true</bool>
-              </property>
-              <property name="maximum">
-               <number>100</number>
-              </property>
+              <item>
+               <property name="text">
+                <string>Average</string>
+               </property>
+              </item>
+              <item>
+               <property name="text">
+                <string>Above Average</string>
+               </property>
+              </item>
+              <item>
+               <property name="text">
+                <string>Extreme</string>
+               </property>
+              </item>
              </widget>
             </item>
            </layout>
           </item>
           <item>
-           <layout class="QHBoxLayout" name="horizontalLayout_21"/>
-          </item>
-          <item>
            <layout class="QHBoxLayout" name="horizontalLayout_18">
             <item>
              <widget class="QLabel" name="label_20">
-              <property name="sizePolicy">
-               <sizepolicy hsizetype="MinimumExpanding" vsizetype="Preferred">
-                <horstretch>0</horstretch>
-                <verstretch>0</verstretch>
-               </sizepolicy>
-              </property>
               <property name="text">
                <string>Helitack</string>
               </property>
              </widget>
             </item>
             <item>
-             <widget class="QSlider" name="helitackPPSlider">
-              <property name="toolTip">
-               <string>Likelyhood of movement (0=no movement, 100=very likely)</string>
+             <widget class="QComboBox" name="helitackPPComboBox">
+              <property name="sizePolicy">
+               <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+                <horstretch>0</horstretch>
+                <verstretch>0</verstretch>
+               </sizepolicy>
               </property>
-              <property name="maximum">
-               <number>100</number>
+              <property name="layoutDirection">
+               <enum>Qt::LeftToRight</enum>
               </property>
-              <property name="orientation">
-               <enum>Qt::Horizontal</enum>
-              </property>
-             </widget>
-            </item>
-            <item>
-             <widget class="QSpinBox" name="helitackPPSpinBox">
-              <property name="toolTip">
-               <string>Likelyhood of movement (0=no movement, 100=very likely)</string>
-              </property>
-              <property name="accelerated">
-               <bool>true</bool>
-              </property>
-              <property name="maximum">
-               <number>100</number>
-              </property>
+              <item>
+               <property name="text">
+                <string>Average</string>
+               </property>
+              </item>
+              <item>
+               <property name="text">
+                <string>Above Average</string>
+               </property>
+              </item>
+              <item>
+               <property name="text">
+                <string>Extreme</string>
+               </property>
+              </item>
              </widget>
             </item>
            </layout>
@@ -1301,6 +1286,21 @@
            </widget>
           </item>
          </layout>
+        </widget>
+        <widget class="QWidget" name="page_2">
+         <widget class="QLabel" name="label_4">
+          <property name="geometry">
+           <rect>
+            <x>110</x>
+            <y>90</y>
+            <width>241</width>
+            <height>17</height>
+           </rect>
+          </property>
+          <property name="text">
+           <string>Management</string>
+          </property>
+         </widget>
         </widget>
         <widget class="QWidget" name="largeFirePage">
          <layout class="QVBoxLayout" name="verticalLayout_5">
@@ -1918,102 +1918,6 @@
     <hint type="destinationlabel">
      <x>390</x>
      <y>259</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>enginePPSlider</sender>
-   <signal>valueChanged(int)</signal>
-   <receiver>enginePPSpinBox</receiver>
-   <slot>setValue(int)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>730</x>
-     <y>169</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>1156</x>
-     <y>169</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>enginePPSpinBox</sender>
-   <signal>valueChanged(int)</signal>
-   <receiver>enginePPSlider</receiver>
-   <slot>setValue(int)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>1156</x>
-     <y>169</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>730</x>
-     <y>169</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>crewsPPSlider</sender>
-   <signal>valueChanged(int)</signal>
-   <receiver>crewsPPSpinBox</receiver>
-   <slot>setValue(int)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>724</x>
-     <y>206</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>1156</x>
-     <y>206</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>crewsPPSpinBox</sender>
-   <signal>valueChanged(int)</signal>
-   <receiver>crewsPPSlider</receiver>
-   <slot>setValue(int)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>1156</x>
-     <y>206</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>724</x>
-     <y>206</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>helitackPPSlider</sender>
-   <signal>valueChanged(int)</signal>
-   <receiver>helitackPPSpinBox</receiver>
-   <slot>setValue(int)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>732</x>
-     <y>280</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>1156</x>
-     <y>280</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>helitackPPSpinBox</sender>
-   <signal>valueChanged(int)</signal>
-   <receiver>helitackPPSlider</receiver>
-   <slot>setValue(int)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>1156</x>
-     <y>280</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>732</x>
-     <y>280</y>
     </hint>
    </hints>
   </connection>
