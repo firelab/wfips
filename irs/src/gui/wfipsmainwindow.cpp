@@ -760,6 +760,18 @@ void WfipsMainWindow::ZoomToLayerExtent()
 
 void WfipsMainWindow::ClearAnalysisAreaSelection()
 {
+    int rc;
+    rc = QMessageBox::warning( this, tr("WFIPS" ),
+                               tr( "All settings associated with the run will " \
+                                   "be cleared, are you sure?" ),
+                               QMessageBox::Ok | QMessageBox::Cancel );
+    if( rc == QMessageBox::Cancel )
+    {
+        /* re-check the button */
+        ui->setAnalysisAreaToolButton->setChecked( true );
+        ui->setAnalysisAreaToolButton->setText( "Clear Analysis Area" );
+        return;
+    }
     QgsVectorLayer *layer;
     for( int i = 0; i < analysisMapCanvasLayers.size(); i++ )
     {
@@ -801,6 +813,12 @@ void WfipsMainWindow::ClearAnalysisAreaSelection()
         QgsMapLayerRegistry::instance()->removeMapLayer( dispatchLocationMemLayer->id() );
         dispatchMapCanvas->refresh();
     }
+    ui->setAnalysisAreaToolButton->setText( "Set Analysis Area" );
+    ui->setAnalysisAreaToolButton->setChecked( false );
+    ui->bufferAnalysisCheckBox->setEnabled( true );
+    ui->bufferAnalysisSpinBox->setEnabled( true );
+    selectedFids.clear();
+    analysisAreaMapCanvas->refresh();
 }
 
 static QgsGeometry * BufferGeomConcurrent( QgsGeometry *geometry, const double buf,
@@ -904,12 +922,6 @@ void WfipsMainWindow::SetAnalysisArea()
     if( !ui->setAnalysisAreaToolButton->isChecked() )
     {
         ClearAnalysisAreaSelection();
-        analysisAreaMapCanvas->refresh();
-        ui->setAnalysisAreaToolButton->setText( "Set Analysis Area" );
-        ui->setAnalysisAreaToolButton->setChecked( false );
-        ui->bufferAnalysisCheckBox->setEnabled( true );
-        ui->bufferAnalysisSpinBox->setEnabled( true );
-        selectedFids.clear();
         return;
     }
     QgsVectorLayer *layer;
@@ -918,12 +930,6 @@ void WfipsMainWindow::SetAnalysisArea()
     if( layer == NULL || !layer->isValid() || selectedFids.size() < 1 )
     {
         ClearAnalysisAreaSelection();
-        analysisAreaMapCanvas->refresh();
-        ui->setAnalysisAreaToolButton->setText( "Set Analysis Area" );
-        ui->setAnalysisAreaToolButton->setChecked( false );
-        ui->bufferAnalysisCheckBox->setEnabled( true );
-        ui->bufferAnalysisSpinBox->setEnabled( true );
-        selectedFids.clear();
         return;
     }
     qDebug() << "Setting analysis area using fids:" << selectedFids;
