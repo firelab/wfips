@@ -1100,6 +1100,10 @@ void WfipsMainWindow::SelectDispatchLocations( QgsFeatureIds fids )
     request.setFilterFids( fids );
     QgsFeatureId fid;
     QgsFeatureIterator fit;
+    if( dispatchLocationMemLayer == NULL || !dispatchLocationMemLayer->isValid() )
+    {
+        return;
+    }
     dispatchLocationMemLayer->removeSelection();
     dispatchLocationMemLayer->select( fids );
     fit = dispatchLocationMemLayer->getFeatures( request );
