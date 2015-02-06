@@ -11,15 +11,53 @@
          <filterAttribute>0.0.1</filterAttribute>
          <toc>
            <section title="WFIPS Manual" ref="index.html">
+- [Data](data.html)
+- [Analysis Area](analysisarea.html)
+- [Agencies](agencies.html)
+- [Resources](resources.html)
+    - [Dispatch Locations](dispatchlocations.hmtl)
+    - [National Aviation Resources](aviation.html)
+    - [Prepositioning](prepositioning.html)
+    - [Large Fire Drawdown](largefiredrawdown.html)
+    - [National Aviation Resources](aviation.html)
+    - [Resource Costs](costs.hmtl)
+- [Fuel Treatment](fueltreatment.html)
+- [Management Objectives](managementobjectives.html)
+- [Large Fire Simulation](largefire.html)
+- [Simulation Parameters](simulationparameters.html)
+- [Results](results.html)
+    - [Initial Attack Success](iasuccess.html)
+    - [Asset Utilization](utilization.html)
+    - [Large Fire Outcome](lfoutcome.html)
+        - [Acreage](lfacreage.html)
+        - [Cost](lfcost.html)
+        - [Population Affected](lfpop.html)
+    - [Export](export.html)
+             <section title="Data" ref="data.html"/>
              <section title="Analysis Area" ref="analysisarea.html"/>
              <section title="Agencies" ref="agencies.html"/>
+             <section title="Resources" ref="resources.html">
+                 <section title="Dispatch Locations" ref="dispatchlocations.hmtl"/>
+                 <section title="National Aviation Resources" ref="aviation.html"/>
+                 <section title="Prepositioning" ref="prepositioning.html"/>
+                 <section title="Large Fire Drawdown" ref="largefiredrawdown.html"/>
+                 <section title="National Aviation Resources" ref="aviation.html"/>
+                 <section title="Resource Costs" ref="costs.hmtl"/>
+             </section>
              <section title="Fuel Treatments" ref="fueltreatment.html"/>
-             <section title="Prepositioning" ref="prepositioning.html"/>
-             <section title="Large Fire Drawdown" ref="largefiredrawdown.html"/>
-             <section title="Large Fire Simulation" ref="largefire.html"/>
              <section title="Management Objectives" ref="managementobjectives.html"/>
+             <section title="Large Fire Simulation" ref="largefire.html"/>
              <section title="Simulation Parameters" ref="simulationparameters.html"/>
-             <section title="Results" ref="results.html"/>
+             <section title="Results" ref="results.html">
+                 <section title="Initial Attack Success" ref="iasuccess.html"/>
+                 <section title="Asset Utilization" ref="utilization.html"/>
+                 <section title="Large Fire Outcome" ref="lfoutcome.html">
+                     <section title="Acreage" ref="lfacreage.html"/>
+                     <section title="Cost" ref="lfcost.html"/>
+                     <section title="Population Affected" ref="lfpop.html"/>
+                 </section>
+                 <section title="Export" ref="export.html"/>
+             </section>
            </section>
          </toc>
          <keywords>
