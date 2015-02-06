@@ -63,7 +63,7 @@ void WfipsIdentifyDialog::ShowIdentifyResults( QList<QgsMapToolIdentify::Identif
     Clear();
 
     /* Can we just grab one layer for all results?  I think so */
-    layer = reinterpret_cast<QgsVectorLayer*>( results[0].mLayer );
+    layer = dynamic_cast<QgsVectorLayer*>( results[0].mLayer );
     if( layer == NULL )
     {
         return;
