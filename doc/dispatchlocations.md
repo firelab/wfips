@@ -1,7 +1,11 @@
 <link href="wfips.css" rel="stylesheet" type="text/css">
 
-Results
-=======
+<head><title>WFIPS: Dispatch Locations</title></head>
+
+Dispatch Locations
+=============
+
+    ...
 
 Map Tools
 ---------
