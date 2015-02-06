@@ -148,6 +148,9 @@
        <layout class="QHBoxLayout" name="horizontalLayout_10">
         <item>
          <widget class="QToolButton" name="treePreviousButton">
+          <property name="toolTip">
+           <string>Go to previous input</string>
+          </property>
           <property name="text">
            <string>Previous</string>
           </property>
@@ -174,6 +177,9 @@
         </item>
         <item>
          <widget class="QToolButton" name="treeNextButton">
+          <property name="toolTip">
+           <string>Go to next input</string>
+          </property>
           <property name="text">
            <string>Next</string>
           </property>
