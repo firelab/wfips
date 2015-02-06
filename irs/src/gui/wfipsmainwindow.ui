@@ -354,7 +354,7 @@
          <enum>QFrame::Plain</enum>
         </property>
         <property name="currentIndex">
-         <number>8</number>
+         <number>5</number>
         </property>
         <widget class="QWidget" name="dataPage">
          <layout class="QVBoxLayout" name="verticalLayout_13">
@@ -780,6 +780,11 @@
               </property>
               <item>
                <property name="text">
+                <string>None</string>
+               </property>
+              </item>
+              <item>
+               <property name="text">
                 <string>Average</string>
                </property>
               </item>
@@ -819,6 +824,11 @@
               </property>
               <item>
                <property name="text">
+                <string>None</string>
+               </property>
+              </item>
+              <item>
+               <property name="text">
                 <string>Average</string>
                </property>
               </item>
@@ -856,6 +866,11 @@
               <property name="layoutDirection">
                <enum>Qt::LeftToRight</enum>
               </property>
+              <item>
+               <property name="text">
+                <string>None</string>
+               </property>
+              </item>
               <item>
                <property name="text">
                 <string>Average</string>
