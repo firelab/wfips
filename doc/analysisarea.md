@@ -39,7 +39,7 @@ Data Selection
 --------------
 
 After a user selects features for the analysis area, data is loaded from the
-database.  The data loaded may depends on the area in different ways.
+database.  The data loaded may depend on the area in different ways.
 
 - FWA: Any FWA *intersecting* the analysis feature(s) are included.
 - Dispatch Locations: Any location associated with the included FWA set will be
@@ -47,7 +47,7 @@ database.  The data loaded may depends on the area in different ways.
 - Resources: If loaded from the default resource database, all resources that
   reside at any location are loaded.  These may be edited.
 - Fire Ignitions: all ignitions *completely contained* inside the selected
-  feature(s) will be loaded.
+  feature(s) (and optional buffer) will be loaded.
 
 Map Tools
 ---------
@@ -58,5 +58,4 @@ Map Tools
 - ![Identify Tool](mActionIdentify.png) Identify feature(s) on the current layer
 - ![Select Tool](mActionSelect.png) Select feature(s) for the analysis area
   from the current layer.
-
 
