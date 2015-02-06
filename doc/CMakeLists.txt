@@ -51,6 +51,17 @@ foreach(md ${md_files})
 endforeach(md ${md_files})
 
 # Copy some files over for ease of use
+# images
+file(GLOB png_files ../irs/src/gui/*.png)
+foreach(f ${png_files})
+    get_filename_component(fname ${f} NAME)
+    message(${f}, ${fname})
+    execute_process(COMMAND cp ${f} ${CMAKE_BINARY_DIR}/doc/${fname}
+                    RESULT_VARIABLE copyrc
+                    OUTPUT_VARIABLE copyout)
+endforeach(f ${png_files})
+
+#markdown
 set(copy_files "wfips.css;wfips.qhp;wfips.qhcp")
 foreach(f ${copy_files})
     configure_file(${f} ${CMAKE_BINARY_DIR}/doc/${f} COPY_ONLY)

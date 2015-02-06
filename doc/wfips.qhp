@@ -30,6 +30,7 @@
          <files>
              <file>wfips.css</file>
              <file>*.html</file>
+             <file>*.png</file>
          </files>
      </filterSection>
  </QtHelpProject>
