@@ -75,7 +75,7 @@ public:
 
     int ExecuteSql( const char *pszSql );
 
-    int Valid() { return valid; }
+    int Valid() { return bValid; }
 
 private:
     void Init();
@@ -86,7 +86,7 @@ private:
 
     char* pszPath;
     char* pszRescPath;
-    int valid;
+    int bValid;
     sqlite3 *db;
 
     /* scratch strings */

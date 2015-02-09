@@ -43,7 +43,7 @@ void WfipsData::Init()
     pszPath = NULL;
     pszRescPath = NULL;
     db = NULL;
-    valid = 0;
+    bValid = 0;
     iScrap = 0;
 }
 
@@ -142,7 +142,7 @@ int WfipsData::Open( const char *pszPath )
         rc = Attach( FormFileName( pszPath, apszDbFiles[i++] ) );
         IRS_CHECK_STATUS;
     }
-    valid = 1;
+    bValid = 1;
     return rc;
 
 error:
@@ -169,7 +169,7 @@ int WfipsData::Close()
     int rc = SQLITE_OK;
     rc = sqlite3_close( db );
     db = NULL;
-    valid = 0;
+    bValid = 0;
     return rc;
 }
 
