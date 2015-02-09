@@ -62,6 +62,7 @@ ENDIF(BUILD_FIG)
 
 IF(BUILD_IRS)
     SET(TEST_SRCS ${TEST_SRCS} test_irs.cpp)
+    SET(TEST_SRCS ${TEST_SRCS} test_wfipsdata.cpp)
     SET(TEST_SRCS ${TEST_SRCS} test_irs_result.cpp)
 ENDIF(BUILD_IRS)
 

@@ -1,0 +1,99 @@
+/******************************************************************************
+ *
+ * Project:  Wildland Fire Investment Planning System
+ * Purpose:  Access on disk data
+ * Author:   Kyle Shannon <kyle at pobox dot com>
+ *
+ ******************************************************************************
+ *
+ * THIS SOFTWARE WAS DEVELOPED AT THE ROCKY MOUNTAIN RESEARCH STATION ( RMRS )
+ * MISSOULA FIRE SCIENCES LABORATORY BY EMPLOYEES OF THE FEDERAL GOVERNMENT 
+ * IN THE COURSE OF THEIR OFFICIAL DUTIES. PURSUANT TO TITLE 17 SECTION 105 
+ * OF THE UNITED STATES CODE, THIS SOFTWARE IS NOT SUBJECT TO COPYRIGHT 
+ * PROTECTION AND IS IN THE PUBLIC DOMAIN. RMRS MISSOULA FIRE SCIENCES 
+ * LABORATORY ASSUMES NO RESPONSIBILITY WHATSOEVER FOR ITS USE BY OTHER 
+ * PARTIES,  AND MAKES NO GUARANTEES, EXPRESSED OR IMPLIED, ABOUT ITS QUALITY, 
+ * RELIABILITY, OR ANY OTHER CHARACTERISTIC.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
+ * OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
+ * THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+ * FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+ * DEALINGS IN THE SOFTWARE.
+ *
+ *****************************************************************************/
+
+#ifndef WFIPS_DATA_H_
+#define WFIPS_DATA_H_
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
+#include <sqlite3.h>
+
+#ifndef MAX_PATH
+#define MAX_PATH 8192
+#endif
+
+#define IRS_SCRAP_BUFFER_SIZE 10
+
+#define COST_DB             "cost.db"
+#define DISPLOC_DB          "disploc.db"
+#define DISTRICT_DB         "district.db"
+#define FOREST_DB           "forest.db"
+#define FPU_DB              "fpu.db"
+#define GACC_DB             "gacc.db"
+#define RESC_DB             "resc.db"
+#define COUNTY_DB           "us_county.db"
+#define STATE_DB            "us_state.db"
+
+static const char *apszDbFiles[] = {COST_DB,DISPLOC_DB,DISTRICT_DB,
+                                    FOREST_DB,FPU_DB,GACC_DB,RESC_DB,
+                                    COUNTY_DB,STATE_DB,NULL};
+
+/*
+** Class for handling reading supporting data and input data for WFIPS.
+** Heavily reliant (required) on sqlite3.  Use sqlite3_malloc/sqlite3_free and
+** kin for mem management here.
+*/
+class WfipsData
+{
+
+public:
+    WfipsData();
+    WfipsData( const char *pszPath );
+    ~WfipsData();
+
+    int SetRescDb( const char *pszPath );
+
+    int Open();
+    int Open( const char *pszPath );
+    int Close();
+
+    int ExecuteSql( const char *pszSql );
+
+    int Valid() { return valid; }
+
+private:
+    int Init();
+
+    const char* FormFileName( const char *pszPath, const char *pszDb );
+    char* BaseName( const char *pszPath );
+    int Attach( const char *pszPath );
+
+    char* pszPath;
+    char* pszRescPath;
+    int valid;
+    sqlite3 *db;
+
+    /* scratch strings */
+    char* GetScrapBuffer();
+    char szScrap[IRS_SCRAP_BUFFER_SIZE][MAX_PATH];
+    int iScrap;
+};
+
+#endif /* WFIPS_DATA_H_ */
+
