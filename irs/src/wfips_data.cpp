@@ -38,7 +38,7 @@ WfipsData::WfipsData( const char *pszPath )
     this->pszPath = sqlite3_mprintf( "%s", pszPath );
 }
 
-int WfipsData::Init()
+void WfipsData::Init()
 {
     pszPath = NULL;
     pszRescPath = NULL;
@@ -172,3 +172,4 @@ int WfipsData::Close()
     valid = 0;
     return rc;
 }
+

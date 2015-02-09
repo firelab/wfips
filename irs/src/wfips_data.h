@@ -78,7 +78,7 @@ public:
     int Valid() { return valid; }
 
 private:
-    int Init();
+    void Init();
 
     const char* FormFileName( const char *pszPath, const char *pszDb );
     char* BaseName( const char *pszPath );
