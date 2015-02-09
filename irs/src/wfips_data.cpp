@@ -87,7 +87,7 @@ const char * WfipsData::FormFileName( const char *pszPath, const char *pszDb )
     return pszScrap;
 }
 
-char* WfipsData::BaseName( const char *pszPath )
+const char* WfipsData::BaseName( const char *pszPath )
 {
     char *pszScrap = GetScrapBuffer();
     const char *p, *q;

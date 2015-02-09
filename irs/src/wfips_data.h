@@ -81,7 +81,7 @@ private:
     void Init();
 
     const char* FormFileName( const char *pszPath, const char *pszDb );
-    char* BaseName( const char *pszPath );
+    const char* BaseName( const char *pszPath );
     int Attach( const char *pszPath );
 
     char* pszPath;
