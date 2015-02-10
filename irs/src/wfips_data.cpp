@@ -38,12 +38,14 @@ WfipsData::WfipsData( const char *pszPath )
     this->pszPath = sqlite3_mprintf( "%s", pszPath );
 }
 
-void WfipsData::Init()
+void
+WfipsData::Init()
 {
     pszPath = NULL;
     pszRescPath = NULL;
     db = NULL;
     bValid = 0;
+    bSpatialiteEnabled = 0;
     iScrap = 0;
 }
 
@@ -54,7 +56,8 @@ WfipsData::~WfipsData()
     sqlite3_close( db );
 }
 
-int WfipsData::Open()
+int
+WfipsData::Open()
 {
     if( pszPath == NULL )
     {
@@ -63,7 +66,8 @@ int WfipsData::Open()
     return Open( pszPath );
 }
 
-char *WfipsData::GetScrapBuffer()
+char*
+WfipsData::GetScrapBuffer()
 {
     iScrap++;
     if( iScrap >= 10 )
@@ -72,7 +76,9 @@ char *WfipsData::GetScrapBuffer()
     return szScrap[iScrap];
 }
 
-const char * WfipsData::FormFileName( const char *pszPath, const char *pszDb )
+const char*
+WfipsData::FormFileName( const char *pszPath,
+                         const char *pszDb )
 {
     int nPathLength = strlen( pszPath );
     int nDbLength = strlen( pszDb );
@@ -87,7 +93,8 @@ const char * WfipsData::FormFileName( const char *pszPath, const char *pszDb )
     return pszScrap;
 }
 
-const char* WfipsData::BaseName( const char *pszPath )
+const char*
+WfipsData::BaseName( const char *pszPath )
 {
     char *pszScrap = GetScrapBuffer();
     const char *p, *q;
@@ -112,7 +119,8 @@ const char* WfipsData::BaseName( const char *pszPath )
 **
 ** /home/kyle/src/somedb.db -> ATTACH /home/kyle/src/somedb.db AS somedb
 */
-int WfipsData::Attach( const char *pszPath )
+int
+WfipsData::Attach( const char *pszPath )
 {
     char *pszSql;
     int rc;
@@ -124,9 +132,10 @@ int WfipsData::Attach( const char *pszPath )
     return rc;
 }
 
-#define IRS_CHECK_STATUS if(rc != SQLITE_OK) goto error
+#define WFIPS_CHECK_STATUS if(rc != SQLITE_OK) goto error
 
-int WfipsData::Open( const char *pszPath )
+int
+WfipsData::Open( const char *pszPath )
 {
     if( pszPath == NULL )
         return 1;
@@ -135,12 +144,27 @@ int WfipsData::Open( const char *pszPath )
 
     rc = sqlite3_open_v2( FormFileName( pszPath, COST_DB ), &db,
                           SQLITE_OPEN_READWRITE, NULL );
-    IRS_CHECK_STATUS;
+    WFIPS_CHECK_STATUS;
     i = 1;
     while( apszDbFiles[i] != NULL )
     {
         rc = Attach( FormFileName( pszPath, apszDbFiles[i++] ) );
-        IRS_CHECK_STATUS;
+        WFIPS_CHECK_STATUS;
+    }
+    rc = sqlite3_enable_load_extension( db, 1 );
+    if( rc != SQLITE_OK )
+    {
+        bSpatialiteEnabled = 0;
+        rc = SQLITE_OK;
+    }
+    else
+    {
+        rc = sqlite3_load_extension( db, SPATIALITE_EXT, NULL, NULL );
+        if( rc != SQLITE_OK )
+        {
+            bSpatialiteEnabled = 0;
+            rc = SQLITE_OK;
+        }
     }
     bValid = 1;
     return rc;
@@ -150,7 +174,8 @@ error:
     return rc;
 }
 
-int WfipsData::ExecuteSql( const char *pszSql )
+int
+WfipsData::ExecuteSql( const char *pszSql )
 {
     sqlite3_stmt *stmt;
     int rc;
@@ -162,6 +187,25 @@ int WfipsData::ExecuteSql( const char *pszSql )
     sqlite3_finalize( stmt );
     stmt = NULL;
     return rc;
+}
+
+int
+WfipsData::GetAssociatedDispLoc( const char *pszWkt,
+                                 int **panDispLocIds,
+                                 int *nCount )
+{
+    assert( nCount );
+    if( bSpatialiteEnabled == 0 )
+    {
+        if( nCount )
+        {
+            *nCount = 0;
+        }
+        return 1;
+    }
+    int rc;
+    sqlite3_stmt *stmt;
+    return 0;
 }
 
 int WfipsData::Close()

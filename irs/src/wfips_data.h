@@ -28,6 +28,7 @@
 #ifndef WFIPS_DATA_H_
 #define WFIPS_DATA_H_
 
+#include <assert.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -38,21 +39,36 @@
 #define MAX_PATH 8192
 #endif
 
-#define IRS_SCRAP_BUFFER_SIZE 10
+#define WFIPS_SCRAP_BUFFER_SIZE 10
 
 #define COST_DB             "cost.db"
 #define DISPLOC_DB          "disploc.db"
 #define DISTRICT_DB         "district.db"
 #define FOREST_DB           "forest.db"
 #define FPU_DB              "fpu.db"
+#define FWA_DB              "fwa.db"
 #define GACC_DB             "gacc.db"
 #define RESC_DB             "resc.db"
 #define COUNTY_DB           "us_county.db"
 #define STATE_DB            "us_state.db"
 
-static const char *apszDbFiles[] = {COST_DB,DISPLOC_DB,DISTRICT_DB,
-                                    FOREST_DB,FPU_DB,GACC_DB,RESC_DB,
-                                    COUNTY_DB,STATE_DB,NULL};
+#ifdef WIN32
+#define SPATIALITE_EXT "spatialite.dll"
+#else
+#define SPATIALITE_EXT "libspatialite.so"
+#endif
+
+static const char *apszDbFiles[] = {COST_DB,
+                                    DISPLOC_DB,
+                                    DISTRICT_DB,
+                                    FOREST_DB,
+                                    FPU_DB,
+                                    FWA_DB,
+                                    GACC_DB,
+                                    RESC_DB,
+                                    COUNTY_DB,
+                                    STATE_DB,
+                                    NULL};
 
 /*
 ** Class for handling reading supporting data and input data for WFIPS.
@@ -74,8 +90,12 @@ public:
     int Close();
 
     int ExecuteSql( const char *pszSql );
+    int GetAssociatedDispLoc( const char *pszWkt,
+                              int **panDispLocIds,
+                              int *nCount );
 
     int Valid() { return bValid; }
+    int SpatialiteEnabled() { return bSpatialiteEnabled; }
 
 private:
     void Init();
@@ -87,11 +107,12 @@ private:
     char* pszPath;
     char* pszRescPath;
     int bValid;
+    int bSpatialiteEnabled;
     sqlite3 *db;
 
     /* scratch strings */
     char* GetScrapBuffer();
-    char szScrap[IRS_SCRAP_BUFFER_SIZE][MAX_PATH];
+    char szScrap[WFIPS_SCRAP_BUFFER_SIZE][MAX_PATH];
     int iScrap;
 };
 
