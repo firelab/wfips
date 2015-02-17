@@ -5,5 +5,14 @@
 Agencies
 ========
 
-Two factors depend on agency designation...
+Select the ownership for fire ignitions and suppression resources 
+for the analysis.
+
+- Ignition Ownership
+- Resource Ownership
+
+Can select to analyze USFS, DOI, and/or Other fire ignitions and 
+use USFS, DOI, and/or State and Local fire suppression resources.
+
+
 
