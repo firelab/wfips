@@ -41,6 +41,8 @@ WfipsMainWindow::WfipsMainWindow( QWidget *parent ) :
     QgsProviderRegistry::instance( qgisPluginPath );
     qDebug() << "QGIS plugin path:" << qgisPluginPath;
 
+	currentMapCanvas = NULL;
+
     ConstructToolButtons();
     ConstructAnalysisAreaWidgets();
     ConstructDispatchWidgets();
