@@ -7,9 +7,9 @@ Fuel Treatment
 
 Simulate Hazardous Fuel Treatments. Simulated fire behavior for treated fires 
 are derived from a spatial fuels layer that represents a durable (5 year) 
-fuel treatment for all areas of the Western United States, if one exists.
-If a durable treatment does not exist for the fuel type (i.e., grass),
-the untreated fuels are used. 
+fuel treatment for all areas of the Western United States. If a durable 
+treatment does not exist for the fuel type (i.e., grass), the untreated 
+fuels are used in the layer. 
 
 Selection Options
 ---------------------------------------------- 

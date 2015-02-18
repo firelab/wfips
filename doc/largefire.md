@@ -33,7 +33,10 @@ simulation.
 to the fire all time out for the day and no resources are left to contain 
 the fire.
 
+Selection Options
+------------------
+
 The percentage of each type of escape fire that will be sent to the Large 
 Fire Analyst can be set and/or the start and end dates for escape fires 
-to be sent can be specified.  
+to be sent to the Large Fire Analyst can be specified.  
 

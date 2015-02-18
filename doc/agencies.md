@@ -6,7 +6,7 @@ Agencies
 ========
 
 Select the ownership for fire ignitions and suppression resources 
-for the analysis.
+to use in the analysis.
 
 - Ignition Ownership
 - Resource Ownership

@@ -29,6 +29,7 @@ selected it is removed with all it's resources. if a resource is
 selected it is removed from the analysis.
 
 - "Remove Empty" removes all the dispatch locations with no resources.
+Removing unused disaptch locations will increase the analysis speed.
 
 - "Revert" reverts the dispatch location and resource information to
 it's original state.

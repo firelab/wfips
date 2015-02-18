@@ -12,7 +12,7 @@ dispatch logic to determine the numbers and types of resources deployed
 to a fire. This can be modified to allow a monitor fire response for 
 locations where the Fire Management Plan allows such a response, or 
 in spatially defined locations. Fire containment is not modeled 
-for Fires recieving a monitor response, and escaping fires are not 
+for Fires recieving a monitor response, and monitored fires are not 
 sent to large fire. 
 
 
@@ -35,10 +35,10 @@ and "preplaned agency administrator response to monitor all fires"
 recieve a minimal response rather than the response determined by 
 FPA's dispatch logic.
 
-"Spatially Defined Response" uses a layer of polygons to define the
-location of fires that will recieve a monitor response. The file 
-and layer are input. All fires located within a ploygon are assigned 
-a monitor response.
+"Spatially Defined Response" uses a geography polygon based layer to 
+define the location of fires that will recieve a monitor response. 
+Specifying the file to load the layer. All fires located within a 
+polygon are assigned a monitor response.
  
 
 

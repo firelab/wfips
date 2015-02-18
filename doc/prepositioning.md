@@ -1,6 +1,6 @@
 <link href="wfips.css" rel="stylesheet" type="text/css">
 
-<head><title>WFIPS: Prepositionsing</title></head>
+<head><title>WFIPS: Prepositioning</title></head>
 
 Prepositioning
 ==============
