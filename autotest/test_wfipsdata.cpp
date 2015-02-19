@@ -56,6 +56,7 @@ BOOST_AUTO_TEST_CASE( create_2 )
     BOOST_CHECK( rc == 0 );
     rc = poData->Close();
     BOOST_CHECK( rc == 0 );
+    poData->Close();
     delete poData;
 }
 
@@ -69,7 +70,34 @@ BOOST_AUTO_TEST_CASE( sql_1 )
     BOOST_CHECK( rc == 0 );
     rc = poData->Close();
     BOOST_CHECK( rc == 0 );
+    poData->Close();
     delete poData;
+}
+
+BOOST_AUTO_TEST_CASE( resc_copy_1 )
+{
+    WfipsData *poData = new WfipsData("/home/kyle/src/wfips/build");
+    int rc = poData->Open();
+    BOOST_CHECK( poData->Valid() == 1 );
+    BOOST_CHECK( rc == 0 );
+    int anRescIds[10] = {1,2,3,4,5,6,7,8,9,10};
+    rc = poData->WriteRescDb( "resc_copy_1.db", anRescIds, 10 );
+    BOOST_CHECK( rc == 0 );
+    poData->Close();
+    delete poData;
+    sqlite3 *db;
+    sqlite3_stmt *stmt;
+    rc = sqlite3_open_v2( "resc_copy_1.db", &db, SQLITE_OPEN_READONLY, NULL );
+    BOOST_REQUIRE( rc == SQLITE_OK );
+    rc = sqlite3_prepare_v2( db, "SELECT COUNT() FROM resource", -1, &stmt, NULL );
+    BOOST_CHECK( rc == SQLITE_OK );
+    rc = sqlite3_step( stmt );
+    BOOST_CHECK( rc == SQLITE_ROW );
+    rc = sqlite3_column_int( stmt, 0 );
+    BOOST_CHECK( rc == 10 );
+    remove( "resc_copy_1.db" );
+    sqlite3_finalize( stmt );
+    sqlite3_close( db );
 }
 
 BOOST_AUTO_TEST_SUITE_END() /* irs */

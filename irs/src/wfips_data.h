@@ -27,13 +27,27 @@
 
 #ifndef WFIPS_DATA_H_
 #define WFIPS_DATA_H_
-
+/* Standard library */
 #include <assert.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 
+/* SQLite/Spatialite */
 #include <sqlite3.h>
+
+/* IRS */
+#include "RunScenario.h"
+#include "DispLoc.h"
+#include "Rescbase.h"
+#include "Airtanker.h"
+#include "Engine.h"
+#include "SmallAT.h"
+#include "SMJAircraft.h"
+#include "Smokejumper.h"
+#include "WaterTender.h"
+#include "Helicopter.h"
+#include "Helitack.h"
 
 #ifndef MAX_PATH
 #define MAX_PATH 8192
@@ -79,6 +93,7 @@ class WfipsData
 {
 
 public:
+    static WfipsData * Create( const char *pszPath = NULL );
     WfipsData();
     WfipsData( const char *pszPath );
     ~WfipsData();
@@ -97,6 +112,8 @@ public:
     int Valid() { return bValid; }
     int SpatialiteEnabled() { return bSpatialiteEnabled; }
 
+    int WriteRescDb( const char *pszPath, int *panIds, int nCount );
+
 private:
     void Init();
 
@@ -114,6 +131,9 @@ private:
     char* GetScrapBuffer();
     char szScrap[WFIPS_SCRAP_BUFFER_SIZE][MAX_PATH];
     int iScrap;
+
+    /* Diane's structs */
+    CRunScenario *poScen;
 };
 
 #endif /* WFIPS_DATA_H_ */

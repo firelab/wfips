@@ -27,6 +27,16 @@
 
 #include "wfips_data.h"
 
+static WfipsData * Create( const char *pszPath )
+{
+    WfipsData *p;
+    if( pszPath )
+        p = new WfipsData();
+    else
+        p = new WfipsData( pszPath );
+    return p;
+}
+
 WfipsData::WfipsData()
 {
     Init();
@@ -204,7 +214,19 @@ WfipsData::GetAssociatedDispLoc( const char *pszWkt,
         return 1;
     }
     int rc;
+    int n;
     sqlite3_stmt *stmt;
+    const void *p;
+    void *pGeometry;
+    rc = sqlite3_prepare_v2( db, "SELECT AsText(?)", -1, &stmt, NULL );
+    rc = sqlite3_bind_text( stmt, 1, pszWkt, -1, NULL );
+    rc = sqlite3_step( stmt );
+    n = sqlite3_column_bytes( stmt, 0 );
+    p = sqlite3_column_blob( stmt, 0 );
+    pGeometry = sqlite3_malloc( n );
+    memcpy( pGeometry, p, n );
+    sqlite3_finalize( stmt );
+
     return 0;
 }
 
@@ -214,6 +236,62 @@ int WfipsData::Close()
     rc = sqlite3_close( db );
     db = NULL;
     bValid = 0;
+    return rc;
+}
+
+int
+WfipsData::WriteRescDb( const char *pszPath, int *panIds, int nCount )
+{
+    int i, n, rc;
+    sqlite3 *rdb;
+    sqlite3_stmt *stmt;
+    char *pszSchema;
+    char szRescId[128];
+    char *pszRescSet;
+
+    rc = sqlite3_open_v2( pszPath, &rdb,
+                          SQLITE_OPEN_CREATE | SQLITE_OPEN_READWRITE,
+                          NULL );
+    if( rc != SQLITE_OK )
+    {
+        return rc;
+    }
+    rc = sqlite3_prepare_v2( db, "SELECT sql FROM resc.sqlite_master " \
+                                 "WHERE type='table' AND name='resource'",
+                             -1, &stmt, NULL );
+    rc = sqlite3_step( stmt );
+    if( rc != SQLITE_ROW )
+    {
+        sqlite3_finalize( stmt );
+        sqlite3_close( db );
+        return rc;
+    }
+    pszSchema = sqlite3_mprintf( "%s", (char*)sqlite3_column_text( stmt, 0 ) );
+    sqlite3_finalize( stmt );
+    rc = sqlite3_exec( rdb, pszSchema, NULL, NULL, NULL );
+    assert( rc == SQLITE_OK );
+    sqlite3_free( pszSchema );
+
+    pszRescSet = sqlite3_mprintf( "%d", panIds[0] );
+    for( i = 1; i < nCount; i++ )
+    {
+        sprintf( szRescId, "%d", panIds[i] );
+        n = strlen( szRescId ) + 1;
+        pszRescSet = (char*)sqlite3_realloc( pszRescSet, strlen( pszRescSet ) + n + 1 );
+        sprintf( pszRescSet, "%s,%d", pszRescSet, panIds[i] );
+    }
+
+    const char *pszBaseRescPath = FormFileName( this->pszPath, RESC_DB );
+    char *pszSql = sqlite3_mprintf( "ATTACH %Q AS baseresc", pszBaseRescPath );
+    rc = sqlite3_exec( rdb, pszSql, NULL, NULL, NULL );
+    sqlite3_free( pszSql );
+
+    pszSql = sqlite3_mprintf( "INSERT INTO resource SELECT * FROM " \
+                              "baseresc.resource WHERE ROWID " \
+                              "IN (%s)", pszRescSet );
+    rc = sqlite3_exec( rdb, pszSql, NULL, NULL, NULL );
+    sqlite3_exec( rdb, "DETACH baseresc", NULL, NULL, NULL );
+    sqlite3_close( rdb );
     return rc;
 }
 
