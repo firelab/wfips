@@ -261,6 +261,8 @@ WfipsData::WriteRescDb( const char *pszPath, int *panIds, int nCount )
     char szRescId[128];
     char *pszRescSet;
 
+    int bUseExtResc = pszRescPath ? 1 : 0;
+
     rc = sqlite3_open_v2( pszPath, &rdb,
                           SQLITE_OPEN_CREATE | SQLITE_OPEN_READWRITE,
                           NULL );
@@ -268,7 +270,7 @@ WfipsData::WriteRescDb( const char *pszPath, int *panIds, int nCount )
     {
         return rc;
     }
-    if( pszRescPath != NULL )
+    if( bUseExtResc )
     {
         rc = sqlite3_open_v2( pszRescPath, &brdb, SQLITE_OPEN_READONLY, NULL );
         if( rc != SQLITE_OK )
@@ -310,10 +312,14 @@ WfipsData::WriteRescDb( const char *pszPath, int *panIds, int nCount )
     }
 
     const char *pszBaseRescPath;
-    if( pszRescPath == NULL )
-        pszBaseRescPath = FormFileName( this->pszPath, RESC_DB );
-    else
+    if( bUseExtResc )
+    {
         pszBaseRescPath = this->pszRescPath;
+    }
+    else
+    {
+        pszBaseRescPath = FormFileName( this->pszPath, RESC_DB );
+    }
     char *pszSql = sqlite3_mprintf( "ATTACH %Q AS baseresc", pszBaseRescPath );
     rc = sqlite3_exec( rdb, pszSql, NULL, NULL, NULL );
     sqlite3_free( pszSql );
@@ -325,8 +331,10 @@ WfipsData::WriteRescDb( const char *pszPath, int *panIds, int nCount )
     rc = sqlite3_exec( rdb, pszSql, NULL, NULL, NULL );
     sqlite3_free( pszSql );
     sqlite3_exec( rdb, "DETACH baseresc", NULL, NULL, NULL );
-    if( pszRescPath )
+    if( bUseExtResc )
+    {
         sqlite3_close( brdb );
+    }
     sqlite3_close( rdb );
     return rc;
 }
