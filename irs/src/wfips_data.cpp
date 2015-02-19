@@ -341,6 +341,7 @@ WfipsData::WriteRescDb( const char *pszPath, int *panIds, int *panDispLocIds,
     sqlite3_free( pszRescSet );
     rc = sqlite3_exec( rdb, pszSql, NULL, NULL, NULL );
     sqlite3_free( pszSql );
+    rc = sqlite3_exec( rdb, "COMMIT", NULL, NULL, NULL );
     sqlite3_exec( rdb, "DETACH baseresc", NULL, NULL, NULL );
     /*
     ** If the user has changed locations, run through and update them. -1 means
@@ -359,6 +360,7 @@ WfipsData::WriteRescDb( const char *pszPath, int *panIds, int *panDispLocIds,
         rc = sqlite3_prepare_v2( rdb, "UPDATE resource SET disploc=?" \
                                       "WHERE ROWID=?",
                                  -1, &ustmt, NULL );
+        rc = sqlite3_exec( rdb, "BEGIN", NULL, NULL, NULL );
         for( i = 0; i < nCount; i++ )
         {
             if( panDispLocIds[i] < 1 )
@@ -372,9 +374,9 @@ WfipsData::WriteRescDb( const char *pszPath, int *panIds, int *panDispLocIds,
             sqlite3_reset( sstmt );
             sqlite3_reset( ustmt );
         }
+        rc = sqlite3_exec( rdb, "COMMIT", NULL, NULL, NULL );
         rc = sqlite3_exec( rdb, "DETACH disploc", NULL, NULL, NULL );
     }
-    rc = sqlite3_exec( rdb, "COMMIT", NULL, NULL, NULL );
     if( bUseExtResc )
     {
         sqlite3_close( brdb );
