@@ -71,7 +71,7 @@ WfipsData::Open()
 {
     if( pszPath == NULL )
     {
-        return 1;
+        return SQLITE_ERROR;
     }
     return Open( pszPath );
 }
@@ -135,7 +135,9 @@ WfipsData::Attach( const char *pszPath )
     char *pszSql;
     int rc;
     if( db == NULL )
-        return 1;
+    {
+        return SQLITE_ERROR;
+    }
     pszSql = sqlite3_mprintf( "ATTACH %Q AS %s", pszPath, BaseName( pszPath ) );
     rc = sqlite3_exec( db, pszSql, NULL, NULL, NULL );
     sqlite3_free( pszSql );
@@ -148,7 +150,9 @@ int
 WfipsData::Open( const char *pszPath )
 {
     if( pszPath == NULL )
-        return 1;
+    {
+        return SQLITE_ERROR;
+    }
     int rc;
     int i;
 
@@ -211,7 +215,7 @@ WfipsData::GetAssociatedDispLoc( const char *pszWkt,
         {
             *nCount = 0;
         }
-        return 1;
+        return SQLITE_ERROR;
     }
     int rc;
     int n;
@@ -251,7 +255,8 @@ int WfipsData::SetRescDb( const char *pszPath )
 }
 
 int
-WfipsData::WriteRescDb( const char *pszPath, int *panIds, int nCount )
+WfipsData::WriteRescDb( const char *pszPath, int *panIds, int *panDispLocIds,
+                        int nCount )
 {
     int i, n, rc;
     sqlite3 *brdb;
@@ -263,7 +268,7 @@ WfipsData::WriteRescDb( const char *pszPath, int *panIds, int nCount )
 
     if( nCount < 1 || panIds == NULL )
     {
-        return 1;
+        return SQLITE_ERROR;
     }
 
     int bUseExtResc = pszRescPath ? 1 : 0;
@@ -336,6 +341,38 @@ WfipsData::WriteRescDb( const char *pszPath, int *panIds, int nCount )
     rc = sqlite3_exec( rdb, pszSql, NULL, NULL, NULL );
     sqlite3_free( pszSql );
     sqlite3_exec( rdb, "DETACH baseresc", NULL, NULL, NULL );
+    /*
+    ** If the user has changed locations, run through and update them. -1 means
+    ** no change, > 0 means change.
+    */
+    if( panDispLocIds != NULL )
+    {
+        const char *pszDispPath = FormFileName( this->pszPath, DISPLOC_DB );
+        const char *pszDispName;
+        pszSql = sqlite3_mprintf( "ATTACH %Q AS disploc", pszDispPath );
+        rc = sqlite3_exec( rdb, pszSql, NULL, NULL, NULL );
+        sqlite3_free( pszSql );
+        sqlite3_stmt *ustmt, *sstmt;
+        rc = sqlite3_prepare_v2( rdb, "SELECT name FROM disploc WHERE ROWID=?",
+                                 -1, &sstmt, NULL );
+        rc = sqlite3_prepare_v2( rdb, "UPDATE resource SET disploc=?" \
+                                      "WHERE ROWID=?",
+                                 -1, &ustmt, NULL );
+        for( i = 0; i < nCount; i++ )
+        {
+            if( panDispLocIds[i] < 1 )
+                continue;
+            rc = sqlite3_bind_int( sstmt, 1, panDispLocIds[i] );
+            rc = sqlite3_step( sstmt );
+            pszDispName = (const char *)sqlite3_column_text( sstmt, 0 );
+            rc = sqlite3_bind_text( ustmt, 1, pszDispName, -1, NULL );
+            rc = sqlite3_bind_int( ustmt, 2, panIds[i] );
+            rc = sqlite3_step( ustmt );
+            sqlite3_reset( sstmt );
+            sqlite3_reset( ustmt );
+        }
+        rc = sqlite3_exec( rdb, "DETACH disploc", NULL, NULL, NULL );
+    }
     if( bUseExtResc )
     {
         sqlite3_close( brdb );

@@ -112,7 +112,10 @@ public:
     int Valid() { return bValid; }
     int SpatialiteEnabled() { return bSpatialiteEnabled; }
 
-    int WriteRescDb( const char *pszPath, int *panIds, int nCount );
+    int WriteRescDb( const char *pszPath,
+                     int *panIds,
+                     int *panDispLocIds,
+                     int nCount );
 
 private:
     void Init();

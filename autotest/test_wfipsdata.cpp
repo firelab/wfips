@@ -81,7 +81,7 @@ BOOST_AUTO_TEST_CASE( resc_copy_1 )
     BOOST_CHECK( poData->Valid() == 1 );
     BOOST_CHECK( rc == 0 );
     int anRescIds[10] = {1,2,3,4,5,6,7,8,9,10};
-    rc = poData->WriteRescDb( "resc_copy_1.db", anRescIds, 10 );
+    rc = poData->WriteRescDb( "resc_copy_1.db", anRescIds, NULL, 10 );
     BOOST_CHECK( rc == 0 );
     poData->Close();
     delete poData;
@@ -107,12 +107,12 @@ BOOST_AUTO_TEST_CASE( resc_copy_2 )
     BOOST_CHECK( poData->Valid() == 1 );
     BOOST_CHECK( rc == 0 );
     int anRescIds[10] = {1,2,3,4,5,6,7,8,9,10};
-    rc = poData->WriteRescDb( "resc_copy_2.db", anRescIds, 10 );
+    rc = poData->WriteRescDb( "resc_copy_2.db", anRescIds, NULL, 10 );
     BOOST_CHECK( rc == 0 );
 
     poData->SetRescDb( "resc_copy_2.db" );
     int anRescIds2[2] = {1,2};
-    rc = poData->WriteRescDb( "resc_copy_2_.db", anRescIds2, 2 );
+    rc = poData->WriteRescDb( "resc_copy_2_.db", anRescIds2, NULL, 2 );
     poData->Close();
     delete poData;
 
@@ -131,6 +131,34 @@ BOOST_AUTO_TEST_CASE( resc_copy_2 )
     sqlite3_finalize( stmt );
     sqlite3_close( db );
 }
+
+BOOST_AUTO_TEST_CASE( resc_copy_3 )
+{
+    WfipsData *poData = new WfipsData("/home/kyle/src/wfips/build");
+    int rc = poData->Open();
+    BOOST_CHECK( poData->Valid() == 1 );
+    BOOST_CHECK( rc == 0 );
+    int anRescIds[10] = {1,2,3,4,5,6,7,8,9,10};
+    int anDispLocIds[10] = {1,1,1,1,1,1,1,1,1,1};
+    rc = poData->WriteRescDb( "resc_copy_3.db", anRescIds, anDispLocIds, 10 );
+    BOOST_CHECK( rc == 0 );
+    poData->Close();
+    delete poData;
+    sqlite3 *db;
+    sqlite3_stmt *stmt;
+    rc = sqlite3_open_v2( "resc_copy_3.db", &db, SQLITE_OPEN_READONLY, NULL );
+    BOOST_CHECK( rc == SQLITE_OK );
+    rc = sqlite3_prepare_v2( db, "SELECT COUNT(DISTINCT disploc) FROM resource", -1, &stmt, NULL );
+    BOOST_CHECK( rc == SQLITE_OK );
+    rc = sqlite3_step( stmt );
+    BOOST_CHECK( rc == SQLITE_ROW );
+    rc = sqlite3_column_int( stmt, 0 );
+    BOOST_CHECK( rc == 1 );
+    remove( "resc_copy_3.db" );
+    sqlite3_finalize( stmt );
+    sqlite3_close( db );
+}
+
 
 BOOST_AUTO_TEST_SUITE_END() /* irs */
 
