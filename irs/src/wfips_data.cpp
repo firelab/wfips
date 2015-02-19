@@ -334,6 +334,7 @@ WfipsData::WriteRescDb( const char *pszPath, int *panIds, int *panDispLocIds,
     rc = sqlite3_exec( rdb, pszSql, NULL, NULL, NULL );
     sqlite3_free( pszSql );
 
+    rc = sqlite3_exec( rdb, "BEGIN", NULL, NULL, NULL );
     pszSql = sqlite3_mprintf( "INSERT INTO resource SELECT * FROM " \
                               "baseresc.resource WHERE ROWID " \
                               "IN (%s)", pszRescSet );
@@ -373,6 +374,7 @@ WfipsData::WriteRescDb( const char *pszPath, int *panIds, int *panDispLocIds,
         }
         rc = sqlite3_exec( rdb, "DETACH disploc", NULL, NULL, NULL );
     }
+    rc = sqlite3_exec( rdb, "COMMIT", NULL, NULL, NULL );
     if( bUseExtResc )
     {
         sqlite3_close( brdb );
