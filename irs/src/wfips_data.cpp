@@ -289,7 +289,9 @@ WfipsData::WriteRescDb( const char *pszPath, int *panIds, int nCount )
     pszSql = sqlite3_mprintf( "INSERT INTO resource SELECT * FROM " \
                               "baseresc.resource WHERE ROWID " \
                               "IN (%s)", pszRescSet );
+    sqlite3_free( pszRescSet );
     rc = sqlite3_exec( rdb, pszSql, NULL, NULL, NULL );
+    sqlite3_free( pszSql );
     sqlite3_exec( rdb, "DETACH baseresc", NULL, NULL, NULL );
     sqlite3_close( rdb );
     return rc;
