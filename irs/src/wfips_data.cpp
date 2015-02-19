@@ -239,10 +239,22 @@ int WfipsData::Close()
     return rc;
 }
 
+int WfipsData::SetRescDb( const char *pszPath )
+{
+    if( pszRescPath )
+        sqlite3_free( pszRescPath );
+    if( pszPath )
+        pszRescPath = sqlite3_mprintf( "%s", pszPath );
+    else
+        pszRescPath = NULL;
+    return 0;
+}
+
 int
 WfipsData::WriteRescDb( const char *pszPath, int *panIds, int nCount )
 {
     int i, n, rc;
+    sqlite3 *brdb;
     sqlite3 *rdb;
     sqlite3_stmt *stmt;
     char *pszSchema;
@@ -256,9 +268,25 @@ WfipsData::WriteRescDb( const char *pszPath, int *panIds, int nCount )
     {
         return rc;
     }
-    rc = sqlite3_prepare_v2( db, "SELECT sql FROM resc.sqlite_master " \
-                                 "WHERE type='table' AND name='resource'",
-                             -1, &stmt, NULL );
+    if( pszRescPath != NULL )
+    {
+        rc = sqlite3_open_v2( pszRescPath, &brdb, SQLITE_OPEN_READONLY, NULL );
+        if( rc != SQLITE_OK )
+        {
+            sqlite3_close( rdb );
+            return rc;
+        }
+        rc = sqlite3_prepare_v2( brdb, "SELECT sql FROM sqlite_master " \
+                                       "WHERE type='table' AND name='resource'",
+                                 -1, &stmt, NULL );
+    }
+    else
+    {
+        brdb = db;
+        rc = sqlite3_prepare_v2( brdb, "SELECT sql FROM resc.sqlite_master " \
+                                       "WHERE type='table' AND name='resource'",
+                                 -1, &stmt, NULL );
+    }
     rc = sqlite3_step( stmt );
     if( rc != SQLITE_ROW )
     {
@@ -281,7 +309,11 @@ WfipsData::WriteRescDb( const char *pszPath, int *panIds, int nCount )
         sprintf( pszRescSet, "%s,%d", pszRescSet, panIds[i] );
     }
 
-    const char *pszBaseRescPath = FormFileName( this->pszPath, RESC_DB );
+    const char *pszBaseRescPath;
+    if( pszRescPath == NULL )
+        pszBaseRescPath = FormFileName( this->pszPath, RESC_DB );
+    else
+        pszBaseRescPath = this->pszRescPath;
     char *pszSql = sqlite3_mprintf( "ATTACH %Q AS baseresc", pszBaseRescPath );
     rc = sqlite3_exec( rdb, pszSql, NULL, NULL, NULL );
     sqlite3_free( pszSql );
@@ -293,6 +325,8 @@ WfipsData::WriteRescDb( const char *pszPath, int *panIds, int nCount )
     rc = sqlite3_exec( rdb, pszSql, NULL, NULL, NULL );
     sqlite3_free( pszSql );
     sqlite3_exec( rdb, "DETACH baseresc", NULL, NULL, NULL );
+    if( pszRescPath )
+        sqlite3_close( brdb );
     sqlite3_close( rdb );
     return rc;
 }
