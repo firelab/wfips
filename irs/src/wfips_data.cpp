@@ -261,6 +261,11 @@ WfipsData::WriteRescDb( const char *pszPath, int *panIds, int nCount )
     char szRescId[128];
     char *pszRescSet;
 
+    if( nCount < 1 || panIds == NULL )
+    {
+        return 1;
+    }
+
     int bUseExtResc = pszRescPath ? 1 : 0;
 
     rc = sqlite3_open_v2( pszPath, &rdb,
