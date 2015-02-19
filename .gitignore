@@ -7,3 +7,4 @@ build
 
 # qt creator autosave
 *.autosave
+*.txt~
