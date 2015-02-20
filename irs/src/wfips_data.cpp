@@ -156,7 +156,7 @@ WfipsData::Open( const char *pszPath )
     int rc;
     int i;
 
-    rc = sqlite3_open_v2( FormFileName( pszPath, ASSOC_DB ), &db,
+    rc = sqlite3_open_v2( FormFileName( pszPath, apszDbFiles[0] ), &db,
                           SQLITE_OPEN_READWRITE, NULL );
     WFIPS_CHECK_STATUS;
     i = 1;

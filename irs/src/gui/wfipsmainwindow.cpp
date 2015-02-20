@@ -1318,3 +1318,4 @@ void WfipsMainWindow::ShowMessage( const int messageType,
     QMessageBox msgBox;
 #endif /* WFIPS_CONSOLE_ERR */
 }
+
