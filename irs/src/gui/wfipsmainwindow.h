@@ -92,6 +92,9 @@
 
 #include "cpl_multiproc.h"
 
+/* Data access */
+#include "wfips_data.h"
+
 namespace Ui {
 class WfipsMainWindow;
 }
@@ -107,6 +110,9 @@ public:
 private:
     Ui::WfipsMainWindow *ui;
     QString qgisPluginPath;
+
+    /* Wfips data access */
+    WfipsData *poData;
 
     /* CRS for map canvases */
     QgsCoordinateReferenceSystem crs;

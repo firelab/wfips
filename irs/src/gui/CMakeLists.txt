@@ -224,6 +224,7 @@ ADD_EXECUTABLE(wfips wfipsmainwindow.cpp
                      wfipsselectmaptool.cpp
                      wfipsdispatcheditdialog.cpp
                      wfipsidentifymaptool.cpp
+                     ${PROJECT_SOURCE_DIR}/irs/src/wfips_data.cpp
                      ${WFIPS_GUI_UI_H}
                      ${WFIPS_GUI_MOC}
                      ${OMFFR_GUI_RCC_SRCS}

@@ -41,7 +41,8 @@ WfipsMainWindow::WfipsMainWindow( QWidget *parent ) :
     QgsProviderRegistry::instance( qgisPluginPath );
     qDebug() << "QGIS plugin path:" << qgisPluginPath;
 
-	currentMapCanvas = NULL;
+    currentMapCanvas = NULL;
+    poData = NULL;
 
     ConstructToolButtons();
     ConstructAnalysisAreaWidgets();
@@ -98,6 +99,7 @@ WfipsMainWindow::~WfipsMainWindow()
     delete dispatchLocationMemLayer;
 
     delete dispatchEditDialog;
+    delete poData;
 }
 
 void WfipsMainWindow::WriteSettings()
@@ -365,6 +367,8 @@ void WfipsMainWindow::LoadAnalysisAreaLayers()
         qDebug() << "The data path has not been provided, no layers";
         return;
     }
+    poData = new WfipsData( wfipsPath.toLocal8Bit().data() );
+    poData->Open();
     ui->analysisAreaComboBox->clear();
     /* Clean up and remove existing layers */
     QString layerId;
@@ -985,7 +989,7 @@ void WfipsMainWindow::SetAnalysisArea()
         newGeometry->transform( transform );
     }
     analysisFeature.setGeometry( newGeometry );
-    QgsGeometry *analisysAreaGeometry = new QgsGeometry( *(analysisFeature.geometry()) );
+    QgsGeometry *analysisAreaGeometry = new QgsGeometry( *(analysisFeature.geometry()) );
     features.append( analysisFeature );
 
     analysisAreaMemLayer = new QgsVectorLayer( "MultiPolygon?crs=EPSG:4269", "Analysis Area", "memory", true );
@@ -1014,21 +1018,26 @@ void WfipsMainWindow::SetAnalysisArea()
     i = 0; n = layer->featureCount();
     this->statusBar()->showMessage( "Searching for dispatch locations..." );
     dispatchLocationMap.clear();
+    int *panLocIds, nLocCount;
+    QString wkt = analysisAreaGeometry->exportToWkt();
+    char *pszWkt = QStringToCString( wkt );
+    if( poData == NULL )
+    {
+        /* panic */
+    }
+    poData->GetAssociatedDispLoc( pszWkt, &panLocIds, &nLocCount );
+    for( int i = 0; i < nLocCount; i++ )
+    {
+        fids.insert( panLocIds[i] );
+    }
+    WfipsData::Free( panLocIds );
+    free( pszWkt );
+    request.setFilterFids( fids );
+    fit = layer->getFeatures( request );
     while( fit.nextFeature( feature ) )
     {
-        if( analisysAreaGeometry->boundingBox().contains( feature.geometry()->asPoint() ) )
-        {
-            if( analisysAreaGeometry->contains( feature.geometry() ) )
-            {
-                fids.insert( feature.id() );
-                dispatchLocationMap.insert( feature.id(),
-                                            feature.attribute( "name" ).toString() );
-            }
-        }
-        i++;
-        progress = (float)i / n * 100;
-        ui->progressBar->setValue( progress );
-        QCoreApplication::processEvents();
+        dispatchLocationMap.insert( feature.id(),
+                                    feature.attribute( "name" ).toString() );
     }
     this->statusBar()->showMessage( "Adding new layers to map canvases..." );
     ui->progressBar->reset();
@@ -1039,7 +1048,7 @@ void WfipsMainWindow::SetAnalysisArea()
     dispatchLocationMemLayer = WfipsCopyToMemLayer( layer, fids );
     assert( dispatchLocationMemLayer->isValid() );
     QgsMapLayerRegistry::instance()->addMapLayer( dispatchLocationMemLayer, true );
-    delete analisysAreaGeometry;
+    delete analysisAreaGeometry;
     for( int i = 0; i < newGeometries.size(); i++ )
     {
         delete newGeometries[i];
@@ -1051,7 +1060,7 @@ void WfipsMainWindow::SetAnalysisArea()
     if( layer->crs() != crs )
     {
         transform.setSourceCrs( layer->crs() );
-        extent = transform.transformBoundingBox( analisysAreaGeometry->boundingBox() );
+        extent = transform.transformBoundingBox( analysisAreaGeometry->boundingBox() );
     }
     extent.scale( 1.1 );
 

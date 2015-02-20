@@ -37,6 +37,7 @@
 #include <sqlite3.h>
 
 /* IRS */
+/*
 #include "RunScenario.h"
 #include "DispLoc.h"
 #include "Rescbase.h"
@@ -48,6 +49,7 @@
 #include "WaterTender.h"
 #include "Helicopter.h"
 #include "Helitack.h"
+*/
 
 #ifndef MAX_PATH
 #define MAX_PATH 8192
@@ -139,7 +141,7 @@ private:
     int iScrap;
 
     /* Diane's structs */
-    CRunScenario *poScen;
+    //CRunScenario *poScen;
 };
 
 #endif /* WFIPS_DATA_H_ */
