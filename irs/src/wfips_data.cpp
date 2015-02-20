@@ -156,7 +156,7 @@ WfipsData::Open( const char *pszPath )
     int rc;
     int i;
 
-    rc = sqlite3_open_v2( FormFileName( pszPath, COST_DB ), &db,
+    rc = sqlite3_open_v2( FormFileName( pszPath, ASSOC_DB ), &db,
                           SQLITE_OPEN_READWRITE, NULL );
     WFIPS_CHECK_STATUS;
     i = 1;
@@ -178,6 +178,10 @@ WfipsData::Open( const char *pszPath )
         {
             bSpatialiteEnabled = 0;
             rc = SQLITE_OK;
+        }
+        else
+        {
+            bSpatialiteEnabled = 1;
         }
     }
     bValid = 1;
@@ -206,7 +210,8 @@ WfipsData::ExecuteSql( const char *pszSql )
 int
 WfipsData::GetAssociatedDispLoc( const char *pszWkt,
                                  int **panDispLocIds,
-                                 int *nCount )
+                                 int *nCount
+                                 /*,IRSProgress pfnProgress*/ )
 {
     assert( nCount );
     if( bSpatialiteEnabled == 0 )
@@ -218,20 +223,62 @@ WfipsData::GetAssociatedDispLoc( const char *pszWkt,
         return SQLITE_ERROR;
     }
     int rc;
-    int n;
+    int i, n;
     sqlite3_stmt *stmt;
     const void *p;
-    void *pGeometry;
-    rc = sqlite3_prepare_v2( db, "SELECT AsText(?)", -1, &stmt, NULL );
+    void *pAnalysisGeometry;
+    /*
+    ** Just allocate for all locations, then realloc when we know how many
+    ** there are. We don't want to run spatial queries twice to get a real
+    ** count.
+    */
+    rc = sqlite3_prepare_v2( db, "SELECT COUNT(*) FROM disploc", -1, &stmt, NULL );
+    rc = sqlite3_step( stmt );
+    assert( rc == SQLITE_ROW );
+    n = sqlite3_column_int( stmt, 0 );
+    (*panDispLocIds) = (int*)sqlite3_malloc( sizeof( int ) * n );
+    sqlite3_finalize( stmt );
+    /* Compile the geometry */
+    rc = sqlite3_prepare_v2( db, "SELECT GeomFromText(?)", -1, &stmt, NULL );
     rc = sqlite3_bind_text( stmt, 1, pszWkt, -1, NULL );
     rc = sqlite3_step( stmt );
     n = sqlite3_column_bytes( stmt, 0 );
     p = sqlite3_column_blob( stmt, 0 );
-    pGeometry = sqlite3_malloc( n );
-    memcpy( pGeometry, p, n );
+    pAnalysisGeometry = sqlite3_malloc( n );
+    memcpy( pAnalysisGeometry, p, n );
     sqlite3_finalize( stmt );
 
-    return 0;
+    /* Find the associated locations */
+    rc = sqlite3_prepare_v2( db, "SELECT DISTINCT(disploc.ROWID) FROM " \
+                                 "disploc JOIN assoc ON name=disploc_name " \
+                                 "WHERE fwa_name IN " \
+                                 "(SELECT name FROM fwa WHERE " \
+                                 "ST_Intersects(?1, fwa.geometry) AND " \
+                                 "fwa.ROWID IN(SELECT pkid FROM "
+                                 "idx_fwa_geometry WHERE "
+                                 "xmin <= MbrMaxX(?1) AND "
+                                 "xmax >= MbrMinX(?1) AND "
+                                 "ymin <= MbrMaxY(?1) AND "
+                                 "ymax >= MbrMinY(?1)))",
+                             -1, &stmt, NULL );
+
+    rc = sqlite3_bind_blob( stmt, 1, pAnalysisGeometry, n, NULL );
+    n = i = 0;
+    while( sqlite3_step( stmt ) == SQLITE_ROW )
+    {
+        (*panDispLocIds)[i++] = sqlite3_column_int( stmt, 0 );
+    }
+    (*panDispLocIds) = (int*)sqlite3_realloc( (*panDispLocIds), sizeof( i ) * i );
+    *nCount = i;
+    sqlite3_finalize( stmt );
+    sqlite3_free( pAnalysisGeometry );
+    return SQLITE_OK;
+}
+
+void
+WfipsData::Free( void *p )
+{
+    sqlite3_free( p );
 }
 
 int WfipsData::Close()
@@ -251,7 +298,7 @@ int WfipsData::SetRescDb( const char *pszPath )
         pszRescPath = sqlite3_mprintf( "%s", pszPath );
     else
         pszRescPath = NULL;
-    return 0;
+    return SQLITE_OK;
 }
 
 int

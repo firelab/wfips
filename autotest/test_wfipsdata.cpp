@@ -159,6 +159,22 @@ BOOST_AUTO_TEST_CASE( resc_copy_3 )
     sqlite3_close( db );
 }
 
+BOOST_AUTO_TEST_CASE( assoc_disploc_1 )
+{
+    WfipsData *poData = new WfipsData("/home/kyle/src/wfips/build");
+    int rc = poData->Open();
+    BOOST_CHECK( poData->Valid() == 1 );
+    BOOST_CHECK( rc == 0 );
+    const char *pszWkt = "POLYGON((-114 47, -113 47, -113 46, -114 46, -114 47))";
+    int *panIds, nCount;
+    poData->GetAssociatedDispLoc( pszWkt, &panIds, &nCount );
+    poData->Close();
+    delete poData;
+    rc = panIds[0];
+    WfipsData::Free( (void*)panIds );
+    BOOST_REQUIRE( nCount > 0 );
+    BOOST_CHECK( rc > 0 );
+}
 
 BOOST_AUTO_TEST_SUITE_END() /* irs */
 

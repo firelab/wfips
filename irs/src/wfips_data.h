@@ -55,6 +55,7 @@
 
 #define WFIPS_SCRAP_BUFFER_SIZE 10
 
+#define ASSOC_DB            "assoc.db"
 #define COST_DB             "cost.db"
 #define DISPLOC_DB          "disploc.db"
 #define DISTRICT_DB         "district.db"
@@ -116,6 +117,8 @@ public:
                      int *panIds,
                      int *panDispLocIds,
                      int nCount );
+
+    static void Free( void *p );
 
 private:
     void Init();
