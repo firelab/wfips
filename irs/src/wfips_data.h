@@ -75,7 +75,8 @@
 #define SPATIALITE_EXT "libspatialite.so"
 #endif
 
-static const char *apszDbFiles[] = {COST_DB,
+static const char *apszDbFiles[] = {ASSOC_DB,
+                                    COST_DB,
                                     DISPLOC_DB,
                                     DISTRICT_DB,
                                     FOREST_DB,
