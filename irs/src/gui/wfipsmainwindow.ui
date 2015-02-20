@@ -137,9 +137,6 @@
           <property name="text">
            <string>Export</string>
           </property>
-          <property name="flags">
-           <set>ItemIsSelectable|ItemIsDragEnabled|ItemIsUserCheckable</set>
-          </property>
          </item>
         </item>
        </widget>
