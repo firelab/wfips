@@ -156,6 +156,7 @@ WfipsData::Open( const char *pszPath )
     int rc;
     int i;
 
+    /* Open one db, attach the rest */
     rc = sqlite3_open_v2( FormFileName( pszPath, apszDbFiles[0] ), &db,
                           SQLITE_OPEN_READWRITE, NULL );
     WFIPS_CHECK_STATUS;
@@ -211,10 +212,10 @@ WfipsData::ExecuteSql( const char *pszSql )
 ** Find all dispatch locations associated with any fwa intersecting the polygon
 ** defined by pszWkt.  Note that FPU boundaries and FWA boundaries were derived
 ** separately, and intersect frequently when they appear coincident.
-** [in]  pszWkt        -> boundary to intersect with fwa geometry.
-** [out] panDispLocIds -> array of integers to be filled.
-** [out] nCount        -> size of array filled.
-** XXX: [in]  pfnProgress   -> optional progress function (to be implemented
+** [in]  pszWkt           -> boundary to intersect with fwa geometry.
+** [out] panDispLocIds    -> array of integers to be filled.
+** [out] nCount           -> size of array filled.
+** XXX: [in]  pfnProgress -> optional progress function (to be implemented)
 *
 * Resulting int array should be freed with the static member WfipsData::Free(),
 * which is analagous to sqlite3_free().
