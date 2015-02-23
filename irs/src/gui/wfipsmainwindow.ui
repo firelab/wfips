@@ -77,6 +77,9 @@
           <property name="text">
            <string>Large Fire Drawdown</string>
           </property>
+          <property name="flags">
+           <set>ItemIsSelectable|ItemIsDragEnabled|ItemIsUserCheckable</set>
+          </property>
          </item>
         </item>
         <item>
@@ -357,7 +360,7 @@
          <enum>QFrame::Plain</enum>
         </property>
         <property name="currentIndex">
-         <number>5</number>
+         <number>10</number>
         </property>
         <widget class="QWidget" name="dataPage">
          <layout class="QVBoxLayout" name="verticalLayout_13">
@@ -1722,7 +1725,11 @@
                 </widget>
                </item>
                <item>
-                <widget class="QSpinBox" name="randomYearsSpinBox"/>
+                <widget class="QSpinBox" name="randomYearsSpinBox">
+                 <property name="accelerated">
+                  <bool>true</bool>
+                 </property>
+                </widget>
                </item>
               </layout>
              </item>

@@ -1025,7 +1025,22 @@ void WfipsMainWindow::SetAnalysisArea()
     {
         /* panic */
     }
-    poData->GetAssociatedDispLoc( pszWkt, &panLocIds, &nLocCount );
+    QFuture<int>nFuture;
+    this->statusBar()->showMessage( "Searching for dispatch locations...", 1500 );
+    ui->progressBar->setRange( 0, 0 );
+    nFuture = QtConcurrent::run( poData, &WfipsData::GetAssociatedDispLoc, pszWkt, &panLocIds, &nLocCount );
+    i = 0;
+    while( !nFuture.isFinished() && i < 1000 )
+    {
+        CPLSleep( 0.01 );
+        ui->progressBar->setValue( 0 );
+        QCoreApplication::processEvents();
+        i++;
+    }
+    nFuture.waitForFinished();
+    ui->progressBar->setRange( 0, 100 );
+    this->statusBar()->showMessage( "Found locations.", 1500 );
+    ui->progressBar->reset();
     for( int i = 0; i < nLocCount; i++ )
     {
         fids.insert( panLocIds[i] );
@@ -1252,7 +1267,6 @@ void WfipsMainWindow::SelectFuelMask()
 */
 QTreeWidgetItem * WfipsMainWindow::FindLastVisibleChild( QTreeWidgetItem *item )
 {
-
     if( !item->isHidden() && item->childCount() == 0 )
     {
         return item;

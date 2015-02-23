@@ -75,6 +75,21 @@
 #define SPATIALITE_EXT "libspatialite.so"
 #endif
 
+/*
+** Agencies
+*/
+#define USFS                  (1 << 1)
+#define DOI_BIA               (1 << 2)
+#define DOI_BLM               (1 << 3)
+#define DOI_FWS               (1 << 4)
+#define DOI_NPS               (1 << 5)
+#define STATE_LOCAL           (1 << 6)
+#define REGIONAL              (1 << 7)
+#define DOI_ALL               (DOI_BIA | DOI_BLM | DOI_FWS | DOI_NPS)
+#define FED_ALL               (USFS | DOI_ALL)
+#define AGENCY_ALL            (FED_ALL | STATE_LOCAL)
+#define AGENCY_OTHER          (AGENCY_ALL &~ FED_ALL)
+
 static const char *apszDbFiles[] = {ASSOC_DB,
                                     COST_DB,
                                     DISPLOC_DB,
