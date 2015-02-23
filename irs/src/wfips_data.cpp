@@ -228,10 +228,7 @@ WfipsData::GetAssociatedDispLoc( const char *pszWkt,
     assert( nCount );
     if( bSpatialiteEnabled == 0 )
     {
-        if( nCount )
-        {
-            *nCount = 0;
-        }
+        *nCount = 0;
         return SQLITE_ERROR;
     }
     int rc;
@@ -248,7 +245,7 @@ WfipsData::GetAssociatedDispLoc( const char *pszWkt,
     rc = sqlite3_step( stmt );
     assert( rc == SQLITE_ROW );
     n = sqlite3_column_int( stmt, 0 );
-    (*panDispLocIds) = (int*)sqlite3_malloc( sizeof( int ) * n );
+    *panDispLocIds = (int*)sqlite3_malloc( sizeof( int ) * n );
     sqlite3_finalize( stmt );
     /* Compile the geometry */
     rc = sqlite3_prepare_v2( db, "SELECT GeomFromText(?)", -1, &stmt, NULL );
@@ -280,7 +277,7 @@ WfipsData::GetAssociatedDispLoc( const char *pszWkt,
     {
         (*panDispLocIds)[i++] = sqlite3_column_int( stmt, 0 );
     }
-    (*panDispLocIds) = (int*)sqlite3_realloc( (*panDispLocIds), sizeof( i ) * i );
+    *panDispLocIds = (int*)sqlite3_realloc( (*panDispLocIds), sizeof( i ) * i );
     *nCount = i;
     sqlite3_finalize( stmt );
     sqlite3_free( pAnalysisGeometry );
