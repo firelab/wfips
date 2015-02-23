@@ -27,7 +27,7 @@
 
 #include "wfips_data.h"
 
-static WfipsData * Create( const char *pszPath )
+WfipsData * WfipsData::Create( const char *pszPath )
 {
     WfipsData *p;
     if( pszPath )
