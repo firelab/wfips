@@ -1019,7 +1019,7 @@ void WfipsMainWindow::SetAnalysisArea()
     this->statusBar()->showMessage( "Searching for dispatch locations..." );
     dispatchLocationMap.clear();
     int *panLocIds, nLocCount;
-    QString wkt = analysisAreaGeometry->exportToWkt();
+    QString wkt = analysisAreaGeometry->exportToWkt( 17 );
     char *pszWkt = QStringToCString( wkt );
     if( poData == NULL )
     {
