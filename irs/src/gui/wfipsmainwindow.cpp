@@ -1019,7 +1019,7 @@ void WfipsMainWindow::SetAnalysisArea()
     this->statusBar()->showMessage( "Searching for dispatch locations..." );
     dispatchLocationMap.clear();
     int *panLocIds, nLocCount;
-    QString wkt = analysisAreaGeometry->exportToWkt( 17 );
+    QString wkt = analysisAreaGeometry->exportToWkt();
     char *pszWkt = QStringToCString( wkt );
     if( poData == NULL )
     {
@@ -1028,7 +1028,6 @@ void WfipsMainWindow::SetAnalysisArea()
     QFuture<int>nFuture;
     this->statusBar()->showMessage( "Searching for dispatch locations...", 1500 );
     ui->progressBar->setRange( 0, 0 );
-    /*
     nFuture = QtConcurrent::run( poData, &WfipsData::GetAssociatedDispLoc, pszWkt, &panLocIds, &nLocCount );
     i = 0;
     while( !nFuture.isFinished() && i < 1000 )
@@ -1039,8 +1038,6 @@ void WfipsMainWindow::SetAnalysisArea()
         i++;
     }
     nFuture.waitForFinished();
-    */
-    poData->GetAssociatedDispLoc( pszWkt, &panLocIds, &nLocCount );
     ui->progressBar->setRange( 0, 100 );
     this->statusBar()->showMessage( "Found locations.", 1500 );
     ui->progressBar->reset();
