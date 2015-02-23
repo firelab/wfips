@@ -178,6 +178,7 @@ WfipsData::Open( const char *pszPath )
         if( rc != SQLITE_OK )
         {
             bSpatialiteEnabled = 0;
+            printf( "Warning, spatialite could not be loaded!\n" );
             rc = SQLITE_OK;
         }
         else
