@@ -56,7 +56,6 @@ BOOST_AUTO_TEST_CASE( create_2 )
     BOOST_CHECK( rc == 0 );
     rc = poData->Close();
     BOOST_CHECK( rc == 0 );
-    poData->Close();
     delete poData;
 }
 
@@ -70,7 +69,6 @@ BOOST_AUTO_TEST_CASE( sql_1 )
     BOOST_CHECK( rc == 0 );
     rc = poData->Close();
     BOOST_CHECK( rc == 0 );
-    poData->Close();
     delete poData;
 }
 
@@ -95,9 +93,9 @@ BOOST_AUTO_TEST_CASE( resc_copy_1 )
     BOOST_CHECK( rc == SQLITE_ROW );
     rc = sqlite3_column_int( stmt, 0 );
     BOOST_CHECK( rc == 10 );
-    remove( "resc_copy_1.db" );
     sqlite3_finalize( stmt );
     sqlite3_close( db );
+    remove( "resc_copy_1.db" );
 }
 
 BOOST_AUTO_TEST_CASE( resc_copy_2 )
@@ -126,10 +124,10 @@ BOOST_AUTO_TEST_CASE( resc_copy_2 )
     BOOST_CHECK( rc == SQLITE_ROW );
     rc = sqlite3_column_int( stmt, 0 );
     BOOST_CHECK( rc == 2 );
-    remove( "resc_copy_2.db" );
-    remove( "resc_copy_2_.db" );
     sqlite3_finalize( stmt );
     sqlite3_close( db );
+    remove( "resc_copy_2.db" );
+    remove( "resc_copy_2_.db" );
 }
 
 BOOST_AUTO_TEST_CASE( resc_copy_3 )
@@ -144,6 +142,7 @@ BOOST_AUTO_TEST_CASE( resc_copy_3 )
     BOOST_CHECK( rc == 0 );
     poData->Close();
     delete poData;
+
     sqlite3 *db;
     sqlite3_stmt *stmt;
     rc = sqlite3_open_v2( "resc_copy_3.db", &db, SQLITE_OPEN_READONLY, NULL );
@@ -154,9 +153,9 @@ BOOST_AUTO_TEST_CASE( resc_copy_3 )
     BOOST_CHECK( rc == SQLITE_ROW );
     rc = sqlite3_column_int( stmt, 0 );
     BOOST_CHECK( rc == 1 );
-    remove( "resc_copy_3.db" );
     sqlite3_finalize( stmt );
     sqlite3_close( db );
+    remove( "resc_copy_3.db" );
 }
 
 BOOST_AUTO_TEST_CASE( assoc_disploc_1 )
@@ -180,6 +179,7 @@ BOOST_AUTO_TEST_CASE( build_set_1 )
 {
     WfipsData *poData = new WfipsData("/home/kyle/src/wfips/build");
     BOOST_CHECK_EQUAL( poData->TestBuildAgencySet1(), 0 );
+    poData->Close();
     delete poData;
 }
 
@@ -187,6 +187,7 @@ BOOST_AUTO_TEST_CASE( build_set_2 )
 {
     WfipsData *poData = new WfipsData("/home/kyle/src/wfips/build");
     BOOST_CHECK_EQUAL( poData->TestBuildAgencySet2(), 0 );
+    poData->Close();
     delete poData;
 }
 
@@ -194,6 +195,7 @@ BOOST_AUTO_TEST_CASE( build_set_3 )
 {
     WfipsData *poData = new WfipsData("/home/kyle/src/wfips/build");
     BOOST_CHECK_EQUAL( poData->TestBuildAgencySet3(), 0 );
+    poData->Close();
     delete poData;
 }
 
@@ -201,6 +203,7 @@ BOOST_AUTO_TEST_CASE( build_set_4 )
 {
     WfipsData *poData = new WfipsData("/home/kyle/src/wfips/build");
     BOOST_CHECK_EQUAL( poData->TestBuildAgencySet4(), 0 );
+    poData->Close();
     delete poData;
 }
 
@@ -208,6 +211,16 @@ BOOST_AUTO_TEST_CASE( build_set_5 )
 {
     WfipsData *poData = new WfipsData("/home/kyle/src/wfips/build");
     BOOST_CHECK_EQUAL( poData->TestBuildAgencySet5(), 0 );
+    poData->Close();
+    delete poData;
+}
+
+BOOST_AUTO_TEST_CASE( build_fid_set_1 )
+{
+    WfipsData *poData = new WfipsData("/home/kyle/src/wfips/build");
+    poData->Open();
+    BOOST_CHECK_EQUAL( poData->TestFidSet1(), 0 );
+    poData->Close();
     delete poData;
 }
 

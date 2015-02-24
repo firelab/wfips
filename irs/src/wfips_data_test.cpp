@@ -61,4 +61,16 @@ int WfipsData::TestBuildAgencySet5()
     return strncmp( pszSet, "'STATE/LOCAL'", MAX_PATH );
 }
 
+int WfipsData::TestFidSet1()
+{
+    int anRescSet[] = {1,2,3,4,5};
+    char *pszRescSet = BuildFidSet( anRescSet, 5 );
+    int rc;
+    if( !pszRescSet )
+        rc = 1;
+    else
+        rc = strcmp( pszRescSet, "1,2,3,4,5" );
+    WfipsData::Free( pszRescSet );
+    return rc;
+}
 

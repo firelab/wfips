@@ -286,7 +286,51 @@ WfipsData::GetAssociatedDispLoc( const char *pszWkt,
     return SQLITE_OK;
 }
 
-const char * WfipsData::BuildAgencySet( int nAgencyFlags )
+char *
+WfipsData::BuildFidSet( int *panFids, int nCount )
+{
+    sqlite3_stmt *stmt;
+    int rc;
+    int nOrder;
+    rc = sqlite3_prepare_v2( db, "SELECT MAX(ROWID) FROM resource",
+                             -1, &stmt, NULL );
+    rc = sqlite3_step( stmt );
+    if( rc != SQLITE_ROW )
+    {
+        sqlite3_finalize( stmt );
+        return NULL;
+    }
+
+    nOrder = strlen( (const char *)sqlite3_column_text( stmt, 0 ) );
+
+    sqlite3_finalize( stmt );
+
+    if( nOrder > 10 )
+    {
+        return NULL;
+    }
+    int nSize = (nCount * (nOrder + 1)) + 1;
+    char *pszSql = (char*)sqlite3_malloc( nSize );
+    *pszSql = '\0';
+    int i = 0;
+    int n = 0;
+    char *pszId = (char*)sqlite3_malloc( nOrder + 1 );
+    for( ; i < nCount; i++ )
+    {
+        *pszId = '\0';
+        sprintf( pszId, "%d", panFids[i] );
+        assert( strlen( pszId ) + strlen( pszSql ) < nSize - 1 );
+        pszSql = strcat( pszSql, pszId );
+        if( i < nCount - 1 )
+            pszSql = strcat( pszSql, "," );
+    }
+    sqlite3_free( pszId );
+    pszSql = (char*)sqlite3_realloc( pszSql, strlen( pszSql ) + 1 );
+    return pszSql;
+}
+
+const char *
+WfipsData::BuildAgencySet( int nAgencyFlags )
 {
     if( nAgencyFlags == 0 )
     {
@@ -403,6 +447,7 @@ WfipsData::WriteRescDb( const char *pszPath, int *panIds, int *panDispLocIds,
     {
         sqlite3_finalize( stmt );
         sqlite3_close( db );
+        sqlite3_close( rdb );
         return rc;
     }
     pszSchema = sqlite3_mprintf( "%s", (char*)sqlite3_column_text( stmt, 0 ) );
@@ -411,6 +456,7 @@ WfipsData::WriteRescDb( const char *pszPath, int *panIds, int *panDispLocIds,
     assert( rc == SQLITE_OK );
     sqlite3_free( pszSchema );
 
+    /* XXX: USE NEW FX() */
     pszRescSet = sqlite3_mprintf( "%d", panIds[0] );
     for( i = 1; i < nCount; i++ )
     {
@@ -475,6 +521,8 @@ WfipsData::WriteRescDb( const char *pszPath, int *panIds, int *panDispLocIds,
         }
         rc = sqlite3_exec( rdb, "COMMIT", NULL, NULL, NULL );
         rc = sqlite3_exec( rdb, "DETACH disploc", NULL, NULL, NULL );
+        rc = sqlite3_finalize( sstmt );
+        rc = sqlite3_finalize( ustmt );
     }
     if( bUseExtResc )
     {

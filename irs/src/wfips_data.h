@@ -167,6 +167,7 @@ public:
     int TestBuildAgencySet3();
     int TestBuildAgencySet4();
     int TestBuildAgencySet5();
+    int TestFidSet1();
 
 private:
     void Init();
@@ -182,6 +183,7 @@ private:
     sqlite3 *db;
 
     const char * BuildAgencySet( int nAgencyFlags );
+    char * BuildFidSet( int *panFids, int nCount );
     /* scratch strings */
     char* GetScrapBuffer();
     char szScrap[WFIPS_SCRAP_BUFFER_SIZE][MAX_PATH];
