@@ -1249,7 +1249,7 @@ bool CRunScenario::DeployResources( int Debugging, int f, int scenario )
                         double MoveLevel =	1.5 - ATTpp.level;
                         bool OutSeason =  ATTpp.outOfSeason;
                         if ( MoveLevel > 0 )
-                            PrepositionResourceIA( RescType, MoveLevel, OutSeason, f );
+                            PrepositionResourceIA( RescType, MoveLevel, OutSeason, m_VFire[f].GetJulianDay() );
                 }
 
 		else	{		// Determine if the fire is on a new day and reset some of the values accordingly
@@ -1263,6 +1263,34 @@ bool CRunScenario::DeployResources( int Debugging, int f, int scenario )
 				for ( int i = 0; i < VNodes.size(); i++ )
 					m_DispTree.Element(VNodes[i])->ResetNewDay( JulianPast );
 
+				// Calculate the resource usage values for the last fire day
+				// Get a list of the dispatch location dispatchers all external nodes
+				vector< OmffrNode< CDispatchBase* >* > DLNodes = m_DispTree.GetExternalNodes( m_DispTree.Root(), -1 );
+
+				// Create Null vector of tree nodes to send to dispatch location dispatcher's function
+				vector< CDispatchBase* > NullNodes;
+
+				for (int i = 0; i < DLNodes.size(); i++)	{
+					// Calculate the daily usage level for the dispatch location based on the levels at 12:01
+					m_DispTree.Element(DLNodes[i])->CalcDailyUsageLevel(JulianPast, NullNodes);
+				}
+
+				// Get a list of the internal node dispatchers and update their current resources available level
+				VNodes = GetInternalNodes( m_DispTree.Root() );
+				VNodes = OrderNodesRootLast( VNodes );
+
+				// Iterate through the internal nodes and update the current resources available level
+				for ( int i = 0; i < VNodes.size(); i++ )	{
+					// Get the external nodes to the node
+					vector< OmffrNode< CDispatchBase* >* > ExNodes = m_DispTree.GetExternalNodes( VNodes[i], -1 );
+					vector < CDispatchBase* > ExDispatchers;
+					for ( int j = 0; j < ExNodes.size(); j++ )
+						ExDispatchers.push_back( m_DispTree.Element( ExNodes[j] ) );
+
+					// Determine the resource usage, the number of deploys divided by the number of resources for the dispatch locations below the node
+					m_DispTree.Element(VNodes[i])->CalcDailyUsageLevel(JulianPast, ExDispatchers);
+				}
+
 				// If the fire day is not the day after the previous fire day, Calculate the resource availability for the days in between
 				JulianPast++;
 
@@ -1271,20 +1299,15 @@ bool CRunScenario::DeployResources( int Debugging, int f, int scenario )
 					// Use time 0001 to determine highest level of unavailable resources
 					int timeYear = ( JulianPast - 1 ) * 1440 + 1;
 
-					// Create Null vector of tree nodes to send to dispatch location dispatcher's function
-					vector< CDispatchBase* > NullNodes;
-
-					// Get a list of the dispatch location dispatchers all external nodes
-					vector< OmffrNode< CDispatchBase* >* > DLNodes = m_DispTree.GetExternalNodes( m_DispTree.Root(), -1 );
-
 					// Iterate through the dispatch location dispatchers and update the current resources available level without the resources in the deployed resources list
-					for ( int i = 0; i < DLNodes.size(); i++ )	
+					for ( int i = 0; i < DLNodes.size(); i++ )	{
+						// Calcualte the Current Resource Level at the dispatch locations at 12:01 for the day
 						m_DispTree.Element( DLNodes[i] )->DetermineCurRescLevel( timeYear, NullNodes );
-						
-					// Get a list of the internal node dispatchers and update their current resources available level
-					vector< OmffrNode< CDispatchBase* >* > VNodes = GetInternalNodes( m_DispTree.Root() );
-					VNodes = OrderNodesRootLast( VNodes );
 
+						// Calculate the daily usage level for the dispatch location based on the levels at 12:01
+						m_DispTree.Element(DLNodes[i])->CalcDailyUsageLevel(JulianPast, NullNodes);
+					}
+						
 					// Iterate through the internal nodes and update the current resources available level
 					for ( int i = 0; i < VNodes.size(); i++ )	{
 						// Get the external nodes to the node
@@ -1293,7 +1316,11 @@ bool CRunScenario::DeployResources( int Debugging, int f, int scenario )
 						for ( int j = 0; j < ExNodes.size(); j++ )
 							ExDispatchers.push_back( m_DispTree.Element( ExNodes[j] ) );
 
+						// Determine the number of resources, by type, where the level is the sum of the resources at the dispatch locations below the node
 						m_DispTree.Element( VNodes[i] )->DetermineCurRescLevel( timeYear, ExDispatchers );
+
+						// Determine the resource usage, the number of deploys divided by the number of resources for the dispatch locations below the node
+						m_DispTree.Element(VNodes[i])->CalcDailyUsageLevel(JulianPast, ExDispatchers);
 					}
 
 					// Reset the Daily minimum resource levels for each dispatcher
@@ -2008,7 +2035,12 @@ bool CRunScenario::DeployResources( int Debugging, int f, int scenario )
 
 				}
 
-			}		// End fire end time is greater than sunrise or is ground resource	
+			}		// End fire end time is greater than sunrise or is ground resource
+			
+			// Update the count of the number of dispatches for the day for the DLDispatcher the resource is located at
+			string dispLocId = (*Iterator)->GetCurrentLocation();
+			int julian = m_VFire[f].GetJulianDay();
+			UpdateDLDispatcherDispatchCount(dispLocId, julian);
 		}
 		// Print the resource work year information to file if debuggings is set on
 	if ( Debugging > 0 )
@@ -2214,6 +2246,7 @@ try{
 		{
 			// Run each individual fire
 			int Julian = m_VFire[j].GetJulianDay();
+			assert( Julian > 0 && Julian < 366 );
 			DeployResources( Debugging, j, Scenario );
 			//cout << "Run Fire: " << j << "\n";
                         if(pfnProgress)
@@ -9301,6 +9334,27 @@ std::map<std::string, double> CRunScenario::GetSingleResourceUsage()
         usage[(*it)->GetRescID()] += minutes / nDays;
     }
     return usage;
+}
+
+// Update the count for the resources deployed from the DLDispatcher for the day
+bool CRunScenario::UpdateDLDispatcherDispatchCount(string dispLocId, int Julian)
+{
+	// Get the DLdispatcher for the dispatch location
+	map< string, OmffrNode< CDispatchBase* >* >::iterator It = m_DispMap.find( dispLocId );
+
+	OmffrNode< CDispatchBase* > *Node;
+
+	if ( It != m_DispMap.end() )	{
+		Node = It->second;
+
+		// Set the values for the internal node
+		m_DispTree.Element( Node )->AddDailyDispatch(Julian);
+
+		return true;
+	}
+
+	else
+		return false;
 }
 
 #if defined(OMFFR) && defined(__GNUC__)

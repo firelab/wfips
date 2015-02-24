@@ -68,6 +68,15 @@ public:
 	vector< double > GetPreviousLevelVector();				//get the previous level vector
 	void SetPreviousLevel( double previouslevel, int Julian );	//set the previous work load level
 	double GetPreviousLevel( int Julian );					//get the previous work load level
+	void SetDailyUsageLevel(vector<double> dailyusagelevel);	//set the daily usage level vector with a vector
+	vector<double> GetDailyUsageLevel();					//get the daily usage level vector
+	void SetDailyUsage(double dailyusage, int Julian);		//set the daily usage level for a julian day
+	double GetDailyUsage(int Julian);						//get the daily usage level for a julian day
+	void SetDailyDispatchLevelVector(vector<int> dailydispatchlevel);	//set the daily dispatch level vector with a vector
+	vector<int> GetDailyDisaptchLevelVector();				//get the daily dispatch level vector
+	void SetDailyDispatchLLevel(int dailydispatchlevel, int Julian);	//set a day of the daily dispatch level
+	int GetDailyDispatchLevel(int Julian);					//get the daily dispatch level for a given julian day
+	void AddDailyDispatch(int Julian, int numberdispatches = 1);	//add dispatches to the daily dispatch level
 	void SetEscapeLevelVector( vector< int > escapelevel ); //set the exscape levels vector
 	vector< int > GetEscapeLevelVector();					//get the escape level vector
 	void SetEscapeLevel( int escapelevel, int Julian );		//set the escape fire level
@@ -91,7 +100,7 @@ public:
 	virtual void DetermineBaseRescLevel( vector< CDispatchBase* > VDispatchers );	//determine base resource level for a dispatcher.  For internal nodes need to be sure to calculated values for all subnodes first
 	void ClearEscapes();									// Clear the temporary list of escape fires for the node
 	void AddEscape( CEscape Escape );						// Add an escape fire to the list in the proper order
-
+	virtual bool CalcDailyUsageLevel(int Julian, vector<CDispatchBase*> VDispatchers);					// Calcualte the daily usage for the dispatch location dispatcher
 
 private:
 	string m_DispatcherID;									//unique id for the dispatcher
@@ -101,6 +110,8 @@ private:
 	vector< int > m_DailyMinRescLevel;						//The minimum number of resources available by each dispatch type that occured during the day
 	vector< double > m_VExpectLevel;						//expected work load level for the dispatcher
 	vector< double > m_VPreviousLevel;						//previous work load level for the dispatcher
+	vector<double> m_VDailyUsage;							//tracks the daily usage of resources (number of dispatches/number of resources)
+	vector<int> m_VDailyDispatches;							//vector with the number of dispatches per julian day
 	vector< int > m_VEscapeLevel;							//escape fire level for the dispatcher
 	vector< int > m_VDispLogicUnfilled;						//level of fires with unfilled dispatch logic
 	int m_SeasonStart;										//Start date for the fire season

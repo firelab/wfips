@@ -211,6 +211,8 @@ public:
         int GetNextLoadArrival(int carrierindex );                                              // get the next load arrival time for a carrier
         bool IsInList( std::list< int > Thelist, int item );                    // is the integer in the list?
 
+		bool UpdateDLDispatcherDispatchCount(string dispLocId, int Julian);		// Increase by one the deployed resources count for the day for the dispatch location
+
         inline std::vector<CResource*>& GetResourceRef() {return m_VResource;}
         inline std::vector<CDispLoc>& GetDispLocRef() {return m_VDispLoc;}
         inline std::vector<CRescType>& GetRescTypeRef() {return m_VRescType;}

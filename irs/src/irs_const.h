@@ -32,7 +32,7 @@
 
 #ifndef OMFFR_DB_DBG
 #ifdef WIN32
-#define OMFFR_DB_DBG "C:/Users/ksshannon/Documents/GitHub/build/data/omffr.sqlite"
+#define OMFFR_DB_DBG "c:/src/wfips/data/omffr.sqlite"
 #ifdef IRS_DIANE_BUILD
 #undef OMFFR_DB_DBG
 #define OMFFR_DB_DBG "C:/src/omffr/data/omffr.sqlite"

@@ -122,8 +122,9 @@ public:
 	bool WRGuidelinesMet( int firestarttimeMSM, int julian, int &prevfiretime, int &prevresttime );	 //determine if the work rest guideline has been met before this firestarts
 	void ClearRescWorkYear();							//clear the resource work year information for the resource
 	virtual int SumRescWorkYear();						//get the total number of minutes in the resource work year
-        void SetDbId(int nId);
+	    void SetDbId(int nId);
         int GetDbId() {return nDbId;}
+
 
 private:
 	string m_RescID;									//unique id for the resource

@@ -1814,3 +1814,26 @@ double CDLDispatcher::CalculateDistance( CFire fire, CalcDistance CalcDistMethod
 	return distance;
 
 }
+
+
+bool CDLDispatcher::CalcDailyUsageLevel(int Julian, vector<CDispatchBase*> VDisaptchers)
+{
+	// Get the number of resources at the dispatch location dispatcher 
+	vector<int> numResources = GetCurRescLevel();
+
+	int count = 0;
+	for (int i = 0; i < numResources.size(); i++)
+		count = count + numResources[i];
+
+	// Get the number of resources deployed
+	int deployed = GetDailyDispatchLevel(Julian);
+
+	if (count == 0 || deployed == 0)
+		SetDailyUsage(0,Julian);
+	else	{
+		double dailyUsage = static_cast<double>(deployed)/count;
+		SetDailyUsage(dailyUsage, Julian);
+	}
+
+	return true;
+}
