@@ -310,8 +310,8 @@ WfipsData::BuildFidSet( int *panFids, int nCount )
         return NULL;
     }
     int nSize = (nCount * (nOrder + 1)) + 1;
-    char *pszSql = (char*)sqlite3_malloc( nSize );
-    *pszSql = '\0';
+    char *pszSet = (char*)sqlite3_malloc( nSize );
+    *pszSet = '\0';
     int i = 0;
     int n = 0;
     char *pszId = (char*)sqlite3_malloc( nOrder + 1 );
@@ -319,14 +319,14 @@ WfipsData::BuildFidSet( int *panFids, int nCount )
     {
         *pszId = '\0';
         sprintf( pszId, "%d", panFids[i] );
-        assert( strlen( pszId ) + strlen( pszSql ) < nSize - 1 );
-        pszSql = strcat( pszSql, pszId );
+        assert( strlen( pszId ) + strlen( pszSet ) < nSize - 1 );
+        pszSet = strcat( pszSet, pszId );
         if( i < nCount - 1 )
-            pszSql = strcat( pszSql, "," );
+            pszSet = strcat( pszSet, "," );
     }
     sqlite3_free( pszId );
-    pszSql = (char*)sqlite3_realloc( pszSql, strlen( pszSql ) + 1 );
-    return pszSql;
+    pszSet = (char*)sqlite3_realloc( pszSet, strlen( pszSet ) + 1 );
+    return pszSet;
 }
 
 const char *
@@ -363,11 +363,26 @@ WfipsData::BuildAgencySet( int nAgencyFlags )
 
 int
 WfipsData::GetAssociatedResources( int *panDispLocIds, int nDispLocCount,
-                                    RescLoc **ppsLoc, int *pnRescLocCount,
-                                    int nAgencyFlags )
+                                   RescLoc **ppsLoc, int *pnRescLocCount,
+                                   int nAgencyFlags )
 {
     assert( pnRescLocCount );
-    const char *pszSet = BuildAgencySet( nAgencyFlags );
+    const char *pszAgencySet = BuildAgencySet( nAgencyFlags );
+    char *pszDispSet = BuildFidSet( panDispLocIds, nDispLocCount );
+    sqlite3_stmt *stmt;
+    char *pszSql;
+    int nCount, n, i, rc;
+    rc = sqlite3_prepare_v2( db, "SELECT COUNT(*) FROM resource",
+                             -1, &stmt, NULL );
+    rc = sqlite3_step( stmt );
+    nCount = sqlite3_column_int( stmt, 0 );
+    *ppsLoc = (RescLoc*)sqlite3_malloc( sizeof( RescLoc ) * nCount );
+
+    sqlite3_finalize( stmt );
+
+    pszSql = sqlite3_mprintf( "SELECT ROWID FROM resource WHERE " \
+                              "disploc IN(%s)", pszDispSet );
+    sqlite3_prepare_v2( db, pszSql, -1, &stmt, NULL );
 
     return 0;
 }
