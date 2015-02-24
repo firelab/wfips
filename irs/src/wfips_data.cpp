@@ -224,13 +224,13 @@ WfipsData::ExecuteSql( const char *pszSql )
 int
 WfipsData::GetAssociatedDispLoc( const char *pszWkt,
                                  int **panDispLocIds,
-                                 int *nCount
+                                 int *pnCount
                                  /*,IRSProgress pfnProgress*/ )
 {
-    assert( nCount );
+    assert( pnCount );
     if( bSpatialiteEnabled == 0 )
     {
-        *nCount = 0;
+        *pnCount = 0;
         return SQLITE_ERROR;
     }
     int rc;
@@ -280,14 +280,55 @@ WfipsData::GetAssociatedDispLoc( const char *pszWkt,
         (*panDispLocIds)[i++] = sqlite3_column_int( stmt, 0 );
     }
     *panDispLocIds = (int*)sqlite3_realloc( (*panDispLocIds), sizeof( i ) * i );
-    *nCount = i;
+    *pnCount = i;
     sqlite3_finalize( stmt );
     sqlite3_free( pAnalysisGeometry );
     return SQLITE_OK;
 }
 
-void
-WfipsData::Free( void *p )
+const char * WfipsData::BuildAgencySet( int nAgencyFlags )
+{
+    if( nAgencyFlags == 0 )
+    {
+        nAgencyFlags = AGENCY_ALL;
+    }
+    char *pszSet = GetScrapBuffer();
+    /* Count the flags for our commas */
+    int i, n;
+    n = 0;
+    for( i = 1; i < 7; i++ )
+    {
+        if( nAgencyFlags & 1 << i )
+            n++;
+    }
+
+    for( i = 1; i < 7; i++ )
+    {
+        if( nAgencyFlags & 1 << i )
+        {
+            strncat( pszSet, aszAgencyNames[i], MAX_PATH );
+            n--;
+            if( n )
+            {
+                strncat( pszSet, ",", MAX_PATH );
+            }
+        }
+    }
+    return pszSet;
+}
+
+int
+WfipsData::GetAssociatedResources( int *panDispLocIds, int nDispLocCount,
+                                    RescLoc **ppsLoc, int *pnRescLocCount,
+                                    int nAgencyFlags )
+{
+    assert( pnRescLocCount );
+    const char *pszSet = BuildAgencySet( nAgencyFlags );
+
+    return 0;
+}
+
+void WfipsData::Free( void *p )
 {
     sqlite3_free( p );
 }

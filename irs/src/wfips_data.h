@@ -84,11 +84,30 @@
 #define DOI_FWS               (1 << 4)
 #define DOI_NPS               (1 << 5)
 #define STATE_LOCAL           (1 << 6)
-#define REGIONAL              (1 << 7)
+//#define REGIONAL              (1 << 7)
 #define DOI_ALL               (DOI_BIA | DOI_BLM | DOI_FWS | DOI_NPS)
 #define FED_ALL               (USFS | DOI_ALL)
 #define AGENCY_ALL            (FED_ALL | STATE_LOCAL)
 #define AGENCY_OTHER          (AGENCY_ALL &~ FED_ALL)
+
+/*
+** Identifiers for resources in sql. NULL padded to align with shifts above.
+*/
+static const char *aszAgencyNames[] = { NULL,
+                                        "'FS'",
+                                        "'BIA'",
+                                        "'BLM'",
+                                        "'FWS'",
+                                        "'NPS'",
+                                        "'STATE/LOCAL'" };
+
+typedef struct RescLoc RescLoc;
+struct RescLoc
+{
+    int nDispLocId;
+    int *panRescIds;
+    int nRescCount;
+};
 
 static const char *apszDbFiles[] = {ASSOC_DB,
                                     COST_DB,
@@ -126,7 +145,11 @@ public:
     int ExecuteSql( const char *pszSql );
     int GetAssociatedDispLoc( const char *pszWkt,
                               int **panDispLocIds,
-                              int *nCount );
+                              int *pnCount );
+
+    int GetAssociatedResources( int *panDispLocIds, int nDispLocCount,
+                                RescLoc **ppsLoc, int *pnRescLocCount,
+                                int nAgencyFlags );
 
     int Valid() { return bValid; }
     int SpatialiteEnabled() { return bSpatialiteEnabled; }
@@ -137,6 +160,13 @@ public:
                      int nCount );
 
     static void Free( void *p );
+
+    /* Test private fx */
+    int TestBuildAgencySet1();
+    int TestBuildAgencySet2();
+    int TestBuildAgencySet3();
+    int TestBuildAgencySet4();
+    int TestBuildAgencySet5();
 
 private:
     void Init();
@@ -151,6 +181,7 @@ private:
     int bSpatialiteEnabled;
     sqlite3 *db;
 
+    const char * BuildAgencySet( int nAgencyFlags );
     /* scratch strings */
     char* GetScrapBuffer();
     char szScrap[WFIPS_SCRAP_BUFFER_SIZE][MAX_PATH];

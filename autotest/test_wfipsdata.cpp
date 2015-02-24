@@ -176,5 +176,40 @@ BOOST_AUTO_TEST_CASE( assoc_disploc_1 )
     BOOST_CHECK( rc > 0 );
 }
 
+BOOST_AUTO_TEST_CASE( build_set_1 )
+{
+    WfipsData *poData = new WfipsData("/home/kyle/src/wfips/build");
+    BOOST_CHECK_EQUAL( poData->TestBuildAgencySet1(), 0 );
+    delete poData;
+}
+
+BOOST_AUTO_TEST_CASE( build_set_2 )
+{
+    WfipsData *poData = new WfipsData("/home/kyle/src/wfips/build");
+    BOOST_CHECK_EQUAL( poData->TestBuildAgencySet2(), 0 );
+    delete poData;
+}
+
+BOOST_AUTO_TEST_CASE( build_set_3 )
+{
+    WfipsData *poData = new WfipsData("/home/kyle/src/wfips/build");
+    BOOST_CHECK_EQUAL( poData->TestBuildAgencySet3(), 0 );
+    delete poData;
+}
+
+BOOST_AUTO_TEST_CASE( build_set_4 )
+{
+    WfipsData *poData = new WfipsData("/home/kyle/src/wfips/build");
+    BOOST_CHECK_EQUAL( poData->TestBuildAgencySet4(), 0 );
+    delete poData;
+}
+
+BOOST_AUTO_TEST_CASE( build_set_5 )
+{
+    WfipsData *poData = new WfipsData("/home/kyle/src/wfips/build");
+    BOOST_CHECK_EQUAL( poData->TestBuildAgencySet5(), 0 );
+    delete poData;
+}
+
 BOOST_AUTO_TEST_SUITE_END() /* irs */
 
