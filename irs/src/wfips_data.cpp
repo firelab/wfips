@@ -200,12 +200,10 @@ WfipsData::ExecuteSql( const char *pszSql )
     sqlite3_stmt *stmt;
     int rc;
     rc = sqlite3_prepare_v2( db, pszSql, -1, &stmt, NULL );
-    while( sqlite3_step( stmt ) == SQLITE_ROW )
-    {
-        printf("SQLITE_ROW\n");
-    }
+    rc = sqlite3_step( stmt );
     sqlite3_finalize( stmt );
     stmt = NULL;
+    rc = rc == SQLITE_ROW || rc == SQLITE_DONE ? 0 : 1;
     return rc;
 }
 
@@ -305,12 +303,12 @@ WfipsData::BuildFidSet( int *panFids, int nCount )
 
     sqlite3_finalize( stmt );
 
-    if( nOrder > 10 )
+    int nSize = (nCount * (nOrder + 1)) + 1;
+    char *pszSet = (char*)sqlite3_malloc( nSize );
+    if( pszSet == NULL )
     {
         return NULL;
     }
-    int nSize = (nCount * (nOrder + 1)) + 1;
-    char *pszSet = (char*)sqlite3_malloc( nSize );
     *pszSet = '\0';
     int i = 0;
     int n = 0;
