@@ -360,7 +360,7 @@
          <enum>QFrame::Plain</enum>
         </property>
         <property name="currentIndex">
-         <number>8</number>
+         <number>7</number>
         </property>
         <widget class="QWidget" name="dataPage">
          <layout class="QVBoxLayout" name="verticalLayout_13">
@@ -1357,7 +1357,7 @@
         <widget class="QWidget" name="page_2">
          <layout class="QVBoxLayout" name="verticalLayout_6">
           <item>
-           <widget class="QGroupBox" name="fuelTreatSpatialGroupBox_2">
+           <widget class="QGroupBox" name="manageGroupBox">
             <property name="title">
              <string>Management Objectives</string>
             </property>
@@ -1374,12 +1374,12 @@
                 <widget class="QComboBox" name="fuelComboBox_2">
                  <item>
                   <property name="text">
-                   <string>Random Treatment</string>
+                   <string>Something Response</string>
                   </property>
                  </item>
                  <item>
                   <property name="text">
-                   <string>Spatial fuel treatment</string>
+                   <string>Something Spatial Response</string>
                   </property>
                  </item>
                 </widget>
