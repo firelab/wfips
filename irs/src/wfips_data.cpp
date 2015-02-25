@@ -408,7 +408,8 @@ WfipsData::GetAssociatedResources( int *panDispLocIds, int nDispLocCount,
     return 0;
 }
 
-void WfipsData::FreeAssociatedResources( WfipsResc *psResc, int nCount )
+void
+WfipsData::FreeAssociatedResources( WfipsResc *psResc, int nCount )
 {
     int i;
     if( !psResc )
