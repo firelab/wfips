@@ -104,16 +104,9 @@ typedef struct WfipsResc WfipsResc;
 struct WfipsResc
 {
     int nId;
+    char *pszDispLoc;
     char *pszName;
-    char *psztype;
-};
-
-typedef struct RescLoc RescLoc;
-struct RescLoc
-{
-    int nDispLocId;
-    WfipsResc *psRescList;
-    int nRescCount;
+    char *pszType;
 };
 
 static const char *apszDbFiles[] = {ASSOC_DB,
@@ -155,7 +148,7 @@ public:
                               int *pnCount );
 
     int GetAssociatedResources( int *panDispLocIds, int nDispLocCount,
-                                RescLoc **ppsLoc, int *pnRescLocCount,
+                                WfipsResc **ppsResc, int *pnRescLocCount,
                                 int nAgencyFlags );
 
     int Valid() { return bValid; }
@@ -166,6 +159,7 @@ public:
                      int *panDispLocIds,
                      int nCount );
 
+    static void FreeAssociatedResources( WfipsResc *psResc, int nCount );
     static void Free( void *p );
 
     /* Test private fx */

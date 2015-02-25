@@ -224,5 +224,57 @@ BOOST_AUTO_TEST_CASE( build_fid_set_1 )
     delete poData;
 }
 
+BOOST_AUTO_TEST_CASE( assoc_resource_1 )
+{
+    WfipsData *poData = new WfipsData("/home/kyle/src/wfips/build");
+    int rc = poData->Open();
+    BOOST_CHECK( poData->Valid() == 1 );
+    BOOST_CHECK( rc == 0 );
+    int anIds[] = {1,2,3,4,5,6,7,8,9,10};
+    WfipsResc *psResc;
+    int nCount;
+    rc = poData->GetAssociatedResources( anIds, 10, &psResc, &nCount, AGENCY_ALL );
+    poData->Close();
+    delete poData;
+    WfipsData::FreeAssociatedResources( psResc, nCount );
+    BOOST_REQUIRE( nCount > 0 );
+    BOOST_CHECK( rc == 0 );
+}
+
+BOOST_AUTO_TEST_CASE( assoc_resource_2 )
+{
+    WfipsData *poData = new WfipsData("/home/kyle/src/wfips/build");
+    int rc = poData->Open();
+    BOOST_CHECK( poData->Valid() == 1 );
+    BOOST_CHECK( rc == 0 );
+    int anIds[] = {1,2,3,4,5,6,7,8,9,10};
+    WfipsResc *psResc;
+    int nCount;
+    rc = poData->GetAssociatedResources( anIds, 10, &psResc, &nCount, USFS );
+    poData->Close();
+    delete poData;
+    WfipsData::FreeAssociatedResources( psResc, nCount );
+    BOOST_REQUIRE( nCount == 0 );
+    BOOST_CHECK( rc == 0 );
+}
+
+BOOST_AUTO_TEST_CASE( assoc_resource_3 )
+{
+    WfipsData *poData = new WfipsData("/home/kyle/src/wfips/build");
+    int rc = poData->Open();
+    BOOST_CHECK( poData->Valid() == 1 );
+    BOOST_CHECK( rc == 0 );
+    int anIds[] = {1,2,3,4,5,6,7,8,9,10};
+    WfipsResc *psResc;
+    int nCount;
+    rc = poData->GetAssociatedResources( anIds, 10, &psResc, &nCount, DOI_BLM );
+    poData->Close();
+    delete poData;
+    WfipsData::FreeAssociatedResources( psResc, nCount );
+    BOOST_REQUIRE( nCount > 0 );
+    BOOST_CHECK( rc == 0 );
+}
+
+
 BOOST_AUTO_TEST_SUITE_END() /* irs */
 
