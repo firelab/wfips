@@ -43,6 +43,8 @@
 
 #include "wfipsguiutil.h"
 
+#include "wfips_data.h"
+
 #define WFIPS_RESC_SUBSET_OMIT      0
 #define WFIPS_RESC_SUBSET_INCLUDE   1
 #define WFIPS_RESC_SUBSET_ALL       2
@@ -70,7 +72,7 @@ public:
     WfipsDispatchEditDialog( QStringList stringList, QWidget *parent = 0 );
     ~WfipsDispatchEditDialog();
 
-    void SetModel( const QMap<QgsFeatureId, QString> &map );
+    void SetModel( const QMap<QgsFeatureId, QString> &map, int agencyFilter );
     void SelectFids( QgsFeatureIds fids );
 
     void SetDataPath( QString path );
@@ -89,7 +91,7 @@ private:
     QgsFeatureIds GetFidsFromNames( QStringList names );
 
     QMap< QString, QList<WfipsResource> > rescAtLocMap;
-    int PopulateRescMap();
+    int PopulateRescMap( int nAgencyFlag );
     QStringList rescTypes;
 
     QgsFeatureIds GetResourceFids( int subset );

@@ -397,7 +397,7 @@ WfipsData::GetAssociatedResources( int *panDispLocIds, int nDispLocCount,
             (*ppsResc)[n].pszDispLoc = sqlite3_mprintf( "%s", sqlite3_column_text( stmt, 0 ) );
             (*ppsResc)[n].nId = sqlite3_column_int( stmt, 1 );
             (*ppsResc)[n].pszName = sqlite3_mprintf( "%s", sqlite3_column_text( stmt, 2 ) );
-            (*ppsResc)[n].pszType = sqlite3_mprintf( "%s", sqlite3_column_text( stmt, 2 ) );
+            (*ppsResc)[n].pszType = sqlite3_mprintf( "%s", sqlite3_column_text( stmt, 3 ) );
             n++;
         }
         sqlite3_reset( stmt );

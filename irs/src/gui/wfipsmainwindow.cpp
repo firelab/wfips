@@ -1058,7 +1058,14 @@ void WfipsMainWindow::SetAnalysisArea()
     ui->progressBar->reset();
     this->statusBar()->showMessage( "Found" + fids.size() + QString( " locations." ), 3000 );
     qDebug() << "Found" << fids.size() << "dispatch locations within the analysis area";
-    dispatchEditDialog->SetModel( dispatchLocationMap );
+    int agencies = 0;
+    if( ui->agencyRescUsfsCheckBox->isChecked() )
+        agencies |= USFS;
+    if( ui->agencyRescDoiCheckBox->isChecked() )
+        agencies |= DOI_ALL;
+    if( ui->agencyRescStateCheckBox->isChecked() )
+        agencies |= STATE_LOCAL;
+    dispatchEditDialog->SetModel( dispatchLocationMap, agencies );
 
     dispatchLocationMemLayer = WfipsCopyToMemLayer( layer, fids );
     assert( dispatchLocationMemLayer->isValid() );
