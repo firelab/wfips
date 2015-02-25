@@ -326,6 +326,7 @@ WfipsData::BuildFidSet( int *panFids, int nCount )
     }
     sqlite3_free( pszId );
     pszSet = (char*)sqlite3_realloc( pszSet, strlen( pszSet ) + 1 );
+    /* To be free'd by the caller */
     return pszSet;
 }
 
@@ -471,15 +472,7 @@ WfipsData::WriteRescDb( const char *pszPath, int *panIds, int *panDispLocIds,
     assert( rc == SQLITE_OK );
     sqlite3_free( pszSchema );
 
-    /* XXX: USE NEW FX() */
-    pszRescSet = sqlite3_mprintf( "%d", panIds[0] );
-    for( i = 1; i < nCount; i++ )
-    {
-        sprintf( szRescId, "%d", panIds[i] );
-        n = strlen( szRescId ) + 1;
-        pszRescSet = (char*)sqlite3_realloc( pszRescSet, strlen( pszRescSet ) + n + 1 );
-        sprintf( pszRescSet, "%s,%d", pszRescSet, panIds[i] );
-    }
+    pszRescSet = BuildFidSet( panIds, nCount );
 
     const char *pszBaseRescPath;
     if( bUseExtResc )

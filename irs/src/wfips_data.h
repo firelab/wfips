@@ -100,12 +100,19 @@ static const char *aszAgencyNames[] = { NULL,
                                         "'FWS'",
                                         "'NPS'",
                                         "'STATE/LOCAL'" };
+typedef struct WfipsResc WfipsResc;
+struct WfipsResc
+{
+    int nId;
+    char *pszName;
+    char *psztype;
+};
 
 typedef struct RescLoc RescLoc;
 struct RescLoc
 {
     int nDispLocId;
-    int *panRescIds;
+    WfipsResc *psRescList;
     int nRescCount;
 };
 
