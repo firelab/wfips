@@ -934,13 +934,15 @@ void WfipsMainWindow::SetAnalysisArea()
     QgsVectorLayer *layer;
     layer =
         dynamic_cast<QgsVectorLayer*>( analysisAreaMapCanvas->currentLayer() );
-    if( layer == NULL || !layer->isValid() || selectedFids.size() < 1 )
+    if( layer == NULL || !layer->isValid() || selectedFids.size() < 1 ||
+        (selectedFids.size() == 1 && selectedFids.contains( -1 )  ) )
     {
         int rc;
         rc = QMessageBox::warning( this, tr("WFIPS" ),
                                tr( "No features have been selected on a valid " \
                                    "layer." ),
                                QMessageBox::Ok );
+        ui->setAnalysisAreaToolButton->setChecked( false );
 
         return;
     }

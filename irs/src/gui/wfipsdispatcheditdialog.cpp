@@ -310,9 +310,10 @@ QgsFeatureIds WfipsDispatchEditDialog::GetResourceFids( int subset )
             {
                 resc = (*it)->child( i )->data( 1, 0 ).toString();
                 j = 0;
-                while( resources[j].name != resc )
+                while( resources[j].name != resc && j < resources.size() )
                     j++;
-                fids.insert( resources[j].rowid );
+                if( j < resources.size() )
+                    fids.insert( resources[j].rowid );
             }
             i++;
         }
