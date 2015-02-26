@@ -77,6 +77,8 @@ public:
 
     void SetDataPath( QString path );
 
+    void Clear();
+
 private:
     Ui::WfipsDispatchEditDialog *ui;
 

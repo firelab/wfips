@@ -73,6 +73,13 @@ void WfipsDispatchEditDialog::SetModel( const QMap<qint64, QString> &map,
     PopulateRescMap( agencyFilter );
 }
 
+void WfipsDispatchEditDialog::Clear()
+{
+    map.clear();
+    rescAtLocMap.clear();
+    treeWidget->clear();
+}
+
 void WfipsDispatchEditDialog::SelectFids( QgsFeatureIds fids )
 {
     if( rescAtLocMap.size() == 0 )

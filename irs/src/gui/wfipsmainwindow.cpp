@@ -810,6 +810,7 @@ void WfipsMainWindow::ClearAnalysisAreaSelection()
     analysisAreaMapCanvas->refresh();
 
     ((WfipsSelectMapTool*)analysisSelectTool)->clear();
+    dispatchEditDialog->Clear();
 
     /* Dispatch Layer */
     if( dispatchMapCanvasLayers.size() > 0 )
