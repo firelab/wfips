@@ -1038,7 +1038,7 @@ void WfipsMainWindow::SetAnalysisArea()
     i = 0;
     while( !nFuture.isFinished() && i < 1000 )
     {
-        CPLSleep( 0.01 );
+        CPLSleep( 0.1 );
         ui->progressBar->setValue( 0 );
         QCoreApplication::processEvents();
         i++;
