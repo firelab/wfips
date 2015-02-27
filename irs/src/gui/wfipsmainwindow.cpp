@@ -523,57 +523,54 @@ void WfipsMainWindow::SetStackIndex( QTreeWidgetItem *current,
             ui->mapToolFrame->setEnabled( true );
             currentMapCanvas = analysisAreaMapCanvas;
             break;
-        case 3:
-            ui->stackedWidget->setCurrentIndex( 2 );
-            break;
         /* Resource map */
+        case 3:
         case 4:
-        case 5:
             ui->stackedWidget->setCurrentIndex( 3 );
             ui->mapToolFrame->setEnabled( true );
             currentMapCanvas = dispatchMapCanvas;
             break;
-        case 6:
+        case 5:
             ui->stackedWidget->setCurrentIndex( 4 );
             break;
-        case 7:
+        case 6:
             ui->stackedWidget->setCurrentIndex( 5 );
             break;
-        case 8:
+        case 7:
             ui->stackedWidget->setCurrentIndex( 6 );
             break;
-        case 9:
+        case 8:
             ui->stackedWidget->setCurrentIndex( 7 );
             break;
-        case 10:
+        case 9:
             ui->stackedWidget->setCurrentIndex( 8 );
             break;
-        case 11:
+        case 10:
             ui->stackedWidget->setCurrentIndex( 9 );
             break;
-        case 12:
+        case 11:
             ui->stackedWidget->setCurrentIndex( 10 );
             break;
-        case 13:
+        case 12:
             ui->stackedWidget->setCurrentIndex( 11 );
             break;
-        case 14:
+        case 13:
             ui->stackedWidget->setCurrentIndex( 12 );
             break;
-        case 15:
+        case 14:
             ui->stackedWidget->setCurrentIndex( 13 );
             break;
+        case 15:
         case 16:
         case 17:
         case 18:
         case 19:
-        case 20:
             break;
+        case 20:
         case 21:
         case 22:
         case 23:
         case 24:
-        case 25:
         /* 0 is the 'invisible root' */
         case 0:
         default:

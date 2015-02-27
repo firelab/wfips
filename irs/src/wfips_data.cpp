@@ -214,7 +214,7 @@ WfipsData::ExecuteSql( const char *pszSql )
 ** [in]  pszWkt           -> boundary to intersect with fwa geometry.
 ** [out] panDispLocIds    -> array of integers to be filled.
 ** [out] nCount           -> size of array filled.
-** XXX: [in]  pfnProgress -> optional progress function (to be implemented)
+** FIXME: [in]  pfnProgress -> optional progress function (to be implemented)
 *
 * Resulting int array should be freed with the static member WfipsData::Free(),
 * which is analagous to sqlite3_free().
