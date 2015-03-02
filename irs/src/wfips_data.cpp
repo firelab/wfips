@@ -275,15 +275,12 @@ WfipsData::GetAssociatedDispLoc( const char *pszWkt,
     n = sqlite3_column_int( stmt, 0 );
     *panDispLocIds = (int*)sqlite3_malloc( sizeof( int ) * n );
     sqlite3_finalize( stmt );
-    /* Compile the geometry */
-    rc = sqlite3_prepare_v2( db, "SELECT GeomFromText(?)", -1, &stmt, NULL );
-    rc = sqlite3_bind_text( stmt, 1, pszWkt, -1, NULL );
-    rc = sqlite3_step( stmt );
-    n = sqlite3_column_bytes( stmt, 0 );
-    p = sqlite3_column_blob( stmt, 0 );
-    pAnalysisGeometry = sqlite3_malloc( n );
-    memcpy( pAnalysisGeometry, p, n );
-    sqlite3_finalize( stmt );
+    pAnalysisGeometry = CompileGeometry( pszWkt );
+    if( pAnalysisGeometry == NULL )
+    {
+        *pnCount = 0;
+        return SQLITE_ERROR;
+    }
 
     /* Find the associated locations */
     rc = sqlite3_prepare_v2( db, "SELECT DISTINCT(disploc.ROWID) FROM " \
