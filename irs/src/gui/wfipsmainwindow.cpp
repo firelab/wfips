@@ -1265,6 +1265,12 @@ void WfipsMainWindow::SelectFuelMask()
     }
     QgsFields fields;
     fields = layer.pendingFields();
+    /*
+    ** XXX
+    ** Disable attribute selection for now, just use fixed.
+    ** XXX
+    */
+    return;
     for( int i = 0; i < fields.size(); i++ )
     {
         qDebug() << fields[i].name();
