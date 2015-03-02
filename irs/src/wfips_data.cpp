@@ -208,6 +208,34 @@ WfipsData::ExecuteSql( const char *pszSql )
 }
 
 /*
+** Compile a geometry into spatialite binary.  To be free'd by the caller using
+** sqlite3_free()
+*/
+void * WfipsData::CompileGeometry( const char *pszWkt )
+{
+    const void *p;
+    void *pCompiled;
+    int n, rc;
+    sqlite3_stmt *stmt;
+    rc = sqlite3_prepare_v2( db, "SELECT GeomFromText(?)", -1, &stmt, NULL );
+    WFIPS_CHECK_STATUS;
+    rc = sqlite3_bind_text( stmt, 1, pszWkt, -1, NULL );
+    WFIPS_CHECK_STATUS;
+    rc = sqlite3_step( stmt );
+    if( rc != SQLITE_ROW )
+        goto error;
+    n = sqlite3_column_bytes( stmt, 0 );
+    p = sqlite3_column_blob( stmt, 0 );
+    pCompiled = sqlite3_malloc( n );
+    memcpy( pCompiled, p, n );
+    sqlite3_finalize( stmt );
+    return pCompiled;
+error:
+    sqlite3_finalize( stmt );
+    return NULL;
+}
+
+/*
 ** Find all dispatch locations associated with any fwa intersecting the polygon
 ** defined by pszWkt.  Note that FPU boundaries and FWA boundaries were derived
 ** separately, and intersect frequently when they appear coincident.

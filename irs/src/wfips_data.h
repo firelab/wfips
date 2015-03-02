@@ -187,10 +187,15 @@ private:
 
     const char * BuildAgencySet( int nAgencyFlags );
     char * BuildFidSet( int *panFids, int nCount );
+
+    /* Treatment Mask */
     /* scratch strings */
     char* GetScrapBuffer();
     char szScrap[WFIPS_SCRAP_BUFFER_SIZE][MAX_PATH];
     int iScrap;
+
+    /* SQLite/Spatialite convenience */
+    void * CompileGeometry( const char *pszWkt );
 
     /* Diane's structs */
     //CRunScenario *poScen;
