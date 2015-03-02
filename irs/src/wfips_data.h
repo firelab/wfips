@@ -61,6 +61,7 @@
 #define COST_DB             "cost.db"
 #define DISPLOC_DB          "disploc.db"
 #define DISTRICT_DB         "district.db"
+#define FIG_DB              "fakefig.db"
 #define FOREST_DB           "forest.db"
 #define FPU_DB              "fpu.db"
 #define FWA_DB              "fwa.db"
