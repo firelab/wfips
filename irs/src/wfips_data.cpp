@@ -246,6 +246,9 @@ error:
 *
 * Resulting int array should be freed with the static member WfipsData::Free(),
 * which is analagous to sqlite3_free().
+*
+* This is primarily used for display, not loading data for the simulation.  The
+* GUI will need to know what locations are available for editing.
 */
 int
 WfipsData::GetAssociatedDispLoc( const char *pszWkt,
@@ -465,13 +468,19 @@ int WfipsData::Close()
 
 int WfipsData::SetRescDb( const char *pszPath )
 {
+    int rc;
+    char *pszSql = NULL;
     if( pszRescPath )
         sqlite3_free( pszRescPath );
     if( pszPath )
         pszRescPath = sqlite3_mprintf( "%s", pszPath );
     else
         pszRescPath = NULL;
-    return SQLITE_OK;
+    rc = sqlite3_exec( db, "DETACH resc", NULL, NULL, NULL );
+    pszSql = sqlite3_mprintf( "ATTACH %Q AS resc", pszPath );
+    rc = sqlite3_exec( db, pszSql, NULL, NULL, NULL );
+    sqlite3_free( pszSql );
+    return rc;
 }
 
 int
@@ -612,14 +621,13 @@ WfipsData::LoadScenario( int nYearIdx, const char *pszTreatWkt,
     void *pTreatGeom = NULL;
     if( pszTreatWkt != NULL )
     {
-        pszTreatSql = sqlite3_mprintf( "AND ST_Contains(@geom, geometry)" );/* AND " \
+        pszTreatSql = sqlite3_mprintf( "AND ST_Contains(@geom, geometry) AND " \
                                        "fig.ROWID IN(SELECT pkid FROM " \
                                        "idx_fig_geometry WHERE " \
                                        "xmin <= MbrMaxX(@geom) AND "
                                        "xmax >= MbrMinX(@geom) AND "
                                        "ymin <= MbrMaxY(@geom) AND "
                                        "ymax >= MbrMinY(@geom))" );
-                                       */
     }
     else
     {

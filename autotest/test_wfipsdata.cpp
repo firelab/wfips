@@ -243,6 +243,7 @@ BOOST_AUTO_TEST_CASE( load_scen_4 )
     const char *pszWkt = "POLYGON((-114 47, -113 47, -113 46, -114 46, -114 47))";
     a = poData->LoadScenario( 5, NULL, 1.0, 0 );
     b = poData->LoadScenario( 5, pszWkt, 1.0, 0 );
+    BOOST_CHECK( a != 0 && b != 0 );
     BOOST_CHECK( a > b );
     return;
 }
@@ -252,10 +253,22 @@ BOOST_AUTO_TEST_CASE( load_scen_5 )
     int a, b;
     a = poData->LoadScenario( 5, NULL, 1.0, AGENCY_ALL );
     b = poData->LoadScenario( 5, NULL, 1.0, DOI_BLM );
+    BOOST_CHECK( a != 0 && b != 0 );
     BOOST_CHECK( a > b );
     return;
 }
 
+BOOST_AUTO_TEST_CASE( set_resource_db_1 )
+{
+    int anIds[] = {1,2,3,4,5,6,7,8,9,10};
+    WfipsResc *psResc;
+    int nCount;
+    poData->SetRescDb( "/home/kyle/src/wfips/build/resc.db" );
+    int rc = poData->GetAssociatedResources( anIds, 10, &psResc, &nCount, AGENCY_ALL );
+    WfipsData::FreeAssociatedResources( psResc, nCount );
+    BOOST_REQUIRE( nCount > 0 );
+    BOOST_CHECK( rc == 0 );
+}
 
 BOOST_AUTO_TEST_SUITE_END() /* irs */
 
