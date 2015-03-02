@@ -355,7 +355,7 @@
          <enum>QFrame::Plain</enum>
         </property>
         <property name="currentIndex">
-         <number>10</number>
+         <number>9</number>
         </property>
         <widget class="QWidget" name="dataPage">
          <layout class="QVBoxLayout" name="verticalLayout_13">
@@ -1501,267 +1501,283 @@
         <widget class="QWidget" name="largeFirePage">
          <layout class="QVBoxLayout" name="verticalLayout_5">
           <item>
-           <widget class="QLabel" name="label_6">
-            <property name="text">
-             <string>Large Fire SImulation</string>
+           <widget class="QGroupBox" name="groupBox_3">
+            <property name="title">
+             <string>Simulate Large Fire Escapes</string>
             </property>
+            <property name="checkable">
+             <bool>true</bool>
+            </property>
+            <layout class="QVBoxLayout" name="verticalLayout_22">
+             <item>
+              <layout class="QHBoxLayout" name="horizontalLayout_24">
+               <item>
+                <widget class="QLabel" name="label_15">
+                 <property name="text">
+                  <string>Season Start</string>
+                 </property>
+                </widget>
+               </item>
+               <item>
+                <widget class="QDateEdit" name="largeFireStartDateEdit">
+                 <property name="date">
+                  <date>
+                   <year>2000</year>
+                   <month>6</month>
+                   <day>1</day>
+                  </date>
+                 </property>
+                 <property name="displayFormat">
+                  <string>d MMM</string>
+                 </property>
+                </widget>
+               </item>
+               <item>
+                <spacer name="horizontalSpacer_13">
+                 <property name="orientation">
+                  <enum>Qt::Horizontal</enum>
+                 </property>
+                 <property name="sizeHint" stdset="0">
+                  <size>
+                   <width>40</width>
+                   <height>20</height>
+                  </size>
+                 </property>
+                </spacer>
+               </item>
+               <item>
+                <widget class="QLabel" name="label_21">
+                 <property name="text">
+                  <string>Season End</string>
+                 </property>
+                </widget>
+               </item>
+               <item>
+                <widget class="QDateEdit" name="largeFireEndDateEdit">
+                 <property name="date">
+                  <date>
+                   <year>2000</year>
+                   <month>10</month>
+                   <day>1</day>
+                  </date>
+                 </property>
+                 <property name="displayFormat">
+                  <string>d MMM</string>
+                 </property>
+                </widget>
+               </item>
+              </layout>
+             </item>
+             <item>
+              <layout class="QHBoxLayout" name="horizontalLayout_50">
+               <item>
+                <widget class="QLabel" name="label_56">
+                 <property name="sizePolicy">
+                  <sizepolicy hsizetype="MinimumExpanding" vsizetype="Preferred">
+                   <horstretch>0</horstretch>
+                   <verstretch>0</verstretch>
+                  </sizepolicy>
+                 </property>
+                 <property name="text">
+                  <string>No Resources Sent</string>
+                 </property>
+                </widget>
+               </item>
+               <item>
+                <widget class="QSlider" name="noRescSentSlider">
+                 <property name="toolTip">
+                  <string>Percent of escapes sent to large fire simulation</string>
+                 </property>
+                 <property name="maximum">
+                  <number>100</number>
+                 </property>
+                 <property name="orientation">
+                  <enum>Qt::Horizontal</enum>
+                 </property>
+                </widget>
+               </item>
+               <item>
+                <widget class="QSpinBox" name="noRescSentSpinBox">
+                 <property name="toolTip">
+                  <string>Percent of escapes sent to large fire simulation</string>
+                 </property>
+                 <property name="accelerated">
+                  <bool>true</bool>
+                 </property>
+                 <property name="suffix">
+                  <string>%</string>
+                 </property>
+                 <property name="maximum">
+                  <number>100</number>
+                 </property>
+                </widget>
+               </item>
+              </layout>
+             </item>
+             <item>
+              <layout class="QHBoxLayout" name="horizontalLayout_49">
+               <item>
+                <widget class="QLabel" name="label_55">
+                 <property name="sizePolicy">
+                  <sizepolicy hsizetype="MinimumExpanding" vsizetype="Preferred">
+                   <horstretch>0</horstretch>
+                   <verstretch>0</verstretch>
+                  </sizepolicy>
+                 </property>
+                 <property name="text">
+                  <string>Time Limit Exceeded</string>
+                 </property>
+                </widget>
+               </item>
+               <item>
+                <widget class="QSlider" name="timeLimitSlider">
+                 <property name="toolTip">
+                  <string>Percent of escapes sent to large fire simulation</string>
+                 </property>
+                 <property name="maximum">
+                  <number>100</number>
+                 </property>
+                 <property name="orientation">
+                  <enum>Qt::Horizontal</enum>
+                 </property>
+                </widget>
+               </item>
+               <item>
+                <widget class="QSpinBox" name="timeLimitSpinBox">
+                 <property name="toolTip">
+                  <string>Percent of escapes sent to large fire simulation</string>
+                 </property>
+                 <property name="accelerated">
+                  <bool>true</bool>
+                 </property>
+                 <property name="suffix">
+                  <string>%</string>
+                 </property>
+                 <property name="maximum">
+                  <number>100</number>
+                 </property>
+                </widget>
+               </item>
+              </layout>
+             </item>
+             <item>
+              <layout class="QHBoxLayout" name="horizontalLayout_48">
+               <item>
+                <widget class="QLabel" name="label_54">
+                 <property name="sizePolicy">
+                  <sizepolicy hsizetype="MinimumExpanding" vsizetype="Preferred">
+                   <horstretch>0</horstretch>
+                   <verstretch>0</verstretch>
+                  </sizepolicy>
+                 </property>
+                 <property name="text">
+                  <string>Size Limit Exceeded</string>
+                 </property>
+                </widget>
+               </item>
+               <item>
+                <widget class="QSlider" name="sizeLimitSlider">
+                 <property name="toolTip">
+                  <string>Percent of escapes sent to large fire simulation</string>
+                 </property>
+                 <property name="maximum">
+                  <number>100</number>
+                 </property>
+                 <property name="orientation">
+                  <enum>Qt::Horizontal</enum>
+                 </property>
+                </widget>
+               </item>
+               <item>
+                <widget class="QSpinBox" name="sizeLimitSpinBox">
+                 <property name="toolTip">
+                  <string>Percent of escapes sent to large fire simulation</string>
+                 </property>
+                 <property name="accelerated">
+                  <bool>true</bool>
+                 </property>
+                 <property name="suffix">
+                  <string>%</string>
+                 </property>
+                 <property name="maximum">
+                  <number>100</number>
+                 </property>
+                </widget>
+               </item>
+              </layout>
+             </item>
+             <item>
+              <layout class="QHBoxLayout" name="horizontalLayout_47">
+               <item>
+                <widget class="QLabel" name="label_53">
+                 <property name="sizePolicy">
+                  <sizepolicy hsizetype="MinimumExpanding" vsizetype="Preferred">
+                   <horstretch>0</horstretch>
+                   <verstretch>0</verstretch>
+                  </sizepolicy>
+                 </property>
+                 <property name="text">
+                  <string>Resources Exhausted</string>
+                 </property>
+                </widget>
+               </item>
+               <item>
+                <widget class="QSlider" name="exhaustedSlider">
+                 <property name="toolTip">
+                  <string>Percent of escapes sent to large fire simulation</string>
+                 </property>
+                 <property name="maximum">
+                  <number>100</number>
+                 </property>
+                 <property name="orientation">
+                  <enum>Qt::Horizontal</enum>
+                 </property>
+                </widget>
+               </item>
+               <item>
+                <widget class="QSpinBox" name="exhaustedSpinBox">
+                 <property name="toolTip">
+                  <string>Percent of escapes sent to large fire simulation</string>
+                 </property>
+                 <property name="accelerated">
+                  <bool>true</bool>
+                 </property>
+                 <property name="suffix">
+                  <string>%</string>
+                 </property>
+                 <property name="maximum">
+                  <number>100</number>
+                 </property>
+                </widget>
+               </item>
+              </layout>
+             </item>
+             <item>
+              <spacer name="verticalSpacer">
+               <property name="orientation">
+                <enum>Qt::Vertical</enum>
+               </property>
+               <property name="sizeHint" stdset="0">
+                <size>
+                 <width>20</width>
+                 <height>40</height>
+                </size>
+               </property>
+              </spacer>
+             </item>
+            </layout>
+            <zorder>label_53</zorder>
+            <zorder></zorder>
+            <zorder></zorder>
+            <zorder></zorder>
+            <zorder></zorder>
+            <zorder></zorder>
+            <zorder></zorder>
+            <zorder></zorder>
+            <zorder></zorder>
+            <zorder></zorder>
+            <zorder>verticalSpacer</zorder>
            </widget>
-          </item>
-          <item>
-           <layout class="QHBoxLayout" name="horizontalLayout_24">
-            <item>
-             <widget class="QLabel" name="label_15">
-              <property name="text">
-               <string>Season Start</string>
-              </property>
-             </widget>
-            </item>
-            <item>
-             <widget class="QDateEdit" name="largeFireStartDateEdit">
-              <property name="date">
-               <date>
-                <year>2000</year>
-                <month>6</month>
-                <day>1</day>
-               </date>
-              </property>
-              <property name="displayFormat">
-               <string>d MMM</string>
-              </property>
-             </widget>
-            </item>
-            <item>
-             <spacer name="horizontalSpacer_13">
-              <property name="orientation">
-               <enum>Qt::Horizontal</enum>
-              </property>
-              <property name="sizeHint" stdset="0">
-               <size>
-                <width>40</width>
-                <height>20</height>
-               </size>
-              </property>
-             </spacer>
-            </item>
-            <item>
-             <widget class="QLabel" name="label_21">
-              <property name="text">
-               <string>Season End</string>
-              </property>
-             </widget>
-            </item>
-            <item>
-             <widget class="QDateEdit" name="largeFireEndDateEdit">
-              <property name="date">
-               <date>
-                <year>2000</year>
-                <month>10</month>
-                <day>1</day>
-               </date>
-              </property>
-              <property name="displayFormat">
-               <string>d MMM</string>
-              </property>
-             </widget>
-            </item>
-           </layout>
-          </item>
-          <item>
-           <layout class="QHBoxLayout" name="horizontalLayout_50">
-            <item>
-             <widget class="QLabel" name="label_56">
-              <property name="sizePolicy">
-               <sizepolicy hsizetype="MinimumExpanding" vsizetype="Preferred">
-                <horstretch>0</horstretch>
-                <verstretch>0</verstretch>
-               </sizepolicy>
-              </property>
-              <property name="text">
-               <string>No Resources Sent</string>
-              </property>
-             </widget>
-            </item>
-            <item>
-             <widget class="QSlider" name="noRescSentSlider">
-              <property name="toolTip">
-               <string>Percent of escapes sent to large fire simulation</string>
-              </property>
-              <property name="maximum">
-               <number>100</number>
-              </property>
-              <property name="orientation">
-               <enum>Qt::Horizontal</enum>
-              </property>
-             </widget>
-            </item>
-            <item>
-             <widget class="QSpinBox" name="noRescSentSpinBox">
-              <property name="toolTip">
-               <string>Percent of escapes sent to large fire simulation</string>
-              </property>
-              <property name="accelerated">
-               <bool>true</bool>
-              </property>
-              <property name="suffix">
-               <string>%</string>
-              </property>
-              <property name="maximum">
-               <number>100</number>
-              </property>
-             </widget>
-            </item>
-           </layout>
-          </item>
-          <item>
-           <layout class="QHBoxLayout" name="horizontalLayout_49">
-            <item>
-             <widget class="QLabel" name="label_55">
-              <property name="sizePolicy">
-               <sizepolicy hsizetype="MinimumExpanding" vsizetype="Preferred">
-                <horstretch>0</horstretch>
-                <verstretch>0</verstretch>
-               </sizepolicy>
-              </property>
-              <property name="text">
-               <string>Time Limit Exceeded</string>
-              </property>
-             </widget>
-            </item>
-            <item>
-             <widget class="QSlider" name="timeLimitSlider">
-              <property name="toolTip">
-               <string>Percent of escapes sent to large fire simulation</string>
-              </property>
-              <property name="maximum">
-               <number>100</number>
-              </property>
-              <property name="orientation">
-               <enum>Qt::Horizontal</enum>
-              </property>
-             </widget>
-            </item>
-            <item>
-             <widget class="QSpinBox" name="timeLimitSpinBox">
-              <property name="toolTip">
-               <string>Percent of escapes sent to large fire simulation</string>
-              </property>
-              <property name="accelerated">
-               <bool>true</bool>
-              </property>
-              <property name="suffix">
-               <string>%</string>
-              </property>
-              <property name="maximum">
-               <number>100</number>
-              </property>
-             </widget>
-            </item>
-           </layout>
-          </item>
-          <item>
-           <layout class="QHBoxLayout" name="horizontalLayout_48">
-            <item>
-             <widget class="QLabel" name="label_54">
-              <property name="sizePolicy">
-               <sizepolicy hsizetype="MinimumExpanding" vsizetype="Preferred">
-                <horstretch>0</horstretch>
-                <verstretch>0</verstretch>
-               </sizepolicy>
-              </property>
-              <property name="text">
-               <string>Size Limit Exceeded</string>
-              </property>
-             </widget>
-            </item>
-            <item>
-             <widget class="QSlider" name="sizeLimitSlider">
-              <property name="toolTip">
-               <string>Percent of escapes sent to large fire simulation</string>
-              </property>
-              <property name="maximum">
-               <number>100</number>
-              </property>
-              <property name="orientation">
-               <enum>Qt::Horizontal</enum>
-              </property>
-             </widget>
-            </item>
-            <item>
-             <widget class="QSpinBox" name="sizeLimitSpinBox">
-              <property name="toolTip">
-               <string>Percent of escapes sent to large fire simulation</string>
-              </property>
-              <property name="accelerated">
-               <bool>true</bool>
-              </property>
-              <property name="suffix">
-               <string>%</string>
-              </property>
-              <property name="maximum">
-               <number>100</number>
-              </property>
-             </widget>
-            </item>
-           </layout>
-          </item>
-          <item>
-           <layout class="QHBoxLayout" name="horizontalLayout_47">
-            <item>
-             <widget class="QLabel" name="label_53">
-              <property name="sizePolicy">
-               <sizepolicy hsizetype="MinimumExpanding" vsizetype="Preferred">
-                <horstretch>0</horstretch>
-                <verstretch>0</verstretch>
-               </sizepolicy>
-              </property>
-              <property name="text">
-               <string>Resources Exhausted</string>
-              </property>
-             </widget>
-            </item>
-            <item>
-             <widget class="QSlider" name="exhaustedSlider">
-              <property name="toolTip">
-               <string>Percent of escapes sent to large fire simulation</string>
-              </property>
-              <property name="maximum">
-               <number>100</number>
-              </property>
-              <property name="orientation">
-               <enum>Qt::Horizontal</enum>
-              </property>
-             </widget>
-            </item>
-            <item>
-             <widget class="QSpinBox" name="exhaustedSpinBox">
-              <property name="toolTip">
-               <string>Percent of escapes sent to large fire simulation</string>
-              </property>
-              <property name="accelerated">
-               <bool>true</bool>
-              </property>
-              <property name="suffix">
-               <string>%</string>
-              </property>
-              <property name="maximum">
-               <number>100</number>
-              </property>
-             </widget>
-            </item>
-           </layout>
-          </item>
-          <item>
-           <spacer name="verticalSpacer">
-            <property name="orientation">
-             <enum>Qt::Vertical</enum>
-            </property>
-            <property name="sizeHint" stdset="0">
-             <size>
-              <width>20</width>
-              <height>40</height>
-             </size>
-            </property>
-           </spacer>
           </item>
          </layout>
         </widget>
