@@ -113,15 +113,15 @@ struct WfipsResc
 static const char *apszDbFiles[] = {ASSOC_DB,
                                     COST_DB,
                                     DISPLOC_DB,
-                                    DISTRICT_DB,
+                                    //DISTRICT_DB,
                                     FIG_DB,
-                                    FOREST_DB,
-                                    FPU_DB,
+                                    //FOREST_DB,
+                                    //FPU_DB,
                                     FWA_DB,
-                                    GACC_DB,
+                                    //GACC_DB,
                                     RESC_DB,
-                                    COUNTY_DB,
-                                    STATE_DB,
+                                    //COUNTY_DB,
+                                    //STATE_DB,
                                     NULL};
 
 /*
@@ -164,6 +164,9 @@ public:
     static void FreeAssociatedResources( WfipsResc *psResc, int nCount );
     static void Free( void *p );
 
+    int LoadScenario( int nYearIdx, const char *pszTreatWkt,
+                      double dfTreatProb, int nAgencyFilter );
+
     /* Test private fx */
     int TestBuildAgencySet1();
     int TestBuildAgencySet2();
@@ -195,8 +198,8 @@ private:
     int iScrap;
 
     /* SQLite/Spatialite convenience */
+    int CompileGeometry( const char *pszWkt, void **pCompiled );
     void * CompileGeometry( const char *pszWkt );
-
     /* Diane's structs */
     //CRunScenario *poScen;
 };

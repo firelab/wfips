@@ -211,10 +211,10 @@ WfipsData::ExecuteSql( const char *pszSql )
 ** Compile a geometry into spatialite binary.  To be free'd by the caller using
 ** sqlite3_free()
 */
-void * WfipsData::CompileGeometry( const char *pszWkt )
+int
+WfipsData::CompileGeometry( const char *pszWkt, void **pCompiled )
 {
     const void *p;
-    void *pCompiled;
     int n, rc;
     sqlite3_stmt *stmt;
     rc = sqlite3_prepare_v2( db, "SELECT GeomFromText(?)", -1, &stmt, NULL );
@@ -226,13 +226,13 @@ void * WfipsData::CompileGeometry( const char *pszWkt )
         goto error;
     n = sqlite3_column_bytes( stmt, 0 );
     p = sqlite3_column_blob( stmt, 0 );
-    pCompiled = sqlite3_malloc( n );
-    memcpy( pCompiled, p, n );
+    *pCompiled = sqlite3_malloc( n );
+    memcpy( *pCompiled, p, n );
     sqlite3_finalize( stmt );
-    return pCompiled;
+    return n;
 error:
     sqlite3_finalize( stmt );
-    return NULL;
+    return 0;
 }
 
 /*
@@ -250,8 +250,8 @@ error:
 int
 WfipsData::GetAssociatedDispLoc( const char *pszWkt,
                                  int **panDispLocIds,
-                                 int *pnCount
-                                 /*,IRSProgress pfnProgress*/ )
+                                 int *pnCount /*,
+                                 IRSProgress pfnProgress*/ )
 {
     assert( pnCount );
     if( bSpatialiteEnabled == 0 )
@@ -260,7 +260,7 @@ WfipsData::GetAssociatedDispLoc( const char *pszWkt,
         return SQLITE_ERROR;
     }
     int rc;
-    int i, n;
+    int i, n, nGeomSize;
     sqlite3_stmt *stmt;
     const void *p;
     void *pAnalysisGeometry;
@@ -275,8 +275,8 @@ WfipsData::GetAssociatedDispLoc( const char *pszWkt,
     n = sqlite3_column_int( stmt, 0 );
     *panDispLocIds = (int*)sqlite3_malloc( sizeof( int ) * n );
     sqlite3_finalize( stmt );
-    pAnalysisGeometry = CompileGeometry( pszWkt );
-    if( pAnalysisGeometry == NULL )
+    nGeomSize = CompileGeometry( pszWkt, &pAnalysisGeometry );
+    if( nGeomSize == 0 )
     {
         *pnCount = 0;
         return SQLITE_ERROR;
@@ -296,7 +296,7 @@ WfipsData::GetAssociatedDispLoc( const char *pszWkt,
                                  "ymax >= MbrMinY(?1)))",
                              -1, &stmt, NULL );
 
-    rc = sqlite3_bind_blob( stmt, 1, pAnalysisGeometry, n, NULL );
+    rc = sqlite3_bind_blob( stmt, 1, pAnalysisGeometry, nGeomSize, NULL );
     n = i = 0;
     while( sqlite3_step( stmt ) == SQLITE_ROW )
     {
@@ -599,5 +599,75 @@ WfipsData::WriteRescDb( const char *pszPath, int *panIds, int *panDispLocIds,
     }
     sqlite3_close( rdb );
     return rc;
+}
+
+int
+WfipsData::LoadScenario( int nYearIdx, const char *pszTreatWkt,
+                         double dfTreatProb, int nAgencyFilter )
+{
+    sqlite3_stmt *stmt;
+    int n, rc;
+    char *pszSql, *pszTreatSql, *pszOwnerSql;
+    int nTreatGeomSize;
+    void *pTreatGeom = NULL;
+    if( pszTreatWkt != NULL )
+    {
+        pszTreatSql = sqlite3_mprintf( "AND ST_Contains(@geom, geometry)" );/* AND " \
+                                       "fig.ROWID IN(SELECT pkid FROM " \
+                                       "idx_fig_geometry WHERE " \
+                                       "xmin <= MbrMaxX(@geom) AND "
+                                       "xmax >= MbrMinX(@geom) AND "
+                                       "ymin <= MbrMaxY(@geom) AND "
+                                       "ymax >= MbrMinY(@geom))" );
+                                       */
+    }
+    else
+    {
+        pszTreatSql = sqlite3_mprintf( "%s", "" );
+    }
+    if( nAgencyFilter != AGENCY_ALL && nAgencyFilter != 0 )
+    {
+        const char *pszAgencySet = BuildAgencySet( nAgencyFilter );
+        pszOwnerSql = sqlite3_mprintf( "AND owner IN(%s)", pszAgencySet );
+    }
+    else
+    {
+        pszOwnerSql = sqlite3_mprintf( "%s", "" );
+    }
+
+    pszSql = sqlite3_mprintf( "SELECT * FROM fig WHERE year=@yidx %s %s",
+                              pszTreatSql, pszOwnerSql );
+
+    rc = sqlite3_prepare_v2( db, pszSql, -1, &stmt, NULL );
+    rc = sqlite3_bind_int( stmt, sqlite3_bind_parameter_index( stmt, "@yidx" ),
+                           nYearIdx );
+    if( pszTreatWkt != NULL )
+    {
+        nTreatGeomSize = CompileGeometry( pszTreatWkt, &pTreatGeom );
+        if( nTreatGeomSize > 0 )
+        {
+            rc = sqlite3_bind_blob( stmt,
+                                    sqlite3_bind_parameter_index( stmt, "@geom" ),
+                                    pTreatGeom, nTreatGeomSize, NULL );
+        }
+        else
+        {
+            /* Panic? */
+        }
+    }
+
+    n = 0;
+    while( sqlite3_step( stmt ) == SQLITE_ROW )
+    {
+        n++;
+    }
+
+    sqlite3_finalize( stmt );
+    sqlite3_free( pszTreatSql );
+    sqlite3_free( pszOwnerSql );
+    sqlite3_free( pszSql );
+    sqlite3_free( pTreatGeom );
+
+    return n;
 }
 
