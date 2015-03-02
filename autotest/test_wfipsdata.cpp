@@ -270,5 +270,16 @@ BOOST_AUTO_TEST_CASE( set_resource_db_1 )
     BOOST_CHECK( rc == 0 );
 }
 
+BOOST_AUTO_TEST_CASE( scen_count_1 )
+{
+    int *panIndices;
+    int rc;
+    rc = poData->GetScenarioIndices( &panIndices );
+    /* Will change */
+    BOOST_CHECK( rc == 1 );
+    BOOST_CHECK( panIndices[0] == 5 );
+    WfipsData::Free( panIndices );
+}
+
 BOOST_AUTO_TEST_SUITE_END() /* irs */
 

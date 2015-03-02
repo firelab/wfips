@@ -679,3 +679,29 @@ WfipsData::LoadScenario( int nYearIdx, const char *pszTreatWkt,
     return n;
 }
 
+int
+WfipsData::GetScenarioIndices( int **ppanIndices )
+{
+    int rc, i, n;
+    assert( ppanIndices != NULL );
+    sqlite3_stmt *stmt;
+    rc = sqlite3_prepare_v2( db, "SELECT COUNT(DISTINCT(year)) FROM fig", -1,
+                             &stmt, NULL );
+    rc = sqlite3_step( stmt );
+    if( rc != SQLITE_ROW )
+        return 0;
+    n = sqlite3_column_int( stmt, 0 );
+    sqlite3_finalize( stmt );
+    *ppanIndices = (int*)sqlite3_malloc( sizeof( int ) * n );
+    rc = sqlite3_prepare_v2( db, "SELECT DISTINCT(year) FROM fig", -1, &stmt,
+                             NULL );
+    i = 0;
+    while( sqlite3_step( stmt ) == SQLITE_ROW )
+    {
+        assert( i < n );
+        (*ppanIndices)[i++] = sqlite3_column_int( stmt, 0 );
+    }
+    sqlite3_finalize( stmt );
+    return n;
+}
+

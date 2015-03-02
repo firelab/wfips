@@ -235,6 +235,10 @@ void WfipsMainWindow::PostConstructionActions()
              this, SLOT( SelectFuelMask() ) );
     connect( ui->fuelAttComboBox, SIGNAL( currentIndexChanged( int ) ),
              this, SLOT( EnableFuelMaskAttr( int ) ) );
+    /* Toggle a radio button the ignitions to enable the proper widgets */
+    ui->randomYearsRadioButton->click();
+    ui->singleYearRadioButton->click();
+    ui->figAllRadioButton->click();
 }
 
 void WfipsMainWindow::ConstructToolButtons()
@@ -367,8 +371,35 @@ void WfipsMainWindow::LoadAnalysisAreaLayers()
         qDebug() << "The data path has not been provided, no layers";
         return;
     }
+    /*
+    ** XXX
+    ** This should probably be moved, or this fx renamed, as we do some stuff
+    ** here just because we have a path.
+    */
     poData = new WfipsData( wfipsPath.toLocal8Bit().data() );
     poData->Open();
+    if( poData->Valid() == 0 )
+    {
+        /* Panic */
+        delete poData;
+        poData = NULL;
+    }
+    if( poData )
+    {
+        int nCount, *panIndices;
+        nCount = poData->GetScenarioIndices( &panIndices );
+        if( nCount > 0 )
+        {
+            ui->randomYearsSpinBox->setRange( 1, nCount );
+            ui->singleYearComboBox->clear();
+            for( int i = 0; i < nCount; i++ )
+            {
+                ui->singleYearComboBox->addItem( QString::number( panIndices[i] ) );
+            }
+            WfipsData::Free( panIndices );
+        }
+    }
+
     ui->analysisAreaComboBox->clear();
     /* Clean up and remove existing layers */
     QString layerId;

@@ -164,6 +164,8 @@ public:
     static void FreeAssociatedResources( WfipsResc *psResc, int nCount );
     static void Free( void *p );
 
+    int GetScenarioIndices( int **ppanIndices );
+
     int LoadScenario( int nYearIdx, const char *pszTreatWkt,
                       double dfTreatProb, int nAgencyFilter );
 

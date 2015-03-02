@@ -1806,7 +1806,7 @@
                 </spacer>
                </item>
                <item>
-                <widget class="QLabel" name="label_9">
+                <widget class="QLabel" name="ignPerDayLabel">
                  <property name="text">
                   <string>Ignitions per day</string>
                  </property>
@@ -1895,17 +1895,7 @@
                 </widget>
                </item>
                <item>
-                <widget class="QSpinBox" name="singleYearSpinBox">
-                 <property name="accelerated">
-                  <bool>true</bool>
-                 </property>
-                 <property name="suffix">
-                  <string/>
-                 </property>
-                 <property name="value">
-                  <number>0</number>
-                 </property>
-                </widget>
+                <widget class="QComboBox" name="singleYearComboBox"/>
                </item>
               </layout>
              </item>
@@ -2267,6 +2257,54 @@
     <hint type="destinationlabel">
      <x>520</x>
      <y>750</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>randomYearsRadioButton</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>randomIgnPerDayComboBox</receiver>
+   <slot>setEnabled(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>362</x>
+     <y>160</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>772</x>
+     <y>161</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>randomYearsRadioButton</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>randomYearsSpinBox</receiver>
+   <slot>setEnabled(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>362</x>
+     <y>160</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>1147</x>
+     <y>161</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>singleYearRadioButton</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>singleYearComboBox</receiver>
+   <slot>setEnabled(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>380</x>
+     <y>195</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>1138</x>
+     <y>196</y>
     </hint>
    </hints>
   </connection>
