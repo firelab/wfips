@@ -80,8 +80,9 @@ char*
 WfipsData::GetScrapBuffer()
 {
     iScrap++;
-    if( iScrap >= 10 )
-        iScrap = iScrap % 10;
+    iScrap = iScrap >= WFIPS_SCRAP_BUFFER_SIZE ?
+             iScrap % WFIPS_SCRAP_BUFFER_SIZE :
+             iScrap;
     memset( szScrap[iScrap], '\0', MAX_PATH );
     return szScrap[iScrap];
 }
