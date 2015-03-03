@@ -69,6 +69,7 @@
 #define RESC_DB             "resc.db"
 #define COUNTY_DB           "us_county.db"
 #define STATE_DB            "us_state.db"
+#define WFIPS_DB_COUNT      12
 
 #ifdef WIN32
 #define SPATIALITE_EXT "spatialite.dll"
@@ -110,18 +111,19 @@ struct WfipsResc
     char *pszType;
 };
 
+/* Database connections are limited to 10 on the normal (default) SQLite */
 static const char *apszDbFiles[] = {ASSOC_DB,
                                     COST_DB,
                                     DISPLOC_DB,
-                                    //DISTRICT_DB,
+                                    DISTRICT_DB,
                                     FIG_DB,
-                                    //FOREST_DB,
-                                    //FPU_DB,
+                                    FOREST_DB,
+                                    FPU_DB,
                                     FWA_DB,
-                                    //GACC_DB,
+                                    GACC_DB,
                                     RESC_DB,
-                                    //COUNTY_DB,
-                                    //STATE_DB,
+                                    COUNTY_DB,
+                                    STATE_DB,
                                     NULL};
 
 /*
