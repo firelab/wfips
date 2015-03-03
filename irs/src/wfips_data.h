@@ -115,15 +115,15 @@ struct WfipsResc
 static const char *apszDbFiles[] = {ASSOC_DB,
                                     COST_DB,
                                     DISPLOC_DB,
-                                    DISTRICT_DB,
+                                    //DISTRICT_DB,
                                     FIG_DB,
-                                    FOREST_DB,
-                                    FPU_DB,
+                                    //FOREST_DB,
+                                    //FPU_DB,
                                     FWA_DB,
-                                    GACC_DB,
+                                    //GACC_DB,
                                     RESC_DB,
-                                    COUNTY_DB,
-                                    STATE_DB,
+                                    //COUNTY_DB,
+                                    //STATE_DB,
                                     NULL};
 
 /*
