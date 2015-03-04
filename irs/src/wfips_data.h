@@ -184,7 +184,11 @@ public:
     /* Not implemented */
     int SetPrepositioning( double, double, double ){return 0;}
     /* int SetDrawdown(){return 0;} */
-    int LoadIrsStructs();
+    int LoadIrsStructs( const char *pszAnalysisAreaWkt );
+    int SampleLargeFire( int nJulStart, int nJulEnd, double dfNoRescProb,
+                         double dfTimeLimitProb, double dfSizeLimitProb,
+                         double dfExhaustProb ){return 0;}
+
     /* XXX TO BE IMPLEMENTED XXX */
 
     /* Test private fx */
@@ -213,16 +217,10 @@ private:
     const char * BuildAgencySet( int nAgencyFlags );
     char * BuildFidSet( int *panFids, int nCount );
 
-    //const char *pszAnalysisAreaWkt;
+    const char *pszAnalysisAreaWkt;
     /* Ignition ownership */
-    int nIgnOwnMask;
 
     /* Treatment Mask */
-    char *pszFuelTreatMaskWkt;
-    double dfTreatProb;
-    /* Large fire */
-    int nLfJulStart, nLfJulEnd;
-    double dfLfNoRescProb, dfLfTimeLimitProb, dfLfSizeLimitProb, dfLfExhaustProb;
 
     /* scratch strings */
     char* GetScrapBuffer();

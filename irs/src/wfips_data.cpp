@@ -58,10 +58,7 @@ WfipsData::Init()
     bValid = 0;
     bSpatialiteEnabled = 0;
     iScrap = 0;
-    //pszAnalysisAreaWkt = NULL;
-    nIgnOwnMask = AGENCY_ALL;
-    pszFuelTreatMaskWkt = NULL;
-    dfTreatProb = 1.0;
+    pszAnalysisAreaWkt = NULL;
 }
 
 WfipsData::~WfipsData()
@@ -69,8 +66,7 @@ WfipsData::~WfipsData()
     sqlite3_free( pszPath );
     sqlite3_free( pszRescPath );
     sqlite3_close( db );
-    //sqlite3_free( (void*)pszAnalysisAreaWkt );
-    sqlite3_free( (void*)pszFuelTreatMaskWkt );
+    sqlite3_free( (void*)pszAnalysisAreaWkt );
 }
 
 int
@@ -731,38 +727,5 @@ WfipsData::SetAnalysisAreaMask( const char *pszMaskWkt )
     //else
         //pszAnalysisAreaWkt = NULL;
     //return SQLITE_OK;
-}
-
-int
-WfipsData::SetFuelTreatmentMask( const char *pszMaskWkt, double dfProb )
-{
-    assert( dfProb >= 0. && dfProb <= 1. );
-    sqlite3_free( (void*)pszFuelTreatMaskWkt );
-    if( pszMaskWkt )
-        pszFuelTreatMaskWkt = sqlite3_mprintf( "%s", pszMaskWkt );
-    else
-        pszFuelTreatMaskWkt = NULL;
-    dfTreatProb = dfProb;
-    return SQLITE_OK;
-}
-int
-WfipsData::SetLargeFireParams( int nJulStart, int nJulEnd, double dfNoRescProb,
-                               double dfTimeLimitProb, double dfSizeLimitProb,
-                               double dfExhaustProb )
-{
-    assert( nJulStart < nJulEnd );
-    assert( nJulStart < 366 && nJulStart > 0 );
-    assert( nJulEnd < 366 && nJulEnd > 0 );
-    assert( dfNoRescProb <= 1.0 && dfNoRescProb >= 0.0 );
-    assert( dfTimeLimitProb <= 1.0 && dfTimeLimitProb >= 0.0 );
-    assert( dfSizeLimitProb <= 1.0 && dfSizeLimitProb >= 0.0 );
-    assert( dfExhaustProb  <= 1.0 && dfExhaustProb  >= 0.0 );
-
-    nLfJulStart = nJulStart;
-    nLfJulEnd = nJulEnd;
-    dfLfNoRescProb = dfNoRescProb;
-    dfLfTimeLimitProb = dfTimeLimitProb;
-    dfLfSizeLimitProb = dfSizeLimitProb;
-    dfLfExhaustProb = dfExhaustProb;
 }
 

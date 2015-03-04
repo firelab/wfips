@@ -111,7 +111,7 @@ WfipsData::CreateLargeAirTankers()
 }
 
 int
-WfipsData::LoadIrsStructs()
+WfipsData::LoadIrsStructs( const char *pszAnalysisAreaWkt )
 {
     poScenario = new CRunScenario();
     LoadRescTypes();
