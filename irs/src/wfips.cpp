@@ -194,7 +194,7 @@ void WfipsFreeAssociatedResources( WfipsResc *psResc, int nCount )
 }
 
 /**
- ** \brief Deallocate some dynamic memory obtainef from Wfips.
+ ** \brief Deallocate some dynamic memory obtained from Wfips.
  **
  ** \param p point to be free'd
  */
