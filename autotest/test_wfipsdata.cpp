@@ -215,7 +215,7 @@ BOOST_AUTO_TEST_CASE( assoc_resource_3 )
 BOOST_AUTO_TEST_CASE( load_scen_1 )
 {
     int rc;
-    rc = poData->LoadScenario( 5, NULL, 1.0, 0 );
+    rc = poData->LoadScenario( 5, NULL, NULL, 1.0, 0 );
     BOOST_CHECK( rc > 0 );
     return;
 }
@@ -223,7 +223,7 @@ BOOST_AUTO_TEST_CASE( load_scen_1 )
 BOOST_AUTO_TEST_CASE( load_scen_2 )
 {
     int rc;
-    rc = poData->LoadScenario( 1, NULL, 1.0, 0 );
+    rc = poData->LoadScenario( 1, NULL, NULL, 1.0, 0 );
     BOOST_CHECK( rc == 0 );
     return;
 }
@@ -232,7 +232,7 @@ BOOST_AUTO_TEST_CASE( load_scen_3 )
 {
     int rc;
     const char *pszWkt = "POLYGON((-114 47, -113 47, -113 46, -114 46, -114 47))";
-    rc = poData->LoadScenario( 5, pszWkt, 1.0, 0 );
+    rc = poData->LoadScenario( 5, pszWkt, NULL, 1.0, 0 );
     BOOST_CHECK( rc > 0 );
     return;
 }
@@ -241,8 +241,8 @@ BOOST_AUTO_TEST_CASE( load_scen_4 )
 {
     int a, b;
     const char *pszWkt = "POLYGON((-114 47, -113 47, -113 46, -114 46, -114 47))";
-    a = poData->LoadScenario( 5, NULL, 1.0, 0 );
-    b = poData->LoadScenario( 5, pszWkt, 1.0, 0 );
+    a = poData->LoadScenario( 5, NULL, NULL, 1.0, 0 );
+    b = poData->LoadScenario( 5, pszWkt, NULL, 1.0, 0 );
     BOOST_CHECK( a != 0 && b != 0 );
     BOOST_CHECK( a > b );
     return;
@@ -251,8 +251,8 @@ BOOST_AUTO_TEST_CASE( load_scen_4 )
 BOOST_AUTO_TEST_CASE( load_scen_5 )
 {
     int a, b;
-    a = poData->LoadScenario( 5, NULL, 1.0, AGENCY_ALL );
-    b = poData->LoadScenario( 5, NULL, 1.0, DOI_BLM );
+    a = poData->LoadScenario( 5, NULL, NULL, 1.0, AGENCY_ALL );
+    b = poData->LoadScenario( 5, NULL, NULL, 1.0, DOI_BLM );
     BOOST_CHECK( a != 0 && b != 0 );
     BOOST_CHECK( a > b );
     return;

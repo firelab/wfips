@@ -27,20 +27,28 @@
 
 #ifndef WFIPS_H_
 #define WFIPS_H_
+
+/*#ifdef __cplusplus
+extern "C" {
+#endif
+*/
+
+
 /* Standard library */
 #include <assert.h>
-#include <stdlib.h>
-#include <string.h>
-
 #include "wfips_data.h"
 
-class Wfips
-{
-public:
-    Wfips();
-    ~Wfips();
-private:
-};
+typedef void * WfipsH;
+
+WfipsH WfipsCreate( const char *pszDataPath );
+
+int WfipsSetRescDb( WfipsH w, const char *pszPath );
+
+/*
+#ifdef __cplusplus
+}
+#endif
+*/
 
 #endif /* WFIPS_H_ */
 

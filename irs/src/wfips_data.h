@@ -37,8 +37,8 @@
 #include <sqlite3.h>
 
 /* IRS */
-/*
 #include "RunScenario.h"
+/*
 #include "DispLoc.h"
 #include "Rescbase.h"
 #include "Airtanker.h"
@@ -140,7 +140,6 @@ public:
     WfipsData( const char *pszPath );
     ~WfipsData();
 
-    int SetRescDb( const char *pszPath );
 
     int Open();
     int Open( const char *pszPath );
@@ -158,6 +157,7 @@ public:
     int Valid() { return bValid; }
     int SpatialiteEnabled() { return bSpatialiteEnabled; }
 
+    int SetRescDb( const char *pszPath );
     int WriteRescDb( const char *pszPath,
                      int *panIds,
                      int *panDispLocIds,
@@ -168,8 +168,23 @@ public:
 
     int GetScenarioIndices( int **ppanIndices );
 
-    int LoadScenario( int nYearIdx, const char *pszTreatWkt,
-                      double dfTreatProb, int nAgencyFilter );
+    /* Move to private */
+    int LoadScenario( int nYearIdx, const char *pszAnalysisAreaWkt,
+                      const char *pszTreatWkt, double dfTreatProb,
+                      int nAgencyFilter );
+
+    int SetAnalysisAreaMask( const char *pszWkt );
+    int SetFuelTreatmentMask( const char *pszWkt, double dfProb );
+    int SetLargeFireParams( int nJulStart, int nJulEnd, double dfNoRescProb,
+                            double dfTimeLimitProb, double dfSizeLimitProb,
+                            double dfExhaustProb );
+    /* XXX TO BE IMPLEMENTED XXX */
+    int SetPrepositioning(){return 0;}
+    /* Not implemented */
+    /* int SetDrawdown(){return 0;} */
+    int LoadIrsStructs(){return 0;}
+
+    /* XXX TO BE IMPLEMENTED XXX */
 
     /* Test private fx */
     int TestBuildAgencySet1();
@@ -195,7 +210,17 @@ private:
     const char * BuildAgencySet( int nAgencyFlags );
     char * BuildFidSet( int *panFids, int nCount );
 
+    //const char *pszAnalysisAreaWkt;
+    /* Ignition ownership */
+    int nIgnOwnMask;
+
     /* Treatment Mask */
+    char *pszFuelTreatMaskWkt;
+    double dfTreatProb;
+    /* Large fire */
+    int nLfJulStart, nLfJulEnd;
+    double dfLfNoRescProb, dfLfTimeLimitProb, dfLfSizeLimitProb, dfLfExhaustProb;
+
     /* scratch strings */
     char* GetScrapBuffer();
     char szScrap[WFIPS_SCRAP_BUFFER_SIZE][MAX_PATH];
@@ -203,9 +228,8 @@ private:
 
     /* SQLite/Spatialite convenience */
     int CompileGeometry( const char *pszWkt, void **pCompiled );
-    void * CompileGeometry( const char *pszWkt );
     /* Diane's structs */
-    //CRunScenario *poScen;
+    CRunScenario *poScenario;
 };
 
 #endif /* WFIPS_DATA_H_ */

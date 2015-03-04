@@ -45,7 +45,8 @@ WfipsData::WfipsData()
 WfipsData::WfipsData( const char *pszPath )
 {
     Init();
-    this->pszPath = sqlite3_mprintf( "%s", pszPath );
+    if( pszPath )
+        this->pszPath = sqlite3_mprintf( "%s", pszPath );
 }
 
 void
@@ -57,6 +58,10 @@ WfipsData::Init()
     bValid = 0;
     bSpatialiteEnabled = 0;
     iScrap = 0;
+    //pszAnalysisAreaWkt = NULL;
+    nIgnOwnMask = AGENCY_ALL;
+    pszFuelTreatMaskWkt = NULL;
+    dfTreatProb = 1.0;
 }
 
 WfipsData::~WfipsData()
@@ -64,6 +69,8 @@ WfipsData::~WfipsData()
     sqlite3_free( pszPath );
     sqlite3_free( pszRescPath );
     sqlite3_close( db );
+    //sqlite3_free( (void*)pszAnalysisAreaWkt );
+    sqlite3_free( (void*)pszFuelTreatMaskWkt );
 }
 
 int
@@ -454,12 +461,14 @@ WfipsData::FreeAssociatedResources( WfipsResc *psResc, int nCount )
     return ;
 }
 
-void WfipsData::Free( void *p )
+void
+WfipsData::Free( void *p )
 {
     sqlite3_free( p );
 }
 
-int WfipsData::Close()
+int
+WfipsData::Close()
 {
     int rc = SQLITE_OK;
     rc = sqlite3_close( db );
@@ -468,16 +477,19 @@ int WfipsData::Close()
     return rc;
 }
 
-int WfipsData::SetRescDb( const char *pszPath )
+int
+WfipsData::SetRescDb( const char *pszPath )
 {
     int rc;
     char *pszSql = NULL;
-    if( pszRescPath )
-        sqlite3_free( pszRescPath );
+    sqlite3_free( pszRescPath );
     if( pszPath )
         pszRescPath = sqlite3_mprintf( "%s", pszPath );
     else
+    {
         pszRescPath = NULL;
+        return SQLITE_ERROR;
+    }
     rc = sqlite3_exec( db, "DETACH resc", NULL, NULL, NULL );
     pszSql = sqlite3_mprintf( "ATTACH %Q AS resc", pszPath );
     rc = sqlite3_exec( db, pszSql, NULL, NULL, NULL );
@@ -613,27 +625,29 @@ WfipsData::WriteRescDb( const char *pszPath, int *panIds, int *panDispLocIds,
 }
 
 int
-WfipsData::LoadScenario( int nYearIdx, const char *pszTreatWkt,
-                         double dfTreatProb, int nAgencyFilter )
+WfipsData::LoadScenario( int nYearIdx, const char *pszAnalysisAreaWkt,
+                         const char *pszTreatWkt, double dfTreatProb,
+                         int nAgencyFilter )
 {
     sqlite3_stmt *stmt;
     int n, rc;
-    char *pszSql, *pszTreatSql, *pszOwnerSql;
-    int nTreatGeomSize;
-    void *pTreatGeom = NULL;
-    if( pszTreatWkt != NULL )
+    char *pszSql, *pszAnalysisAreaSql, *pszOwnerSql;
+    int nAnalysisGeomSize;
+    void *pAnalysisGeom = NULL;
+    if( pszAnalysisAreaWkt != NULL )
     {
-        pszTreatSql = sqlite3_mprintf( "AND ST_Contains(@geom, geometry) AND " \
-                                       "fig.ROWID IN(SELECT pkid FROM " \
-                                       "idx_fig_geometry WHERE " \
-                                       "xmin <= MbrMaxX(@geom) AND "
-                                       "xmax >= MbrMinX(@geom) AND "
-                                       "ymin <= MbrMaxY(@geom) AND "
-                                       "ymax >= MbrMinY(@geom))" );
+        pszAnalysisAreaSql =
+            sqlite3_mprintf( "AND ST_Contains(@geom, geometry) AND " \
+                             "fig.ROWID IN(SELECT pkid FROM " \
+                             "idx_fig_geometry WHERE " \
+                             "xmin <= MbrMaxX(@geom) AND "
+                             "xmax >= MbrMinX(@geom) AND "
+                             "ymin <= MbrMaxY(@geom) AND "
+                             "ymax >= MbrMinY(@geom))" );
     }
     else
     {
-        pszTreatSql = sqlite3_mprintf( "%s", "" );
+        pszAnalysisAreaSql = sqlite3_mprintf( "%s", "" );
     }
     if( nAgencyFilter != AGENCY_ALL && nAgencyFilter != 0 )
     {
@@ -646,19 +660,19 @@ WfipsData::LoadScenario( int nYearIdx, const char *pszTreatWkt,
     }
 
     pszSql = sqlite3_mprintf( "SELECT * FROM fig WHERE year=@yidx %s %s",
-                              pszTreatSql, pszOwnerSql );
+                              pszAnalysisAreaSql, pszOwnerSql );
 
     rc = sqlite3_prepare_v2( db, pszSql, -1, &stmt, NULL );
     rc = sqlite3_bind_int( stmt, sqlite3_bind_parameter_index( stmt, "@yidx" ),
                            nYearIdx );
-    if( pszTreatWkt != NULL )
+    if( pszAnalysisAreaWkt != NULL )
     {
-        nTreatGeomSize = CompileGeometry( pszTreatWkt, &pTreatGeom );
-        if( nTreatGeomSize > 0 )
+        nAnalysisGeomSize = CompileGeometry( pszAnalysisAreaWkt, &pAnalysisGeom );
+        if( nAnalysisGeomSize > 0 )
         {
             rc = sqlite3_bind_blob( stmt,
                                     sqlite3_bind_parameter_index( stmt, "@geom" ),
-                                    pTreatGeom, nTreatGeomSize, NULL );
+                                    pAnalysisGeom, nAnalysisGeomSize, NULL );
         }
         else
         {
@@ -673,10 +687,10 @@ WfipsData::LoadScenario( int nYearIdx, const char *pszTreatWkt,
     }
 
     sqlite3_finalize( stmt );
-    sqlite3_free( pszTreatSql );
+    sqlite3_free( pszAnalysisAreaSql );
     sqlite3_free( pszOwnerSql );
     sqlite3_free( pszSql );
-    sqlite3_free( pTreatGeom );
+    sqlite3_free( pAnalysisGeom );
 
     return n;
 }
@@ -705,5 +719,50 @@ WfipsData::GetScenarioIndices( int **ppanIndices )
     }
     sqlite3_finalize( stmt );
     return n;
+}
+
+int
+WfipsData::SetAnalysisAreaMask( const char *pszMaskWkt )
+{
+    return 0;
+    //sqlite3_free( (void*)pszAnalysisAreaWkt );
+    //if( pszMaskWkt )
+        //pszAnalysisAreaWkt = sqlite3_mprintf( "%s", pszMaskWkt );
+    //else
+        //pszAnalysisAreaWkt = NULL;
+    //return SQLITE_OK;
+}
+
+int
+WfipsData::SetFuelTreatmentMask( const char *pszMaskWkt, double dfProb )
+{
+    assert( dfProb >= 0. && dfProb <= 1. );
+    sqlite3_free( (void*)pszFuelTreatMaskWkt );
+    if( pszMaskWkt )
+        pszFuelTreatMaskWkt = sqlite3_mprintf( "%s", pszMaskWkt );
+    else
+        pszFuelTreatMaskWkt = NULL;
+    dfTreatProb = dfProb;
+    return SQLITE_OK;
+}
+int
+WfipsData::SetLargeFireParams( int nJulStart, int nJulEnd, double dfNoRescProb,
+                               double dfTimeLimitProb, double dfSizeLimitProb,
+                               double dfExhaustProb )
+{
+    assert( nJulStart < nJulEnd );
+    assert( nJulStart < 366 && nJulStart > 0 );
+    assert( nJulEnd < 366 && nJulEnd > 0 );
+    assert( dfNoRescProb <= 1.0 && dfNoRescProb >= 0.0 );
+    assert( dfTimeLimitProb <= 1.0 && dfTimeLimitProb >= 0.0 );
+    assert( dfSizeLimitProb <= 1.0 && dfSizeLimitProb >= 0.0 );
+    assert( dfExhaustProb  <= 1.0 && dfExhaustProb  >= 0.0 );
+
+    nLfJulStart = nJulStart;
+    nLfJulEnd = nJulEnd;
+    dfLfNoRescProb = dfNoRescProb;
+    dfLfTimeLimitProb = dfTimeLimitProb;
+    dfLfSizeLimitProb = dfSizeLimitProb;
+    dfLfExhaustProb = dfExhaustProb;
 }
 
