@@ -127,6 +127,8 @@ int WfipsSetPrepositioning( WfipsH w, double dfEngine,
  ** involved in an area defined as WKT.  This means any dispatch location
  ** associated with any FWA that intersects the geometry specified in the WKT.
  **
+ ** panDispLocIds must be free'd with WfipsFree().
+ **
  ** \param [in] w an opaque handle to a Wfips object.
  ** \param [in] pszWkt OGC Well-known text representation of a geometry.
  **                    Presumably a polygon or multipolygon, although any
@@ -146,6 +148,8 @@ int WfipsGetAssociatedDispLoc( WfipsH w, const char *pszWkt,
 /**
  ** \brief Get all resources for a set of dispatch locations.
  **
+ ** ppsResc must be free'd with WfipsFreeAssociatedResources().
+ **
  ** \param [in] w an opaque handle to a Wfips object.
  ** \param [in] panDispLocIds array of ROWIDs for dispatch locations.
  ** \param [in] nDispLocCount number of elements in the array.
@@ -164,20 +168,38 @@ int WfipsGetAssociatedResources( WfipsH w, int *panDispLocIds, int nDispLocCount
                                                     nAgencyFlags );
 }
 
+/**
+ ** \brief Get the unique year identifiers for the fig.
+ **
+ ** \param [in] w an opaque handle to a Wfips object.
+ ** \param [out] ppanIndices array of years to fill.
+ ** \return the size of the array of years.
+ */
 int WfipsGetScenarioIndices( WfipsH w, int **ppanIndices )
 {
     assert( w );
     return ((WfipsData*)w)->GetScenarioIndices( ppanIndices );
 }
 
+/**
+ ** \brief Deallocate an array of resources obtained with
+ **        WfipsGetAssociatedDispLoc().
+ **
+ ** \param [in] psResc pointer to an array of WfipsResc.
+ ** \param [in] nCount size of the array.
+ */
 void WfipsFreeAssociatedResources( WfipsResc *psResc, int nCount )
 {
     WfipsData::FreeAssociatedResources( psResc, nCount );
 }
 
+/**
+ ** \brief Deallocate some dynamic memory obtainef from Wfips.
+ **
+ ** \param p point to be free'd
+ */
 void WfipsFree( void *p )
 {
     WfipsData::Free( p );
 }
-
 
