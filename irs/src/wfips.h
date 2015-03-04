@@ -28,15 +28,15 @@
 #ifndef WFIPS_H_
 #define WFIPS_H_
 
-/*#ifdef __cplusplus
-extern "C" {
-#endif
-*/
-
 
 /* Standard library */
 #include <assert.h>
+#include <stdlib.h>
 #include "wfips_data.h"
+
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 typedef void * WfipsH;
 
@@ -44,11 +44,27 @@ WfipsH WfipsCreate( const char *pszDataPath );
 
 int WfipsSetRescDb( WfipsH w, const char *pszPath );
 
-/*
+int WfipsWriteRescDb( WfipsH w, const char *pszPath,
+                      int *panIds, int *panDispLocIds,
+                      int nCount );
+
+int WfipsSetPrepositioning( WfipsH w, double dfEngine,
+                            double dfCrews, double dfHelitack );
+
+int WfipsGetAssociatedDispLoc( WfipsH w, const char *pszWkt,
+                               int **panDispLocIds, int *pnCount );
+
+int WfipsGetAssociatedResources( WfipsH w, int *panDispLocIds, int nDispLocCount,
+                                 WfipsResc **ppsResc, int *pnRescLocCount,
+                                 int nAgencyFlags );
+void WfipsFreeAssociatedResources( WfipsResc *psResc, int nCount );
+void WfipsFree( void *p );
+
+int WfipsGetScenarioIndices( WfipsH w, int **ppanIndices );
+
 #ifdef __cplusplus
 }
 #endif
-*/
 
 #endif /* WFIPS_H_ */
 

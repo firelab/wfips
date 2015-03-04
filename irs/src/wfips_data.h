@@ -179,8 +179,8 @@ public:
                             double dfTimeLimitProb, double dfSizeLimitProb,
                             double dfExhaustProb );
     /* XXX TO BE IMPLEMENTED XXX */
-    int SetPrepositioning(){return 0;}
     /* Not implemented */
+    int SetPrepositioning( double, double, double ){return 0;}
     /* int SetDrawdown(){return 0;} */
     int LoadIrsStructs(){return 0;}
 

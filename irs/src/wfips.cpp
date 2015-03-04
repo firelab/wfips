@@ -69,3 +69,55 @@ int WfipsSetRescDb( WfipsH w, const char *pszPath )
     return ((WfipsData*)w)->SetRescDb( pszPath );
 }
 
+int WfipsWriteRescDb( WfipsH w,
+                      const char *pszPath,
+                      int *panIds,
+                      int *panDispLocIds,
+                      int nCount )
+{
+    assert( w );
+    return ((WfipsData*)w)->WriteRescDb( pszPath, panIds,
+                                         panDispLocIds, nCount );
+}
+
+int WfipsSetPrepositioning( WfipsH w, double dfEngine,
+                            double dfCrews, double dfHelitack )
+{
+    assert( w );
+    return ((WfipsData*)w)->SetPrepositioning( dfEngine, dfCrews, dfHelitack );
+}
+
+int WfipsGetAssociatedDispLoc( WfipsH w, const char *pszWkt,
+                               int **panDispLocIds, int *pnCount )
+{
+    assert( w );
+    return ((WfipsData*)w)->GetAssociatedDispLoc( pszWkt, panDispLocIds, pnCount );
+}
+
+int WfipsGetAssociatedResources( WfipsH w, int *panDispLocIds, int nDispLocCount,
+                                 WfipsResc **ppsResc, int *pnRescLocCount,
+                                 int nAgencyFlags )
+{
+    assert( w );
+    return ((WfipsData*)w)->GetAssociatedResources( panDispLocIds, nDispLocCount,
+                                                    ppsResc, pnRescLocCount,
+                                                    nAgencyFlags );
+}
+
+int WfipsGetScenarioIndices( WfipsH w, int **ppanIndices )
+{
+    assert( w );
+    return ((WfipsData*)w)->GetScenarioIndices( ppanIndices );
+}
+
+void WfipsFreeAssociatedResources( WfipsResc *psResc, int nCount )
+{
+    WfipsData::FreeAssociatedResources( psResc, nCount );
+}
+
+void WfipsFree( void *p )
+{
+    WfipsData::Free( p );
+}
+
+
