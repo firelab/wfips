@@ -231,10 +231,17 @@ private:
 
     /* SQLite/Spatialite convenience */
     int CompileGeometry( const char *pszWkt, void **pCompiled );
+
     /* Diane's structs */
     CRunScenario *poScenario;
     int LoadRescTypes();
     int LoadProdRates();
+    int LoadDipatchLogic();
+    int LoadFwas();
+    int LoadDispatchLocations();
+    int LoadTankerBases();
+    int LoadResources();
+    int CreateLargeAirTankers();
 };
 
 #endif /* WFIPS_DATA_H_ */

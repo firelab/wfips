@@ -27,7 +27,8 @@
 
 #include "wfips_data.h"
 
-int WfipsData::LoadRescTypes()
+int
+WfipsData::LoadRescTypes()
 {
     sqlite3_stmt *stmt;
     sqlite3_prepare_v2( db, "SELECT * FROM resc_type", -1, &stmt,
@@ -50,7 +51,8 @@ int WfipsData::LoadRescTypes()
     stmt = NULL;
     return 0;
 }
-int WfipsData::LoadProdRates()
+int
+WfipsData::LoadProdRates()
 {
     int rc;
     sqlite3_stmt *stmt;
@@ -78,35 +80,48 @@ int WfipsData::LoadProdRates()
 }
 
 int
+WfipsData::LoadDipatchLogic()
+{
+    return 0;
+}
+int
+WfipsData::LoadFwas()
+{
+    return 0;
+}
+int
+WfipsData::LoadDispatchLocations()
+{
+    return 0;
+}
+int
+WfipsData::LoadTankerBases()
+{
+    return 0;
+}
+int
+WfipsData::LoadResources()
+{
+    return 0;
+}
+int
+WfipsData::CreateLargeAirTankers()
+{
+    return 0;
+}
+
+int
 WfipsData::LoadIrsStructs()
 {
     poScenario = new CRunScenario();
-    /*
-    pD->LoadRescType( pS->m_VRescType, NULL );
-    if( pRd->pfnProgress )
-        pRd->pfnProgress( 0.1, "Loading Production Rates...", NULL );
-    pD->LoadProdRates( pS->m_VProdRates, NULL );
-    if( pRd->pfnProgress )
-        pRd->pfnProgress( 0.3, "Loading Dispatch Logic...", NULL );
-    pD->LoadDispatchLogic( pS->m_VDispLogic, NULL, NULL );
-    if( pRd->pfnProgress )
-        pRd->pfnProgress( 0.5, "Loading FWAs...", NULL );
-    pD->LoadFwa( pS->m_VDispLogic, pS->m_VFWA, NULL, NULL );
-    if( pRd->pfnProgress )
-        pRd->pfnProgress( 0.7, "Loading Dispatch Locations...", NULL );
-    pD->LoadDispatchLocation( pS->m_VFWA, pS->m_VDispLoc, NULL );
-    if( pRd->pfnProgress )
-        pRd->pfnProgress( 0.8, "Loading Tanker bases...", NULL );
-    pD->LoadTankerBases( pS, pS->m_VFWA, pS->m_VDispLoc, -1, NULL );
-    if( pRd->pfnProgress )
-        pRd->pfnProgress( 0.9, "Loading Resources...", NULL );
-    pD->LoadResource( pS, pS->m_VRescType, pS->m_VDispLoc, pS->m_VResource,
-                      NULL, NULL, NULL, pRd->pszOmitSet, NULL );
-                      //pszExternalResourceDb, NULL, NULL );
-    pD->CreateLargeAirtankers( pS->m_VRescType, pS->m_VDispLoc,
-                               pS->m_VResource, pRd->nTankerCount, NULL );
-
-                               */
+    LoadRescTypes();
+    LoadProdRates();
+    LoadDipatchLogic();
+    LoadFwas();
+    LoadDispatchLocations();
+    LoadTankerBases();
+    LoadResources();
+    CreateLargeAirTankers();
     return 0;
 }
 
