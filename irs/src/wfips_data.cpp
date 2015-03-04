@@ -720,12 +720,11 @@ WfipsData::GetScenarioIndices( int **ppanIndices )
 int
 WfipsData::SetAnalysisAreaMask( const char *pszMaskWkt )
 {
-    return 0;
-    //sqlite3_free( (void*)pszAnalysisAreaWkt );
-    //if( pszMaskWkt )
-        //pszAnalysisAreaWkt = sqlite3_mprintf( "%s", pszMaskWkt );
-    //else
-        //pszAnalysisAreaWkt = NULL;
-    //return SQLITE_OK;
+    sqlite3_free( (void*)pszAnalysisAreaWkt );
+    if( pszMaskWkt )
+        pszAnalysisAreaWkt = sqlite3_mprintf( "%s", pszMaskWkt );
+    else
+        pszAnalysisAreaWkt = NULL;
+    return SQLITE_OK;
 }
 
