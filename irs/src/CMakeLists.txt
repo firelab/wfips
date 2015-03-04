@@ -40,6 +40,7 @@ SET(IRS_SOURCES irs.cpp
                 irs_result.cpp
                 wfips.cpp
                 wfips_data.cpp
+                wfips_data_load.cpp
                 wfips_data_test.cpp
                 #irs_api.cpp
                 irs_error.cpp

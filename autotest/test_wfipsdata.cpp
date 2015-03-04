@@ -281,5 +281,16 @@ BOOST_AUTO_TEST_CASE( scen_count_1 )
     WfipsData::Free( panIndices );
 }
 
+BOOST_AUTO_TEST_CASE( load_resc_types_1 )
+{
+    BOOST_CHECK( poData->TestProdLoad1() == 0 );
+}
+
+BOOST_AUTO_TEST_CASE( load_prod_rates_1 )
+{
+    BOOST_CHECK( poData->TestProdLoad1() == 0 );
+}
+
+
 BOOST_AUTO_TEST_SUITE_END() /* irs */
 

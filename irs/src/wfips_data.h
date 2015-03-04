@@ -66,6 +66,7 @@
 #define FPU_DB              "fpu.db"
 #define FWA_DB              "fwa.db"
 #define GACC_DB             "gacc.db"
+#define STATIC_DB           "static.db"
 #define RESC_DB             "resc.db"
 #define COUNTY_DB           "us_county.db"
 #define STATE_DB            "us_state.db"
@@ -121,6 +122,7 @@ static const char *apszDbFiles[] = {ASSOC_DB,
                                     //FPU_DB,
                                     FWA_DB,
                                     //GACC_DB,
+                                    STATIC_DB,
                                     RESC_DB,
                                     //COUNTY_DB,
                                     //STATE_DB,
@@ -182,8 +184,7 @@ public:
     /* Not implemented */
     int SetPrepositioning( double, double, double ){return 0;}
     /* int SetDrawdown(){return 0;} */
-    int LoadIrsStructs(){return 0;}
-
+    int LoadIrsStructs();
     /* XXX TO BE IMPLEMENTED XXX */
 
     /* Test private fx */
@@ -193,6 +194,8 @@ public:
     int TestBuildAgencySet4();
     int TestBuildAgencySet5();
     int TestFidSet1();
+    int TestRescTypeLoad1();
+    int TestProdLoad1();
 
 private:
     void Init();
@@ -230,6 +233,8 @@ private:
     int CompileGeometry( const char *pszWkt, void **pCompiled );
     /* Diane's structs */
     CRunScenario *poScenario;
+    int LoadRescTypes();
+    int LoadProdRates();
 };
 
 #endif /* WFIPS_DATA_H_ */

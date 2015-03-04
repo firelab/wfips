@@ -74,3 +74,25 @@ int WfipsData::TestFidSet1()
     return rc;
 }
 
+int WfipsData::TestRescTypeLoad1()
+{
+    poScenario = new CRunScenario();
+    LoadRescTypes();
+    int rc = 0;
+    if( poScenario->m_VRescType.size() == 0 )
+        rc = 1;
+    delete poScenario;
+    return rc;
+}
+
+int WfipsData::TestProdLoad1()
+{
+    poScenario = new CRunScenario();
+    LoadProdRates();
+    int rc = 0;
+    if( poScenario->m_VProdRates.size() == 0 )
+        rc = 1;
+    delete poScenario;
+    return rc;
+}
+
