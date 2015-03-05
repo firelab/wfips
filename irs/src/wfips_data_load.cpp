@@ -80,20 +80,15 @@ WfipsData::LoadProdRates()
 }
 
 int
-WfipsData::LoadDipatchLogic()
+WfipsData::LoadDispatchLogic()
 {
-   /* Declare all sql stmts */
-    sqlite3_stmt *fwa_stmt;
-    sqlite3_stmt *dlg_stmt;
-    sqlite3_stmt *ind_stmt;
-    sqlite3_stmt *bkp_stmt;
-    sqlite3_stmt *res_stmt;
-    sqlite3_exec( db, "BEGIN TRANSACTION", NULL, NULL, NULL );
-    /* Prepare */
-
-    /*
-    if( pszFilter != NULL )
+    sqlite3_stmt *stmt;
+    sqlite3_stmt *rstmt;
+    int rc, i, j, n;
+    if( pszAnalysisAreaWkt )
     {
+        /* Subset */
+        /*
         sqlite3_prepare_v2( db, "SELECT DISTINCT(displog_id) FROM "
                                 "fwa LEFT JOIN fwa_bndry ON "
                                 "(fwa.name=fwa_bndry.fwa_lndr_name) "
@@ -106,32 +101,44 @@ WfipsData::LoadDipatchLogic()
                                 "ymin <= MbrMaxY(GeomFromText(?1)) AND "
                                 "ymax >= MbrMinY(GeomFromText(?1)))",
                             -1, &fwa_stmt, NULL );
-        sqlite3_bind_text( fwa_stmt, 1, pszFilter, -1, NULL );
+        */
     }
-    else if( pszFpuFilter != NULL )
-    {
-        sqlite3_prepare_v2( db, "SELECT DISTINCT displog_id FROM fwa "
-                                "LEFT JOIN fpu ON fwa.fpu_id=fpu.id "
-                                "WHERE fpu.name LIKE '%' || ? || '%'",
-                            -1, &fwa_stmt, NULL );
-        sqlite3_bind_text( fwa_stmt, 1, pszFpuFilter, -1, NULL );
-    }
-    else
-    {
-        sqlite3_prepare_v2( db, "SELECT DISTINCT displog_id from fwa",
-                            -1, &fwa_stmt, NULL );
-    }
+    rc = sqlite3_prepare_v2( db, "SELECT name,indice,num_lev,bp_1,bp_2, " \
+                                 "bp_3,bp_4 FROM " \
+                                 "displog JOIN brk_point USING(name)",
+                             -1, &stmt, NULL );
+    rc = sqlite3_prepare_v2( db, "SELECT * FROM  num_resc WHERE name=?", -1,
+                             &rstmt, NULL );
 
-    sqlite3_prepare_v2( db, "SELECT * FROM disp_logic WHERE id=?", -1,
-            &dlg_stmt, NULL );
-    sqlite3_prepare_v2( db, "SELECT name FROM indice WHERE value=?", -1,
-            &ind_stmt, NULL );
-    sqlite3_prepare_v2( db, "SELECT * FROM  brk_point WHERE displog_id=?", -1, 
-            &bkp_stmt, NULL );
-    sqlite3_prepare_v2( db, "SELECT * FROM  num_resc WHERE displog_id=?", -1,
-            &res_stmt, NULL );
-    */
-
+    const char *pszName, *pszIndice;
+    int nLevels, anBps[4];
+    int nBp, anRescCount[13][5];
+    while( sqlite3_step( stmt ) == SQLITE_ROW )
+    {
+        pszName = (const char*)sqlite3_column_text( stmt, 0 );
+        pszIndice = (const char*)sqlite3_column_text( stmt, 1 );
+        nLevels = sqlite3_column_int( stmt, 2 );
+        memset( anBps, 0, sizeof( int ) * 4 );
+        for( i = 0; i < nLevels; i++ )
+            anBps[i] = sqlite3_column_int( stmt, 3 + i );
+        sqlite3_bind_text( rstmt, 1, pszName, -1, NULL );
+        i = 0;
+        memset( anRescCount, 0, sizeof( int ) * 13 * 5 );
+        while( sqlite3_step( rstmt ) == SQLITE_ROW )
+        {
+            for( j = 0; j < 13; j++ )
+            {
+                anRescCount[j][i] = sqlite3_column_int( stmt, j+2 );
+            }
+            i++;
+        }
+        poScenario->m_VDispLogic.push_back( CDispLogic( std::string( pszName ),
+                                            std::string( pszIndice ), nLevels,
+                                            anBps, anRescCount ) );
+        sqlite3_reset( rstmt );
+    }
+    sqlite3_finalize( stmt );
+    sqlite3_finalize( rstmt );
     return 0;
 }
 int
@@ -167,7 +174,7 @@ WfipsData::LoadIrsStructs( const char *pszAnalysisAreaWkt )
     poScenario = new CRunScenario();
     LoadRescTypes();
     LoadProdRates();
-    LoadDipatchLogic();
+    LoadDispatchLogic();
     LoadFwas();
     LoadDispatchLocations();
     LoadTankerBases();

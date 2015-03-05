@@ -96,3 +96,14 @@ int WfipsData::TestProdLoad1()
     return rc;
 }
 
+int WfipsData::TestDispLogLoad1()
+{
+    poScenario = new CRunScenario();
+    LoadDispatchLogic();
+    int rc = 0;
+    if( poScenario->m_VDispLogic.size() == 0 )
+        rc = 1;
+    delete poScenario;
+    return rc;
+}
+

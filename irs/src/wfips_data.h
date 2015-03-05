@@ -60,6 +60,7 @@
 #define ASSOC_DB            "assoc.db"
 #define COST_DB             "cost.db"
 #define DISPLOC_DB          "disploc.db"
+#define DISPLOG_DB          "displog.db"
 #define DISTRICT_DB         "district.db"
 #define FIG_DB              "fakefig.db"
 #define FOREST_DB           "forest.db"
@@ -116,6 +117,7 @@ struct WfipsResc
 static const char *apszDbFiles[] = {ASSOC_DB,
                                     COST_DB,
                                     DISPLOC_DB,
+                                    DISPLOG_DB,
                                     //DISTRICT_DB,
                                     FIG_DB,
                                     //FOREST_DB,
@@ -200,6 +202,7 @@ public:
     int TestFidSet1();
     int TestRescTypeLoad1();
     int TestProdLoad1();
+    int TestDispLogLoad1();
 
 private:
     void Init();
@@ -234,7 +237,7 @@ private:
     CRunScenario *poScenario;
     int LoadRescTypes();
     int LoadProdRates();
-    int LoadDipatchLogic();
+    int LoadDispatchLogic();
     int LoadFwas();
     int LoadDispatchLocations();
     int LoadTankerBases();
