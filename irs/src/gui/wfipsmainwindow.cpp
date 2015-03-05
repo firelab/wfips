@@ -63,6 +63,7 @@ WfipsMainWindow::WfipsMainWindow( QWidget *parent ) :
     /* Call *after* construction */
     CreateConnections();
     PostConstructionActions();
+    ui->threadSpinBox->setRange( 1, QThread::idealThreadCount() );
     ReadSettings();
     this->setWindowIcon( QIcon( ":/osu" ) );
     ui->progressBar->setRange( 0, 100 );
@@ -122,6 +123,9 @@ void WfipsMainWindow::WriteSettings()
     {
         settings.setValue( "defaultlayer", lyr );
     }
+    int nThreadCount = ui->threadSpinBox->value();
+    settings.setValue( "threadcount", ui->threadSpinBox->value() );
+    settings.setValue( "advancedrun", ui->advancedRunGroupBox->isChecked() );
 }
 
 void WfipsMainWindow::ReadSettings()
@@ -158,6 +162,14 @@ void WfipsMainWindow::ReadSettings()
             i = 0;
         }
         ui->analysisAreaComboBox->setCurrentIndex( i );
+    }
+    if( settings.contains( "threadcount" ) )
+    {
+        ui->threadSpinBox->setValue( settings.value( "threadcount" ).toInt() );
+    }
+    if( settings.contains( "advancedrun" ) )
+    {
+        ui->advancedRunGroupBox->setChecked( settings.value( "advancedrun" ).toBool() );
     }
     /* last */
     if( settings.contains( "xmin" ) &&
