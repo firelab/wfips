@@ -108,7 +108,7 @@ WfipsData::LoadDispatchLogic()
                                      -1, &stmt, NULL );
 
             rc = sqlite3_bind_blob( stmt, sqlite3_bind_parameter_index( stmt, "@geom" ),
-                                    pGeom, n, NULL );
+                                    pGeom, n, sqlite3_free );
         }
         else
         {
