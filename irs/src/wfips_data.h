@@ -59,6 +59,7 @@
 
 #define ASSOC_DB            "assoc.db"
 #define COST_DB             "cost.db"
+#define DELAY_DB            "delay.db"
 #define DISPLOC_DB          "disploc.db"
 #define DISPLOG_DB          "displog.db"
 #define DISTRICT_DB         "district.db"
@@ -204,6 +205,8 @@ public:
     int TestProdLoad1();
     int TestDispLogLoad1();
     int TestDispLogLoad2();
+    int TestFwaLoad1();
+    int TestFwaLoad2();
 
 private:
     void Init();
