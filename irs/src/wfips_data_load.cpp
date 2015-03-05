@@ -97,7 +97,7 @@ WfipsData::LoadDispatchLogic()
                                          "JOIN brk_point ON " \
                                          "displog.name=brk_point.name " \
                                          "WHERE ST_Intersects(@geom, geometry) " \
-                                         " AND fwa.ROWID IN " \
+                                         "AND fwa.ROWID IN " \
                                          "(SELECT pkid FROM " \
                                          "idx_fwa_geometry WHERE " \
                                          "xmin <= MbrMaxX(@geom) AND " \
