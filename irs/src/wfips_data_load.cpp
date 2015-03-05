@@ -82,6 +82,56 @@ WfipsData::LoadProdRates()
 int
 WfipsData::LoadDipatchLogic()
 {
+   /* Declare all sql stmts */
+    sqlite3_stmt *fwa_stmt;
+    sqlite3_stmt *dlg_stmt;
+    sqlite3_stmt *ind_stmt;
+    sqlite3_stmt *bkp_stmt;
+    sqlite3_stmt *res_stmt;
+    sqlite3_exec( db, "BEGIN TRANSACTION", NULL, NULL, NULL );
+    /* Prepare */
+
+    /*
+    if( pszFilter != NULL )
+    {
+        sqlite3_prepare_v2( db, "SELECT DISTINCT(displog_id) FROM "
+                                "fwa LEFT JOIN fwa_bndry ON "
+                                "(fwa.name=fwa_bndry.fwa_lndr_name) "
+                                "WHERE ST_Intersects(fwa_bndry.geometry, "
+                                "GeomFromText(?1)) AND "
+                                "fwa_bndry.ROWID IN (SELECT pkid FROM "
+                                "idx_fwa_bndry_geometry WHERE "
+                                "xmin <= MbrMaxX(GeomFromText(?1)) AND "
+                                "xmax >= MbrMinX(GeomFromText(?1)) AND "
+                                "ymin <= MbrMaxY(GeomFromText(?1)) AND "
+                                "ymax >= MbrMinY(GeomFromText(?1)))",
+                            -1, &fwa_stmt, NULL );
+        sqlite3_bind_text( fwa_stmt, 1, pszFilter, -1, NULL );
+    }
+    else if( pszFpuFilter != NULL )
+    {
+        sqlite3_prepare_v2( db, "SELECT DISTINCT displog_id FROM fwa "
+                                "LEFT JOIN fpu ON fwa.fpu_id=fpu.id "
+                                "WHERE fpu.name LIKE '%' || ? || '%'",
+                            -1, &fwa_stmt, NULL );
+        sqlite3_bind_text( fwa_stmt, 1, pszFpuFilter, -1, NULL );
+    }
+    else
+    {
+        sqlite3_prepare_v2( db, "SELECT DISTINCT displog_id from fwa",
+                            -1, &fwa_stmt, NULL );
+    }
+
+    sqlite3_prepare_v2( db, "SELECT * FROM disp_logic WHERE id=?", -1,
+            &dlg_stmt, NULL );
+    sqlite3_prepare_v2( db, "SELECT name FROM indice WHERE value=?", -1,
+            &ind_stmt, NULL );
+    sqlite3_prepare_v2( db, "SELECT * FROM  brk_point WHERE displog_id=?", -1, 
+            &bkp_stmt, NULL );
+    sqlite3_prepare_v2( db, "SELECT * FROM  num_resc WHERE displog_id=?", -1,
+            &res_stmt, NULL );
+    */
+
     return 0;
 }
 int
