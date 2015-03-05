@@ -722,9 +722,14 @@ WfipsData::SetAnalysisAreaMask( const char *pszMaskWkt )
 {
     sqlite3_free( (void*)pszAnalysisAreaWkt );
     if( pszMaskWkt )
+    {
         pszAnalysisAreaWkt = sqlite3_mprintf( "%s", pszMaskWkt );
+        /* TODO: compile a binary geometry */
+    }
     else
+    {
         pszAnalysisAreaWkt = NULL;
+    }
     return SQLITE_OK;
 }
 

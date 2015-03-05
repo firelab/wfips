@@ -64,7 +64,7 @@
 #define FIG_DB              "fakefig.db"
 #define FOREST_DB           "forest.db"
 #define FPU_DB              "fpu.db"
-#define FWA_DB              "fwa.db"
+#define FWA_DB              "kylefwa.db"
 #define GACC_DB             "gacc.db"
 #define STATIC_DB           "static.db"
 #define RESC_DB             "resc.db"
