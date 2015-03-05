@@ -107,7 +107,8 @@ WfipsData::LoadDispatchLogic()
                                          "group by displog.name",
                                      -1, &stmt, NULL );
 
-            rc = sqlite3_bind_blob( stmt, sqlite3_bind_parameter_index( stmt, "@geom" ),
+            rc = sqlite3_bind_blob( stmt,
+                                    sqlite3_bind_parameter_index( stmt, "@geom" ),
                                     pGeom, n, sqlite3_free );
         }
         else
