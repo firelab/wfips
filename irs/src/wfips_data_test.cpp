@@ -107,3 +107,20 @@ int WfipsData::TestDispLogLoad1()
     return rc;
 }
 
+int WfipsData::TestDispLogLoad2()
+{
+    poScenario = new CRunScenario();
+    LoadDispatchLogic();
+    int rc = 0;
+    int a = poScenario->m_VDispLogic.size();
+    poScenario->m_VDispLogic.clear();
+    SetAnalysisAreaMask( "POLYGON((-114 47, -113 47, -113 46, -114 46, -114 47))" );
+    LoadDispatchLogic();
+    int b = poScenario->m_VDispLogic.size();
+    delete poScenario;
+    if( a <= b || a == 0 || b == 0 )
+        rc = 1;
+    return rc;
+}
+
+

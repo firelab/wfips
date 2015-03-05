@@ -296,5 +296,10 @@ BOOST_AUTO_TEST_CASE( load_disp_log_1 )
     BOOST_CHECK( poData->TestDispLogLoad1() == 0 );
 }
 
+BOOST_AUTO_TEST_CASE( load_disp_log_2 )
+{
+    BOOST_CHECK( poData->TestDispLogLoad2() == 0 );
+}
+
 BOOST_AUTO_TEST_SUITE_END() /* irs */
 

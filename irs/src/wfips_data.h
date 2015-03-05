@@ -203,6 +203,7 @@ public:
     int TestRescTypeLoad1();
     int TestProdLoad1();
     int TestDispLogLoad1();
+    int TestDispLogLoad2();
 
 private:
     void Init();

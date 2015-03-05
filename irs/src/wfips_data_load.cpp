@@ -85,28 +85,44 @@ WfipsData::LoadDispatchLogic()
     sqlite3_stmt *stmt;
     sqlite3_stmt *rstmt;
     int rc, i, j, n;
+    void *pGeom;
     if( pszAnalysisAreaWkt )
     {
-        /* Subset */
-        /*
-        sqlite3_prepare_v2( db, "SELECT DISTINCT(displog_id) FROM "
-                                "fwa LEFT JOIN fwa_bndry ON "
-                                "(fwa.name=fwa_bndry.fwa_lndr_name) "
-                                "WHERE ST_Intersects(fwa_bndry.geometry, "
-                                "GeomFromText(?1)) AND "
-                                "fwa_bndry.ROWID IN (SELECT pkid FROM "
-                                "idx_fwa_bndry_geometry WHERE "
-                                "xmin <= MbrMaxX(GeomFromText(?1)) AND "
-                                "xmax >= MbrMinX(GeomFromText(?1)) AND "
-                                "ymin <= MbrMaxY(GeomFromText(?1)) AND "
-                                "ymax >= MbrMinY(GeomFromText(?1)))",
-                            -1, &fwa_stmt, NULL );
-        */
+        n = CompileGeometry( pszAnalysisAreaWkt, &pGeom );
+        if( n > 0 )
+        {
+            rc = sqlite3_prepare_v2( db, "SELECT displog.name,indice,num_lev,bp_1," \
+                                         "bp_2,bp_3,bp_4 FROM fwa JOIN displog " \
+                                         "ON fwa.displogic_name=displog.name " \
+                                         "JOIN brk_point ON " \
+                                         "displog.name=brk_point.name " \
+                                         "WHERE ST_Intersects(@geom, geometry) " \
+                                         " AND fwa.ROWID IN " \
+                                         "(SELECT pkid FROM " \
+                                         "idx_fwa_geometry WHERE " \
+                                         "xmin <= MbrMaxX(@geom) AND " \
+                                         "xmax >= MbrMinX(@geom) AND " \
+                                         "ymin <= MbrMaxY(@geom) AND " \
+                                         "ymax >= MbrMinY(@geom)) " \
+                                         "group by displog.name",
+                                     -1, &stmt, NULL );
+
+            rc = sqlite3_bind_blob( stmt, sqlite3_bind_parameter_index( stmt, "@geom" ),
+                                    pGeom, n, NULL );
+        }
+        else
+        {
+            /* Geometry is bad */
+            return SQLITE_ERROR;
+        }
     }
-    rc = sqlite3_prepare_v2( db, "SELECT name,indice,num_lev,bp_1,bp_2, " \
-                                 "bp_3,bp_4 FROM " \
-                                 "displog JOIN brk_point USING(name)",
-                             -1, &stmt, NULL );
+    else
+    {
+        rc = sqlite3_prepare_v2( db, "SELECT name,indice,num_lev,bp_1,bp_2, " \
+                                     "bp_3,bp_4 FROM " \
+                                     "displog JOIN brk_point USING(name)",
+                                 -1, &stmt, NULL );
+    }
     rc = sqlite3_prepare_v2( db, "SELECT * FROM  num_resc WHERE name=?", -1,
                              &rstmt, NULL );
 
