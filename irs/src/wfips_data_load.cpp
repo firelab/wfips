@@ -161,6 +161,132 @@ WfipsData::LoadDispatchLogic()
 int
 WfipsData::LoadFwas()
 {
+    //assert( poScenario->m_VDispLogic.size() > 0 );
+    sqlite3_stmt *stmt;
+    int rc, n, i;
+    void *pGeom;
+    if( pszAnalysisAreaWkt )
+    {
+        n = CompileGeometry( pszAnalysisAreaWkt, &pGeom );
+        if( n > 0 )
+        {
+            rc = sqlite3_prepare_v2( db, "SELECT * FROM fwa JOIN delay.reload ON " \
+                                         "fwa.name=reload.fwa_name JOIN " \
+                                         "delay.walk_in ON " \
+                                         "reload.fwa_name=walk_in.fwa_name " \
+                                         "WHERE ST_Intersects(@geom, geometry) " \
+                                         "AND fwa.ROWID IN " \
+                                         "(SELECT pkid FROM " \
+                                         "idx_fwa_geometry WHERE " \
+                                         "xmin <= MbrMaxX(@geom) AND " \
+                                         "xmax >= MbrMinX(@geom) AND " \
+                                         "ymin <= MbrMaxY(@geom) AND " \
+                                         "ymax >= MbrMinY(@geom))",
+                                     -1, &stmt, NULL );
+
+            rc = sqlite3_bind_blob( stmt,
+                                    sqlite3_bind_parameter_index( stmt, "@geom" ),
+                                    pGeom, n, sqlite3_free );
+        }
+        else
+        {
+            return SQLITE_ERROR;
+        }
+    }
+    else
+    {
+        rc = sqlite3_prepare_v2( db, "SELECT * FROM fwa JOIN delay.reload ON " \
+                                     "fwa.name=reload.fwa_name JOIN " \
+                                     "delay.walk_in ON " \
+                                     "reload.fwa_name=walk_in.fwa_name",
+                                 -1, &stmt, NULL );
+    }
+    const char *pszName;
+    int nWalkIn, nPumpRoll, nHead, nTail, nPara;
+    double dfAttDist;
+    int bWaterDrops, bExcluded;
+    double dfDiscSize, dfEslSize, dfEslTime, dfAirGrnd;
+    int nFirstDelay;
+    const char *pszLogic;
+    int anReload[5];
+    int anWalkIn[6];
+    int iFwa = 0;
+    while( sqlite3_step( stmt ) == SQLITE_ROW )
+    {
+        pszName = (const char *)sqlite3_column_text( stmt, 1 );
+        nWalkIn = sqlite3_column_int( stmt, 2 );
+        nPumpRoll = sqlite3_column_int( stmt, 3 );
+        nHead = sqlite3_column_int( stmt, 4 );
+        nTail = sqlite3_column_int( stmt, 5 );
+        nPara = sqlite3_column_int( stmt, 6 );
+        dfAttDist = sqlite3_column_double( stmt, 7 );
+        bWaterDrops = sqlite3_column_int( stmt, 8 );
+        bExcluded = sqlite3_column_int( stmt, 9 );
+        dfDiscSize = sqlite3_column_double( stmt, 10 );
+        dfEslSize = sqlite3_column_double( stmt, 11 );
+        dfEslTime = sqlite3_column_double( stmt, 12 );
+        dfAirGrnd = sqlite3_column_double( stmt, 13 );
+        nFirstDelay = sqlite3_column_int( stmt, 14 );
+        pszLogic = (const char *)sqlite3_column_text( stmt, 15 );
+        memset( anReload, 0, sizeof( int ) * 5 );
+        for( i = 0; i < 5; i++ )
+        {
+            anReload[i] = sqlite3_column_int( stmt, 16+i );
+        }
+        memset( anWalkIn, 0, sizeof( int ) * 6 );
+        for( i = 0; i < 6; i++ )
+        {
+            anWalkIn[i] = sqlite3_column_int( stmt, 16+5+i );
+        }
+        /*
+        ** We use defaults now for some delays: From FPA:
+        **
+        ** Post Escape Delay 20 minutes for all but smokejumpers, smokejumpers 120 minutes.
+        ** Post Unused Delay 10 minutes for all.
+        ** Post Used Delay 30 minutes for all but boats and smokejumpers, boats and smokejumpers 120 minutes.
+        ** tracked,boat,crew,engine,helitack,smkjmp
+        **/
+        int anPostEscape[6] = {20,20, 20,20,20,120};
+        int anPostUnused[6] = {10,10, 10,10,10,10};
+        int anPostUsed[6]   = {30,120,30,30,30,120};
+
+
+        /*
+        ** These values have also been defaulted.
+        */
+        std::string aoRos[10];
+        double adfRosCoeff[10];
+        double adfDiurn[24];
+        for( i = 0; i < 10; i++ )
+        {
+            aoRos[i] = std::string( "NA" );
+            adfRosCoeff[i] = 1.0;
+        }
+        for( i = 0; i < 24; i++ )
+        {
+            adfDiurn[i] = 0.;
+        }
+
+        for( i = 0; i < poScenario->m_VDispLogic.size(); i++ )
+        {
+            if( std::string( pszLogic ) == poScenario->m_VDispLogic[i].GetLogicID() )
+                break;
+        }
+
+        poScenario->m_VFWA.push_back( CFWA( std::string( pszName ),
+                                            std::string( "" ), nWalkIn,
+                                            nPumpRoll, nHead, nTail, nPara,
+                                            dfAttDist, bWaterDrops, bExcluded,
+                                            dfDiscSize, dfEslTime, dfEslSize,
+                                            dfAirGrnd, anWalkIn, anPostUsed,
+                                            anPostUnused, anPostEscape, anReload,
+                                            nFirstDelay, adfDiurn, aoRos,
+                                            adfRosCoeff, iFwa,
+                                            poScenario->m_VDispLogic[i],
+                                            std::string( "" ) ) );
+        iFwa++;
+    }
+    sqlite3_finalize( stmt );
     return 0;
 }
 int

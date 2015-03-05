@@ -117,6 +117,7 @@ struct WfipsResc
 /* Database connections are limited to 10 on the normal (default) SQLite */
 static const char *apszDbFiles[] = {ASSOC_DB,
                                     COST_DB,
+                                    DELAY_DB,
                                     DISPLOC_DB,
                                     DISPLOG_DB,
                                     //DISTRICT_DB,

@@ -123,4 +123,33 @@ int WfipsData::TestDispLogLoad2()
     return rc;
 }
 
+int WfipsData::TestFwaLoad1()
+{
+    poScenario = new CRunScenario();
+    LoadDispatchLogic();
+    LoadFwas();
+    int rc = 0;
+    if( poScenario->m_VFWA.size() == 0 )
+        rc = 1;
+    delete poScenario;
+    return rc;
+}
+
+int WfipsData::TestFwaLoad2()
+{
+    poScenario = new CRunScenario();
+    LoadDispatchLogic();
+    LoadFwas();
+    int rc = 0;
+    int a = poScenario->m_VFWA.size();
+    poScenario->m_VFWA.clear();
+    SetAnalysisAreaMask( "POLYGON((-114 47, -113 47, -113 46, -114 46, -114 47))" );
+    LoadFwas();
+    int b = poScenario->m_VFWA.size();
+    delete poScenario;
+    if( a <= b || a == 0 || b == 0 )
+        rc = 1;
+    return rc;
+}
+
 
