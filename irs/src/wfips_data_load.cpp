@@ -381,11 +381,13 @@ WfipsData::LoadDispatchLocations()
 int
 WfipsData::LoadTankerBases()
 {
+    /* Implement later... */
     return 0;
 }
 int
 WfipsData::LoadResources()
 {
+    /* Implement later... */
     return 0;
 }
 int

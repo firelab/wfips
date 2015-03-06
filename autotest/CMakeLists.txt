@@ -223,6 +223,69 @@ ADD_TEST(omffr_conv_add_string_1 ${EXECUTABLE_OUTPUT_PATH}/test_main
 ADD_TEST(omffr_conv_add_string_2 ${EXECUTABLE_OUTPUT_PATH}/test_main
          --run_test=conv/add_string_2)
 
+ADD_TEST( wfips_create_1 ${EXECUTABLE_OUTPUT_PATH}/test_main
+          --run_test=wfipsdata/create_1 )
+ADD_TEST( wfips_create_2 ${EXECUTABLE_OUTPUT_PATH}/test_main
+          --run_test=wfipsdata/create_2 )
+ADD_TEST( wfips_sql_1 ${EXECUTABLE_OUTPUT_PATH}/test_main
+          --run_test=wfipsdata/sql_1 )
+ADD_TEST( wfips_resc_copy_1 ${EXECUTABLE_OUTPUT_PATH}/test_main
+          --run_test=wfipsdata/resc_copy_1 )
+ADD_TEST( wfips_resc_copy_2 ${EXECUTABLE_OUTPUT_PATH}/test_main
+          --run_test=wfipsdata/resc_copy_2 )
+ADD_TEST( wfips_resc_copy_3 ${EXECUTABLE_OUTPUT_PATH}/test_main
+          --run_test=wfipsdata/resc_copy_3 )
+ADD_TEST( wfips_assoc_disploc_1 ${EXECUTABLE_OUTPUT_PATH}/test_main
+          --run_test=wfipsdata/assoc_disploc_1 )
+ADD_TEST( wfips_build_set_1 ${EXECUTABLE_OUTPUT_PATH}/test_main
+          --run_test=wfipsdata/build_set_1 )
+ADD_TEST( wfips_build_set_2 ${EXECUTABLE_OUTPUT_PATH}/test_main
+          --run_test=wfipsdata/build_set_2 )
+ADD_TEST( wfips_build_set_3 ${EXECUTABLE_OUTPUT_PATH}/test_main
+          --run_test=wfipsdata/build_set_3 )
+ADD_TEST( wfips_build_set_4 ${EXECUTABLE_OUTPUT_PATH}/test_main
+          --run_test=wfipsdata/build_set_4 )
+ADD_TEST( wfips_build_set_5 ${EXECUTABLE_OUTPUT_PATH}/test_main
+          --run_test=wfipsdata/build_set_5 )
+ADD_TEST( wfips_build_fid_set_1 ${EXECUTABLE_OUTPUT_PATH}/test_main
+          --run_test=wfipsdata/build_fid_set_1 )
+ADD_TEST( wfips_assoc_resource_1 ${EXECUTABLE_OUTPUT_PATH}/test_main
+          --run_test=wfipsdata/assoc_resource_1 )
+ADD_TEST( wfips_assoc_resource_2 ${EXECUTABLE_OUTPUT_PATH}/test_main
+          --run_test=wfipsdata/assoc_resource_2 )
+ADD_TEST( wfips_assoc_resource_3 ${EXECUTABLE_OUTPUT_PATH}/test_main
+          --run_test=wfipsdata/assoc_resource_3 )
+ADD_TEST( wfips_load_scen_1 ${EXECUTABLE_OUTPUT_PATH}/test_main
+          --run_test=wfipsdata/load_scen_1 )
+ADD_TEST( wfips_load_scen_2 ${EXECUTABLE_OUTPUT_PATH}/test_main
+          --run_test=wfipsdata/load_scen_2 )
+ADD_TEST( wfips_load_scen_3 ${EXECUTABLE_OUTPUT_PATH}/test_main
+          --run_test=wfipsdata/load_scen_3 )
+ADD_TEST( wfips_load_scen_4 ${EXECUTABLE_OUTPUT_PATH}/test_main
+          --run_test=wfipsdata/load_scen_4 )
+ADD_TEST( wfips_load_scen_5 ${EXECUTABLE_OUTPUT_PATH}/test_main
+          --run_test=wfipsdata/load_scen_5 )
+ADD_TEST( wfips_set_resource_db_1 ${EXECUTABLE_OUTPUT_PATH}/test_main
+          --run_test=wfipsdata/set_resource_db_1 )
+ADD_TEST( wfips_scen_count_1 ${EXECUTABLE_OUTPUT_PATH}/test_main
+          --run_test=wfipsdata/scen_count_1 )
+ADD_TEST( wfips_load_resc_types_1 ${EXECUTABLE_OUTPUT_PATH}/test_main
+          --run_test=wfipsdata/load_resc_types_1 )
+ADD_TEST( wfips_load_prod_rates_1 ${EXECUTABLE_OUTPUT_PATH}/test_main
+          --run_test=wfipsdata/load_prod_rates_1 )
+ADD_TEST( wfips_load_disp_log_1 ${EXECUTABLE_OUTPUT_PATH}/test_main
+          --run_test=wfipsdata/load_disp_log_1 )
+ADD_TEST( wfips_load_disp_log_2 ${EXECUTABLE_OUTPUT_PATH}/test_main
+          --run_test=wfipsdata/load_disp_log_2 )
+ADD_TEST( wfips_load_fwa_1 ${EXECUTABLE_OUTPUT_PATH}/test_main
+          --run_test=wfipsdata/load_fwa_1 )
+ADD_TEST( wfips_load_fwa_2 ${EXECUTABLE_OUTPUT_PATH}/test_main
+          --run_test=wfipsdata/load_fwa_2 )
+ADD_TEST( wfips_load_disp_loc_1 ${EXECUTABLE_OUTPUT_PATH}/test_main
+          --run_test=wfipsdata/load_disp_loc_1 )
+ADD_TEST( wfips_load_disp_loc_2 ${EXECUTABLE_OUTPUT_PATH}/test_main
+          --run_test=wfipsdata/load_disp_loc_2 )
+
 IF(RUN_SLOW_TESTS)
 
     # *************************************************************************
