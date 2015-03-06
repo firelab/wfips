@@ -292,6 +292,90 @@ WfipsData::LoadFwas()
 int
 WfipsData::LoadDispatchLocations()
 {
+    sqlite3_stmt *stmt, *astmt;
+    int rc, n, i;
+    void *pGeom;
+    int nFwaCount;
+    if( pszAnalysisAreaWkt )
+    {
+        n = CompileGeometry( pszAnalysisAreaWkt, &pGeom );
+        if( n > 0 )
+        {
+            rc = sqlite3_prepare_v2( db, "SELECT disploc.name,fpu_code," \
+                                         "callback,X(disploc.geometry)," \
+                                         "Y(disploc.geometry) FROM " \
+                                         "disploc JOIN assoc ON " \
+                                         "name=disploc_name " \
+                                         "WHERE fwa_name IN " \
+                                         "(SELECT name FROM fwa WHERE " \
+                                         "ST_Intersects(@geom, fwa.geometry) AND " \
+                                         "fwa.ROWID IN(SELECT pkid FROM "
+                                         "idx_fwa_geometry WHERE "
+                                         "xmin <= MbrMaxX(@geom) AND "
+                                         "xmax >= MbrMinX(@geom) AND "
+                                         "ymin <= MbrMaxY(@geom) AND "
+                                         "ymax >= MbrMinY(@geom))) GROUP BY " \
+                                         "disploc.name",
+                                     -1, &stmt, NULL );
+
+            rc = sqlite3_bind_blob( stmt,
+                                    sqlite3_bind_parameter_index( stmt, "@geom" ),
+                                    pGeom, n, sqlite3_free );
+        }
+        else
+        {
+            return SQLITE_ERROR;
+        }
+    }
+    else
+    {
+        rc = sqlite3_prepare_v2( db, "SELECT name,fpu_code,callback," \
+                                     "X(geometry), Y(geometry) FROM disploc",
+                                 -1, &stmt, NULL );
+    }
+    rc = sqlite3_prepare_v2( db, "SELECT distance FROM assoc WHERE " \
+                                 "disploc_name=? AND fwa_name=?",
+                             -1, &astmt, NULL );
+    nFwaCount = poScenario->m_VFWA.size();
+
+    const char *pszName, *pszFpu;
+    int nCallBack;
+    double dfX, dfY;
+    double dfDist;
+    while( sqlite3_step( stmt ) == SQLITE_ROW )
+    {
+        pszName = (const char*)sqlite3_column_text( stmt, 0 );
+        pszFpu = (const char*)sqlite3_column_text( stmt, 1 );
+        nCallBack = sqlite3_column_int( stmt, 2 );
+        dfX = sqlite3_column_double( stmt, 3 );
+        dfY = sqlite3_column_double( stmt, 4 );
+        CDispLoc oDispLoc( std::string( pszName ), nCallBack,
+                           std::string( pszFpu ), dfY, dfX );
+        for( i = 0; i < nFwaCount; i++ )
+        {
+            rc = sqlite3_bind_text( astmt, 1, pszName, -1, NULL );
+            rc = sqlite3_bind_text( astmt, 2,
+                                    poScenario->m_VFWA[i].GetFWAID().c_str(),
+                                    -1, SQLITE_TRANSIENT );
+            rc = sqlite3_step( astmt );
+            if( rc == SQLITE_ROW )
+            {
+                dfDist = sqlite3_column_double( astmt, 0 );
+            }
+            else
+            {
+                sqlite3_reset( astmt );
+                continue;
+            }
+            poScenario->m_VFWA[i].AddAssociation( std::string( pszName ), dfDist );
+            oDispLoc.AddAssocFWA( &(poScenario->m_VFWA[i]) );
+            sqlite3_reset( astmt );
+        }
+        poScenario->m_VDispLoc.push_back( oDispLoc );
+    }
+
+    sqlite3_finalize( stmt );
+    sqlite3_finalize( astmt );
     return 0;
 }
 int

@@ -152,4 +152,31 @@ int WfipsData::TestFwaLoad2()
     return rc;
 }
 
+int WfipsData::TestDispLocLoad1()
+{
+    poScenario = new CRunScenario();
+    LoadDispatchLogic();
+    LoadFwas();
+    LoadDispatchLocations();
+    int rc = 0;
+    if( poScenario->m_VDispLoc.size() == 0 )
+        rc = 1;
+    delete poScenario;
+    return rc;
+}
+
+int WfipsData::TestDispLocLoad2()
+{
+    poScenario = new CRunScenario();
+    SetAnalysisAreaMask( "POLYGON((-114 47, -113 47, -113 46, -114 46, -114 47))" );
+    LoadDispatchLogic();
+    LoadFwas();
+    LoadDispatchLocations();
+    int rc = 0;
+    if( poScenario->m_VDispLoc.size() > 1000 )
+        rc = 1;
+    delete poScenario;
+    return rc;
+}
+
 

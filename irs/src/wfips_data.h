@@ -208,6 +208,8 @@ public:
     int TestDispLogLoad2();
     int TestFwaLoad1();
     int TestFwaLoad2();
+    int TestDispLocLoad1();
+    int TestDispLocLoad2();
 
 private:
     void Init();

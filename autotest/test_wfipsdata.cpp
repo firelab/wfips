@@ -311,6 +311,15 @@ BOOST_AUTO_TEST_CASE( load_fwa_2 )
     BOOST_CHECK( poData->TestFwaLoad2() == 0 );
 }
 
+BOOST_AUTO_TEST_CASE( load_disp_loc_1 )
+{
+    BOOST_CHECK( poData->TestDispLocLoad1() == 0 );
+}
+
+BOOST_AUTO_TEST_CASE( load_disp_loc_2 )
+{
+    BOOST_CHECK( poData->TestDispLocLoad2() == 0 );
+}
 
 BOOST_AUTO_TEST_SUITE_END() /* irs */
 
