@@ -138,7 +138,6 @@ int WfipsData::TestFwaLoad1()
 int WfipsData::TestFwaLoad2()
 {
     poScenario = new CRunScenario();
-    LoadDispatchLogic();
     LoadFwas();
     int rc = 0;
     int a = poScenario->m_VFWA.size();
@@ -169,7 +168,6 @@ int WfipsData::TestDispLocLoad2()
 {
     poScenario = new CRunScenario();
     SetAnalysisAreaMask( "POLYGON((-114 47, -113 47, -113 46, -114 46, -114 47))" );
-    LoadDispatchLogic();
     LoadFwas();
     LoadDispatchLocations();
     int rc = 0;
