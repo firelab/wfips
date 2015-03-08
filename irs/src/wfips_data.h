@@ -38,7 +38,6 @@
 
 /* IRS */
 #include "RunScenario.h"
-/*
 #include "DispLoc.h"
 #include "Rescbase.h"
 #include "Airtanker.h"
@@ -49,7 +48,6 @@
 #include "WaterTender.h"
 #include "Helicopter.h"
 #include "Helitack.h"
-*/
 
 #ifndef MAX_PATH
 #define MAX_PATH 8192
@@ -79,6 +77,25 @@
 #else
 #define SPATIALITE_EXT "libspatialite.so"
 #endif
+
+/* String comparison macros */
+#ifndef EQUAL
+#define EQUAL(a,b) strcmp((a),(b))==0
+#endif
+
+#ifndef EQUALN
+#define EQUALN(a,b,n) strncmp((a),(b),(n))==0
+#endif
+
+/* Map day indices to names.  NULL padded for 1-based */
+static const char *apszWfipsDayOfWeek[] = { NULL,
+                                           "Monday",
+                                            "Tuesday",
+                                            "Wednesday",
+                                            "Thursday",
+                                            "Friday",
+                                            "Saturday",
+                                            "Sunday" };
 
 /*
 ** Agencies
@@ -210,6 +227,8 @@ public:
     int TestFwaLoad2();
     int TestDispLocLoad1();
     int TestDispLocLoad2();
+    int TestResourceLoad1();
+    int TestResourceLoad2();
 
 private:
     void Init();

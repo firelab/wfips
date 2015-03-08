@@ -322,5 +322,17 @@ BOOST_AUTO_TEST_CASE( load_disp_loc_2 )
     BOOST_CHECK( poData->TestDispLocLoad2() == 0 );
 }
 
+BOOST_AUTO_TEST_CASE( load_resource_1 )
+{
+    // Disable, too slow.
+    //BOOST_CHECK( poData->TestResourceLoad1() == 0 );
+}
+
+BOOST_AUTO_TEST_CASE( load_resource_2 )
+{
+    BOOST_CHECK( poData->TestResourceLoad2() == 0 );
+}
+
+
 BOOST_AUTO_TEST_SUITE_END() /* irs */
 

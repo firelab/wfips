@@ -384,15 +384,200 @@ WfipsData::LoadTankerBases()
     /* Implement later... */
     return 0;
 }
+/*
+** Load resources from disk.  If we have edited the resources and saved them,
+** does that mean we just get to load all of the resources?
+*/
 int
 WfipsData::LoadResources()
 {
-    /* Implement later... */
+    sqlite3_stmt *stmt;
+    int rc, i, j, n;
+    const char *pszName, *pszType;
+    int nStaffing;
+    const char *pszStartTime, *pszEndTime, *pszStartDay, *pszEndDay;
+    int nStartSeason, nEndSeason;
+    const char *pszDispLocName;
+    int nPercAvail = 100;
+    double dfDayCost, dfHourCost;
+    dfDayCost = dfHourCost = 0;
+    int nVolume, bSeverity;
+    const char *pszVersion;
+    pszVersion = "A";
+    double dfFte = 0;
+    double dfNumPositions = 0;
+    double dfAnnualCost = 0;
+    double dfVehicleCost = 0;
+
+    std::multimap<std::string, CResource*>resc_map;
+
+    rc = sqlite3_prepare_v2( db, "SELECT * FROM resource WHERE disploc=?", -1,
+                             &stmt, NULL );
+    for( i = 0; i < poScenario->m_VDispLoc.size(); i++ )
+    {
+        rc = sqlite3_bind_text( stmt, 1,
+                                poScenario->m_VDispLoc[i].GetDispLocID().c_str(),
+                                -1, SQLITE_TRANSIENT );
+        while( sqlite3_step( stmt ) == SQLITE_ROW )
+        {
+            pszName = (const char*)sqlite3_column_text( stmt, 0 );
+            pszType = (const char*)sqlite3_column_text( stmt, 1 );
+            nStaffing = sqlite3_column_int( stmt, 2 );
+            pszStartTime = (const char*)sqlite3_column_text( stmt, 3 );
+            pszEndTime = (const char*)sqlite3_column_text( stmt, 4 );
+            pszStartDay = apszWfipsDayOfWeek[sqlite3_column_int( stmt, 5 )];
+            pszEndDay = apszWfipsDayOfWeek[sqlite3_column_int( stmt, 6 )];
+            nStartSeason = sqlite3_column_int( stmt, 7 );
+            nEndSeason = sqlite3_column_int( stmt, 8 );
+            //nPercAvail = sqlite3_column_int( stmt, 11 );
+            //dfDayCost = sqlite3_column_double( stmt, 12 );
+            //dfHourCost = sqlite3_column_double( stmt, 13 );
+            nVolume = sqlite3_column_int( stmt, 9 );
+            bSeverity = sqlite3_column_int( stmt, 10 );
+            //pszVersion = (const char*)sqlite3_column_text( stmt, 16 );
+            //dfFte = sqlite3_column_double( resc_stmt, 17 );
+            //dfNumPositions = sqlite3_column_double( resc_stmt, 18 );
+            //dfAnnualCost = sqlite3_column_double( resc_stmt, 19 );
+            //dfVehicleCost = sqlite3_column_double( resc_stmt, 20 );
+
+            /* We need a resc type object for the resource constructor */
+            j = 0;
+            while( j < poScenario->m_VRescType.size() )
+            {
+                if( std::string( pszType ) == poScenario->m_VRescType[j].GetRescType() )
+                    break;
+                j++;
+            }
+            if( j == poScenario->m_VRescType.size() )
+            {
+                sqlite3_reset( stmt );
+                continue;
+            }
+
+            // Construct CResource object of the appropriate type
+            if( EQUALN( pszType, "DZR", 3 ) ||
+                EQUALN( pszType, "TP", 2 ) )
+            {
+                poScenario->m_VResource.push_back( new CConstProd( pszName,
+                                                   poScenario->m_VRescType[j],
+                                                   nStaffing, pszStartTime,
+                                                   pszEndTime, pszStartDay, 
+                                                   pszEndDay, nStartSeason,
+                                                   nEndSeason, poScenario->m_VDispLoc[i],
+                                                   nPercAvail, dfDayCost,
+                                                   dfHourCost ) );
+
+            }
+            else if( EQUAL( pszType, "CRW" ) )
+            {
+                poScenario->m_VResource.push_back( new CCrew( pszName,
+                                                   poScenario->m_VRescType[j], nStaffing,
+                                                   pszStartTime, pszEndTime, pszStartDay,
+                                                   pszEndDay, nStartSeason,
+                                                   nEndSeason, poScenario->m_VDispLoc[i], nPercAvail,
+                                                   dfDayCost, dfHourCost ) );
+            }
+            else if( EQUALN( pszType, "EN", 2 ) )
+            {
+                poScenario->m_VResource.push_back( new CEngine( pszName,
+                                                   poScenario->m_VRescType[j], nStaffing,
+                                                   pszStartTime, pszEndTime, 
+                                                   pszStartDay, pszEndDay, 
+                                                   nStartSeason, nEndSeason, 
+                                                   poScenario->m_VDispLoc[i], nPercAvail, dfDayCost,
+                                                   dfHourCost, nVolume ) );
+            }
+            else if( EQUAL( pszType, "WT" ) )
+            {
+                 poScenario->m_VResource.push_back( new CWaterTender( pszName,
+                                                    poScenario->m_VRescType[j],
+                                                    nStaffing, pszStartTime,
+                                                    pszEndTime, pszStartDay,
+                                                    pszEndDay, nStartSeason,
+                                                    nEndSeason, poScenario->m_VDispLoc[i],
+                                                    nPercAvail, dfDayCost,
+                                                    dfHourCost ) );
+            }
+            else if( EQUAL( pszType, "ATT" ) )
+            {
+                poScenario->m_VResource.push_back( new CAirtanker( pszName,
+                                                   poScenario->m_VRescType[j],
+                                                   nStaffing, pszStartTime,
+                                                   pszEndTime, pszStartDay,
+                                                   pszEndDay, nStartSeason,
+                                                   nEndSeason, poScenario->m_VDispLoc[i],
+                                                   nPercAvail, dfDayCost,
+                                                   dfHourCost, nVolume ) );
+            }
+            else if( EQUAL( pszType, "SEAT" ) || EQUAL( pszType, "SCP" ) )
+            {
+                poScenario->m_VResource.push_back( new CSmallAT( pszName,
+                                                   poScenario->m_VRescType[j], 
+                                                   nStaffing, pszStartTime,
+                                                   pszEndTime, pszStartDay, pszEndDay,
+                                                   nStartSeason, nEndSeason,
+                                                   poScenario->m_VDispLoc[i], nPercAvail, dfDayCost,
+                                                   dfHourCost, nVolume ) );
+            }
+            else if( EQUAL( pszType, "SMJR" ) )
+            {
+                poScenario->m_VResource.push_back( new CSmokejumper( pszName,
+                                                   poScenario->m_VRescType[j],
+                                                   nStaffing, pszStartTime,
+                                                   pszEndTime, pszStartDay,
+                                                   pszEndDay, nStartSeason,
+                                                   nEndSeason, poScenario->m_VDispLoc[i],
+                                                   nPercAvail, dfDayCost,
+                                                   dfHourCost ) ); 
+            }
+            else if( EQUAL( pszType, "SJAC" ) )
+            {
+                 poScenario->m_VResource.push_back( new CSMJAircraft( pszName,
+                                                    poScenario->m_VRescType[j],
+                                                    nStaffing, pszStartTime,
+                                                    pszEndTime, pszStartDay,
+                                                    pszEndDay, nStartSeason,
+                                                    nEndSeason, poScenario->m_VDispLoc[i],
+                                                    nPercAvail, dfDayCost,
+                                                    dfHourCost, nVolume ) );
+            }
+            else if( EQUAL( pszType, "HELI" ) )
+            {
+                poScenario->m_VResource.push_back( new CHelitack( pszName,
+                                                 poScenario->m_VRescType[j],
+                                                 nStaffing, pszStartTime,
+                                                 pszEndTime, pszStartDay,
+                                                 pszEndDay, nStartSeason,
+                                                 nEndSeason, poScenario->m_VDispLoc[i],
+                                                 nPercAvail, dfDayCost,
+                                                 dfHourCost ) );
+            }
+            else if( EQUALN( pszType, "HEL", 3 ) )
+            {
+                poScenario->m_VResource.push_back( new CHelicopter( pszName,
+                                                   poScenario->m_VRescType[j],
+                                                   nStaffing, pszStartTime,
+                                                   pszEndTime, pszStartDay,
+                                                   pszEndDay, nStartSeason,
+                                                   nEndSeason, poScenario->m_VDispLoc[i],
+                                                   nPercAvail, dfDayCost,
+                                                   dfHourCost, nVolume ) );
+                resc_map.insert( std::pair<string, CResource*>( pszName,
+                                                                poScenario->m_VResource[poScenario->m_VResource.size()-1] ) );
+             }
+            //poScenario->m_VResource[resc.size()-1]->SetDbId( nRescDbId );
+        }
+        sqlite3_reset( stmt );
+    }
+    //AssociateHelitack( resc_map );
+    sqlite3_finalize( stmt );
+
     return 0;
 }
 int
 WfipsData::CreateLargeAirTankers()
 {
+    /* Implement later... */
     return 0;
 }
 

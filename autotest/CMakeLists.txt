@@ -291,6 +291,10 @@ IF(RUN_SLOW_TESTS)
                   --run_test=wfipsdata/load_fwa_2 )
         ADD_TEST( wfips_load_disp_loc_2 ${EXECUTABLE_OUTPUT_PATH}/test_main
                   --run_test=wfipsdata/load_disp_loc_2 )
+        ADD_TEST( wfips_load_resource_1 ${EXECUTABLE_OUTPUT_PATH}/test_main
+                  --run_test=wfipsdata/load_resource_1 )
+        ADD_TEST( wfips_load_resource_2 ${EXECUTABLE_OUTPUT_PATH}/test_main
+                  --run_test=wfipsdata/load_resource_2 )
         #ADD_TEST(irs_test_avg_fires_1 ${EXECUTABLE_OUTPUT_PATH}/test_main
         #         --run_test=irs/avg_fires_1)
         ADD_TEST(irs_test_scenario_order ${EXECUTABLE_OUTPUT_PATH}/test_main
