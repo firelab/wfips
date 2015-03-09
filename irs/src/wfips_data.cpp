@@ -621,9 +621,8 @@ WfipsData::WriteRescDb( const char *pszPath, int *panIds, int *panDispLocIds,
 }
 
 int
-WfipsData::LoadScenario( int nYearIdx, const char *pszAnalysisAreaWkt,
-                         const char *pszTreatWkt, double dfTreatProb,
-                         int nAgencyFilter )
+WfipsData::LoadScenario( int nYearIdx, const char *pszTreatWkt,
+                         double dfTreatProb, int nAgencyFilter )
 {
     sqlite3_stmt *stmt;
     int n, rc;
@@ -677,8 +676,28 @@ WfipsData::LoadScenario( int nYearIdx, const char *pszAnalysisAreaWkt,
     }
 
     n = 0;
+    int nYear, nFire, nJulDay, nWeekDay, nDiscTime, nBi;
+    double dfRos;
+    int nElev, nFbfm;
+    const char *pszSc;
+    int nSlope, bWalkIn;
+    const char *pszTactic;
+    double dfAttDist, dfRatio;
+    int nSunRise, nSunset, bWaterDrops, bPumpRoll;
+    const char *pszFwa;
+    double dfGmtOffset;
+    int nTreatBi;
+    double dfTreatRos;
+    int nTreatFbfm;
+    const char *pszTreatSc;
+    double dfTreatRatio;
+    const char *pszOwner;
+    int nWfpTpa;
+    double dfManObj;
+
     while( sqlite3_step( stmt ) == SQLITE_ROW )
     {
+        
         n++;
     }
 

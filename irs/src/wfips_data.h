@@ -192,9 +192,8 @@ public:
     int GetScenarioIndices( int **ppanIndices );
 
     /* Move to private */
-    int LoadScenario( int nYearIdx, const char *pszAnalysisAreaWkt,
-                      const char *pszTreatWkt, double dfTreatProb,
-                      int nAgencyFilter );
+    int LoadScenario( int nYearIdx, const char *pszTreatWkt,
+                      double dfTreatProb, int nAgencyFilter );
 
     int SetAnalysisAreaMask( const char *pszWkt );
     int SetFuelTreatmentMask( const char *pszWkt, double dfProb );
