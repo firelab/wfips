@@ -105,7 +105,6 @@ CFire& CFire::SetMemVars( const CFire &thatfire )
         m_Treated = thatfire.m_Treated;
     m_TreatPriority = thatfire.m_TreatPriority;
     m_ManageObjective = thatfire.m_ManageObjective;
-        int nManageObjective;
 	
 	return *this;
 }

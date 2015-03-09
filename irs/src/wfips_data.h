@@ -48,6 +48,7 @@
 #include "WaterTender.h"
 #include "Helicopter.h"
 #include "Helitack.h"
+#include "Fire.h"
 
 #ifndef MAX_PATH
 #define MAX_PATH 8192
@@ -268,6 +269,10 @@ private:
     int LoadTankerBases();
     int LoadResources();
     int CreateLargeAirTankers();
+
+    /* Helper for Diane's structs */
+    std::map<std::string, int> FwaIndexMap;
+    std::map<std::string, int> DispLogIndexMap;
 };
 
 #endif /* WFIPS_DATA_H_ */

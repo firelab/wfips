@@ -86,6 +86,10 @@ WfipsData::LoadDispatchLogic()
     sqlite3_stmt *rstmt;
     int rc, i, j, n;
     void *pGeom;
+
+    /* Clear our lookup */
+    DispLogIndexMap.clear();
+
     if( pszAnalysisAreaWkt )
     {
         n = CompileGeometry( pszAnalysisAreaWkt, &pGeom );
@@ -152,12 +156,14 @@ WfipsData::LoadDispatchLogic()
         poScenario->m_VDispLogic.push_back( CDispLogic( std::string( pszName ),
                                             std::string( pszIndice ), nLevels,
                                             anBps, anRescCount ) );
+        DispLogIndexMap.insert( std::pair<std::string, int>( pszName, poScenario->m_VDispLogic.size() - 1 ) );
         sqlite3_reset( rstmt );
     }
     sqlite3_finalize( stmt );
     sqlite3_finalize( rstmt );
     return 0;
 }
+
 int
 WfipsData::LoadFwas()
 {
@@ -165,6 +171,10 @@ WfipsData::LoadFwas()
     sqlite3_stmt *stmt;
     int rc, n, i;
     void *pGeom;
+
+    /* Clear our lookup */
+    FwaIndexMap.clear();
+
     if( pszAnalysisAreaWkt )
     {
         n = CompileGeometry( pszAnalysisAreaWkt, &pGeom );
@@ -267,11 +277,17 @@ WfipsData::LoadFwas()
             adfDiurn[i] = 0.;
         }
 
+        /*
+        ** The value of this is up for discussion...
+        */
+        i = DispLogIndexMap[pszLogic];
+        /*
         for( i = 0; i < poScenario->m_VDispLogic.size(); i++ )
         {
             if( std::string( pszLogic ) == poScenario->m_VDispLogic[i].GetLogicID() )
                 break;
         }
+        */
 
         poScenario->m_VFWA.push_back( CFWA( std::string( pszName ),
                                             std::string( "" ), nWalkIn,
@@ -285,16 +301,18 @@ WfipsData::LoadFwas()
                                             poScenario->m_VDispLogic[i],
                                             std::string( "" ) ) );
         iFwa++;
+        FwaIndexMap.insert( std::pair<std::string, int>( pszName, iFwa ) );
     }
     sqlite3_finalize( stmt );
     return 0;
 }
+
 int
 WfipsData::LoadDispatchLocations()
 {
-    sqlite3_stmt *stmt, *astmt;
+    sqlite3_stmt *stmt, *astmt, *estmt;
     int rc, n, i;
-    void *pGeom;
+    void *pGeom = NULL;
     int nFwaCount;
     if( pszAnalysisAreaWkt )
     {
@@ -336,6 +354,8 @@ WfipsData::LoadDispatchLocations()
     rc = sqlite3_prepare_v2( db, "SELECT distance FROM assoc WHERE " \
                                  "disploc_name=? AND fwa_name=?",
                              -1, &astmt, NULL );
+    rc = sqlite3_prepare_v2( db, "SELECT COUNT(*) FROM resource WHERE disploc=?",
+                             -1, &estmt, NULL );
     nFwaCount = poScenario->m_VFWA.size();
 
     const char *pszName, *pszFpu;
@@ -345,6 +365,13 @@ WfipsData::LoadDispatchLocations()
     while( sqlite3_step( stmt ) == SQLITE_ROW )
     {
         pszName = (const char*)sqlite3_column_text( stmt, 0 );
+        rc = sqlite3_bind_text( estmt, 1, pszName, -1, NULL );
+        if( sqlite3_step( estmt ) != SQLITE_ROW ||
+            sqlite3_column_int( estmt, 0 ) < 1 )
+        {
+            sqlite3_reset( estmt );
+            continue;
+        }
         pszFpu = (const char*)sqlite3_column_text( stmt, 1 );
         nCallBack = sqlite3_column_int( stmt, 2 );
         dfX = sqlite3_column_double( stmt, 3 );
@@ -371,11 +398,13 @@ WfipsData::LoadDispatchLocations()
             oDispLoc.AddAssocFWA( &(poScenario->m_VFWA[i]) );
             sqlite3_reset( astmt );
         }
+        sqlite3_reset( estmt );
         poScenario->m_VDispLoc.push_back( oDispLoc );
     }
 
     sqlite3_finalize( stmt );
     sqlite3_finalize( astmt );
+    sqlite3_finalize( estmt );
     return 0;
 }
 int

@@ -138,6 +138,7 @@ int WfipsData::TestFwaLoad1()
 int WfipsData::TestFwaLoad2()
 {
     poScenario = new CRunScenario();
+    LoadDispatchLogic();
     LoadFwas();
     int rc = 0;
     int a = poScenario->m_VFWA.size();

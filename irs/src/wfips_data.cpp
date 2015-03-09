@@ -625,10 +625,13 @@ WfipsData::LoadScenario( int nYearIdx, const char *pszTreatWkt,
                          double dfTreatProb, int nAgencyFilter )
 {
     sqlite3_stmt *stmt;
-    int n, rc;
+    sqlite3_stmt *gstmt;
+    int i, n, rc;
     char *pszSql, *pszAnalysisAreaSql, *pszOwnerSql;
     int nAnalysisGeomSize;
     void *pAnalysisGeom = NULL;
+    int nTreatSize;
+    void *pTreatGeom = NULL;
     if( pszAnalysisAreaWkt != NULL )
     {
         pszAnalysisAreaSql =
@@ -654,7 +657,9 @@ WfipsData::LoadScenario( int nYearIdx, const char *pszTreatWkt,
         pszOwnerSql = sqlite3_mprintf( "%s", "" );
     }
 
-    pszSql = sqlite3_mprintf( "SELECT * FROM fig WHERE year=@yidx %s %s",
+    pszSql = sqlite3_mprintf( "SELECT *, X(geometry), Y(geometry) FROM " \
+                              "fig WHERE year=@yidx %s %s " \
+                              "ORDER BY jul_day, disc_time",
                               pszAnalysisAreaSql, pszOwnerSql );
 
     rc = sqlite3_prepare_v2( db, pszSql, -1, &stmt, NULL );
@@ -667,7 +672,7 @@ WfipsData::LoadScenario( int nYearIdx, const char *pszTreatWkt,
         {
             rc = sqlite3_bind_blob( stmt,
                                     sqlite3_bind_parameter_index( stmt, "@geom" ),
-                                    pAnalysisGeom, nAnalysisGeomSize, NULL );
+                                    pAnalysisGeom, nAnalysisGeomSize, sqlite3_free );
         }
         else
         {
@@ -675,15 +680,39 @@ WfipsData::LoadScenario( int nYearIdx, const char *pszTreatWkt,
         }
     }
 
-    n = 0;
-    int nYear, nFire, nJulDay, nWeekDay, nDiscTime, nBi;
+    if( pszTreatWkt != NULL )
+    {
+        rc = sqlite3_prepare_v2( db, "SELECT 1 WHERE " \
+                                     "ST_Contains(@treat, @fig) AND " \
+                                     "X(@fig) <= MbrMaxX(@treat) AND " \
+                                     "X(@fig) >= MbrMinX(@treat) AND " \
+                                     "Y(@fig) <= MbrMaxY(@treat) AND " \
+                                     "Y(@fig) <= MbrMinY(@treat)",
+                                 -1, &gstmt, NULL );
+        nTreatSize = CompileGeometry( pszTreatWkt, &pTreatGeom );
+        if( nTreatSize >0 )
+        {
+            rc = sqlite3_bind_blob( gstmt,
+                                    sqlite3_bind_parameter_index( gstmt, "@treat" ),
+                                    pTreatGeom, nTreatSize, sqlite3_free );
+        }
+        else
+        {
+            /* Panic */
+        }
+    }
+
+    int nYear, nFire, nJulDay;
+    const char *pszWeekDay, *pszDiscTime;
+    int nBi;
     double dfRos;
     int nElev, nFbfm;
     const char *pszSc;
     int nSlope, bWalkIn;
     const char *pszTactic;
     double dfAttDist, dfRatio;
-    int nSunRise, nSunset, bWaterDrops, bPumpRoll;
+    const char *pszSunrise, *pszSunset;
+    int bWaterDrops, bPumpRoll;
     const char *pszFwa;
     double dfGmtOffset;
     int nTreatBi;
@@ -694,20 +723,96 @@ WfipsData::LoadScenario( int nYearIdx, const char *pszTreatWkt,
     const char *pszOwner;
     int nWfpTpa;
     double dfManObj;
+    void *pFigGeom;
+    double dfX, dfY;
+
+    int bTreated;
+    int nFigGeomSize;
+    int nMinSteps = 250;
+    int nMaxSteps = 10000;
+
+    int iFire = 0;
 
     while( sqlite3_step( stmt ) == SQLITE_ROW )
     {
-        
-        n++;
+        nYear = sqlite3_column_int( stmt, 0 );
+        nFire = sqlite3_column_int( stmt, 1 );
+        nJulDay = sqlite3_column_int( stmt, 2 );
+        pszWeekDay = apszWfipsDayOfWeek[sqlite3_column_int( stmt, 3 )];
+        pszDiscTime = (const char*)sqlite3_column_text( stmt, 4 );
+        nBi = sqlite3_column_int( stmt, 5 );
+        dfRos = sqlite3_column_double( stmt, 6 );
+        nElev = sqlite3_column_int( stmt, 7 );
+        nFbfm = sqlite3_column_int( stmt, 8 );
+        pszSc = (const char*)sqlite3_column_text( stmt, 9 );
+        nSlope = sqlite3_column_int( stmt, 10 );
+        bWalkIn = sqlite3_column_int( stmt, 11 );
+        pszTactic = (const char*)sqlite3_column_text( stmt, 12 );
+        dfAttDist = sqlite3_column_double( stmt, 13 );
+        dfRatio = sqlite3_column_double( stmt, 14 );
+        pszSunrise = (const char*)sqlite3_column_text( stmt, 15 );
+        pszSunset = (const char*)sqlite3_column_text( stmt, 16 );
+        bWaterDrops = sqlite3_column_int( stmt, 17 );
+        bPumpRoll = sqlite3_column_int( stmt, 18 );
+        pszFwa = (const char*)sqlite3_column_text( stmt, 19 );
+        dfGmtOffset = sqlite3_column_double( stmt, 20 );
+        nTreatBi = sqlite3_column_int( stmt, 21 );
+        dfTreatRos = sqlite3_column_double( stmt, 22 );
+        nTreatFbfm = sqlite3_column_int( stmt, 23 );
+        pszTreatSc = (const char*)sqlite3_column_text( stmt, 24 );
+        dfTreatRatio = sqlite3_column_double( stmt, 25 );
+        n = sqlite3_column_bytes( stmt, 26 );
+        pFigGeom = (void*)sqlite3_column_blob( stmt, 26 );
+        pszOwner = (const char*)sqlite3_column_text( stmt, 27 );
+        nWfpTpa = sqlite3_column_int( stmt, 28 );
+        dfManObj = sqlite3_column_double( stmt, 29 );
+
+        /* X and Y from spatialite */
+        dfX = sqlite3_column_double( stmt, 30 );
+        dfY = sqlite3_column_double( stmt, 31 );
+
+        bTreated = 0;
+        if( pszTreatWkt != NULL )
+        {
+            rc = sqlite3_bind_blob( gstmt,
+                                    sqlite3_bind_parameter_index( gstmt, "@fig" ),
+                                    pFigGeom, n, NULL );
+            rc = sqlite3_step( gstmt );
+            if( rc == SQLITE_ROW && sqlite3_column_int( gstmt, 0 ) == 1 )
+            {
+                /* Set FB params, etc. */
+                bTreated = 1;
+            }
+            sqlite3_reset( gstmt );
+        }
+        i = FwaIndexMap[pszFwa];
+        /*
+        poScenario->m_VFire.push_back( CFire( nYear, nFire, nJulDay,
+                                              std::string( pszWeekDay ),
+                                              std::string( pszDiscTime ), nBi,
+                                              dfRos, nFbfm,
+                                              std::string( pszSc ),
+                                              nSlope, (bool)bWalkIn,
+                                              std::string( pszTactic ),
+                                              dfAttDist, nElev, dfRatio,
+                                              nMinSteps, nMaxSteps,
+                                              std::string( pszSunrise ),
+                                              std::string( pszSunset ),
+                                              (bool)bWaterDrops, (bool)bPumpRoll,
+                                              (CFWA&)(poScenario->m_VFWA[i]),
+                                              dfY, dfX ) );
+        poScenario->m_VFire[iFire].SetTreated( bTreated );
+        */
+        iFire++;
     }
 
     sqlite3_finalize( stmt );
+    sqlite3_finalize( gstmt );
     sqlite3_free( pszAnalysisAreaSql );
     sqlite3_free( pszOwnerSql );
     sqlite3_free( pszSql );
-    sqlite3_free( pAnalysisGeom );
 
-    return n;
+    return iFire;
 }
 
 int
