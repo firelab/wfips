@@ -97,6 +97,11 @@ public:
         double m_lat;
         double m_lon;
 
+        int GetTreatPriority() {return m_TreatPriority;}
+        void SetTreatPriority( int tp );
+        int GetManageObjectiver() {return m_ManageObjective;}
+        void SetManageObjectiver( int mo );
+
 private:
 	int m_Scenario;												//fire scenario
 	int m_FireNumber;											//fire number
@@ -124,6 +129,9 @@ private:
 	int m_WTArrival;												//Time the first water tender arrives at the fire
         bool m_SimulateContain;
         bool m_Treated;
+
+        int m_TreatPriority;
+        int m_ManageObjective;
 	
 	static int count;											//number of objects instantiated
 
