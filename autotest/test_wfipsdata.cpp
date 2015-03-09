@@ -240,8 +240,8 @@ BOOST_AUTO_TEST_CASE( load_scen_3 )
 BOOST_AUTO_TEST_CASE( load_scen_4 )
 {
     int a, b;
-    poData->SetAnalysisAreaMask( "POLYGON((-114 47, -113 47, -113 46, -114 46, -114 47))" );
     a = poData->LoadScenario( 5, NULL, 1.0, 0 );
+    poData->SetAnalysisAreaMask( "POLYGON((-114 47, -113 47, -113 46, -114 46, -114 47))" );
     b = poData->LoadScenario( 5, NULL, 1.0, 0 );
     BOOST_CHECK( a != 0 && b != 0 );
     BOOST_CHECK( a > b );
