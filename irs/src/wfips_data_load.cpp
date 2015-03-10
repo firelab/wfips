@@ -33,7 +33,7 @@ WfipsData::LoadRescTypes()
     sqlite3_stmt *stmt;
     sqlite3_prepare_v2( db, "SELECT * FROM resc_type", -1, &stmt,
                         NULL );
-
+    poScenario->m_VRescType.clear();
     const char *pszName;
     int nSpeed, nDispDelay, nRespDelay, nSetupTime;
     while( sqlite3_step( stmt ) == SQLITE_ROW )
@@ -56,6 +56,7 @@ WfipsData::LoadProdRates()
 {
     int rc;
     sqlite3_stmt *stmt;
+    poScenario->m_VProdRates.clear();
     rc = sqlite3_prepare_v2( db, "SELECT * FROM prod_rate", -1, &stmt,
                              NULL );
 
@@ -89,6 +90,8 @@ WfipsData::LoadDispatchLogic()
 
     /* Clear our lookup */
     DispLogIndexMap.clear();
+
+    poScenario->m_VDispLogic.clear();
 
     if( pszAnalysisAreaWkt )
     {
@@ -174,6 +177,8 @@ WfipsData::LoadFwas()
 
     /* Clear our lookup */
     FwaIndexMap.clear();
+
+    poScenario->m_VFWA.clear();
 
     if( pszAnalysisAreaWkt )
     {
@@ -314,6 +319,9 @@ WfipsData::LoadDispatchLocations()
     int rc, n, i;
     void *pGeom = NULL;
     int nFwaCount;
+
+    poScenario->m_VDispLoc.clear();
+
     if( pszAnalysisAreaWkt )
     {
         n = CompileGeometry( pszAnalysisAreaWkt, &pGeom );
@@ -442,6 +450,9 @@ WfipsData::LoadResources()
 
     rc = sqlite3_prepare_v2( db, "SELECT * FROM resource WHERE disploc=?", -1,
                              &stmt, NULL );
+
+    poScenario->m_VResource.clear();
+
     for( i = 0; i < poScenario->m_VDispLoc.size(); i++ )
     {
         rc = sqlite3_bind_text( stmt, 1,

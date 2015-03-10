@@ -209,3 +209,110 @@ int WfipsData::TestResourceLoad2()
     return rc;
 }
 
+int WfipsData::TestScenLoad1()
+{
+    int rc;
+    poScenario = new CRunScenario();
+    LoadFwas();
+    rc = LoadScenario( 5, NULL, 1.0, 0 );
+    delete poScenario;
+    return rc;
+}
+
+int WfipsData::TestScenLoad2()
+{
+    int rc;
+    poScenario = new CRunScenario();
+    LoadFwas();
+    rc = LoadScenario( 1, NULL, 1.0, 0 );
+    delete poScenario;
+    return poScenario->m_VFire.size();
+}
+
+int WfipsData::TestScenLoad3()
+{
+    int rc;
+    poScenario = new CRunScenario();
+    SetAnalysisAreaMask( "POLYGON((-114 47, -113 47, -113 46, -114 46, -114 47))" );
+    LoadFwas();
+    rc = LoadScenario( 5, NULL, 1.0, 0 );
+    if( poScenario->m_VFire.size() == 0 )
+        rc = 1;
+    delete poScenario;
+    return rc;
+}
+
+int WfipsData::TestScenLoad4()
+{
+    int rc, a, b;
+    rc = 0;
+    poScenario = new CRunScenario();
+    LoadFwas();
+    LoadScenario( 5, NULL, 1.0, 0 );
+    a = poScenario->m_VFire.size();
+    SetAnalysisAreaMask( "POLYGON((-114 47, -113 47, -113 46, -114 46, -114 47))" );
+    LoadScenario( 5, NULL, 1.0, 0 );
+    b = poScenario->m_VFire.size();
+    if( a == 0 || b == 0 || a < b )
+        rc = 1;
+    delete poScenario;
+    return rc;
+}
+
+int WfipsData::TestScenLoad5()
+{
+    int rc, a, b;
+    rc = 0;
+    poScenario = new CRunScenario();
+    LoadFwas();
+    LoadScenario( 5, NULL, 1.0, AGENCY_ALL );
+    a = poScenario->m_VFire.size();
+    b = LoadScenario( 5, NULL, 1.0, DOI_BLM );
+    b = poScenario->m_VFire.size();
+    if( a == 0 || b == 0 || a < b )
+        rc = 1;
+    delete poScenario;
+    return rc;
+}
+
+int WfipsData::TestScenLoad6()
+{
+    int rc, i;
+    poScenario = new CRunScenario();
+    const char *pszWkt = "POLYGON((-114 47, -113 47, -113 46, -114 46, -114 47))";
+    SetAnalysisAreaMask( pszWkt );
+    LoadFwas();
+    rc = LoadScenario( 5, NULL, 1.0, AGENCY_ALL );
+    for( i = 0; i < poScenario->m_VFire.size(); i++ )
+    {
+        if( poScenario->m_VFire[i].GetTreated() != 0 )
+        {
+            rc = 1;
+            break;
+        }
+    }
+    delete poScenario;
+    return rc;
+}
+
+int WfipsData::TestScenLoad7()
+{
+    int rc, i;
+    poScenario = new CRunScenario();
+    const char *pszWkt = "POLYGON((-114 47, -113 47, -113 46, -114 46, -114 47))";
+    SetAnalysisAreaMask( pszWkt );
+    LoadFwas();
+    rc = LoadScenario( 5, pszWkt, 1.0, AGENCY_ALL );
+    for( i = 0; i < poScenario->m_VFire.size(); i++ )
+    {
+        if( poScenario->m_VFire[i].GetTreated() != 1 )
+        {
+            rc = 1;
+            break;
+        }
+    }
+    delete poScenario;
+    return rc;
+}
+
+

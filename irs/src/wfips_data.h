@@ -229,6 +229,13 @@ public:
     int TestDispLocLoad2();
     int TestResourceLoad1();
     int TestResourceLoad2();
+    int TestScenLoad1();
+    int TestScenLoad2();
+    int TestScenLoad3();
+    int TestScenLoad4();
+    int TestScenLoad5();
+    int TestScenLoad6();
+    int TestScenLoad7();
 
 private:
     void Init();

@@ -99,7 +99,7 @@ CFire& CFire::SetMemVars( const CFire &thatfire )
 	m_WaterDrops = thatfire.m_WaterDrops;							//set whether or not water drops are allowed
 	m_IsPumpNRoll = thatfire.m_IsPumpNRoll;							//set whether engines on fire use pump and roll methods
 	m_WTArrival = thatfire.m_WTArrival;								//arrival time for the first water tender to the fire
-        m_lat = thatfire.m_lat;
+
         m_lon = thatfire.m_lon;
         m_SimulateContain = thatfire.m_SimulateContain;
         m_Treated = thatfire.m_Treated;

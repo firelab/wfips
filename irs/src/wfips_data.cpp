@@ -625,13 +625,14 @@ WfipsData::LoadScenario( int nYearIdx, const char *pszTreatWkt,
                          double dfTreatProb, int nAgencyFilter )
 {
     sqlite3_stmt *stmt;
-    sqlite3_stmt *gstmt;
+    sqlite3_stmt *gstmt = NULL;
     int i, n, rc;
     char *pszSql, *pszAnalysisAreaSql, *pszOwnerSql;
     int nAnalysisGeomSize;
     void *pAnalysisGeom = NULL;
     int nTreatSize;
     void *pTreatGeom = NULL;
+    poScenario->m_VFire.clear();
     if( pszAnalysisAreaWkt != NULL )
     {
         pszAnalysisAreaSql =
@@ -687,7 +688,7 @@ WfipsData::LoadScenario( int nYearIdx, const char *pszTreatWkt,
                                      "X(@fig) <= MbrMaxX(@treat) AND " \
                                      "X(@fig) >= MbrMinX(@treat) AND " \
                                      "Y(@fig) <= MbrMaxY(@treat) AND " \
-                                     "Y(@fig) <= MbrMinY(@treat)",
+                                     "Y(@fig) >= MbrMinY(@treat)",
                                  -1, &gstmt, NULL );
         nTreatSize = CompileGeometry( pszTreatWkt, &pTreatGeom );
         if( nTreatSize >0 )
@@ -738,7 +739,7 @@ WfipsData::LoadScenario( int nYearIdx, const char *pszTreatWkt,
         nYear = sqlite3_column_int( stmt, 0 );
         nFire = sqlite3_column_int( stmt, 1 );
         nJulDay = sqlite3_column_int( stmt, 2 );
-        pszWeekDay = apszWfipsDayOfWeek[sqlite3_column_int( stmt, 3 )];
+        pszWeekDay = apszWfipsDayOfWeek[sqlite3_column_int( stmt, 3 )+1];
         pszDiscTime = (const char*)sqlite3_column_text( stmt, 4 );
         nBi = sqlite3_column_int( stmt, 5 );
         dfRos = sqlite3_column_double( stmt, 6 );
@@ -781,12 +782,17 @@ WfipsData::LoadScenario( int nYearIdx, const char *pszTreatWkt,
             if( rc == SQLITE_ROW && sqlite3_column_int( gstmt, 0 ) == 1 )
             {
                 /* Set FB params, etc. */
+                nBi = nTreatBi;
+                dfRos = dfTreatRos;
+                nFbfm = nTreatFbfm;
+                pszSc = pszTreatSc;
+                dfRatio = dfTreatRatio;
                 bTreated = 1;
             }
             sqlite3_reset( gstmt );
         }
+        /* try/catch? */
         i = FwaIndexMap[pszFwa];
-        /*
         poScenario->m_VFire.push_back( CFire( nYear, nFire, nJulDay,
                                               std::string( pszWeekDay ),
                                               std::string( pszDiscTime ), nBi,
@@ -802,7 +808,6 @@ WfipsData::LoadScenario( int nYearIdx, const char *pszTreatWkt,
                                               (CFWA&)(poScenario->m_VFWA[i]),
                                               dfY, dfX ) );
         poScenario->m_VFire[iFire].SetTreated( bTreated );
-        */
         iFire++;
     }
 
@@ -812,7 +817,7 @@ WfipsData::LoadScenario( int nYearIdx, const char *pszTreatWkt,
     sqlite3_free( pszOwnerSql );
     sqlite3_free( pszSql );
 
-    return iFire;
+    return 0;
 }
 
 int
@@ -848,7 +853,6 @@ WfipsData::SetAnalysisAreaMask( const char *pszMaskWkt )
     if( pszMaskWkt )
     {
         pszAnalysisAreaWkt = sqlite3_mprintf( "%s", pszMaskWkt );
-        /* TODO: compile a binary geometry */
     }
     else
     {

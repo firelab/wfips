@@ -224,12 +224,12 @@ ADD_EXECUTABLE(wfips wfipsmainwindow.cpp
                      wfipsselectmaptool.cpp
                      wfipsdispatcheditdialog.cpp
                      wfipsidentifymaptool.cpp
-                     ${PROJECT_SOURCE_DIR}/irs/src/wfips_data.cpp
                      ${WFIPS_GUI_UI_H}
                      ${WFIPS_GUI_MOC}
                      ${OMFFR_GUI_RCC_SRCS}
                      main2.cpp)
 TARGET_LINK_LIBRARIES(wfips ${LINK_LIBS})
+TARGET_LINK_LIBRARIES(wfips ${CMAKE_BINARY_DIR}/irs/src/${CMAKE_CFG_INTDIR}/${CMAKE_STATIC_LIBRARY_PREFIX}irs${CMAKE_STATIC_LIBRARY_SUFFIX})
 IF(NOT USE_INTERNAL_SQLITE)
     TARGET_LINK_LIBRARIES(wfips ${SQLITE3_LIBRARY})
 ENDIF(NOT USE_INTERNAL_SQLITE)

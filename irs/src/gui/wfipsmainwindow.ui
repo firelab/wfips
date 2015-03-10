@@ -355,7 +355,7 @@
          <enum>QFrame::Plain</enum>
         </property>
         <property name="currentIndex">
-         <number>7</number>
+         <number>8</number>
         </property>
         <widget class="QWidget" name="dataPage">
          <layout class="QVBoxLayout" name="verticalLayout_13">
@@ -1198,7 +1198,7 @@
              <item>
               <widget class="QStackedWidget" name="fuelStackWidget">
                <property name="currentIndex">
-                <number>0</number>
+                <number>3</number>
                </property>
                <widget class="QWidget" name="page_4"/>
                <widget class="QWidget" name="page">
@@ -1348,164 +1348,32 @@
                <widget class="QWidget" name="page_5">
                 <layout class="QVBoxLayout" name="verticalLayout_24">
                  <item>
-                  <layout class="QHBoxLayout" name="horizontalLayout_27">
-                   <item>
-                    <widget class="QLabel" name="label_6">
-                     <property name="toolTip">
-                      <string>Highest Priority</string>
-                     </property>
-                     <property name="text">
-                      <string>Category 1</string>
-                     </property>
-                    </widget>
-                   </item>
-                   <item>
-                    <spacer name="horizontalSpacer_20">
-                     <property name="orientation">
-                      <enum>Qt::Horizontal</enum>
-                     </property>
-                     <property name="sizeHint" stdset="0">
-                      <size>
-                       <width>40</width>
-                       <height>20</height>
-                      </size>
-                     </property>
-                    </spacer>
-                   </item>
-                   <item>
-                    <widget class="QSpinBox" name="wfpSpinBox1">
-                     <property name="toolTip">
-                      <string>Highest Priority</string>
-                     </property>
-                     <property name="accelerated">
-                      <bool>true</bool>
-                     </property>
-                     <property name="suffix">
-                      <string>%</string>
-                     </property>
-                     <property name="maximum">
-                      <number>100</number>
-                     </property>
-                    </widget>
-                   </item>
-                  </layout>
+                  <widget class="QCheckBox" name="wfpCat1CheckBox">
+                   <property name="text">
+                    <string>Treat Category 1</string>
+                   </property>
+                  </widget>
                  </item>
                  <item>
-                  <layout class="QHBoxLayout" name="horizontalLayout_28">
-                   <item>
-                    <widget class="QLabel" name="label_9">
-                     <property name="text">
-                      <string>Category 2</string>
-                     </property>
-                    </widget>
-                   </item>
-                   <item>
-                    <spacer name="horizontalSpacer_21">
-                     <property name="orientation">
-                      <enum>Qt::Horizontal</enum>
-                     </property>
-                     <property name="sizeHint" stdset="0">
-                      <size>
-                       <width>40</width>
-                       <height>20</height>
-                      </size>
-                     </property>
-                    </spacer>
-                   </item>
-                   <item>
-                    <widget class="QSpinBox" name="wfpSpinBox2">
-                     <property name="accelerated">
-                      <bool>true</bool>
-                     </property>
-                     <property name="suffix">
-                      <string>%</string>
-                     </property>
-                     <property name="maximum">
-                      <number>100</number>
-                     </property>
-                    </widget>
-                   </item>
-                  </layout>
+                  <widget class="QCheckBox" name="wfpCat2CheckBox">
+                   <property name="text">
+                    <string>Treat Category 2</string>
+                   </property>
+                  </widget>
                  </item>
                  <item>
-                  <layout class="QHBoxLayout" name="horizontalLayout_16">
-                   <item>
-                    <widget class="QLabel" name="label_4">
-                     <property name="text">
-                      <string>Category 3</string>
-                     </property>
-                    </widget>
-                   </item>
-                   <item>
-                    <spacer name="horizontalSpacer_23">
-                     <property name="orientation">
-                      <enum>Qt::Horizontal</enum>
-                     </property>
-                     <property name="sizeHint" stdset="0">
-                      <size>
-                       <width>40</width>
-                       <height>20</height>
-                      </size>
-                     </property>
-                    </spacer>
-                   </item>
-                   <item>
-                    <widget class="QSpinBox" name="wfpSpinBox3">
-                     <property name="accelerated">
-                      <bool>true</bool>
-                     </property>
-                     <property name="suffix">
-                      <string>%</string>
-                     </property>
-                     <property name="maximum">
-                      <number>100</number>
-                     </property>
-                    </widget>
-                   </item>
-                  </layout>
+                  <widget class="QCheckBox" name="wfpCat3CheckBox">
+                   <property name="text">
+                    <string>Treat Category 3</string>
+                   </property>
+                  </widget>
                  </item>
                  <item>
-                  <layout class="QHBoxLayout" name="horizontalLayout_29">
-                   <item>
-                    <widget class="QLabel" name="label_19">
-                     <property name="toolTip">
-                      <string>Lowest Priority.</string>
-                     </property>
-                     <property name="text">
-                      <string>Category 4</string>
-                     </property>
-                    </widget>
-                   </item>
-                   <item>
-                    <spacer name="horizontalSpacer_24">
-                     <property name="orientation">
-                      <enum>Qt::Horizontal</enum>
-                     </property>
-                     <property name="sizeHint" stdset="0">
-                      <size>
-                       <width>40</width>
-                       <height>20</height>
-                      </size>
-                     </property>
-                    </spacer>
-                   </item>
-                   <item>
-                    <widget class="QSpinBox" name="wfpSpinBox4">
-                     <property name="toolTip">
-                      <string>Lowest Priority.</string>
-                     </property>
-                     <property name="accelerated">
-                      <bool>true</bool>
-                     </property>
-                     <property name="suffix">
-                      <string>%</string>
-                     </property>
-                     <property name="maximum">
-                      <number>100</number>
-                     </property>
-                    </widget>
-                   </item>
-                  </layout>
+                  <widget class="QCheckBox" name="wfpCat4CheckBox">
+                   <property name="text">
+                    <string>Treat Category 4</string>
+                   </property>
+                  </widget>
                  </item>
                  <item>
                   <spacer name="verticalSpacer_6">
