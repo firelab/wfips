@@ -1003,7 +1003,6 @@ int FRisk::JulianToMonth( const int day )
     //assert( day > 0 && day <= 365 );
     if( day > 365 || day < 1 )
     {
-        fprintf( stderr, "Julian day %d is not valid\n", day );
         return -1;
     }
     int i = DAYS_IN_MONTH[0];
