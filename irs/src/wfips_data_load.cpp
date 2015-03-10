@@ -142,7 +142,7 @@ WfipsData::LoadDispatchLogic()
         pszName = (const char*)sqlite3_column_text( stmt, 0 );
         pszIndice = (const char*)sqlite3_column_text( stmt, 1 );
         nLevels = sqlite3_column_int( stmt, 2 );
-        assert( nLevels < 5 );
+        assert( nLevels <= 5 );
         memset( anBps, 0, sizeof( int ) * 4 );
         for( i = 0; i < nLevels - 1; i++ )
             anBps[i] = sqlite3_column_int( stmt, 3 + i );
@@ -163,6 +163,7 @@ WfipsData::LoadDispatchLogic()
         DispLogIndexMap.insert( std::pair<std::string, int>( pszName, poScenario->m_VDispLogic.size() - 1 ) );
         sqlite3_reset( rstmt );
     }
+    assert( DispLogIndexMap.size() == poScenario->m_VDispLogic.size() );
     sqlite3_finalize( stmt );
     sqlite3_finalize( rstmt );
     return 0;
@@ -300,7 +301,6 @@ WfipsData::LoadFwas()
                 break;
         }
         */
-
         poScenario->m_VFWA.push_back( CFWA( std::string( pszName ),
                                             std::string( "" ), nWalkIn,
                                             nPumpRoll, nHead, nTail, nPara,
@@ -315,6 +315,7 @@ WfipsData::LoadFwas()
         iFwa++;
         FwaIndexMap.insert( std::pair<std::string, int>( pszName, iFwa ) );
     }
+    assert( FwaIndexMap.size() == poScenario->m_VFWA.size() );
     sqlite3_finalize( stmt );
     return 0;
 }
