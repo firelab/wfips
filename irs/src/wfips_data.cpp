@@ -733,7 +733,7 @@ WfipsData::LoadScenario( int nYearIdx, const char *pszTreatWkt,
     int nMaxSteps = 10000;
 
     int iFire = 0;
-
+    int q;
     while( sqlite3_step( stmt ) == SQLITE_ROW )
     {
         nYear = sqlite3_column_int( stmt, 0 );
@@ -793,6 +793,11 @@ WfipsData::LoadScenario( int nYearIdx, const char *pszTreatWkt,
         }
         /* try/catch? */
         i = FwaIndexMap[pszFwa];
+        //11154
+        q = FwaIndexMap.size();
+        //649,1325,2064,2088,2323,2425,4325,4359,4493,4576,5104,5259
+        //5874,6323...
+        printf( "iFire: %d\n", iFire );
         poScenario->m_VFire.push_back( CFire( nYear, nFire, nJulDay,
                                               std::string( pszWeekDay ),
                                               std::string( pszDiscTime ), nBi,
