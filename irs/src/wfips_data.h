@@ -54,6 +54,12 @@
 #define MAX_PATH 8192
 #endif
 
+#ifdef WIN32
+#define WFIPS_DATA_TEST_PATH "c:/wfips/data/"
+#else
+#define WFIPS_DATA_TEST_PATH "/home/kyle/src/wfips/build/"
+#endif
+
 #define WFIPS_SCRAP_BUFFER_SIZE 10
 
 #define ASSOC_DB            "assoc.db"

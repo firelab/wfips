@@ -33,7 +33,7 @@ struct WfipsDataMock
 {
     WfipsDataMock()
     {
-        poData = new WfipsData("/home/kyle/src/wfips/build");
+        poData = new WfipsData(WFIPS_DATA_TEST_PATH);
         poData->Open();
     }
     ~WfipsDataMock()
@@ -55,7 +55,7 @@ BOOST_AUTO_TEST_CASE( create_1 )
 
 BOOST_AUTO_TEST_CASE( create_2 )
 {
-    WfipsData *poData2 = new WfipsData("/home/kyle/src/wfips/build");
+    WfipsData *poData2 = new WfipsData(WFIPS_DATA_TEST_PATH);
     int rc = poData2->Open();
     BOOST_CHECK( poData2->Valid() == 1 );
     BOOST_CHECK( rc == 0 );
@@ -252,7 +252,7 @@ BOOST_AUTO_TEST_CASE( set_resource_db_1 )
     int anIds[] = {1,2,3,4,5,6,7,8,9,10};
     WfipsResc *psResc;
     int nCount;
-    poData->SetRescDb( "/home/kyle/src/wfips/build/resc.db" );
+    poData->SetRescDb( WFIPS_DATA_TEST_PATH "resc.db" );
     int rc = poData->GetAssociatedResources( anIds, 10, &psResc, &nCount, AGENCY_ALL );
     WfipsData::FreeAssociatedResources( psResc, nCount );
     BOOST_REQUIRE( nCount > 0 );
