@@ -142,8 +142,9 @@ WfipsData::LoadDispatchLogic()
         pszName = (const char*)sqlite3_column_text( stmt, 0 );
         pszIndice = (const char*)sqlite3_column_text( stmt, 1 );
         nLevels = sqlite3_column_int( stmt, 2 );
+        assert( nLevels < 5 );
         memset( anBps, 0, sizeof( int ) * 4 );
-        for( i = 0; i < nLevels; i++ )
+        for( i = 0; i < nLevels - 1; i++ )
             anBps[i] = sqlite3_column_int( stmt, 3 + i );
         sqlite3_bind_text( rstmt, 1, pszName, -1, NULL );
         i = 0;
