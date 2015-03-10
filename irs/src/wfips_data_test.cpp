@@ -221,12 +221,13 @@ int WfipsData::TestScenLoad1()
 
 int WfipsData::TestScenLoad2()
 {
-    int rc;
+    int rc, n;
     poScenario = new CRunScenario();
     LoadFwas();
     rc = LoadScenario( 1, NULL, 1.0, 0 );
+    n =  poScenario->m_VFire.size();
     delete poScenario;
-    return poScenario->m_VFire.size();
+    return n;
 }
 
 int WfipsData::TestScenLoad3()
