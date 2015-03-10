@@ -248,12 +248,12 @@ WfipsData::LoadFwas()
         memset( anReload, 0, sizeof( int ) * 5 );
         for( i = 0; i < 5; i++ )
         {
-            anReload[i] = sqlite3_column_int( stmt, 16+i );
+            anReload[i] = sqlite3_column_int( stmt, 18+i );
         }
         memset( anWalkIn, 0, sizeof( int ) * 6 );
         for( i = 0; i < 6; i++ )
         {
-            anWalkIn[i] = sqlite3_column_int( stmt, 16+5+i );
+            anWalkIn[i] = sqlite3_column_int( stmt, 18+5+i );
         }
         /*
         ** We use defaults now for some delays: From FPA:
