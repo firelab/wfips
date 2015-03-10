@@ -797,7 +797,6 @@ WfipsData::LoadScenario( int nYearIdx, const char *pszTreatWkt,
         q = FwaIndexMap.size();
         //649,1325,2064,2088,2323,2425,4325,4359,4493,4576,5104,5259
         //5874,6323...
-        printf( "iFire: %d\n", iFire );
         poScenario->m_VFire.push_back( CFire( nYear, nFire, nJulDay,
                                               std::string( pszWeekDay ),
                                               std::string( pszDiscTime ), nBi,
