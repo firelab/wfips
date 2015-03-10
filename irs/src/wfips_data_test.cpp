@@ -213,6 +213,7 @@ int WfipsData::TestScenLoad1()
 {
     int rc;
     poScenario = new CRunScenario();
+    LoadDispatchLogic();
     LoadFwas();
     rc = LoadScenario( 5, NULL, 1.0, 0 );
     delete poScenario;
@@ -223,6 +224,7 @@ int WfipsData::TestScenLoad2()
 {
     int rc, n;
     poScenario = new CRunScenario();
+    LoadDispatchLogic();
     LoadFwas();
     rc = LoadScenario( 1, NULL, 1.0, 0 );
     n =  poScenario->m_VFire.size();
@@ -235,6 +237,7 @@ int WfipsData::TestScenLoad3()
     int rc;
     poScenario = new CRunScenario();
     SetAnalysisAreaMask( "POLYGON((-114 47, -113 47, -113 46, -114 46, -114 47))" );
+    LoadDispatchLogic();
     LoadFwas();
     rc = LoadScenario( 5, NULL, 1.0, 0 );
     if( poScenario->m_VFire.size() == 0 )
@@ -248,6 +251,7 @@ int WfipsData::TestScenLoad4()
     int rc, a, b;
     rc = 0;
     poScenario = new CRunScenario();
+    LoadDispatchLogic();
     LoadFwas();
     LoadScenario( 5, NULL, 1.0, 0 );
     a = poScenario->m_VFire.size();
@@ -265,6 +269,7 @@ int WfipsData::TestScenLoad5()
     int rc, a, b;
     rc = 0;
     poScenario = new CRunScenario();
+    LoadDispatchLogic();
     LoadFwas();
     LoadScenario( 5, NULL, 1.0, AGENCY_ALL );
     a = poScenario->m_VFire.size();
@@ -282,6 +287,7 @@ int WfipsData::TestScenLoad6()
     poScenario = new CRunScenario();
     const char *pszWkt = "POLYGON((-114 47, -113 47, -113 46, -114 46, -114 47))";
     SetAnalysisAreaMask( pszWkt );
+    LoadDispatchLogic();
     LoadFwas();
     rc = LoadScenario( 5, NULL, 1.0, AGENCY_ALL );
     for( i = 0; i < poScenario->m_VFire.size(); i++ )
@@ -302,6 +308,7 @@ int WfipsData::TestScenLoad7()
     poScenario = new CRunScenario();
     const char *pszWkt = "POLYGON((-114 47, -113 47, -113 46, -114 46, -114 47))";
     SetAnalysisAreaMask( pszWkt );
+    LoadDispatchLogic();
     LoadFwas();
     rc = LoadScenario( 5, pszWkt, 1.0, AGENCY_ALL );
     for( i = 0; i < poScenario->m_VFire.size(); i++ )
