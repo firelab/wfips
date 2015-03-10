@@ -229,20 +229,22 @@ WfipsData::LoadFwas()
     while( sqlite3_step( stmt ) == SQLITE_ROW )
     {
         pszName = (const char *)sqlite3_column_text( stmt, 1 );
-        nWalkIn = sqlite3_column_int( stmt, 2 );
-        nPumpRoll = sqlite3_column_int( stmt, 3 );
-        nHead = sqlite3_column_int( stmt, 4 );
-        nTail = sqlite3_column_int( stmt, 5 );
-        nPara = sqlite3_column_int( stmt, 6 );
-        dfAttDist = sqlite3_column_double( stmt, 7 );
-        bWaterDrops = sqlite3_column_int( stmt, 8 );
-        bExcluded = sqlite3_column_int( stmt, 9 );
-        dfDiscSize = sqlite3_column_double( stmt, 10 );
-        dfEslSize = sqlite3_column_double( stmt, 11 );
-        dfEslTime = sqlite3_column_double( stmt, 12 );
-        dfAirGrnd = sqlite3_column_double( stmt, 13 );
-        nFirstDelay = sqlite3_column_int( stmt, 14 );
-        pszLogic = (const char *)sqlite3_column_text( stmt, 15 );
+        // FPU 2
+        // FMG 3
+        nWalkIn = sqlite3_column_int( stmt, 4 );
+        nPumpRoll = sqlite3_column_int( stmt, 5 );
+        nHead = sqlite3_column_int( stmt, 6 );
+        nTail = sqlite3_column_int( stmt, 7 );
+        nPara = sqlite3_column_int( stmt, 8 );
+        dfAttDist = sqlite3_column_double( stmt, 9 );
+        bWaterDrops = sqlite3_column_int( stmt, 10 );
+        bExcluded = sqlite3_column_int( stmt, 11 );
+        dfDiscSize = sqlite3_column_double( stmt, 12 );
+        dfEslSize = sqlite3_column_double( stmt, 13 );
+        dfEslTime = sqlite3_column_double( stmt, 14 );
+        dfAirGrnd = sqlite3_column_double( stmt, 15 );
+        nFirstDelay = sqlite3_column_int( stmt, 16 );
+        pszLogic = (const char *)sqlite3_column_text( stmt, 17 );
         memset( anReload, 0, sizeof( int ) * 5 );
         for( i = 0; i < 5; i++ )
         {
