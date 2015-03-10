@@ -501,7 +501,7 @@ void CDispatchBase::AddEscape( CEscape Escape )
 				Found = true;
 				
 			if ( CompLevel == ELevel && CompTime > ETime )
-				Found == true;
+				Found = true;
 
 			if ( !Found )
 				It++;	
