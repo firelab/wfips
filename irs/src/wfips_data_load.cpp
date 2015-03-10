@@ -256,9 +256,13 @@ WfipsData::LoadFwas()
         /*
         ** We use defaults now for some delays: From FPA:
         **
-        ** Post Escape Delay 20 minutes for all but smokejumpers, smokejumpers 120 minutes.
+        ** Post Escape Delay 20 minutes for all but smokejumpers, smokejumpers 
+        ** 120 minutes.
         ** Post Unused Delay 10 minutes for all.
-        ** Post Used Delay 30 minutes for all but boats and smokejumpers, boats and smokejumpers 120 minutes.
+        ** Post Used Delay 30 minutes for all but boats and smokejumpers, boats
+        ** and smokejumpers 120 minutes.
+        **
+        ** Columns:
         ** tracked,boat,crew,engine,helitack,smkjmp
         **/
         int anPostEscape[6] = {20,20, 20,20,20,120};
