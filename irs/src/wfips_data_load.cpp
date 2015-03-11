@@ -643,7 +643,7 @@ WfipsData::LoadIrsStructs( const char *pszAnalysisAreaWkt )
     LoadTankerBases();
     LoadResources();
     CreateLargeAirTankers();
-    poScenario->m_NumFWA = pS->m_VFWA.size();
+    poScenario->m_NumFWA = poScenario->m_VFWA.size();
     poScenario->m_NumRescType = poScenario->m_VRescType.size();
     poScenario->m_NumDispLoc = poScenario->m_VDispLoc.size();
     poScenario->m_NumProdRates = poScenario->m_VProdRates.size();
