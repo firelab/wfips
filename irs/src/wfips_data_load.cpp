@@ -99,12 +99,14 @@ WfipsData::LoadDispatchLogic()
         n = CompileGeometry( pszAnalysisAreaWkt, &pGeom );
         if( n > 0 )
         {
-            rc = sqlite3_prepare_v2( db, "SELECT displog.name,indice,num_lev,bp_1," \
-                                         "bp_2,bp_3,bp_4 FROM fwa JOIN displog " \
+            rc = sqlite3_prepare_v2( db, "SELECT displog.name,indice," \
+                                         "num_lev,bp_1,bp_2,bp_3,bp_4 " \
+                                         "FROM fwa JOIN displog " \
                                          "ON fwa.displogic_name=displog.name " \
                                          "JOIN brk_point ON " \
                                          "displog.name=brk_point.name " \
                                          "WHERE ST_Intersects(@geom, geometry) " \
+                                         "AND fwa.name NOT LIKE '%unassign%' " \
                                          "AND fwa.ROWID IN " \
                                          "(SELECT pkid FROM " \
                                          "idx_fwa_geometry WHERE " \
@@ -112,7 +114,7 @@ WfipsData::LoadDispatchLogic()
                                          "xmax >= MbrMinX(@geom) AND " \
                                          "ymin <= MbrMaxY(@geom) AND " \
                                          "ymax >= MbrMinY(@geom)) " \
-                                         "group by displog.name",
+                                         "GROUP BY displog.name",
                                      -1, &stmt, NULL );
 
             rc = sqlite3_bind_blob( stmt,
@@ -127,9 +129,14 @@ WfipsData::LoadDispatchLogic()
     }
     else
     {
-        rc = sqlite3_prepare_v2( db, "SELECT name,indice,num_lev,bp_1,bp_2, " \
-                                     "bp_3,bp_4 FROM " \
-                                     "displog JOIN brk_point USING(name)",
+        rc = sqlite3_prepare_v2( db, "SELECT displog.name,indice," \
+                                     "num_lev,bp_1,bp_2,bp_3,bp_4 FROM " \
+                                     "fwa JOIN displog ON " \
+                                     "fwa.displogic_name=displog.name " \
+                                     "JOIN brk_point ON " \
+                                     "displog.name=brk_point.name " \
+                                     "WHERE fwa.name NOT LIKE '%unassign%' " \
+                                     "GROUP BY displog.name",
                                  -1, &stmt, NULL );
     }
     rc = sqlite3_prepare_v2( db, "SELECT * FROM  num_resc WHERE name=?", -1,
@@ -194,6 +201,7 @@ WfipsData::LoadFwas()
                                          "delay.walk_in ON " \
                                          "reload.fwa_name=walk_in.fwa_name " \
                                          "WHERE ST_Intersects(@geom, geometry) " \
+                                         "AND fwa.name NOT LIKE '%unassign%' " \
                                          "AND fwa.ROWID IN " \
                                          "(SELECT pkid FROM " \
                                          "idx_fwa_geometry WHERE " \
@@ -217,7 +225,8 @@ WfipsData::LoadFwas()
         rc = sqlite3_prepare_v2( db, "SELECT * FROM fwa JOIN delay.reload ON " \
                                      "fwa.name=reload.fwa_name JOIN " \
                                      "delay.walk_in ON " \
-                                     "reload.fwa_name=walk_in.fwa_name",
+                                     "reload.fwa_name=walk_in.fwa_name " \
+                                     "WHERE fwa.name NOT LIKE '%unassign%'",
                                  -1, &stmt, NULL );
     }
     const char *pszName;
@@ -341,7 +350,8 @@ WfipsData::LoadDispatchLocations()
                                          "Y(disploc.geometry) FROM " \
                                          "disploc JOIN assoc ON " \
                                          "name=disploc_name " \
-                                         "WHERE fwa_name IN " \
+                                         "WHERE fwa_name NOT LIKE '%unassign%' " \
+                                         "AND fwa_name IN " \
                                          "(SELECT name FROM fwa WHERE " \
                                          "ST_Intersects(@geom, fwa.geometry) AND " \
                                          "fwa.ROWID IN(SELECT pkid FROM "
@@ -365,20 +375,25 @@ WfipsData::LoadDispatchLocations()
     else
     {
         rc = sqlite3_prepare_v2( db, "SELECT name,fpu_code,callback," \
-                                     "X(geometry), Y(geometry) FROM disploc",
+                                     "X(geometry), Y(geometry) FROM disploc " \
+                                     "JOIN assoc ON name=disploc_name WHERE "\
+                                     "fwa_name NOT LIKE '%unassign%' " \
+                                     "GROUP BY disploc.name",
                                  -1, &stmt, NULL );
     }
-    rc = sqlite3_prepare_v2( db, "SELECT distance FROM assoc WHERE " \
-                                 "disploc_name=? AND fwa_name=?",
+    rc = sqlite3_prepare_v2( db, "SELECT fwa_name, distance FROM assoc WHERE " \
+                                 "disploc_name=?",
                              -1, &astmt, NULL );
     rc = sqlite3_prepare_v2( db, "SELECT COUNT(*) FROM resource WHERE disploc=?",
                              -1, &estmt, NULL );
     nFwaCount = poScenario->m_VFWA.size();
 
     const char *pszName, *pszFpu;
+    const char *pszFwa;
     int nCallBack;
     double dfX, dfY;
     double dfDist;
+    std::map<std::string, int>::iterator it;
     while( sqlite3_step( stmt ) == SQLITE_ROW )
     {
         pszName = (const char*)sqlite3_column_text( stmt, 0 );
@@ -395,26 +410,20 @@ WfipsData::LoadDispatchLocations()
         dfY = sqlite3_column_double( stmt, 4 );
         CDispLoc oDispLoc( std::string( pszName ), nCallBack,
                            std::string( pszFpu ), dfY, dfX );
-        for( i = 0; i < nFwaCount; i++ )
+        rc = sqlite3_bind_text( astmt, 1, pszName, -1, NULL );
+        while( sqlite3_step( astmt ) == SQLITE_ROW )
         {
-            rc = sqlite3_bind_text( astmt, 1, pszName, -1, NULL );
-            rc = sqlite3_bind_text( astmt, 2,
-                                    poScenario->m_VFWA[i].GetFWAID().c_str(),
-                                    -1, SQLITE_TRANSIENT );
-            rc = sqlite3_step( astmt );
-            if( rc == SQLITE_ROW )
+            pszFwa = (const char*)sqlite3_column_text( astmt, 0 );
+            dfDist = sqlite3_column_double( astmt, 1 );
+            it = FwaIndexMap.find( pszFwa );
+            if( it != FwaIndexMap.end() )
             {
-                dfDist = sqlite3_column_double( astmt, 0 );
+                i = it->second;
+                poScenario->m_VFWA[i].AddAssociation( std::string( pszName ), dfDist );
+                oDispLoc.AddAssocFWA( &(poScenario->m_VFWA[i]) );
             }
-            else
-            {
-                sqlite3_reset( astmt );
-                continue;
-            }
-            poScenario->m_VFWA[i].AddAssociation( std::string( pszName ), dfDist );
-            oDispLoc.AddAssocFWA( &(poScenario->m_VFWA[i]) );
-            sqlite3_reset( astmt );
         }
+        sqlite3_reset( astmt );
         sqlite3_reset( estmt );
         poScenario->m_VDispLoc.push_back( oDispLoc );
     }
@@ -643,7 +652,7 @@ WfipsData::LoadIrsStructs( const char *pszAnalysisAreaWkt )
     LoadTankerBases();
     LoadResources();
     CreateLargeAirTankers();
-    poScenario->m_NumFWA = pS->m_VFWA.size();
+    poScenario->m_NumFWA = poScenario->m_VFWA.size();
     poScenario->m_NumRescType = poScenario->m_VRescType.size();
     poScenario->m_NumDispLoc = poScenario->m_VDispLoc.size();
     poScenario->m_NumProdRates = poScenario->m_VProdRates.size();

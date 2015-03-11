@@ -312,8 +312,7 @@ BOOST_AUTO_TEST_CASE( load_fwa_2 )
 
 BOOST_AUTO_TEST_CASE( load_disp_loc_1 )
 {
-    // Disable, too slow.
-    //BOOST_CHECK( poData->TestDispLocLoad1() == 0 );
+    BOOST_CHECK( poData->TestDispLocLoad1() == 0 );
 }
 
 BOOST_AUTO_TEST_CASE( load_disp_loc_2 )
@@ -323,8 +322,7 @@ BOOST_AUTO_TEST_CASE( load_disp_loc_2 )
 
 BOOST_AUTO_TEST_CASE( load_resource_1 )
 {
-    // Disable, too slow.
-    //BOOST_CHECK( poData->TestResourceLoad1() == 0 );
+    BOOST_CHECK( poData->TestResourceLoad1() == 0 );
 }
 
 BOOST_AUTO_TEST_CASE( load_resource_2 )
