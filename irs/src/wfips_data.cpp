@@ -735,7 +735,7 @@ WfipsData::LoadScenario( int nYearIdx, const char *pszTreatWkt,
 
     int iFire = 0;
     std::map<std::string, int>::iterator it;
-    int q;
+    int nInvalid = 0;
     while( sqlite3_step( stmt ) == SQLITE_ROW )
     {
         nYear = sqlite3_column_int( stmt, 0 );
@@ -783,19 +783,28 @@ WfipsData::LoadScenario( int nYearIdx, const char *pszTreatWkt,
             rc = sqlite3_step( gstmt );
             if( rc == SQLITE_ROW && sqlite3_column_int( gstmt, 0 ) == 1 )
             {
-                /* Set FB params, etc. */
-                nBi = nTreatBi;
-                dfRos = dfTreatRos;
-                nFbfm = nTreatFbfm;
-                pszSc = pszTreatSc;
-                dfRatio = dfTreatRatio;
                 bTreated = 1;
             }
             sqlite3_reset( gstmt );
         }
+        else if( nWfpTreatMask )
+        {
+            bTreated = nWfpTreatMask & 1 << nWfpTpa;
+        }
+        if( bTreated )
+        {
+            /* Set FB params, etc. */
+            nBi = nTreatBi;
+            dfRos = dfTreatRos;
+            nFbfm = nTreatFbfm;
+            pszSc = pszTreatSc;
+            dfRatio = dfTreatRatio;
+        }
         it = FwaIndexMap.find( pszFwa );
         if( it == FwaIndexMap.end() )
         {
+            nInvalid++;
+            //printf("Invalid fwa name: %s\n", pszFwa);
             continue;
         }
         i = it->second;
@@ -817,6 +826,8 @@ WfipsData::LoadScenario( int nYearIdx, const char *pszTreatWkt,
         poScenario->m_VFire[iFire].SetManageObjective( dfManObj );
         iFire++;
     }
+
+    //printf( "Warning. %d fires failed to load due to invalid fwa names\n", nInvalid );
 
     sqlite3_finalize( stmt );
     sqlite3_finalize( gstmt );
