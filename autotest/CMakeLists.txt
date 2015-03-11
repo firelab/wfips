@@ -280,8 +280,6 @@ ADD_TEST( wfips_load_disp_log_2 ${EXECUTABLE_OUTPUT_PATH}/test_main
           --run_test=wfipsdata/load_disp_log_2 )
 ADD_TEST( wfips_load_fwa_1 ${EXECUTABLE_OUTPUT_PATH}/test_main
           --run_test=wfipsdata/load_fwa_1 )
-ADD_TEST( wfips_load_disp_loc_1 ${EXECUTABLE_OUTPUT_PATH}/test_main
-          --run_test=wfipsdata/load_disp_loc_1 )
 
 IF(RUN_SLOW_TESTS)
     # *************************************************************************
@@ -290,6 +288,8 @@ IF(RUN_SLOW_TESTS)
     IF(BUILD_IRS)
         ADD_TEST( wfips_load_fwa_2 ${EXECUTABLE_OUTPUT_PATH}/test_main
                   --run_test=wfipsdata/load_fwa_2 )
+        ADD_TEST( wfips_load_disp_loc_1 ${EXECUTABLE_OUTPUT_PATH}/test_main
+                  --run_test=wfipsdata/load_disp_loc_1 )
         ADD_TEST( wfips_load_disp_loc_2 ${EXECUTABLE_OUTPUT_PATH}/test_main
                   --run_test=wfipsdata/load_disp_loc_2 )
         ADD_TEST( wfips_load_resource_1 ${EXECUTABLE_OUTPUT_PATH}/test_main
