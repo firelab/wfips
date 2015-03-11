@@ -49,6 +49,7 @@ CFire::CFire( int scenario, int firenum, int julianday, string dayofweek, string
 	m_WTArrival = 10000;												//arrival time for the first water tender to the fire
     m_TreatPriority = -1;
     m_ManageObjective = -1;
+    m_UseStategy = 0;
 
 	count++;														//increase the count for the number of fires
 }
@@ -106,6 +107,7 @@ CFire& CFire::SetMemVars( const CFire &thatfire )
         m_Treated = thatfire.m_Treated;
     m_TreatPriority = thatfire.m_TreatPriority;
     m_ManageObjective = thatfire.m_ManageObjective;
+    m_UseStategy = thatfire.m_UseStategy;
 	
 	return *this;
 }

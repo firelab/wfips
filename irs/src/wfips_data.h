@@ -125,6 +125,8 @@ static const char *apszWfipsDayOfWeek[] = { NULL,
 #define WFP_PRIORITY_3        (1 << 3)
 #define WFP_PRIORITY_4        (1 << 4)
 
+#define WFP_PRIORITY_COUNT    4
+
 /* Matt and Crystals Strategic Response */
 #define STR_RESP_1            (1 << 1)
 #define STR_RESP_2A           (1 << 2)
@@ -134,6 +136,8 @@ static const char *apszWfipsDayOfWeek[] = { NULL,
 #define STR_RESP_4            (1 << 6)
 #define STR_RESP_5            (1 << 7)
 #define STR_RESP_6            (1 << 8)
+
+#define STR_RESP_COUNT        8
 
 /*
 ** Identifiers for resources in sql. NULL padded to align with shifts above.
@@ -196,6 +200,7 @@ public:
                               int **panDispLocIds,
                               int *pnCount );
 
+
     int GetAssociatedResources( int *panDispLocIds, int nDispLocCount,
                                 WfipsResc **ppsResc, int *pnRescLocCount,
                                 int nAgencyFlags );
@@ -217,7 +222,7 @@ public:
     /* Move to private */
     int LoadScenario( int nYearIdx, const char *pszTreatWkt,
                       double dfTreatProb, int nWfpTreatMask,
-                      int nAgencyFilter );
+                      double *padfWfpTreatProb, int nAgencyFilter );
 
     int SetAnalysisAreaMask( const char *pszWkt );
     int SetFuelTreatmentMask( const char *pszWkt, double dfProb );
@@ -259,6 +264,13 @@ public:
     int TestScenLoad5();
     int TestScenLoad6();
     int TestScenLoad7();
+    int TestScenLoad8();
+    int TestScenLoad9();
+    //int TestScenLoad10();
+    //int TestScenLoad11();
+    //int TestScenLoad12();
+    //int TestScenLoad13();
+    //int TestScenLoad14();
 
 private:
     void Init();

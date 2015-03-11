@@ -623,7 +623,7 @@ WfipsData::WriteRescDb( const char *pszPath, int *panIds, int *panDispLocIds,
 int
 WfipsData::LoadScenario( int nYearIdx, const char *pszTreatWkt,
                          double dfTreatProb, int nWfpTreatMask,
-                         int nAgencyFilter )
+                         double *padfWfpTreatProb, int nAgencyFilter )
 {
     sqlite3_stmt *stmt;
     sqlite3_stmt *gstmt = NULL;
@@ -682,7 +682,7 @@ WfipsData::LoadScenario( int nYearIdx, const char *pszTreatWkt,
         }
     }
 
-    if( pszTreatWkt != NULL )
+    if( pszTreatWkt != NULL && dfTreatProb > 0. )
     {
         rc = sqlite3_prepare_v2( db, "SELECT 1 WHERE " \
                                      "ST_Contains(@treat, @fig) AND " \
@@ -692,7 +692,7 @@ WfipsData::LoadScenario( int nYearIdx, const char *pszTreatWkt,
                                      "Y(@fig) >= MbrMinY(@treat)",
                                  -1, &gstmt, NULL );
         nTreatSize = CompileGeometry( pszTreatWkt, &pTreatGeom );
-        if( nTreatSize >0 )
+        if( nTreatSize > 0 )
         {
             rc = sqlite3_bind_blob( gstmt,
                                     sqlite3_bind_parameter_index( gstmt, "@treat" ),
@@ -736,6 +736,9 @@ WfipsData::LoadScenario( int nYearIdx, const char *pszTreatWkt,
     int iFire = 0;
     std::map<std::string, int>::iterator it;
     int nInvalid = 0;
+    int nProb;
+    double dfProb, dfUserProb;
+
     while( sqlite3_step( stmt ) == SQLITE_ROW )
     {
         nYear = sqlite3_column_int( stmt, 0 );
@@ -775,7 +778,24 @@ WfipsData::LoadScenario( int nYearIdx, const char *pszTreatWkt,
         dfY = sqlite3_column_double( stmt, 31 );
 
         bTreated = 0;
-        if( pszTreatWkt != NULL )
+
+        if( dfTreatProb > 0. )
+        {
+            dfUserProb = dfTreatProb;
+        }
+        else if( nWfpTreatMask && nWfpTpa > 0 )
+        {
+            dfUserProb = padfWfpTreatProb[nWfpTpa-1];
+        }
+        else
+        {
+            dfUserProb = 1.;
+        }
+        sqlite3_randomness( sizeof( int ), &nProb );
+        dfProb = (double)abs(nProb)/(double)0x7FFFFFFF;
+        assert( dfProb >= 0.0 );
+
+        if( pszTreatWkt != NULL && dfTreatProb > 0. )
         {
             rc = sqlite3_bind_blob( gstmt,
                                     sqlite3_bind_parameter_index( gstmt, "@fig" ),
@@ -789,16 +809,27 @@ WfipsData::LoadScenario( int nYearIdx, const char *pszTreatWkt,
         }
         else if( nWfpTreatMask )
         {
-            bTreated = nWfpTreatMask & 1 << nWfpTpa;
+            bTreated = nWfpTreatMask & (1 << nWfpTpa);
+        }
+        else if( dfTreatProb > 0. )
+        {
+            bTreated = 1;
         }
         if( bTreated )
         {
-            /* Set FB params, etc. */
-            nBi = nTreatBi;
-            dfRos = dfTreatRos;
-            nFbfm = nTreatFbfm;
-            pszSc = pszTreatSc;
-            dfRatio = dfTreatRatio;
+            if( dfProb < dfUserProb )
+            {
+                /* Set FB params, etc. */
+                nBi = nTreatBi;
+                dfRos = dfTreatRos;
+                nFbfm = nTreatFbfm;
+                pszSc = pszTreatSc;
+                dfRatio = dfTreatRatio;
+            }
+            else
+            {
+                bTreated = 0;
+            }
         }
         it = FwaIndexMap.find( pszFwa );
         if( it == FwaIndexMap.end() )

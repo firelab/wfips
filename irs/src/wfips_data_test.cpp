@@ -31,6 +31,8 @@
 ** Test various combinations of resources to create a set.
 */
 
+static double WFP_DEFAULT_PROB[WFP_PRIORITY_COUNT] = {1.,1.,1.,1.};
+
 int WfipsData::TestBuildAgencySet1()
 {
     const char* pszSet = BuildAgencySet( USFS );
@@ -215,7 +217,7 @@ int WfipsData::TestScenLoad1()
     poScenario = new CRunScenario();
     LoadDispatchLogic();
     LoadFwas();
-    rc = LoadScenario( 5, NULL, 1.0, 0, 0 );
+    rc = LoadScenario( 5, NULL, 0.0, 0, WFP_DEFAULT_PROB, 0 );
     delete poScenario;
     return rc;
 }
@@ -226,7 +228,7 @@ int WfipsData::TestScenLoad2()
     poScenario = new CRunScenario();
     LoadDispatchLogic();
     LoadFwas();
-    rc = LoadScenario( 1, NULL, 1.0, 0, 0 );
+    rc = LoadScenario( 1, NULL, 0.0, 0, WFP_DEFAULT_PROB, 0 );
     n =  poScenario->m_VFire.size();
     delete poScenario;
     return n;
@@ -239,7 +241,7 @@ int WfipsData::TestScenLoad3()
     SetAnalysisAreaMask( "POLYGON((-114 47, -113 47, -113 46, -114 46, -114 47))" );
     LoadDispatchLogic();
     LoadFwas();
-    rc = LoadScenario( 5, NULL, 1.0, 0, 0 );
+    rc = LoadScenario( 5, NULL, 0.0, 0, WFP_DEFAULT_PROB, 0 );
     if( poScenario->m_VFire.size() == 0 )
         rc = 1;
     delete poScenario;
@@ -253,10 +255,10 @@ int WfipsData::TestScenLoad4()
     poScenario = new CRunScenario();
     LoadDispatchLogic();
     LoadFwas();
-    LoadScenario( 5, NULL, 1.0, 0, 0 );
+    LoadScenario( 5, NULL, 0.0, 0, WFP_DEFAULT_PROB, 0 );
     a = poScenario->m_VFire.size();
     SetAnalysisAreaMask( "POLYGON((-114 47, -113 47, -113 46, -114 46, -114 47))" );
-    LoadScenario( 5, NULL, 1.0, 0, 0 );
+    LoadScenario( 5, NULL, 0.0, 0, WFP_DEFAULT_PROB, 0 );
     b = poScenario->m_VFire.size();
     if( a == 0 || b == 0 || a < b )
         rc = 1;
@@ -271,9 +273,9 @@ int WfipsData::TestScenLoad5()
     poScenario = new CRunScenario();
     LoadDispatchLogic();
     LoadFwas();
-    LoadScenario( 5, NULL, 1.0, 0, AGENCY_ALL );
+    LoadScenario( 5, NULL, 0.0, 0, WFP_DEFAULT_PROB, AGENCY_ALL );
     a = poScenario->m_VFire.size();
-    b = LoadScenario( 5, NULL, 1.0, 0, DOI_BLM );
+    b = LoadScenario( 5, NULL, 0.0, 0, WFP_DEFAULT_PROB, DOI_BLM );
     b = poScenario->m_VFire.size();
     if( a == 0 || b == 0 || a < b )
         rc = 1;
@@ -289,7 +291,7 @@ int WfipsData::TestScenLoad6()
     SetAnalysisAreaMask( pszWkt );
     LoadDispatchLogic();
     LoadFwas();
-    rc = LoadScenario( 5, NULL, 1.0, 0, AGENCY_ALL );
+    rc = LoadScenario( 5, NULL, 0.0, 0, WFP_DEFAULT_PROB, AGENCY_ALL );
     for( i = 0; i < poScenario->m_VFire.size(); i++ )
     {
         if( poScenario->m_VFire[i].GetTreated() != 0 )
@@ -310,7 +312,7 @@ int WfipsData::TestScenLoad7()
     SetAnalysisAreaMask( pszWkt );
     LoadDispatchLogic();
     LoadFwas();
-    rc = LoadScenario( 5, pszWkt, 1.0, 0, AGENCY_ALL );
+    rc = LoadScenario( 5, pszWkt, 1.0, 0, WFP_DEFAULT_PROB, AGENCY_ALL );
     for( i = 0; i < poScenario->m_VFire.size(); i++ )
     {
         if( poScenario->m_VFire[i].GetTreated() != 1 )
@@ -323,4 +325,50 @@ int WfipsData::TestScenLoad7()
     return rc;
 }
 
+int WfipsData::TestScenLoad8()
+{
+    int rc, i;
+    poScenario = new CRunScenario();
+    LoadDispatchLogic();
+    LoadFwas();
+    rc = LoadScenario( 5, NULL, 0.0, 0, WFP_DEFAULT_PROB, AGENCY_ALL );
+    for( i = 0; i < poScenario->m_VFire.size(); i++ )
+    {
+        if( poScenario->m_VFire[i].GetTreated() != 0 )
+        {
+            rc = 1;
+            break;
+        }
+    }
+    delete poScenario;
+    return rc;
+}
+
+int WfipsData::TestScenLoad9()
+{
+    int rc, i, nTreated, nUntreated;
+    poScenario = new CRunScenario();
+    LoadDispatchLogic();
+    LoadFwas();
+    rc = LoadScenario( 5, NULL, 0.5, 0, WFP_DEFAULT_PROB, AGENCY_ALL );
+    nTreated = nUntreated = 0;
+    for( i = 0; i < poScenario->m_VFire.size(); i++ )
+    {
+        if( poScenario->m_VFire[i].GetTreated() == 0 )
+        {
+            nUntreated++;
+        }
+        else
+        {
+            nTreated++;
+        }
+    }
+    delete poScenario;
+    int nDiff = abs( nTreated - nUntreated );
+    if( rc || (float)nDiff / (nTreated + nUntreated) > 0.1 )
+        rc = 1;
+    else
+        rc = 0;
+    return rc;
+}
 
