@@ -1271,7 +1271,7 @@ void WfipsMainWindow::HideDispatchLocations( QgsFeatureIds fids )
 void WfipsMainWindow::EnableCustomFuelMask( int index )
 {
     ui->fuelStackWidget->setCurrentIndex( index );
-    bool enable = (bool)index;
+    bool enable = index == 1;
     ui->fuelMaskToolButton->setEnabled( enable );
 }
 

@@ -125,6 +125,16 @@ static const char *apszWfipsDayOfWeek[] = { NULL,
 #define WFP_PRIORITY_3        (1 << 3)
 #define WFP_PRIORITY_4        (1 << 4)
 
+/* Matt and Crystals Strategic Response */
+#define STR_RESP_1            (1 << 1)
+#define STR_RESP_2A           (1 << 2)
+#define STR_RESP_2B           (1 << 3)
+#define STR_RESP_3A           (1 << 4)
+#define STR_RESP_3B           (1 << 5)
+#define STR_RESP_4            (1 << 6)
+#define STR_RESP_5            (1 << 7)
+#define STR_RESP_6            (1 << 8)
+
 /*
 ** Identifiers for resources in sql. NULL padded to align with shifts above.
 */

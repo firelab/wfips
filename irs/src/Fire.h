@@ -99,8 +99,8 @@ public:
 
         int GetTreatPriority() {return m_TreatPriority;}
         void SetTreatPriority( int tp ){m_TreatPriority = tp;}
-        int GetManageObjectiver() {return m_ManageObjective;}
-        void SetManageObjectiver( int mo ){m_ManageObjective = mo;}
+        int GetManageObjective() {return m_ManageObjective;}
+        void SetManageObjective( int mo ){m_ManageObjective = mo;}
 
 private:
 	int m_Scenario;												//fire scenario

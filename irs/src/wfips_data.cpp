@@ -814,6 +814,7 @@ WfipsData::LoadScenario( int nYearIdx, const char *pszTreatWkt,
                                               (CFWA&)(poScenario->m_VFWA[i]),
                                               dfY, dfX ) );
         poScenario->m_VFire[iFire].SetTreated( bTreated );
+        poScenario->m_VFire[iFire].SetManageObjective( dfManObj );
         iFire++;
     }
 
