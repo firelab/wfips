@@ -42,6 +42,8 @@ CDispatchBase::CDispatchBase()
 		m_VPreviousLevel.push_back( 1.0 );
 		m_VEscapeLevel.push_back( 0 );
 		m_VDispLogicUnfilled.push_back( 0 );
+		m_VDailyDispatches.push_back(0);
+		m_VDailyUsage.push_back(0.0);
 	}
 
 	count++;
@@ -67,6 +69,8 @@ CDispatchBase::CDispatchBase( string dispatcherID )
 		m_VPreviousLevel.push_back( 1.0 );
 		m_VEscapeLevel.push_back( 0 );
 		m_VDispLogicUnfilled.push_back( 0 );
+		m_VDailyDispatches.push_back(0);
+		m_VDailyUsage.push_back(0.0);
 	}
 	
 	count++;														// Increase the resource count
@@ -86,6 +90,8 @@ CDispatchBase::CDispatchBase( const CDispatchBase &dispatchbase )
 	m_VPreviousLevel = dispatchbase.m_VPreviousLevel;
 	m_VEscapeLevel = dispatchbase.m_VEscapeLevel;
 	m_VDispLogicUnfilled = dispatchbase.m_VDispLogicUnfilled;
+	m_VDailyDispatches = dispatchbase.m_VDailyDispatches;
+	m_VDailyUsage = dispatchbase.m_VDailyUsage;
 }
 
 // Destructor for CDispatchBase
@@ -124,6 +130,11 @@ bool CDispatchBase::operator==( CDispatchBase &dispatchbase )
 		Equal = false;
 	if ( m_VDispLogicUnfilled != dispatchbase.m_VDispLogicUnfilled )
 		Equal = false;
+	if (m_VDailyDispatches != dispatchbase.m_VDailyDispatches)
+		Equal = false;
+	if (m_VDailyUsage != dispatchbase.m_VDailyUsage)
+		Equal = false;
+
 
 	return Equal;
 }
@@ -240,6 +251,43 @@ double CDispatchBase::GetPreviousLevel( int Julian )
     assert( 0 < Julian < 366 );
     return m_VPreviousLevel[Julian-1];
 }
+
+// Set the daily usage level vector with a vector
+void CDispatchBase::SetDailyUsageLevel(vector<double> dailyusagelevel)
+{	m_VDailyUsage = dailyusagelevel;	}
+
+// Get the daily usage level vector
+vector<double> CDispatchBase::GetDailyUsageLevel()
+{	return m_VDailyUsage;	}
+
+// Set the daily usage level vector for a julian day
+void CDispatchBase::SetDailyUsage(double dailyusage, int Julian)
+{	assert( 0 < Julian < 366 );
+	m_VDailyUsage[Julian-1] = dailyusage;	}
+
+// Get the daily usage level for a julian day
+double CDispatchBase::GetDailyUsage(int Julian)
+{	return m_VDailyUsage[Julian-1];	}
+
+// Set the daily dispatch level vector with a vector
+void CDispatchBase::SetDailyDispatchLevelVector(vector<int> dailydispatchlevel)
+{	m_VDailyDispatches = dailydispatchlevel;	}
+
+// Get the daily dispatch level vector
+vector<int> CDispatchBase::GetDailyDisaptchLevelVector()
+{	return m_VDailyDispatches;	}
+
+// Set a day of the daily dispatch level vector
+void CDispatchBase::SetDailyDispatchLLevel(int dailydispatchlevel, int Julian)
+{	m_VDailyDispatches[Julian - 1] = dailydispatchlevel;	}
+
+// Get the daily dispatch level for a given julian day
+int CDispatchBase::GetDailyDispatchLevel(int Julian)
+{	return m_VDailyDispatches[Julian - 1];	}
+
+// Add dispatches to the daily dispatch level
+void CDispatchBase::AddDailyDispatch(int Julian, int numberdispatches)
+{	m_VDailyDispatches[Julian - 1] = m_VDailyDispatches[Julian - 1] + numberdispatches;	}
 
 // set the escape fire level for the dispatcher using a vector
 void CDispatchBase::SetEscapeLevelVector( vector< int > escapelevel )
@@ -515,7 +563,33 @@ void CDispatchBase::AddEscape( CEscape Escape )
 
 }
 
-			
+// Calcualte the daily usage for the dispatcher as a function of the dispatch location nodes under it
+bool CDispatchBase::CalcDailyUsageLevel(int Julian, vector<CDispatchBase*> VDispatchers)
+{
+	// Get the number of resources at the dispatch location dispatcher 
+	vector<int> numResources = GetCurRescLevel();
+
+	int count = 0;
+	for (int i = 0; i < numResources.size(); i++)
+		count = count + numResources[i];
+
+	
+
+	if (count == 0)	
+		SetDailyUsage(0,Julian);
+	else	{
+		// Get the number of resources deployed
+		int deployed = 0;
+		for (int i = 0; i < VDispatchers.size(); i++)	{
+			int DLDeployed = VDispatchers[i]->GetDailyDispatchLevel(Julian);
+			deployed = deployed + DLDeployed;
+		}
+		double dailyUsage = static_cast<double>(deployed)/count;
+		SetDailyUsage(dailyUsage, Julian);
+	}
+
+	return true;
+}
 
 
 

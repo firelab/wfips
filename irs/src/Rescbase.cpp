@@ -986,3 +986,5 @@ void CResource::SetDbId( int nDbId )
 #endif
 }
 
+
+

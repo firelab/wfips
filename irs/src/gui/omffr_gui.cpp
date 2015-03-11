@@ -48,9 +48,9 @@ OmffrMainWindow::OmffrMainWindow(QWidget* parent) : QMainWindow(parent)
 #ifndef WIN32
     layerPath = "/home/kyle/src/omffr/trunk/data/omffr.sqlite|layername=";
 #else
-    layerPath = "c:/Users/ksshannon/Documents/GitHub/build/data/omffr.sqlite|layername=";
+	layerPath = "c:/src/wfips/data/omffr.sqlite|layername=";
 #ifdef IRS_DIANE_BUILD
-    layerPath = "c:/src/omffr/data/omffr.sqlite|layername=";
+	layerPath = "c:/src/wfips/data/omffr.sqlite|layername=";
 #endif
 #endif
     qDebug() << layerPath;
@@ -918,7 +918,7 @@ int OmffrMainWindow::SimulateIRS()
 #ifdef IRS_DIANE_BUILD
     poSuite = (IRSSuite*)IRSSuite::Create( "c:/src/omffr/data/omffr.sqlite", 0 );
 #else
-    poSuite = (IRSSuite*)IRSSuite::Create( "c:/Users/ksshannon/Documents/GitHub/build/data/omffr.sqlite", 0 );
+    poSuite = (IRSSuite*)IRSSuite::Create( "c:/src/wfips/data/omffr.sqlite", 0 );
 #endif
 #else
     poSuite = (IRSSuite*)IRSSuite::Create( "/home/kyle/src/omffr/trunk/data/omffr.sqlite", 0 );
@@ -1635,7 +1635,7 @@ void OmffrMainWindow::LoadResultsFile()
 
         //dataPath = OMFFR_DB_DBG;
 #ifdef WIN32
-	dataPath = "c:/Users/ksshannon/Documents/GitHub/build/data/omffr.sqlite";
+	dataPath = "c:/src/wfips/data/omffr.sqlite";
 #else
 	dataPath = "/home/kyle/src/omffr/trunk/data/omffr.sqlite";
 #endif

@@ -98,6 +98,8 @@ public:
 	vector< int > DetermineCurRescLevelatDeploy( CFire fire, list< CResource* > LDeployedResources );		//determine the current level of resources by type excluding the resources being deployed
 	virtual void DetermineBaseRescLevel( vector< CDispatchBase* > VDispatchers );	//determine base resource level for a dispatcher.  For internal nodes need to be sure to calculated values for all subnodes first
 
+	virtual bool CalcDailyUsageLevel(int Julian, vector<CDispatchBase*> VDisaptchers);			// Calculate the daily usage for a day for the dispatch locaton dispatcher
+
 private:
 	RescMap m_RescMap;										//multimap of resources at the dispatch location with deploy type key
 	CDispLoc &m_DispLoc;									//reference to a dispatch location instance
