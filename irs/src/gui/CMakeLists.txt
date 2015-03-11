@@ -128,28 +128,8 @@ ELSE (WIN32)
   ADD_DEFINITIONS(-DCORE_EXPORT=)
 ENDIF (WIN32)
 
-SET(OMFFR_GUI_SRCS main.cpp
-                   omffr_gui.cpp
-                   simpleidentifymaptool.cpp
-                   simpleareamaptool.cpp
-                   boxplotitem.cpp
-                   textscaledraw.cpp
-                   piewidget.cpp)
-IF(USE_INTERNAL_SQLITE)
-    SET(IRS_SOURCES ${IRS_SOURCES} $<TARGET_OBJECTS:sqlite3>)
-ENDIF(USE_INTERNAL_SQLITE)
+SET(WFIPS_GUI_RCCS resources.qrc)
 
-SET(OMFFR_GUI_UIS omffr_gui.ui)
-
-SET(OMFFR_GUI_MOC_HDRS ${PROJECT_SOURCE_DIR}/irs/src/data_load.h
-                       omffr_gui.h
-                       simpleidentifymaptool.h
-                       simpleareamaptool.h
-                       piewidget.h)
-
-SET(OMFFR_GUI_RCCS resources.qrc)
-
-OPTION(BUILD_GUI_V2 "Build the new interface dummy project" OFF)
 QT4_WRAP_UI(WFIPS_GUI_UI_H wfipsmainwindow.ui
                            wfipsaddlayerdialog.ui
                            wfipsdispatcheditdialog.ui
@@ -165,12 +145,6 @@ INCLUDE(${QT_USE_FILE})
 ########################################################
 # Build
 
-QT4_WRAP_UI(OMFFR_GUI_UIS_H  ${OMFFR_GUI_UIS})
-
-QT4_WRAP_CPP(OMFFR_GUI_MOC_SRCS  ${OMFFR_GUI_MOC_HDRS})
-
-QT4_ADD_RESOURCES(OMFFR_GUI_RCC_SRCS ${OMFFR_GUI_RCCS})
-
 IF(WIN32)
     SET(GUI_TYPE WIN32)
 ELSE(NOT ENABLE_CONSOLE)
@@ -178,19 +152,15 @@ ELSE(NOT ENABLE_CONSOLE)
 ENDIF(WIN32)
 SET(GUI_TYPE "")
 
-INCLUDE_DIRECTORIES(${GDAL_INCLUDE_DIR}
-                    ${GEOS_INCLUDE_DIR}
-                    ${CMAKE_CURRENT_BINARY_DIR}
+INCLUDE_DIRECTORIES(${CMAKE_CURRENT_BINARY_DIR}
                     ${QT_INCLUDE_DIR}
                     ${QGIS_INCLUDE_DIR}
-                    ${QWT_INCLUDE_DIR}
-                    ${SQLITE3_INCLUDE_DIR}
                     ${PROJECT_SOURCE_DIR}/irs/src)
 
 ADD_DEFINITIONS(-DQGIS_PLUGIN_DIR="${QGIS_PLUGIN_DIR}")
 
 # Link to qt release libs always
-SET(OMFFR_QT_LIBS ${QT_QTCORE_LIBRARY_RELEASE}
+SET(WFIPS_QT_LIBS ${QT_QTCORE_LIBRARY_RELEASE}
                   ${QT_QTGUI_LIBRARY_RELEASE}
                   ${QT_QTSQL_LIBRARY_RELEASE}
                   ${QT_QTSVG_LIBRARY_RELEASE}
@@ -226,28 +196,9 @@ ADD_EXECUTABLE(wfips wfipsmainwindow.cpp
                      wfipsidentifymaptool.cpp
                      ${WFIPS_GUI_UI_H}
                      ${WFIPS_GUI_MOC}
-                     ${OMFFR_GUI_RCC_SRCS}
+                     ${WFIPS_GUI_RCC_SRCS}
                      main2.cpp)
 TARGET_LINK_LIBRARIES(wfips ${LINK_LIBS})
 TARGET_LINK_LIBRARIES(wfips ${CMAKE_BINARY_DIR}/irs/src/${CMAKE_CFG_INTDIR}/${CMAKE_STATIC_LIBRARY_PREFIX}irs${CMAKE_STATIC_LIBRARY_SUFFIX})
-IF(NOT USE_INTERNAL_SQLITE)
-    TARGET_LINK_LIBRARIES(wfips ${SQLITE3_LIBRARY})
-ENDIF(NOT USE_INTERNAL_SQLITE)
-
 ADD_DEPENDENCIES(wfips irs)
-
-ADD_EXECUTABLE (omffr_gui ${GUI_TYPE}
-                ${OMFFR_GUI_SRCS}
-                ${OMFFR_GUI_MOC_SRCS}
-                ${OMFFR_GUI_RCC_SRCS}
-                ${OMFFR_GUI_UIS_H})
-TARGET_LINK_LIBRARIES(omffr_gui ${CMAKE_BINARY_DIR}/irs/src/${CMAKE_CFG_INTDIR}/${CMAKE_STATIC_LIBRARY_PREFIX}irs${CMAKE_STATIC_LIBRARY_SUFFIX})
-IF (MSVC)
-    TARGET_LINK_LIBRARIES(omffr_gui ${QT_QTMAIN_LIBRARY_RELEASE})
-ENDIF (MSVC)
-IF(NOT USE_INTERNAL_SQLITE)
-    TARGET_LINK_LIBRARIES(omffr_gui ${SQLITE3_LIBRARY})
-ENDIF(NOT USE_INTERNAL_SQLITE)
-TARGET_LINK_LIBRARIES(omffr_gui ${LINK_LIBS})
-ADD_DEPENDENCIES(omffr_gui irs)
 

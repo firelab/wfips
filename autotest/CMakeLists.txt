@@ -61,9 +61,7 @@ IF(BUILD_FIG)
 ENDIF(BUILD_FIG)
 
 IF(BUILD_IRS)
-    SET(TEST_SRCS ${TEST_SRCS} test_irs.cpp)
     SET(TEST_SRCS ${TEST_SRCS} test_wfipsdata.cpp)
-    SET(TEST_SRCS ${TEST_SRCS} test_irs_result.cpp)
 ENDIF(BUILD_IRS)
 
 SET(TEST_SRCS ${TEST_SRCS} test_omffr_conv.cpp)
@@ -85,9 +83,8 @@ ADD_DEPENDENCIES(test_main common)
 IF(BUILD_FIG)
     ADD_DEPENDENCIES(test_main fig)
 ENDIF(BUILD_FIG)
-IF(BUILD_IRS)
-    ADD_DEPENDENCIES(test_main irs)
-ENDIF(BUILD_IRS)
+
+ADD_DEPENDENCIES(test_main irs)
 
 # *****************************************************************************
 # OmffrTree tests
@@ -134,70 +131,6 @@ ENDIF(BUILD_FIG)
 # *****************************************************************************
 # IRS tests
 # *****************************************************************************
-IF(BUILD_IRS)
-    ADD_TEST(irs_test_db_fpu_query ${EXECUTABLE_OUTPUT_PATH}/test_main
-             --run_test=irs/db_fpu_query)
-    ADD_TEST(irs_test_smooth_1 ${EXECUTABLE_OUTPUT_PATH}/test_main
-             --run_test=irs/smooth_1)
-    ADD_TEST(irs_test_smooth_2 ${EXECUTABLE_OUTPUT_PATH}/test_main
-             --run_test=irs/smooth_2)
-    ADD_TEST(irs_test_smooth_3 ${EXECUTABLE_OUTPUT_PATH}/test_main
-             --run_test=irs/smooth_3)
-    ADD_TEST(irs_test_resource_dist_1 ${EXECUTABLE_OUTPUT_PATH}/test_main
-             --run_test=irs/resource_dist_1)
-    ADD_TEST(irs_test_point_query_1 ${EXECUTABLE_OUTPUT_PATH}/test_main
-             --run_test=irs/point_query_1)
-    ADD_TEST(irs_test_load_resc_type ${EXECUTABLE_OUTPUT_PATH}/test_main
-             --run_test=irs/load_resc_type)
-    ADD_TEST(irs_test_general_resc_1 ${EXECUTABLE_OUTPUT_PATH}/test_main
-             --run_test=irs/general_resc_1)
-    ADD_TEST(irs_test_load_disploc_fpu ${EXECUTABLE_OUTPUT_PATH}/test_main
-             --run_test=irs/load_disploc_fpu)
-    ADD_TEST(irs_test_get_fpu_name ${EXECUTABLE_OUTPUT_PATH}/test_main
-             --run_test=irs/get_fpu_name)
-    ADD_TEST(irs_test_fpu_filter ${EXECUTABLE_OUTPUT_PATH}/test_main
-             --run_test=irs/fpu_filter)
-    ADD_TEST(irs_test_bad_filter ${EXECUTABLE_OUTPUT_PATH}/test_main
-             --run_test=irs/bad_filter)
-    ADD_TEST(irs_test_resc_copy_1 ${EXECUTABLE_OUTPUT_PATH}/test_main
-             --run_test=irs/resc_copy_1)
-    ADD_TEST(irs_test_resc_remove_set_1 ${EXECUTABLE_OUTPUT_PATH}/test_main
-             --run_test=irs/resc_remove_set_1)
-    ADD_TEST(irs_test_resc_remove_set_2 ${EXECUTABLE_OUTPUT_PATH}/test_main
-             --run_test=irs/resc_remove_set_2)
-    ADD_TEST(irs_test_resc_remove_set_3 ${EXECUTABLE_OUTPUT_PATH}/test_main
-             --run_test=irs/resc_remove_set_3)
-    ADD_TEST(irs_test_resc_remove_set_4 ${EXECUTABLE_OUTPUT_PATH}/test_main
-             --run_test=irs/resc_remove_set_4)
-    ADD_TEST(irs_test_resc_remove_set_5 ${EXECUTABLE_OUTPUT_PATH}/test_main
-             --run_test=irs/resc_remove_set_6)
-    ADD_TEST(irs_test_resc_remove_set_6 ${EXECUTABLE_OUTPUT_PATH}/test_main
-             --run_test=irs/resc_remove_set_6)
-    ADD_TEST(irs_test_resc_remove_set_6 ${EXECUTABLE_OUTPUT_PATH}/test_main
-             --run_test=irs/resc_remove_set_6)
-    ADD_TEST(irs_test_resc_remove_set_7 ${EXECUTABLE_OUTPUT_PATH}/test_main
-             --run_test=irs/resc_remove_set_7)
-    ADD_TEST(irs_test_resc_remove_set_8 ${EXECUTABLE_OUTPUT_PATH}/test_main
-             --run_test=irs/resc_remove_set_8)
-    ADD_TEST(irs_test_resc_remove_set_9 ${EXECUTABLE_OUTPUT_PATH}/test_main
-             --run_test=irs/resc_remove_set_9)
-    ADD_TEST(irs_test_resc_remove_set_10 ${EXECUTABLE_OUTPUT_PATH}/test_main
-             --run_test=irs/resc_remove_set_10)
-    ADD_TEST(irs_test_resc_remove_set_11 ${EXECUTABLE_OUTPUT_PATH}/test_main
-             --run_test=irs/resc_remove_set_11)
-    ADD_TEST(irs_test_resc_remove_set_12 ${EXECUTABLE_OUTPUT_PATH}/test_main
-             --run_test=irs/resc_remove_set_12)
-    ADD_TEST(irs_test_resc_remove_set_13 ${EXECUTABLE_OUTPUT_PATH}/test_main
-             --run_test=irs/resc_remove_set_13)
-    # IRS Results
-    ADD_TEST(irs_test_single_resc_usage ${EXECUTABLE_OUTPUT_PATH}/test_main
-             --run_test=irs_result/single_resc_usage)
-    ADD_TEST(irs_test_remove_resc_1 ${EXECUTABLE_OUTPUT_PATH}/test_main
-             --run_test=irs_result/remove_resc_1)
-    #ADD_TEST(irs_test_result_attributes_1 ${EXECUTABLE_OUTPUT_PATH}/test_main
-    #         --run_test=result_attributes_1)
-ENDIF(BUILD_IRS)
-
 ADD_TEST(omffr_conv_path_1 ${EXECUTABLE_OUTPUT_PATH}/test_main
          --run_test=conv/path_1)
 ADD_TEST(omffr_conv_join_1 ${EXECUTABLE_OUTPUT_PATH}/test_main
@@ -284,34 +217,19 @@ ADD_TEST( wfips_load_disp_loc_1 ${EXECUTABLE_OUTPUT_PATH}/test_main
           --run_test=wfipsdata/load_disp_loc_1 )
 
 IF(RUN_SLOW_TESTS)
-    # *************************************************************************
-    # IRS tests
-    # *************************************************************************
-    IF(BUILD_IRS)
-        ADD_TEST( wfips_load_fwa_2 ${EXECUTABLE_OUTPUT_PATH}/test_main
-                  --run_test=wfipsdata/load_fwa_2 )
-        ADD_TEST( wfips_load_disp_loc_2 ${EXECUTABLE_OUTPUT_PATH}/test_main
-                  --run_test=wfipsdata/load_disp_loc_2 )
-        ADD_TEST( wfips_load_resource_1 ${EXECUTABLE_OUTPUT_PATH}/test_main
-                  --run_test=wfipsdata/load_resource_1 )
-        ADD_TEST( wfips_load_resource_2 ${EXECUTABLE_OUTPUT_PATH}/test_main
-                  --run_test=wfipsdata/load_resource_2 )
-        ADD_TEST( wfips_load_scen_3 ${EXECUTABLE_OUTPUT_PATH}/test_main
-                  --run_test=wfipsdata/load_scen_3 )
-        ADD_TEST( wfips_load_scen_6 ${EXECUTABLE_OUTPUT_PATH}/test_main
-                  --run_test=wfipsdata/load_scen_6 )
-        ADD_TEST( wfips_load_scen_7 ${EXECUTABLE_OUTPUT_PATH}/test_main
-                  --run_test=wfipsdata/load_scen_7 )
-        #ADD_TEST(irs_test_avg_fires_1 ${EXECUTABLE_OUTPUT_PATH}/test_main
-        #         --run_test=irs/avg_fires_1)
-        ADD_TEST(irs_test_scenario_order ${EXECUTABLE_OUTPUT_PATH}/test_main
-                 --run_test=irs/scenario_order)
-        ADD_TEST(irs_test_load_airtankers ${EXECUTABLE_OUTPUT_PATH}/test_main
-                 --run_test=irs/load_airtankers)
-        ADD_TEST(irs_test_gacc_filter ${EXECUTABLE_OUTPUT_PATH}/test_main
-                 --run_test=irs/gacc_filter)
-        ADD_TEST(irs_test_state_filter ${EXECUTABLE_OUTPUT_PATH}/test_main
-                 --run_test=irs/state_filter)
-    ENDIF(BUILD_IRS)
+    ADD_TEST( wfips_load_fwa_2 ${EXECUTABLE_OUTPUT_PATH}/test_main
+              --run_test=wfipsdata/load_fwa_2 )
+    ADD_TEST( wfips_load_disp_loc_2 ${EXECUTABLE_OUTPUT_PATH}/test_main
+              --run_test=wfipsdata/load_disp_loc_2 )
+    ADD_TEST( wfips_load_resource_1 ${EXECUTABLE_OUTPUT_PATH}/test_main
+              --run_test=wfipsdata/load_resource_1 )
+    ADD_TEST( wfips_load_resource_2 ${EXECUTABLE_OUTPUT_PATH}/test_main
+              --run_test=wfipsdata/load_resource_2 )
+    ADD_TEST( wfips_load_scen_3 ${EXECUTABLE_OUTPUT_PATH}/test_main
+              --run_test=wfipsdata/load_scen_3 )
+    ADD_TEST( wfips_load_scen_6 ${EXECUTABLE_OUTPUT_PATH}/test_main
+              --run_test=wfipsdata/load_scen_6 )
+    ADD_TEST( wfips_load_scen_7 ${EXECUTABLE_OUTPUT_PATH}/test_main
+              --run_test=wfipsdata/load_scen_7 )
 ENDIF(RUN_SLOW_TESTS)
 
