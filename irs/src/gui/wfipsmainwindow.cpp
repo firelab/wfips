@@ -63,6 +63,7 @@ WfipsMainWindow::WfipsMainWindow( QWidget *parent ) :
     /* Call *after* construction */
     CreateConnections();
     PostConstructionActions();
+    ui->threadSpinBox->setRange( 1, QThread::idealThreadCount() );
     ReadSettings();
     this->setWindowIcon( QIcon( ":/osu" ) );
     ui->progressBar->setRange( 0, 100 );
@@ -122,6 +123,9 @@ void WfipsMainWindow::WriteSettings()
     {
         settings.setValue( "defaultlayer", lyr );
     }
+    int nThreadCount = ui->threadSpinBox->value();
+    settings.setValue( "threadcount", ui->threadSpinBox->value() );
+    settings.setValue( "advancedrun", ui->advancedRunGroupBox->isChecked() );
 }
 
 void WfipsMainWindow::ReadSettings()
@@ -158,6 +162,14 @@ void WfipsMainWindow::ReadSettings()
             i = 0;
         }
         ui->analysisAreaComboBox->setCurrentIndex( i );
+    }
+    if( settings.contains( "threadcount" ) )
+    {
+        ui->threadSpinBox->setValue( settings.value( "threadcount" ).toInt() );
+    }
+    if( settings.contains( "advancedrun" ) )
+    {
+        ui->advancedRunGroupBox->setChecked( settings.value( "advancedrun" ).toBool() );
     }
     /* last */
     if( settings.contains( "xmin" ) &&
@@ -235,6 +247,10 @@ void WfipsMainWindow::PostConstructionActions()
              this, SLOT( SelectFuelMask() ) );
     connect( ui->fuelAttComboBox, SIGNAL( currentIndexChanged( int ) ),
              this, SLOT( EnableFuelMaskAttr( int ) ) );
+    /* Toggle a radio button the ignitions to enable the proper widgets */
+    ui->randomYearsRadioButton->click();
+    ui->singleYearRadioButton->click();
+    ui->figAllRadioButton->click();
 }
 
 void WfipsMainWindow::ConstructToolButtons()
@@ -367,8 +383,35 @@ void WfipsMainWindow::LoadAnalysisAreaLayers()
         qDebug() << "The data path has not been provided, no layers";
         return;
     }
+    /*
+    ** XXX
+    ** This should probably be moved, or this fx renamed, as we do some stuff
+    ** here just because we have a path.
+    */
     poData = new WfipsData( wfipsPath.toLocal8Bit().data() );
     poData->Open();
+    if( poData->Valid() == 0 )
+    {
+        /* Panic */
+        delete poData;
+        poData = NULL;
+    }
+    if( poData )
+    {
+        int nCount, *panIndices;
+        nCount = poData->GetScenarioIndices( &panIndices );
+        if( nCount > 0 )
+        {
+            ui->randomYearsSpinBox->setRange( 1, nCount );
+            ui->singleYearComboBox->clear();
+            for( int i = 0; i < nCount; i++ )
+            {
+                ui->singleYearComboBox->addItem( QString::number( panIndices[i] ) );
+            }
+            WfipsData::Free( panIndices );
+        }
+    }
+
     ui->analysisAreaComboBox->clear();
     /* Clean up and remove existing layers */
     QString layerId;
@@ -523,57 +566,54 @@ void WfipsMainWindow::SetStackIndex( QTreeWidgetItem *current,
             ui->mapToolFrame->setEnabled( true );
             currentMapCanvas = analysisAreaMapCanvas;
             break;
-        case 3:
-            ui->stackedWidget->setCurrentIndex( 2 );
-            break;
         /* Resource map */
+        case 3:
         case 4:
-        case 5:
             ui->stackedWidget->setCurrentIndex( 3 );
             ui->mapToolFrame->setEnabled( true );
             currentMapCanvas = dispatchMapCanvas;
             break;
-        case 6:
+        case 5:
             ui->stackedWidget->setCurrentIndex( 4 );
             break;
-        case 7:
+        case 6:
             ui->stackedWidget->setCurrentIndex( 5 );
             break;
-        case 8:
+        case 7:
             ui->stackedWidget->setCurrentIndex( 6 );
             break;
-        case 9:
+        case 8:
             ui->stackedWidget->setCurrentIndex( 7 );
             break;
-        case 10:
+        case 9:
             ui->stackedWidget->setCurrentIndex( 8 );
             break;
-        case 11:
+        case 10:
             ui->stackedWidget->setCurrentIndex( 9 );
             break;
-        case 12:
+        case 11:
             ui->stackedWidget->setCurrentIndex( 10 );
             break;
-        case 13:
+        case 12:
             ui->stackedWidget->setCurrentIndex( 11 );
             break;
-        case 14:
+        case 13:
             ui->stackedWidget->setCurrentIndex( 12 );
             break;
-        case 15:
+        case 14:
             ui->stackedWidget->setCurrentIndex( 13 );
             break;
+        case 15:
         case 16:
         case 17:
         case 18:
         case 19:
-        case 20:
             break;
+        case 20:
         case 21:
         case 22:
         case 23:
         case 24:
-        case 25:
         /* 0 is the 'invisible root' */
         case 0:
         default:
@@ -810,6 +850,7 @@ void WfipsMainWindow::ClearAnalysisAreaSelection()
     analysisAreaMapCanvas->refresh();
 
     ((WfipsSelectMapTool*)analysisSelectTool)->clear();
+    dispatchEditDialog->Clear();
 
     /* Dispatch Layer */
     if( dispatchMapCanvasLayers.size() > 0 )
@@ -933,9 +974,16 @@ void WfipsMainWindow::SetAnalysisArea()
     QgsVectorLayer *layer;
     layer =
         dynamic_cast<QgsVectorLayer*>( analysisAreaMapCanvas->currentLayer() );
-    if( layer == NULL || !layer->isValid() || selectedFids.size() < 1 )
+    if( layer == NULL || !layer->isValid() || selectedFids.size() < 1 ||
+        (selectedFids.size() == 1 && selectedFids.contains( -1 )  ) )
     {
-        ClearAnalysisAreaSelection();
+        int rc;
+        rc = QMessageBox::warning( this, tr("WFIPS" ),
+                               tr( "No features have been selected on a valid " \
+                                   "layer." ),
+                               QMessageBox::Ok );
+        ui->setAnalysisAreaToolButton->setChecked( false );
+
         return;
     }
     qDebug() << "Setting analysis area using fids:" << selectedFids;
@@ -1032,7 +1080,7 @@ void WfipsMainWindow::SetAnalysisArea()
     i = 0;
     while( !nFuture.isFinished() && i < 1000 )
     {
-        CPLSleep( 0.01 );
+        CPLSleep( 0.1 );
         ui->progressBar->setValue( 0 );
         QCoreApplication::processEvents();
         i++;
@@ -1058,7 +1106,14 @@ void WfipsMainWindow::SetAnalysisArea()
     ui->progressBar->reset();
     this->statusBar()->showMessage( "Found" + fids.size() + QString( " locations." ), 3000 );
     qDebug() << "Found" << fids.size() << "dispatch locations within the analysis area";
-    dispatchEditDialog->SetModel( dispatchLocationMap );
+    int agencies = 0;
+    if( ui->agencyRescUsfsCheckBox->isChecked() )
+        agencies |= USFS;
+    if( ui->agencyRescDoiCheckBox->isChecked() )
+        agencies |= DOI_ALL;
+    if( ui->agencyRescStateCheckBox->isChecked() )
+        agencies |= STATE_LOCAL;
+    dispatchEditDialog->SetModel( dispatchLocationMap, agencies );
 
     dispatchLocationMemLayer = WfipsCopyToMemLayer( layer, fids );
     assert( dispatchLocationMemLayer->isValid() );
@@ -1216,7 +1271,7 @@ void WfipsMainWindow::HideDispatchLocations( QgsFeatureIds fids )
 void WfipsMainWindow::EnableCustomFuelMask( int index )
 {
     ui->fuelStackWidget->setCurrentIndex( index );
-    bool enable = (bool)index;
+    bool enable = index == 1;
     ui->fuelMaskToolButton->setEnabled( enable );
 }
 
@@ -1253,6 +1308,12 @@ void WfipsMainWindow::SelectFuelMask()
     }
     QgsFields fields;
     fields = layer.pendingFields();
+    /*
+    ** XXX
+    ** Disable attribute selection for now, just use fixed.
+    ** XXX
+    */
+    return;
     for( int i = 0; i < fields.size(); i++ )
     {
         qDebug() << fields[i].name();

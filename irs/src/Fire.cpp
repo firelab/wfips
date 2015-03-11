@@ -47,6 +47,8 @@ CFire::CFire( int scenario, int firenum, int julianday, string dayofweek, string
         m_lon = lon;
 
 	m_WTArrival = 10000;												//arrival time for the first water tender to the fire
+    m_TreatPriority = -1;
+    m_ManageObjective = -1;
 
 	count++;														//increase the count for the number of fires
 }
@@ -97,11 +99,14 @@ CFire& CFire::SetMemVars( const CFire &thatfire )
 	m_WaterDrops = thatfire.m_WaterDrops;							//set whether or not water drops are allowed
 	m_IsPumpNRoll = thatfire.m_IsPumpNRoll;							//set whether engines on fire use pump and roll methods
 	m_WTArrival = thatfire.m_WTArrival;								//arrival time for the first water tender to the fire
+
         m_lat = thatfire.m_lat;
         m_lon = thatfire.m_lon;
         m_SimulateContain = thatfire.m_SimulateContain;
         m_Treated = thatfire.m_Treated;
-
+    m_TreatPriority = thatfire.m_TreatPriority;
+    m_ManageObjective = thatfire.m_ManageObjective;
+	
 	return *this;
 }
 

@@ -32,10 +32,8 @@ PROJECT(omffr)
 # Check for markdown
 find_program(markdown markdown /usr/bin /usr/local/bin)
 if(NOT markdown)
-    message("-- Could not find markdown")
     return()
 else(NOT markdown)
-    message("-- Found markdown: " ${markdown})
 endif(NOT markdown)
 
 file(GLOB md_files "*.md")
@@ -55,7 +53,6 @@ endforeach(md ${md_files})
 file(GLOB png_files ../irs/src/gui/*.png)
 foreach(f ${png_files})
     get_filename_component(fname ${f} NAME)
-    message(${f}, ${fname})
     execute_process(COMMAND cp ${f} ${CMAKE_BINARY_DIR}/doc/${fname}
                     RESULT_VARIABLE copyrc
                     OUTPUT_VARIABLE copyout)
@@ -71,11 +68,9 @@ execute_process(COMMAND qhelpgenerator wfips.qhp -o wfips.qch
                 WORKING_DIRECTORY ${CMAKE_BINARY_DIR}/doc
                 RESULT_VARIABLE qhelprc
                 OUTPUT_VARIABLE qhelpout)
-message(${qhelpout})
 
 execute_process(COMMAND qcollectiongenerator wfips.qhcp -o wfips.qhc
                 WORKING_DIRECTORY ${CMAKE_BINARY_DIR}/doc
                 RESULT_VARIABLE qhelprc
                 OUTPUT_VARIABLE qhelpout)
 
-message(${qhelpout})

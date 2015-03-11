@@ -33,58 +33,48 @@ struct WfipsDataMock
 {
     WfipsDataMock()
     {
+        poData = new WfipsData(WFIPS_DATA_TEST_PATH);
+        poData->Open();
     }
     ~WfipsDataMock()
     {
+        poData->Close();
+        delete poData;
     }
+    WfipsData *poData;
 };
 
 BOOST_FIXTURE_TEST_SUITE( wfipsdata, WfipsDataMock )
 
 BOOST_AUTO_TEST_CASE( create_1 )
 {
-    WfipsData *poData = new WfipsData();
-    BOOST_CHECK( poData->Valid() == 0 );
-    delete poData;
+    WfipsData *poData2 = new WfipsData();
+    BOOST_CHECK( poData2->Valid() == 0 );
+    delete poData2;
 }
 
 BOOST_AUTO_TEST_CASE( create_2 )
 {
-    WfipsData *poData = new WfipsData("/home/kyle/src/wfips/build");
-    int rc = poData->Open();
-    BOOST_CHECK( poData->Valid() == 1 );
+    WfipsData *poData2 = new WfipsData(WFIPS_DATA_TEST_PATH);
+    int rc = poData2->Open();
+    BOOST_CHECK( poData2->Valid() == 1 );
     BOOST_CHECK( rc == 0 );
-    rc = poData->Close();
+    rc = poData2->Close();
     BOOST_CHECK( rc == 0 );
-    poData->Close();
-    delete poData;
+    delete poData2;
 }
 
 BOOST_AUTO_TEST_CASE( sql_1 )
 {
-    WfipsData *poData = new WfipsData("/home/kyle/src/wfips/build");
-    int rc = poData->Open();
-    BOOST_CHECK( poData->Valid() == 1 );
+    int rc = poData->ExecuteSql( "SELECT COUNT(*) FROM resource" );
     BOOST_CHECK( rc == 0 );
-    rc = poData->ExecuteSql( "SELECT COUNT(*) FROM resource" );
-    BOOST_CHECK( rc == 0 );
-    rc = poData->Close();
-    BOOST_CHECK( rc == 0 );
-    poData->Close();
-    delete poData;
 }
 
 BOOST_AUTO_TEST_CASE( resc_copy_1 )
 {
-    WfipsData *poData = new WfipsData("/home/kyle/src/wfips/build");
-    int rc = poData->Open();
-    BOOST_CHECK( poData->Valid() == 1 );
-    BOOST_CHECK( rc == 0 );
     int anRescIds[10] = {1,2,3,4,5,6,7,8,9,10};
-    rc = poData->WriteRescDb( "resc_copy_1.db", anRescIds, NULL, 10 );
+    int rc = poData->WriteRescDb( "resc_copy_1.db", anRescIds, NULL, 10 );
     BOOST_CHECK( rc == 0 );
-    poData->Close();
-    delete poData;
     sqlite3 *db;
     sqlite3_stmt *stmt;
     rc = sqlite3_open_v2( "resc_copy_1.db", &db, SQLITE_OPEN_READONLY, NULL );
@@ -95,26 +85,20 @@ BOOST_AUTO_TEST_CASE( resc_copy_1 )
     BOOST_CHECK( rc == SQLITE_ROW );
     rc = sqlite3_column_int( stmt, 0 );
     BOOST_CHECK( rc == 10 );
-    remove( "resc_copy_1.db" );
     sqlite3_finalize( stmt );
     sqlite3_close( db );
+    remove( "resc_copy_1.db" );
 }
 
 BOOST_AUTO_TEST_CASE( resc_copy_2 )
 {
-    WfipsData *poData = new WfipsData("/home/kyle/src/wfips/build");
-    int rc = poData->Open();
-    BOOST_CHECK( poData->Valid() == 1 );
-    BOOST_CHECK( rc == 0 );
     int anRescIds[10] = {1,2,3,4,5,6,7,8,9,10};
-    rc = poData->WriteRescDb( "resc_copy_2.db", anRescIds, NULL, 10 );
+    int rc = poData->WriteRescDb( "resc_copy_2.db", anRescIds, NULL, 10 );
     BOOST_CHECK( rc == 0 );
 
     poData->SetRescDb( "resc_copy_2.db" );
     int anRescIds2[2] = {1,2};
     rc = poData->WriteRescDb( "resc_copy_2_.db", anRescIds2, NULL, 2 );
-    poData->Close();
-    delete poData;
 
     sqlite3 *db;
     sqlite3_stmt *stmt;
@@ -126,24 +110,19 @@ BOOST_AUTO_TEST_CASE( resc_copy_2 )
     BOOST_CHECK( rc == SQLITE_ROW );
     rc = sqlite3_column_int( stmt, 0 );
     BOOST_CHECK( rc == 2 );
-    remove( "resc_copy_2.db" );
-    remove( "resc_copy_2_.db" );
     sqlite3_finalize( stmt );
     sqlite3_close( db );
+    remove( "resc_copy_2.db" );
+    remove( "resc_copy_2_.db" );
 }
 
 BOOST_AUTO_TEST_CASE( resc_copy_3 )
 {
-    WfipsData *poData = new WfipsData("/home/kyle/src/wfips/build");
-    int rc = poData->Open();
-    BOOST_CHECK( poData->Valid() == 1 );
-    BOOST_CHECK( rc == 0 );
     int anRescIds[10] = {1,2,3,4,5,6,7,8,9,10};
     int anDispLocIds[10] = {1,1,1,1,1,1,1,1,1,1};
-    rc = poData->WriteRescDb( "resc_copy_3.db", anRescIds, anDispLocIds, 10 );
+    int rc = poData->WriteRescDb( "resc_copy_3.db", anRescIds, anDispLocIds, 10 );
     BOOST_CHECK( rc == 0 );
-    poData->Close();
-    delete poData;
+
     sqlite3 *db;
     sqlite3_stmt *stmt;
     rc = sqlite3_open_v2( "resc_copy_3.db", &db, SQLITE_OPEN_READONLY, NULL );
@@ -154,27 +133,195 @@ BOOST_AUTO_TEST_CASE( resc_copy_3 )
     BOOST_CHECK( rc == SQLITE_ROW );
     rc = sqlite3_column_int( stmt, 0 );
     BOOST_CHECK( rc == 1 );
-    remove( "resc_copy_3.db" );
     sqlite3_finalize( stmt );
     sqlite3_close( db );
+    remove( "resc_copy_3.db" );
 }
 
 BOOST_AUTO_TEST_CASE( assoc_disploc_1 )
 {
-    WfipsData *poData = new WfipsData("/home/kyle/src/wfips/build");
-    int rc = poData->Open();
-    BOOST_CHECK( poData->Valid() == 1 );
-    BOOST_CHECK( rc == 0 );
     const char *pszWkt = "POLYGON((-114 47, -113 47, -113 46, -114 46, -114 47))";
     int *panIds, nCount;
     poData->GetAssociatedDispLoc( pszWkt, &panIds, &nCount );
-    poData->Close();
-    delete poData;
-    rc = panIds[0];
+    int rc = panIds[0];
     WfipsData::Free( (void*)panIds );
     BOOST_REQUIRE( nCount > 0 );
     BOOST_CHECK( rc > 0 );
 }
+
+BOOST_AUTO_TEST_CASE( build_set_1 )
+{
+    BOOST_CHECK_EQUAL( poData->TestBuildAgencySet1(), 0 );
+}
+
+BOOST_AUTO_TEST_CASE( build_set_2 )
+{
+    BOOST_CHECK_EQUAL( poData->TestBuildAgencySet2(), 0 );
+}
+
+BOOST_AUTO_TEST_CASE( build_set_3 )
+{
+    BOOST_CHECK_EQUAL( poData->TestBuildAgencySet3(), 0 );
+}
+
+BOOST_AUTO_TEST_CASE( build_set_4 )
+{
+    BOOST_CHECK_EQUAL( poData->TestBuildAgencySet4(), 0 );
+}
+
+BOOST_AUTO_TEST_CASE( build_set_5 )
+{
+    BOOST_CHECK_EQUAL( poData->TestBuildAgencySet5(), 0 );
+}
+
+BOOST_AUTO_TEST_CASE( build_fid_set_1 )
+{
+    BOOST_CHECK_EQUAL( poData->TestFidSet1(), 0 );
+}
+
+BOOST_AUTO_TEST_CASE( assoc_resource_1 )
+{
+    int anIds[] = {1,2,3,4,5,6,7,8,9,10};
+    WfipsResc *psResc;
+    int nCount;
+    int rc = poData->GetAssociatedResources( anIds, 10, &psResc, &nCount, AGENCY_ALL );
+    WfipsData::FreeAssociatedResources( psResc, nCount );
+    BOOST_REQUIRE( nCount > 0 );
+    BOOST_CHECK( rc == 0 );
+}
+
+BOOST_AUTO_TEST_CASE( assoc_resource_2 )
+{
+    int anIds[] = {1,2,3,4,5,6,7,8,9,10};
+    WfipsResc *psResc;
+    int nCount;
+    int rc = poData->GetAssociatedResources( anIds, 10, &psResc, &nCount, USFS );
+    WfipsData::FreeAssociatedResources( psResc, nCount );
+    BOOST_REQUIRE( nCount == 0 );
+    BOOST_CHECK( rc == 0 );
+}
+
+BOOST_AUTO_TEST_CASE( assoc_resource_3 )
+{
+    int anIds[] = {1,2,3,4,5,6,7,8,9,10};
+    WfipsResc *psResc;
+    int nCount;
+    int rc = poData->GetAssociatedResources( anIds, 10, &psResc, &nCount, DOI_BLM );
+    WfipsData::FreeAssociatedResources( psResc, nCount );
+    BOOST_REQUIRE( nCount > 0 );
+    BOOST_CHECK( rc == 0 );
+}
+
+BOOST_AUTO_TEST_CASE( load_scen_1 )
+{
+    BOOST_CHECK( poData->TestScenLoad1() == 0 );
+}
+
+BOOST_AUTO_TEST_CASE( load_scen_2 )
+{
+    BOOST_CHECK( poData->TestScenLoad2() == 0 );
+}
+
+BOOST_AUTO_TEST_CASE( load_scen_3 )
+{
+    BOOST_CHECK( poData->TestScenLoad3() == 0 );
+}
+
+BOOST_AUTO_TEST_CASE( load_scen_4 )
+{
+    BOOST_CHECK( poData->TestScenLoad4() == 0 );
+}
+
+BOOST_AUTO_TEST_CASE( load_scen_5 )
+{
+    BOOST_CHECK( poData->TestScenLoad5() == 0 );
+}
+
+BOOST_AUTO_TEST_CASE( load_scen_6 )
+{
+    BOOST_CHECK( poData->TestScenLoad6() == 0 );
+}
+
+BOOST_AUTO_TEST_CASE( load_scen_7 )
+{
+    BOOST_CHECK( poData->TestScenLoad7() == 0 );
+}
+
+BOOST_AUTO_TEST_CASE( set_resource_db_1 )
+{
+    int anIds[] = {1,2,3,4,5,6,7,8,9,10};
+    WfipsResc *psResc;
+    int nCount;
+    poData->SetRescDb( WFIPS_DATA_TEST_PATH "resc.db" );
+    int rc = poData->GetAssociatedResources( anIds, 10, &psResc, &nCount, AGENCY_ALL );
+    WfipsData::FreeAssociatedResources( psResc, nCount );
+    BOOST_REQUIRE( nCount > 0 );
+    BOOST_CHECK( rc == 0 );
+}
+
+BOOST_AUTO_TEST_CASE( scen_count_1 )
+{
+    int *panIndices;
+    int rc;
+    rc = poData->GetScenarioIndices( &panIndices );
+    /* Will change */
+    BOOST_CHECK( rc == 1 );
+    BOOST_CHECK( panIndices[0] == 5 );
+    WfipsData::Free( panIndices );
+}
+
+BOOST_AUTO_TEST_CASE( load_resc_types_1 )
+{
+    BOOST_CHECK( poData->TestProdLoad1() == 0 );
+}
+
+BOOST_AUTO_TEST_CASE( load_prod_rates_1 )
+{
+    BOOST_CHECK( poData->TestProdLoad1() == 0 );
+}
+
+BOOST_AUTO_TEST_CASE( load_disp_log_1 )
+{
+    BOOST_CHECK( poData->TestDispLogLoad1() == 0 );
+}
+
+BOOST_AUTO_TEST_CASE( load_disp_log_2 )
+{
+    BOOST_CHECK( poData->TestDispLogLoad2() == 0 );
+}
+
+BOOST_AUTO_TEST_CASE( load_fwa_1 )
+{
+    BOOST_CHECK( poData->TestFwaLoad1() == 0 );
+}
+
+BOOST_AUTO_TEST_CASE( load_fwa_2 )
+{
+    BOOST_CHECK( poData->TestFwaLoad2() == 0 );
+}
+
+BOOST_AUTO_TEST_CASE( load_disp_loc_1 )
+{
+    // Disable, too slow.
+    //BOOST_CHECK( poData->TestDispLocLoad1() == 0 );
+}
+
+BOOST_AUTO_TEST_CASE( load_disp_loc_2 )
+{
+    BOOST_CHECK( poData->TestDispLocLoad2() == 0 );
+}
+
+BOOST_AUTO_TEST_CASE( load_resource_1 )
+{
+    // Disable, too slow.
+    //BOOST_CHECK( poData->TestResourceLoad1() == 0 );
+}
+
+BOOST_AUTO_TEST_CASE( load_resource_2 )
+{
+    BOOST_CHECK( poData->TestResourceLoad2() == 0 );
+}
+
 
 BOOST_AUTO_TEST_SUITE_END() /* irs */
 

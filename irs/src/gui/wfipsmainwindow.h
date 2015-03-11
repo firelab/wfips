@@ -34,6 +34,7 @@
 #include <QMessageBox>
 #include <QProgressBar>
 #include <QSettings>
+#include <QThread>
 #include <QTreeWidget>
 #include <QTreeWidgetItem>
 #include <QVBoxLayout>
