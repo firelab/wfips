@@ -85,7 +85,7 @@ WfipsData::LoadDispatchLogic()
 {
     sqlite3_stmt *stmt;
     sqlite3_stmt *rstmt;
-    int rc, i, j, n;
+    int rc, i, j, n, iLogic;
     void *pGeom;
 
     /* Clear our lookup */
@@ -137,6 +137,7 @@ WfipsData::LoadDispatchLogic()
     const char *pszName, *pszIndice;
     int nLevels, anBps[4];
     int nBp, anRescCount[13][5];
+    iLogic = 0;
     while( sqlite3_step( stmt ) == SQLITE_ROW )
     {
         pszName = (const char*)sqlite3_column_text( stmt, 0 );
@@ -160,7 +161,7 @@ WfipsData::LoadDispatchLogic()
         poScenario->m_VDispLogic.push_back( CDispLogic( std::string( pszName ),
                                             std::string( pszIndice ), nLevels,
                                             anBps, anRescCount ) );
-        DispLogIndexMap.insert( std::pair<std::string, int>( pszName, poScenario->m_VDispLogic.size() - 1 ) );
+        DispLogIndexMap.insert( std::pair<std::string, int>( pszName, iLogic++ ) );
         sqlite3_reset( rstmt );
     }
     assert( DispLogIndexMap.size() == poScenario->m_VDispLogic.size() );
