@@ -74,14 +74,6 @@ IF(BUILD_TESTING)
 ENDIF(BUILD_TESTING)
 
 # *****************************************************************************
-# Artificial Neural Network library modules
-# We use FANN for ANN simulation.  It is comprised of 3 separate libs for
-# different precisions, fixed, float and double.
-# *****************************************************************************
-
-OPTION(BUILD_ANN "Build ANN module" OFF)
-
-# *****************************************************************************
 # Fire Ignition Generator (FIG).  This module builds the fig from raw simulated
 # ignitions.  It currently has some window dependencies and can't be built on
 # non-msvc builds.
