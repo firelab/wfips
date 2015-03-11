@@ -212,6 +212,17 @@ WfipsData::ExecuteSql( const char *pszSql )
     return rc;
 }
 
+double
+WfipsData::Random()
+{
+    double d;
+    int n;
+    sqlite3_randomness( sizeof( int ), &n );
+    d = (double)abs(n)/(double)INT_MAX;
+    assert( d >= 0.0  && d <= 1.0 );
+    return d;
+}
+
 /*
 ** Compile a geometry into spatialite binary.  To be free'd by the caller using
 ** sqlite3_free()
@@ -623,7 +634,8 @@ WfipsData::WriteRescDb( const char *pszPath, int *panIds, int *panDispLocIds,
 int
 WfipsData::LoadScenario( int nYearIdx, const char *pszTreatWkt,
                          double dfTreatProb, int nWfpTreatMask,
-                         double *padfWfpTreatProb, int nAgencyFilter )
+                         double *padfWfpTreatProb, double dfStratProb,
+                         int nAgencyFilter )
 {
     sqlite3_stmt *stmt;
     sqlite3_stmt *gstmt = NULL;
@@ -791,9 +803,7 @@ WfipsData::LoadScenario( int nYearIdx, const char *pszTreatWkt,
         {
             dfUserProb = 1.;
         }
-        sqlite3_randomness( sizeof( int ), &nProb );
-        dfProb = (double)abs(nProb)/(double)0x7FFFFFFF;
-        assert( dfProb >= 0.0 );
+        dfProb = Random();
 
         if( pszTreatWkt != NULL && dfTreatProb > 0. )
         {
@@ -855,6 +865,12 @@ WfipsData::LoadScenario( int nYearIdx, const char *pszTreatWkt,
                                               dfY, dfX ) );
         poScenario->m_VFire[iFire].SetTreated( bTreated );
         poScenario->m_VFire[iFire].SetManageObjective( dfManObj );
+        /* XXX: Set up properly (3A or 3B) */
+        if( Random() < dfStratProb  && dfManObj >= 2.9 && dfManObj < 4.0 )
+            poScenario->m_VFire[iFire].SetUseStrategy( 1 );
+        else
+            poScenario->m_VFire[iFire].SetUseStrategy( 0 );
+
         iFire++;
     }
 

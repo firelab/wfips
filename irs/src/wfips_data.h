@@ -29,6 +29,7 @@
 #define WFIPS_DATA_H_
 /* Standard library */
 #include <assert.h>
+#include <limits.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -97,12 +98,12 @@
 /* Map day indices to names.  NULL padded for 1-based */
 static const char *apszWfipsDayOfWeek[] = { NULL,
                                            "Monday",
-                                            "Tuesday",
-                                            "Wednesday",
-                                            "Thursday",
-                                            "Friday",
-                                            "Saturday",
-                                            "Sunday" };
+                                           "Tuesday",
+                                           "Wednesday",
+                                           "Thursday",
+                                           "Friday",
+                                           "Saturday",
+                                           "Sunday" };
 
 /*
 ** Agencies
@@ -222,7 +223,8 @@ public:
     /* Move to private */
     int LoadScenario( int nYearIdx, const char *pszTreatWkt,
                       double dfTreatProb, int nWfpTreatMask,
-                      double *padfWfpTreatProb, int nAgencyFilter );
+                      double *padfWfpTreatProb, double dfStratProb,
+                      int nAgencyFilter );
 
     int SetAnalysisAreaMask( const char *pszWkt );
     int SetFuelTreatmentMask( const char *pszWkt, double dfProb );
@@ -300,6 +302,7 @@ private:
 
     /* SQLite/Spatialite convenience */
     int CompileGeometry( const char *pszWkt, void **pCompiled );
+    double Random();
 
     /* Diane's structs */
     CRunScenario *poScenario;

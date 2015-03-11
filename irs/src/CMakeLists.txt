@@ -36,12 +36,6 @@ INCLUDE_DIRECTORIES(${SQLITE3_INCLUDE_DIR}
                     ${GDAL_INCLUDE_DIR}
                     ${PROJECT_SOURCE_DIR}/common/src)
 
-# Stupid const string errrors in contain
-if(NOT MSVC)
-    SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-deprecated-writable-strings")
-endif(NOT MSVC)
-
-
 SET(IRS_SOURCES irs.cpp
                 irs_result.cpp
                 #irs_api.cpp

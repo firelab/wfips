@@ -37,6 +37,11 @@ SET(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake/Modules/")
 
 SET(CMAKE_INCLUDE_CURRENT_DIR ON)
 
+# Stupid const string errrors in contain
+if(NOT MSVC)
+    SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-deprecated-writable-strings")
+endif(NOT MSVC)
+
 # *****************************************************************************
 # Set the version for the project
 # *****************************************************************************

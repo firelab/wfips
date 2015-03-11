@@ -1534,7 +1534,7 @@
              <bool>true</bool>
             </property>
             <property name="checked">
-             <bool>false</bool>
+             <bool>true</bool>
             </property>
             <layout class="QVBoxLayout" name="verticalLayout_17">
              <item>
@@ -1543,12 +1543,7 @@
                 <widget class="QComboBox" name="fuelComboBox_2">
                  <item>
                   <property name="text">
-                   <string>Something Response</string>
-                  </property>
-                 </item>
-                 <item>
-                  <property name="text">
-                   <string>Something Spatial Response</string>
+                   <string>Modified Response</string>
                   </property>
                  </item>
                 </widget>
@@ -1571,7 +1566,7 @@
              <item>
               <widget class="QStackedWidget" name="fuelStackWidget_2">
                <property name="currentIndex">
-                <number>1</number>
+                <number>0</number>
                </property>
                <widget class="QWidget" name="page_3">
                 <layout class="QVBoxLayout" name="verticalLayout_19">
@@ -1580,7 +1575,7 @@
                    <item>
                     <widget class="QLabel" name="label_17">
                      <property name="text">
-                      <string>Percent of Ignitions Treated</string>
+                      <string>Percent of Modified Response</string>
                      </property>
                     </widget>
                    </item>
@@ -1604,6 +1599,12 @@
                      </property>
                      <property name="suffix">
                       <string>%</string>
+                     </property>
+                     <property name="maximum">
+                      <number>100</number>
+                     </property>
+                     <property name="value">
+                      <number>100</number>
                      </property>
                     </widget>
                    </item>
@@ -1684,7 +1685,7 @@
                    <item>
                     <widget class="QSpinBox" name="fuelProbSpinBox_2">
                      <property name="enabled">
-                      <bool>false</bool>
+                      <bool>true</bool>
                      </property>
                      <property name="accelerated">
                       <bool>true</bool>
