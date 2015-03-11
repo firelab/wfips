@@ -215,7 +215,7 @@ int WfipsData::TestScenLoad1()
     poScenario = new CRunScenario();
     LoadDispatchLogic();
     LoadFwas();
-    rc = LoadScenario( 5, NULL, 1.0, 0 );
+    rc = LoadScenario( 5, NULL, 1.0, 0, 0 );
     delete poScenario;
     return rc;
 }
@@ -226,7 +226,7 @@ int WfipsData::TestScenLoad2()
     poScenario = new CRunScenario();
     LoadDispatchLogic();
     LoadFwas();
-    rc = LoadScenario( 1, NULL, 1.0, 0 );
+    rc = LoadScenario( 1, NULL, 1.0, 0, 0 );
     n =  poScenario->m_VFire.size();
     delete poScenario;
     return n;
@@ -239,7 +239,7 @@ int WfipsData::TestScenLoad3()
     SetAnalysisAreaMask( "POLYGON((-114 47, -113 47, -113 46, -114 46, -114 47))" );
     LoadDispatchLogic();
     LoadFwas();
-    rc = LoadScenario( 5, NULL, 1.0, 0 );
+    rc = LoadScenario( 5, NULL, 1.0, 0, 0 );
     if( poScenario->m_VFire.size() == 0 )
         rc = 1;
     delete poScenario;
@@ -253,10 +253,10 @@ int WfipsData::TestScenLoad4()
     poScenario = new CRunScenario();
     LoadDispatchLogic();
     LoadFwas();
-    LoadScenario( 5, NULL, 1.0, 0 );
+    LoadScenario( 5, NULL, 1.0, 0, 0 );
     a = poScenario->m_VFire.size();
     SetAnalysisAreaMask( "POLYGON((-114 47, -113 47, -113 46, -114 46, -114 47))" );
-    LoadScenario( 5, NULL, 1.0, 0 );
+    LoadScenario( 5, NULL, 1.0, 0, 0 );
     b = poScenario->m_VFire.size();
     if( a == 0 || b == 0 || a < b )
         rc = 1;
@@ -271,9 +271,9 @@ int WfipsData::TestScenLoad5()
     poScenario = new CRunScenario();
     LoadDispatchLogic();
     LoadFwas();
-    LoadScenario( 5, NULL, 1.0, AGENCY_ALL );
+    LoadScenario( 5, NULL, 1.0, 0, AGENCY_ALL );
     a = poScenario->m_VFire.size();
-    b = LoadScenario( 5, NULL, 1.0, DOI_BLM );
+    b = LoadScenario( 5, NULL, 1.0, 0, DOI_BLM );
     b = poScenario->m_VFire.size();
     if( a == 0 || b == 0 || a < b )
         rc = 1;
@@ -289,7 +289,7 @@ int WfipsData::TestScenLoad6()
     SetAnalysisAreaMask( pszWkt );
     LoadDispatchLogic();
     LoadFwas();
-    rc = LoadScenario( 5, NULL, 1.0, AGENCY_ALL );
+    rc = LoadScenario( 5, NULL, 1.0, 0, AGENCY_ALL );
     for( i = 0; i < poScenario->m_VFire.size(); i++ )
     {
         if( poScenario->m_VFire[i].GetTreated() != 0 )
@@ -310,7 +310,7 @@ int WfipsData::TestScenLoad7()
     SetAnalysisAreaMask( pszWkt );
     LoadDispatchLogic();
     LoadFwas();
-    rc = LoadScenario( 5, pszWkt, 1.0, AGENCY_ALL );
+    rc = LoadScenario( 5, pszWkt, 1.0, 0, AGENCY_ALL );
     for( i = 0; i < poScenario->m_VFire.size(); i++ )
     {
         if( poScenario->m_VFire[i].GetTreated() != 1 )

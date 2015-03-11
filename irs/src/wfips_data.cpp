@@ -622,7 +622,8 @@ WfipsData::WriteRescDb( const char *pszPath, int *panIds, int *panDispLocIds,
 
 int
 WfipsData::LoadScenario( int nYearIdx, const char *pszTreatWkt,
-                         double dfTreatProb, int nAgencyFilter )
+                         double dfTreatProb, int nWfpTreatMask,
+                         int nAgencyFilter )
 {
     sqlite3_stmt *stmt;
     sqlite3_stmt *gstmt = NULL;

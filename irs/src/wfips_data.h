@@ -119,6 +119,12 @@ static const char *apszWfipsDayOfWeek[] = { NULL,
 #define AGENCY_ALL            (FED_ALL | STATE_LOCAL)
 #define AGENCY_OTHER          (AGENCY_ALL &~ FED_ALL)
 
+/* Greg Dillon's WFP values */
+#define WFP_PRIORITY_1        (1 << 1)
+#define WFP_PRIORITY_2        (1 << 2)
+#define WFP_PRIORITY_3        (1 << 3)
+#define WFP_PRIORITY_4        (1 << 4)
+
 /*
 ** Identifiers for resources in sql. NULL padded to align with shifts above.
 */
@@ -200,7 +206,8 @@ public:
 
     /* Move to private */
     int LoadScenario( int nYearIdx, const char *pszTreatWkt,
-                      double dfTreatProb, int nAgencyFilter );
+                      double dfTreatProb, int nWfpTreatMask,
+                      int nAgencyFilter );
 
     int SetAnalysisAreaMask( const char *pszWkt );
     int SetFuelTreatmentMask( const char *pszWkt, double dfProb );

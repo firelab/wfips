@@ -301,13 +301,6 @@ WfipsData::LoadFwas()
             continue;
         }
         i = it->second;
-        /*
-        for( i = 0; i < poScenario->m_VDispLogic.size(); i++ )
-        {
-            if( std::string( pszLogic ) == poScenario->m_VDispLogic[i].GetLogicID() )
-                break;
-        }
-        */
         poScenario->m_VFWA.push_back( CFWA( std::string( pszName ),
                                             std::string( "" ), nWalkIn,
                                             nPumpRoll, nHead, nTail, nPara,
