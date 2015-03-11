@@ -733,6 +733,7 @@ WfipsData::LoadScenario( int nYearIdx, const char *pszTreatWkt,
     int nMaxSteps = 10000;
 
     int iFire = 0;
+    std::map<std::string, int>::iterator it;
     int q;
     while( sqlite3_step( stmt ) == SQLITE_ROW )
     {
@@ -791,12 +792,12 @@ WfipsData::LoadScenario( int nYearIdx, const char *pszTreatWkt,
             }
             sqlite3_reset( gstmt );
         }
-        /* try/catch? */
-        i = FwaIndexMap[pszFwa];
-        //11154
-        q = FwaIndexMap.size();
-        //649,1325,2064,2088,2323,2425,4325,4359,4493,4576,5104,5259
-        //5874,6323...
+        it = FwaIndexMap.find( pszFwa );
+        if( it == FwaIndexMap.end() )
+        {
+            continue;
+        }
+        i = it->second;
         poScenario->m_VFire.push_back( CFire( nYear, nFire, nJulDay,
                                               std::string( pszWeekDay ),
                                               std::string( pszDiscTime ), nBi,

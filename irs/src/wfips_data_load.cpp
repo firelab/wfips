@@ -228,6 +228,7 @@ WfipsData::LoadFwas()
     int anReload[5];
     int anWalkIn[6];
     int iFwa = 0;
+    std::map<std::string, int>::iterator it;
     while( sqlite3_step( stmt ) == SQLITE_ROW )
     {
         pszName = (const char *)sqlite3_column_text( stmt, 1 );
@@ -293,7 +294,12 @@ WfipsData::LoadFwas()
         /*
         ** The value of this is up for discussion...
         */
-        i = DispLogIndexMap[pszLogic];
+        it = DispLogIndexMap.find( pszLogic );
+        if( it == DispLogIndexMap.end() )
+        {
+            continue;
+        }
+        i = it->second;
         /*
         for( i = 0; i < poScenario->m_VDispLogic.size(); i++ )
         {
