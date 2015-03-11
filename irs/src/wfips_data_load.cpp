@@ -318,8 +318,8 @@ WfipsData::LoadFwas()
                                             adfRosCoeff, iFwa,
                                             poScenario->m_VDispLogic[i],
                                             std::string( "" ) ) );
-        iFwa++;
         FwaIndexMap.insert( std::pair<std::string, int>( pszName, iFwa ) );
+        iFwa++;
     }
     assert( FwaIndexMap.size() == poScenario->m_VFWA.size() );
     sqlite3_finalize( stmt );
