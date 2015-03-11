@@ -873,7 +873,7 @@ WfipsData::LoadScenario( int nYearIdx, const char *pszTreatWkt,
 
         iFire++;
     }
-
+    poScenario->m_NumFire = poScenario->m_VFire.size();
     //printf( "Warning. %d fires failed to load due to invalid fwa names\n", nInvalid );
 
     sqlite3_finalize( stmt );

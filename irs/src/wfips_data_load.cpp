@@ -47,6 +47,7 @@ WfipsData::LoadRescTypes()
                                                       nDispDelay, nRespDelay,
                                                       nSetupTime ) );
     }
+
     sqlite3_finalize( stmt );
     stmt = NULL;
     return 0;
@@ -642,6 +643,15 @@ WfipsData::LoadIrsStructs( const char *pszAnalysisAreaWkt )
     LoadTankerBases();
     LoadResources();
     CreateLargeAirTankers();
+    poScenario->m_NumFWA = pS->m_VFWA.size();
+    poScenario->m_NumRescType = poScenario->m_VRescType.size();
+    poScenario->m_NumDispLoc = poScenario->m_VDispLoc.size();
+    poScenario->m_NumProdRates = poScenario->m_VProdRates.size();
+    poScenario->m_NumResource = poScenario->m_VResource.size();
+    poScenario->CreateDispTree();
+    poScenario->ResourcesToDispatchers();
+    poScenario->FWAsFindClosestAirtankerBases();
+
     return 0;
 }
 

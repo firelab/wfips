@@ -55,10 +55,12 @@
 #define MAX_PATH 8192
 #endif
 
-#ifdef WIN32
-#define WFIPS_DATA_TEST_PATH "c:/wfips/data/"
-#else
-#define WFIPS_DATA_TEST_PATH "/home/kyle/src/wfips/build/"
+#ifndef WFIPS_DATA_TEST_PATH
+ #ifdef WIN32
+  #define WFIPS_DATA_TEST_PATH "c:/wfips/data/"
+ #else
+  #define WFIPS_DATA_TEST_PATH "/home/kyle/src/wfips/build/"
+ #endif
 #endif
 
 #define WFIPS_SCRAP_BUFFER_SIZE 10
@@ -220,18 +222,17 @@ public:
 
     int GetScenarioIndices( int **ppanIndices );
 
-    /* Move to private */
+    /* Move to private ??? */
     int LoadScenario( int nYearIdx, const char *pszTreatWkt,
                       double dfTreatProb, int nWfpTreatMask,
                       double *padfWfpTreatProb, double dfStratProb,
                       int nAgencyFilter );
 
     int SetAnalysisAreaMask( const char *pszWkt );
-    int SetFuelTreatmentMask( const char *pszWkt, double dfProb );
+    /* XXX TO BE IMPLEMENTED XXX */
     int SetLargeFireParams( int nJulStart, int nJulEnd, double dfNoRescProb,
                             double dfTimeLimitProb, double dfSizeLimitProb,
                             double dfExhaustProb );
-    /* XXX TO BE IMPLEMENTED XXX */
     /* Not implemented */
     int SetPrepositioning( double, double, double ){return 0;}
     /* int SetDrawdown(){return 0;} */
@@ -239,6 +240,9 @@ public:
     int SampleLargeFire( int nJulStart, int nJulEnd, double dfNoRescProb,
                          double dfTimeLimitProb, double dfSizeLimitProb,
                          double dfExhaustProb ){return 0;}
+
+    int RunScenario( int iYearIndex ) { return 0;}
+    int ExportResults( const char *pszDbName ) {return 0;}
 
     /* XXX TO BE IMPLEMENTED XXX */
 
@@ -277,6 +281,7 @@ public:
 private:
     void Init();
 
+    /* File path and db helpers */
     const char* FormFileName( const char *pszPath, const char *pszDb );
     const char* BaseName( const char *pszPath );
     int Attach( const char *pszPath );
@@ -287,13 +292,11 @@ private:
     int bSpatialiteEnabled;
     sqlite3 *db;
 
+    /* String helpers */
     const char * BuildAgencySet( int nAgencyFlags );
     char * BuildFidSet( int *panFids, int nCount );
 
     const char *pszAnalysisAreaWkt;
-    /* Ignition ownership */
-
-    /* Treatment Mask */
 
     /* scratch strings */
     char* GetScrapBuffer();
