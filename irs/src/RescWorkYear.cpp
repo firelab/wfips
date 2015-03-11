@@ -39,13 +39,15 @@ CRescWorkYear::~CRescWorkYear() {}
 // Assignment operator for class CRescWorkYear
 CRescWorkYear& CRescWorkYear::operator=( const CRescWorkYear& that)
 {
-	m_Scenario = that.m_Scenario;
-	m_FireNum = that.m_FireNum;
-	m_Julian = that.m_Julian;
-	m_StartTime = that.m_StartTime;
-	m_EndTime = that.m_EndTime;
-	m_Effort = that.m_Effort;
-	m_Flag = that.m_Flag;
+	if (&that != this)	{
+		m_Scenario = that.m_Scenario;
+		m_FireNum = that.m_FireNum;
+		m_Julian = that.m_Julian;
+		m_StartTime = that.m_StartTime;
+		m_EndTime = that.m_EndTime;
+		m_Effort = that.m_Effort;
+		m_Flag = that.m_Flag;
+	}
 	
 	return *this;
 }

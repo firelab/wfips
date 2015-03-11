@@ -23,9 +23,9 @@ class CNatDispatcher : public CDispatchBase {
 public:
 	CNatDispatcher();										//CNatDispatcher default constructor
 	CNatDispatcher( string dispatcherID );
-	CNatDispatcher( const CNatDispatcher &natdispatcher);	//copy constructor
+	CNatDispatcher( const CNatDispatcher &rhs);	//copy constructor
 	virtual ~CNatDispatcher();								//destructor
-		
+
 	// function definitions for set and get functions for class member variables
 	void SetAirtankerVector( vector< CResource* > VAirtankers );	//set the vector of airtankers with a vector of airtanker pointers
 	vector< CResource* > GetAirtankerVector();				//get the vector of airtanker pointers
@@ -43,6 +43,8 @@ private:
 	
 	vector< CResource* > m_VAirtankers;						//vector of the airtankers in the analysis
 	vector< CDLDispatcher* > m_VATDispatcherPtrs;			//vector of pointers to the airtanker bases
+
+	CNatDispatcher& operator=(const CNatDispatcher &rhs){};	//assignment operator in private because of vectors of airtankers and airtanker dispatch locations
 	
 
 };		// end of class CNatDispatcher

@@ -15,6 +15,8 @@ public:
 	CProdRates( const CProdRates &prodrates );
 	~CProdRates();													//destructor
 
+	CProdRates& operator=(const CProdRates &rhs);					//assignment operator
+
 	double GetProdRate();											//get the production rate for the entry
 	
 	// Compare with CProdRates instance to determine if match then return production rate

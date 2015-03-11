@@ -23,7 +23,7 @@ public:
 	CGACCDispatcher( string dispatcherID );
 	CGACCDispatcher( const CGACCDispatcher &gaccdispatcher);		//copy constructor
 	virtual ~CGACCDispatcher();										//destructor
-		
+
 	// function definitions for set and get functions for class member variables
 	void AddNewTypeTwoCrew( CResource* Resource, CDLDispatcher *DLdispatcher );		// Add a new Type II IA Crew to a GACC Dispatcher
 	void MoveTypeTwoCrew( CTypeTwoIACrew &typetwocrew, CDLDispatcher *DLdispatcher, CGACCDispatcher *oldGACCdispatcher );	//Move a Type II IA Crew that already exists to the GACC and create 4 - 5 person IA crews at the dispatch location dispatcher
@@ -43,7 +43,8 @@ public:
 	
 	
 private:
-	vector< CTypeTwoIACrew > m_VTypeTwoCrews;						// vector of type two crews at the GACC dispatcher
+	vector<CTypeTwoIACrew> m_VTypeTwoCrews;							// vector of type two crews at the GACC dispatcher 
+	CGACCDispatcher& operator=(const CGACCDispatcher &rhs){};		// assignment operator private because CTypeTwoIACrew has pointers to DLDispatcher
 		
 
 };		// end of class CGACCDispatcher

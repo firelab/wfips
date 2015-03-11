@@ -502,6 +502,8 @@ void OmffrMainWindow::SetUpMapCanvas()
     for(int i = 0; i < areaLayers.size();i++)
     {
         layer = new QgsVectorLayer(layerPath + areaLayers[i], "", providerName);
+		if( layer->isValid() != true )
+			continue;
         //symbol = QgsSymbolV2::defaultSymbol(layer->geometryType());
         symbol = QgsSymbolV2::defaultSymbol(QGis::Polygon);
         renderer =
@@ -960,7 +962,7 @@ int OmffrMainWindow::SimulateIRS()
     else
     {
         layer = dynamic_cast<QgsVectorLayer*>(mapCanvas->currentLayer());
-        featureList = layer->selectedFeatures();
+       featureList = layer->selectedFeatures();
         if(layer)
         {
             if(featureList.size() > 0)

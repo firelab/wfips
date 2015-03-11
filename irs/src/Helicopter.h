@@ -59,10 +59,10 @@ private:
 	std::vector< int >m_Gallons;									// Volume that can be carried at different altitudes ( as above ) for the helicopter type
 	bool m_IsCarrier;												// Indicates whether or not the helicopter is being used as a carrier
 
-	std::list< CResource* > m_AttachedCrews;						// List of crews that are attached to the helicotper for prepositioning and drawdown
+	std::list<CResource*> m_AttachedCrews;							// List of crews that are attached to the helicotper for prepositioning and drawdown
 	bool m_HelitackEquipped;										// Indicates whether the helicopter is equipped to deliver helitack crews
 
+	CHelicopter& operator=(const CHelicopter &rhs){};				// assignment operator private because pointer to attached crews needs to be updated for threading
 
-};		// end class CHelicopter
-
+};
 #endif	// end HELICOPTER.H

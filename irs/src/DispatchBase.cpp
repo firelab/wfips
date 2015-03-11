@@ -92,10 +92,35 @@ CDispatchBase::CDispatchBase( const CDispatchBase &dispatchbase )
 	m_VDispLogicUnfilled = dispatchbase.m_VDispLogicUnfilled;
 	m_VDailyDispatches = dispatchbase.m_VDailyDispatches;
 	m_VDailyUsage = dispatchbase.m_VDailyUsage;
+	m_LTempEscapes = dispatchbase.m_LTempEscapes;
 }
 
 // Destructor for CDispatchBase
 CDispatchBase::~CDispatchBase() {}
+
+// Assignment Operator
+CDispatchBase& CDispatchBase::operator=(const CDispatchBase &rhs)
+{
+	if (&rhs != this)	{
+		m_DispatcherID = rhs.m_DispatcherID;
+		m_SeasonStart = rhs.m_SeasonStart;
+		m_SeasonEnd = rhs.m_SeasonEnd;
+		m_BaseRescLevel = rhs.m_BaseRescLevel;
+		m_MinRescLevel = rhs.m_MinRescLevel;
+		m_CurRescLevel = rhs.m_CurRescLevel;
+		m_DailyMinRescLevel = rhs.m_DailyMinRescLevel;
+		m_VExpectLevel = rhs.m_VExpectLevel;
+		m_VPreviousLevel = rhs.m_VPreviousLevel;
+		m_VEscapeLevel = rhs.m_VEscapeLevel;
+		m_VDispLogicUnfilled = rhs.m_VDispLogicUnfilled;
+		m_VDailyDispatches = rhs.m_VDailyDispatches;
+		m_VDailyUsage = rhs.m_VDailyUsage;
+		m_LTempEscapes = rhs.m_LTempEscapes;
+	}
+
+	return *this;
+}
+
 
 // Print tree
 std::ostream &operator<<(std::ostream &out, CDispatchBase *dispatchbase )
@@ -105,7 +130,7 @@ std::ostream &operator<<(std::ostream &out, CDispatchBase *dispatchbase )
 }
 
 // Equal operator for CDispatchBase
-bool CDispatchBase::operator==( CDispatchBase &dispatchbase )
+/*bool CDispatchBase::operator==( CDispatchBase &dispatchbase )
 {
 	bool Equal = true;
 	if ( m_DispatcherID != dispatchbase.m_DispatcherID )
@@ -135,9 +160,12 @@ bool CDispatchBase::operator==( CDispatchBase &dispatchbase )
 	if (m_VDailyUsage != dispatchbase.m_VDailyUsage)
 		Equal = false;
 
+	if (m_LTempEscapes != dispatchbase.m_LTempEscapes)
+		Equal = false;
+
 
 	return Equal;
-}
+}*/
 
 
 
@@ -525,7 +553,7 @@ void CDispatchBase::AddEscape( CEscape Escape )
 {
 	// If the list is empty
 	if ( m_LTempEscapes.empty() )
-		m_LTempEscapes.push_back( CEscape( Escape ) );
+		m_LTempEscapes.push_back(Escape);
 
 	else	{
 
@@ -549,7 +577,7 @@ void CDispatchBase::AddEscape( CEscape Escape )
 				Found = true;
 				
 			if ( CompLevel == ELevel && CompTime > ETime )
-				Found == true;
+				Found = true;
 
 			if ( !Found )
 				It++;	
@@ -557,7 +585,7 @@ void CDispatchBase::AddEscape( CEscape Escape )
 		}
 
 		// place the escape fire
-		m_LTempEscapes.push_back( CEscape( Escape ) );
+		m_LTempEscapes.push_back(Escape);
 
 	}
 

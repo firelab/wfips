@@ -17,10 +17,12 @@ using std::string;
 class CLocalDispatcher : public CDispatchBase {
 
 public:
-	CLocalDispatcher();										//CLocalDispatcher default constructor
+	CLocalDispatcher();											//CLocalDispatcher default constructor
 	CLocalDispatcher( string dispatcherID );
-	CLocalDispatcher( const CLocalDispatcher &localdispatcher);		//copy constructor
+	CLocalDispatcher( const CLocalDispatcher &localdispatcher);	//copy constructor
 	virtual ~CLocalDispatcher();								//destructor
+
+	CLocalDispatcher& operator=(const CLocalDispatcher &rhs);	//assignment operator
 		
 	// function definitions for set and get functions for class member variables
 	

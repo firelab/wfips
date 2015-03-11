@@ -26,7 +26,9 @@ public:
 	CEngine( string rescID, CRescType &resctype, int staffing, string starttime, string endtime, string startdayofweek, 
 		string enddayofweek, int startseason, int endseason, CDispLoc &dispatchloc, int percentavail, double daily, double hourly, int volume );	
 	CEngine( const CEngine &engine );
-	virtual ~CEngine();														//Destructor
+	virtual ~CEngine();												//Destructor
+
+	CEngine& operator=(const CEngine &rhs);							//Assignment Operator
 	
 	void SetVolume( int volume );									//Set the volume for the engine
 	int GetVolume();												//Get the volume for the engine

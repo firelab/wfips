@@ -696,7 +696,7 @@ void CRunScenario::ReadResourceFile( std::string oFilename )
 	}
 
 	// Assign the helitack crews to their primary helicopter
-	AssignHelitack( ResourceMap );
+	AssignHelitack(ResourceMap);
 
 }
 
@@ -1177,12 +1177,12 @@ void CRunScenario::ReadFiles( std::string oPath )
 
 	// Create a Dispatcher tree from the vector data
 	bool Succeed = CreateDispTree();
-	if ( Succeed )
+	if (Succeed)
 		cout << "Tree successfully created\n";
 
 	// Create the resource maps for the dispatch location dispatchers
 	Succeed = ResourcesToDispatchers();
-	if ( Succeed )
+	if (Succeed)
 		cout << "Resources to Map successfully\n";
 
 	//m_DispTree.Print( m_DispTree.Root());
@@ -2225,6 +2225,7 @@ try{
 	
 	return SimulationStatus;
   }
+
   // Run the scenario
   bool CRunScenario::RunScenario( int Debugging, int Scenario,
           int (*pfnProgress)(double dfProgress, const char *pszMessage, void *pArg ) )
@@ -5420,7 +5421,7 @@ void CRunScenario::SaveTypeTwoIARescWorkYear()
 
 			OutCrews << "GACC: " << GACC->GetDispatcherID() << "\n";
 
-			vector< CTypeTwoIACrew > Crews = GACC->GetTypeTwoCrewVector();
+			vector< CTypeTwoIACrew > Crews(GACC->GetTypeTwoCrewVector());
 
 			// Iterate through the Type II IA Crews at the GACC
 			for ( int j = 0; j < Crews.size(); j++ )	{
@@ -8834,7 +8835,7 @@ void CRunScenario::ReturnResources( int Julian )
 
 										else	{
 
-											CTypeTwoIACrew TypeTwoCrew = GACCDisp->GetTypeTwoCrew( Index );
+											CTypeTwoIACrew TypeTwoCrew(GACCDisp->GetTypeTwoCrew( Index ));
 
 											// Get the GACCDispatcher for the Home Base Node
 											OmffrNode< CDispatchBase* >* BaseParentNode = m_DispTree.Parent( BaseNode );

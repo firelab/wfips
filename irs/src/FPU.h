@@ -20,7 +20,7 @@ public:
 	~CFPU();													//destructor
 
 	CFPU( const CFPU &fpu );									//copy constructor for 
-	const CFPU &operator=( const CFPU &fpu);					//Assignment operator
+	CFPU &operator=(const CFPU &fpu);							//Assignment operator
 
 	// Set and get functions for FWA variables
 	void SetFPUID( string id );									//set the FPU ID

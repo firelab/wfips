@@ -37,6 +37,20 @@ CProdRates::CProdRates( const CProdRates &prodrates )
 // Destructor for CProdRates
 CProdRates::~CProdRates() {}
 
+CProdRates& CProdRates::operator=(const CProdRates &rhs)
+{
+	if (&rhs != this)	{
+		m_RescType = rhs.m_RescType;
+		m_SlopeCat = rhs.m_SlopeCat;
+		m_Staffing = rhs.m_Staffing;
+		m_FuelModel = rhs.m_FuelModel;
+		m_SpecificCondition = rhs.m_SpecificCondition;
+		m_ProdRate = rhs.m_ProdRate;
+	}
+
+	return *this;
+}
+
 // Compare with instance of class and return production rate if match else -1
 double CProdRates::Compare( string resctype, int slopecat, int staffing, int fuelmodel, string spcondition )
 {

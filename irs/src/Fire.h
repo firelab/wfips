@@ -24,6 +24,10 @@ public:
                 double lon);			//constructor
 	CFire( const CFire &thatfire );								//copy constructor for CFire
 	~CFire();													//destructor
+
+	CFire& operator=( const CFire &fire);						//assignment operator for fire
+	bool operator==(const CFire &fire);							//equals operator
+	bool operator!=(const CFire &fire);							//notequals operator
 	
 	// Set and get functions for fire variables
 	void SetFWA( CFWA &fwa );									//set the FWA for the fire - problem with = operator in CFWA
@@ -90,8 +94,7 @@ public:
         void SetTreated(bool bTreated) {m_Treated = bTreated;}
 
 	CFire& SetMemVars( const CFire &Fire);						//function to set the membervariables excluding m_FWA for copy constructor and assignment operator
-	CFire& operator=( const CFire &fire);						//assignment operator for fire
-
+	
 	double CalcFBFireSize( int timeMSM );							//calculate the size of a fire at a given time without any containment
 
         double m_lat;

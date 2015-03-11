@@ -45,6 +45,13 @@ CConstProd::CConstProd( const CConstProd &constprod ) : CGround( constprod ) {}
 // Destructor for CConstProd
 CConstProd::~CConstProd() {}
 
+CConstProd& CConstProd::operator=(const CConstProd &rhs)
+{
+	if (&rhs != this)
+		CGround::operator=(rhs);
+	return *this;
+}
+
 
 // Get the fireline production rate for the constant producer
 double CConstProd::DetermineProdRate( CFire fire, std::vector< CProdRates > &VProdRates, int timeMSM ) 

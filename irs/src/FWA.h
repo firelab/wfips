@@ -24,10 +24,12 @@ public:
 		bool waterdrops, bool excluded, double discsize, int esltime, int eslsize, double airtoground, int walkindelay[6],
 		int postcontainused[6], int postcontainunused[6], int postescape[6], int reloaddelay[4], int firstunitdelay, 
 		double diurnalcoeffs[24], string ROSadjfuel[10], double ROSadjustment[10], int index, CDispLogic &displogic, string FPU,
-		double Latitude = 0, double Longitude = 0 );		// constructor
+		double Latitude = 0, double Longitude = 0 );			//constructor
+	CFWA( const CFWA &fwa );									//copy constructor for CFWA
+
 	~CFWA();													//destructor
 
-	CFWA( const CFWA &fwa );									//copy constructor for CFWA
+	CFWA &operator=( const CFWA &fwa);							//Assignment operator
 
 	// Set and get functions for FWA variables
 	void SetFWAID( string id );									//set the FWA ID
@@ -95,7 +97,6 @@ public:
 
 	static int GetCount();										//get the number of fires instantiated
 	void PrintFWAInfo();										//print information about fire
-	const CFWA &operator=( const CFWA &fwa);					//Assignment operator
 	double FuelModelAdjROS( int fuelmodel, double ROS );		//Return the ROS for the fire adjusted by the FWA's Fuel Model adjustment factor
 	
 	void SetAssociations( AssocMap map );						// Set the association map using an association map

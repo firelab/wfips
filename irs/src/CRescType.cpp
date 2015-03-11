@@ -50,6 +50,21 @@ CRescType::CRescType( const CRescType &rhs )
     m_SetupDelay = rhs.m_SetupDelay;
 }
 
+// Assignment operator
+CRescType& CRescType::operator=(const CRescType &rhs)
+{
+	if (&rhs != this)	{
+		m_Type = rhs.m_Type;
+		m_AvgSpeed = rhs.m_AvgSpeed;
+		m_DispatchDelay = rhs.m_DispatchDelay;
+		m_ResponseDelay = rhs.m_ResponseDelay;
+		m_SetupDelay = rhs.m_SetupDelay; 
+	}
+
+	return *this;
+}
+
+
 // Set the resource type
 void CRescType::SetRescType( string resctype )
 {	m_Type = resctype;	}

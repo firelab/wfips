@@ -15,11 +15,12 @@ class CEscape	{
 public:
 	CEscape( int EscapeDate, int EscapeTime, CFire &Fire, int Level = 0, int Duration = 0, int Size = 0, int WUILevel = 0, 
 	int HVRLevel = 0, bool WFU = false );
-
+		
 	~CEscape();
-
+		
 	CEscape( const CEscape &Escape );
-	const CEscape &operator=( const CEscape &Escape );
+	CEscape &operator=( const CEscape &Escape );
+	bool operator==(const CEscape &Escape);
 
 	void SetEscapeDate( int Julian );								// Set the date the fire escaped
 	int GetEscapeDate();											// Get the date the fire escaped

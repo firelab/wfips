@@ -23,23 +23,23 @@ using std::string;
 #include "DispLoc.h"
 
 
-// Default Constructor for CNatDispatcher
+// Default Constructor for CGACCDispatcher
 CGACCDispatcher::CGACCDispatcher() : CDispatchBase(), m_VTypeTwoCrews()
 {
 }
 
-// Constructor for CNatDispatcher
+// Constructor for CGACCDispatcher
 CGACCDispatcher::CGACCDispatcher( string dispatcherID ) : CDispatchBase( dispatcherID ), m_VTypeTwoCrews() 
 {
 }
 
-// Copy constructor for CNatDispatcher
+// Copy constructor for CGACCDispatcher
 CGACCDispatcher::CGACCDispatcher( const CGACCDispatcher &gaccdispatcher ) : CDispatchBase ( gaccdispatcher )
 {
-    m_VTypeTwoCrews = vector<CTypeTwoIACrew>(gaccdispatcher.m_VTypeTwoCrews);
+    SetTypeTwoCrewVector(gaccdispatcher.m_VTypeTwoCrews);
 }
 
-// Destructor for CDLDispatcher
+// Destructor for CGACCDispatcher
 CGACCDispatcher::~CGACCDispatcher()
 {}
 
@@ -78,7 +78,7 @@ void CGACCDispatcher::MoveTypeTwoCrew( CTypeTwoIACrew &typetwocrew, CDLDispatche
 
 	for ( int i = 0; i < m_VTypeTwoCrews.size(); i++ )	{
 
-		CTypeTwoIACrew CompCrew = m_VTypeTwoCrews[i];
+		CTypeTwoIACrew CompCrew(m_VTypeTwoCrews[i]);
 
 		if ( CompCrew == typetwocrew )	{
 			Found = true;
@@ -120,7 +120,7 @@ void CGACCDispatcher::MoveTypeTwoCrew( CTypeTwoIACrew &typetwocrew, CDLDispatche
 		// Remove the type two crew from the old GACC dispatcher list
 		while ( !Foundb &&  i < OldTypeTwoCrews.size() )	{
 
-			CTypeTwoIACrew CompCrew = OldTypeTwoCrews[i];
+			CTypeTwoIACrew CompCrew(OldTypeTwoCrews[i]);
 
 			if ( CompCrew.GetCrewID() == typetwocrew.GetCrewID() )
 				Foundb = true;

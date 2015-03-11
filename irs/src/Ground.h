@@ -16,9 +16,11 @@ public:
 		string enddayofweek, int startseason, int endseason, CDispLoc &dispatchloc, int percentavail, double daily, double hourly );		//constructor for ground resources
 	CGround( const CGround &ground );
 	virtual ~CGround();													//destructor
+
+	CGround& operator=(const CGround &rhs);								//assignment operator
 	
-	virtual int CalcInitArrival( CFire fire, double distance );					//calculate the initial arrival time for the resource
-	virtual bool IsRescAvailable( CFire fire );					//is the resource available?
+	virtual int CalcInitArrival( CFire fire, double distance );			//calculate the initial arrival time for the resource
+	virtual bool IsRescAvailable( CFire fire );							//is the resource available?
 	
 
 }; //	end  class CGround

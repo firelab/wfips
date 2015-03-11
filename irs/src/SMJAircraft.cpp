@@ -47,6 +47,14 @@ CSMJAircraft::CSMJAircraft( const CSMJAircraft &smjaircraft ) : CAerial( smjairc
 CSMJAircraft::~CSMJAircraft() {}
 
 
+// Assignment Operator
+CSMJAircraft& CSMJAircraft::operator=(const CSMJAircraft &rhs)
+{
+	if (&rhs != this)
+		CAerial::operator=(rhs);
+	return *this;
+}
+
 // Get the fireline production rate for the constant producer
 double CSMJAircraft::DetermineProdRate( CFire fire, std::vector< CProdRates > &VProdRates, int timeMSM ) 
 {		

@@ -28,13 +28,14 @@ using std::vector;
 
 class CResource {
 
-public:
+public:		
 	CResource();										//CResource default constructor
 	CResource( string rescID, CRescType &resctype, int staffing, string starttime, string endtime, string startdayofweek, 
 		string enddayofweek, int startseason, int endseason, CDispLoc &dispatchloc, int percentavail, double daily, double hourly);
 	CResource( const CResource &resource );				// Copy Constructor
 	virtual ~CResource();								//destructor
-		
+	
+	CResource& operator=(const CResource &rhs);			//assignment operator
 		
 	// function definitions for set and get functions for class member variables
 	void SetRescID( string rescID );					//set the resource id
@@ -132,8 +133,8 @@ private:
 	int m_Staffing;										//staffing for the resource
 	string m_StartTime;									//start time for the resource's workday
 	string m_EndTime;									//end time for the resource's workday
-	string m_StartDayofWeek;								//start day for the resource's workweek
-	string m_EndDayofWeek;									//end day for the resource's workweek
+	string m_StartDayofWeek;							//start day for the resource's workweek
+	string m_EndDayofWeek;								//end day for the resource's workweek
 	int m_StartSeason;									//julian date for the start of the resource's season
 	int m_EndSeason;									//julian date for the end of the resource's season
 	CDispLoc &m_DispLoc;								//dispatch location for the resource needs to match an instance in CDispLoc

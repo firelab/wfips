@@ -17,6 +17,8 @@ public:
 	CRescType( const CRescType &rhs );
 	~CRescType();									//destructor
 
+	CRescType &operator=(const CRescType &rhs);		//assignment operator
+
 	void SetRescType( string resctype );			//set the resource type
 	string GetRescType();							//get the resource type
 	void SetAvgSpeed( int speed );					//set the average speed for the resource
@@ -29,15 +31,15 @@ public:
 	int GetSetupDelay();							//get the setupdelay
 
 
-	void PrintRescType();						//print information about resource type
-	int PreConstructDelay();					//calculate portion of delay for Dispatch, Response, and Set-up delays
+	void PrintRescType();							//print information about resource type
+	int PreConstructDelay();						//calculate portion of delay for Dispatch, Response, and Set-up delays
 
 	
 private:
 	string m_Type;									//resource type
-	int m_AvgSpeed;								//average travel speed for resource type
-	int m_DispatchDelay;								//dispatch delay for resource type
-	int m_ResponseDelay;								//response delay for resource type
+	int m_AvgSpeed;									//average travel speed for resource type
+	int m_DispatchDelay;							//dispatch delay for resource type
+	int m_ResponseDelay;							//response delay for resource type
 	int m_SetupDelay;								//set-up delay for resource type
 
 };		//end class CRescType

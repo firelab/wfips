@@ -115,6 +115,8 @@ private:
 	static list< CResource* > s_LateArrivals;				// list of resources in the dispatch logic that were not currently available
 	CalcDistance CalcDistMethod;
 
+	CDLDispatcher& operator=(const CDLDispatcher &rhs){};	// assignment operator private as map of pointers to the resources
+
 };		// end of class CDLDispatcher
 
 #endif   // DLDISPATCHER_H

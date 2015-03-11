@@ -41,6 +41,14 @@ CSmokejumper::CSmokejumper( const CSmokejumper &smokejumper ) : CAirDelivered( s
 // Destructor for CSmokejumper
 CSmokejumper::~CSmokejumper(){}
 
+// Assignment Operator
+CSmokejumper& CSmokejumper::operator=(const CSmokejumper &rhs)
+{
+	if (&rhs != this)
+		CAirDelivered::operator=(rhs);
+	return *this;
+}
+
 
 // Calculate the initial arrival time for the resource (does not include first responder delay)
 int CSmokejumper::CalcInitArrival( CFire fire, double distance)

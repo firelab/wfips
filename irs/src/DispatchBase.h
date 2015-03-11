@@ -37,7 +37,8 @@ public:
 	CDispatchBase( const CDispatchBase &dispatchbase);		//copy constructor
 	virtual ~CDispatchBase();								//destructor
 
-	virtual bool operator==( CDispatchBase &dispatchbase );	// equal operator
+	CDispatchBase& operator=(const CDispatchBase &rhs);		// assignment operator
+	//virtual bool operator==( CDispatchBase &dispatchbase );	// equal operator
 
 		
 	// function definitions for set and get functions for class member variables

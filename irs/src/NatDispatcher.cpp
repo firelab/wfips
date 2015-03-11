@@ -31,9 +31,10 @@ CNatDispatcher::CNatDispatcher( string dispatcherID ) : CDispatchBase( dispatche
 }
 
 // Copy constructor for CNatDispatcher
-CNatDispatcher::CNatDispatcher( const CNatDispatcher &natdispatcher ) : CDispatchBase ( natdispatcher )
+CNatDispatcher::CNatDispatcher( const CNatDispatcher &rhs ) : CDispatchBase ( rhs )
 {
-	
+	m_VAirtankers = rhs.m_VAirtankers;						
+	m_VATDispatcherPtrs = rhs.m_VATDispatcherPtrs;	
 }
 
 // Destructor for CDLDispatcher

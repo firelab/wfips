@@ -121,13 +121,30 @@ CHelicopter::CHelicopter( const CHelicopter &helicopter ) : CAerial( helicopter 
 	m_Gallons = helicopter.m_Gallons;
 	m_IsCarrier = helicopter.m_IsCarrier;
 	m_HelitackEquipped = helicopter.m_HelitackEquipped;
-	m_AttachedCrews = helicopter.m_AttachedCrews;
+	m_AttachedCrews = helicopter.m_AttachedCrews;				// Note these are pointers and this needs to be changed for threading
 
 }
 
 
 // Destructor for CConstProd
 CHelicopter::~CHelicopter() {}
+
+// Assignment Operator
+/*CHelicopter& CHelicopter::operator=(const CHelicopter &rhs)
+{
+	if (&rhs != this)	{
+		CAerial::operator=(rhs);
+
+		m_HeliType = rhs.m_HeliType;
+		m_NumCrew = rhs.m_NumCrew;
+		m_Gallons = rhs.m_Gallons;
+		m_IsCarrier = rhs.m_IsCarrier;
+		m_HelitackEquipped = rhs.m_HelitackEquipped;
+		m_AttachedCrews = rhs.m_AttachedCrews;
+	}
+
+	return *this;
+}*/
 
 // Get number of crew helicopter can carry at elevation of fire
 int CHelicopter::GetNumCrew( int elevation )

@@ -47,6 +47,25 @@ CResults::CResults( const CResults &results ) : m_Fire( results.m_Fire )
 // Destructor for class CResults
 CResults::~CResults() {}
 
+CResults& CResults::operator=(const CResults  &rhs)
+{
+	if(&rhs != this)	{
+		m_Fire = rhs.m_Fire;
+		m_FinalFireCost = rhs.m_FinalFireCost;
+		m_FinalFireLine = rhs.m_FinalFireLine;
+		m_FinalFirePerimeter = rhs.m_FinalFirePerimeter;
+		m_FinalFireSize = rhs.m_FinalFireSize;
+		m_FinalFireSweep = rhs.m_FinalFireSweep;
+		m_FinalFireTime = rhs.m_FinalFireTime;
+		m_FinalResourcesUsed = rhs.m_FinalResourcesUsed;
+		m_Status = rhs.m_Status;
+		m_DispLogicFilled = rhs.m_DispLogicFilled;
+		m_InSeason = rhs.m_InSeason;
+	}
+
+	return *this;
+}
+
 // Set pointer to fire
 //void CResults::SetFire( CFire &fire )		// Need to create a copy constructor in order to do this
 //{	m_Fire = fire;	}

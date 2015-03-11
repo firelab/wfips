@@ -31,6 +31,8 @@ public:
 	CRescWorkYear( const CRescWorkYear& that);
 	~CRescWorkYear();
 
+	CRescWorkYear& operator=( const CRescWorkYear& that);
+
 	void SetScenario( int scenario );
 	int GetScenario();
 	void SetFireNum( int firenum );
@@ -45,8 +47,6 @@ public:
 	string GetEffort();
 	void SetFlag( bool flag );
 	bool GetFlag();
-
-	CRescWorkYear& operator=( const CRescWorkYear& that);
 
 private:
 	int m_Scenario;													// Scenario Number

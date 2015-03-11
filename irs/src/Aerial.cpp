@@ -47,6 +47,20 @@ CAerial::CAerial( const CAerial &aerial ) : CResource( aerial )
 // Destructor for CGround
 CAerial::~CAerial() {}
 
+// Assignment Operator
+CAerial& CAerial::operator=(const CAerial &rhs)
+{
+	if (&rhs != this)	{
+		CResource::operator=(rhs);
+		
+		m_Volume = rhs.m_Volume;
+		m_NextLoadArrival = rhs.m_NextLoadArrival;
+		m_CrewDispLoc = rhs.m_CrewDispLoc;
+	}
+
+	return *this;
+}
+
 // Set drop volume
 void CAerial::SetVolume( int volume )
 {	m_Volume = volume;	}

@@ -52,6 +52,7 @@ CResource::CResource( string rescID, CRescType &resctype, int staffing, string s
 	m_AvailableFlag = false;							//indicates if the resource has timed out for the day ( 0 - not timed out, 1 - timed out)
 	m_IsBorrowed = false;								//indicates if the resource has been borrowed by another dispatch location
 	m_ReturnTime = -1;									//the time the resource has to leave the dispatch location that borrowed it
+	nDbId = 0;											//database id
 
 	// Set the dispatch type from the resource type
 	m_DispatchType = DetermineDispType();							// Determine the dispatch type for the resource
@@ -100,11 +101,50 @@ CResource::CResource( const CResource &resource ) : m_RescType( resource.m_RescT
 	m_ReturnTime = resource.m_ReturnTime;									
 	m_VMovement = resource.m_VMovement;
 	m_VDrawDown = resource.m_VDrawDown;
+	nDbId = resource.nDbId;
 	
 }
 
 // Destructor for CResource
 CResource::~CResource() {}
+
+// Assignment operator
+CResource& CResource::operator=(const CResource &rhs)  
+{
+	if (&rhs != this)	{
+		m_RescID = rhs.m_RescID;
+		m_RescType = rhs.m_RescType;
+		m_Staffing =rhs.m_Staffing;								
+		m_StartTime = rhs.m_StartTime;							
+		m_EndTime = rhs.m_EndTime;								
+		m_StartDayofWeek = rhs.m_StartDayofWeek;				
+		m_EndDayofWeek = rhs.m_EndDayofWeek;					
+		m_StartSeason = rhs.m_StartSeason;						
+		m_EndSeason = rhs.m_EndSeason;
+		m_DispLoc = rhs.m_DispLoc;
+		m_PctAvail = rhs.m_PctAvail;
+		m_DailyCost = rhs.m_DailyCost;									
+		m_HourlyCost = rhs.m_HourlyCost;	
+		m_WorkshiftLength = rhs.m_WorkshiftLength;							
+		m_InitArrival = rhs.m_InitArrival;									
+		m_Duration = rhs.m_Duration;									
+		m_ProdRate = rhs.m_ProdRate;									
+		m_AvailableTime = rhs.m_AvailableTime;	
+		m_AvailableFlag = rhs.m_AvailableFlag;	
+		m_DispatchType = rhs.m_DispatchType;							
+		m_DelayType = rhs.m_DelayType;	
+		m_WorkshiftStartTime = rhs.m_WorkshiftStartTime;
+		m_VRescWorkYear = rhs.m_VRescWorkYear;
+		m_NumWorkEntries = rhs.m_NumWorkEntries;
+		m_IsBorrowed = rhs.m_IsBorrowed;								
+		m_ReturnTime = rhs.m_ReturnTime;									
+		m_VMovement = rhs.m_VMovement;
+		m_VDrawDown = rhs.m_VDrawDown;
+		nDbId = rhs.nDbId;
+	}
+
+	return *this;
+}
 
 // Set the Resource ID
 void CResource::SetRescID( string rescid )

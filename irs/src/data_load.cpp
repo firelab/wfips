@@ -345,7 +345,7 @@ IRS_Err SpatialiteDataAccess::LoadSpatial( std::vector<CFWA>&fwa,
     return 0;
 }
 
-IRS_Err SpatialiteDataAccess::LoadAllData( CRunScenario *poScenario,
+IRS_Err SpatialiteDataAccess::LoadAllData( CDataMaster *poScenario,
                                            const char *pszExternalResourceDb )
 {
     this->LoadRescType( poScenario->m_VRescType, NULL );
@@ -1463,7 +1463,7 @@ IRS_Err SpatialiteDataAccess::LoadDispatchLocation( std::vector<CFWA>&fwas,
  * \param papszOptions name/value options
  * \return 0 on success, non-zero otherwise
  */
-IRS_Err SpatialiteDataAccess::LoadTankerBases( CRunScenario *poScenario,
+IRS_Err SpatialiteDataAccess::LoadTankerBases( CDataMaster *poScenario,
                                                std::vector<CFWA>&fwas,
                                                std::vector<CDispLoc>&loc,
                                                double dfMaxDistance,
@@ -1573,7 +1573,7 @@ std::string SpatialiteDataAccess::GetDispLocFPU( const char *pszName )
     return oFpu;
 }
 
-IRS_Err SpatialiteDataAccess::LoadResource( CRunScenario* scenario,
+IRS_Err SpatialiteDataAccess::LoadResource( CDataMaster* scenario,
                                             std::vector<CRescType>&types,
                                             std::vector<CDispLoc>&loc,
                                             std::vector<CResource*>&resc,

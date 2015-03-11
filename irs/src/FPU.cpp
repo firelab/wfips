@@ -59,15 +59,17 @@ CFPU::CFPU( const CFPU &fpu )
 }
 
 // Assignment operator
-const CFPU &CFPU::operator=( const CFPU &fpu)
+CFPU &CFPU::operator=(const CFPU &fpu)
 {
-	m_FPUID = fpu.m_FPUID;
-	m_Average = fpu.m_Average;
-	m_Max = fpu.m_Max;
-	m_FausMax = fpu.m_FausMax;
-	m_ExpectLevel = fpu.m_ExpectLevel;
-	m_NumFires = fpu.m_NumFires;
-	m_ATReliance = fpu.m_ATReliance;
+	if (&fpu != this)	{
+		m_FPUID = fpu.m_FPUID;
+		m_Average = fpu.m_Average;
+		m_Max = fpu.m_Max;
+		m_FausMax = fpu.m_FausMax;
+		m_ExpectLevel = fpu.m_ExpectLevel;
+		m_NumFires = fpu.m_NumFires;
+		m_ATReliance = fpu.m_ATReliance;
+	}
 
 	return *this;
 }

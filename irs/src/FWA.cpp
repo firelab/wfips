@@ -115,7 +115,7 @@ CFWA::CFWA( const CFWA &fwa )  : m_DispLogic( fwa.m_DispLogic )
 }
 
 // Define assignment operator (=) for CFWA
-const CFWA &CFWA::operator=( const CFWA &fwa )
+CFWA &CFWA::operator=( const CFWA &fwa )
 {
 	if ( &fwa != this )		{
 		m_FWAID = fwa.m_FWAID;

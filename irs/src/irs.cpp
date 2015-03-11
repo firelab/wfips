@@ -277,7 +277,8 @@ void IRSSuite::LoadDataConcurrent( void *pData )
     CPLCreateOrAcquireMutex( &hIRSMutex, 1000.0 );
 #endif
     IRSRunData *pRd = (IRSRunData*)pData;
-    CRunScenario *pS = pRd->poScen;
+    //*****CRunScenario *pS = pRd->poScen;
+	CDataMaster *pS = new CDataMaster();
     IRSDataAccess *pD = pRd->poDA;
     if( pRd->pfnProgress )
         pRd->pfnProgress( 0.05, "Loading Resource Types...", NULL );
@@ -323,6 +324,14 @@ void IRSSuite::LoadDataConcurrent( void *pData )
     /* Put resources in tree */
     pS->ResourcesToDispatchers();
     pS->FWAsFindClosestAirtankerBases();
+
+	//*******Clone the resources and dispatchers
+	std::vector<CResource*> ResourceCopy;
+	OmffrTree<CDispatchBase*> TreeCopy;
+	std::map<string, OmffrNode<CDispatchBase*>*> DispMapCopy;
+	std::map<string, OmffrNode<CDispatchBase*>*> InMapCopy;
+
+	pS->CopyDataSet(ResourceCopy, TreeCopy, DispMapCopy, InMapCopy);
 
     /*
     ** FIXME: doesn't work on windowed simulation?
@@ -422,11 +431,11 @@ int IRSSuite::RunScenarios( unsigned int nYearStart, unsigned nYearCount,
         {
             pasRunData[i].poDA->AddFpuFilter( poDataAccess->GetFpuFilter() ) ;
         }
-        pasRunData[i].poScen->SetPreposition( pasPP[0], pasPP[1], pasPP[2], pasPP[3],
+        /******pasRunData[i].poScen->SetPreposition( pasPP[0], pasPP[1], pasPP[2], pasPP[3],
                                               pasPP[4], pasPP[5], pasPP[6],
                                               pasDD[0], pasDD[1], pasDD[2], pasDD[3],
                                               pasDD[4], pasDD[5], pasDD[6], pasDD[7],
-                                              pasPP[7], pasPP[8] );
+                                              pasPP[7], pasPP[8] );*/
     }
     if(pfnProgress)
         pfnProgress( 0.0, "Creating Threads...", NULL );
@@ -744,6 +753,9 @@ int IRSSuite::RunAllScenarios( unsigned int nThreads, IRSProgress pfnProgress )
  */
 int IRSSuite::LoadData( IRSProgress pfnProgress )
 {
+	
+	//*****
+	CDataMaster *poScenario = new CDataMaster();
     if( pszDataPath == NULL )
     {
         return IRS_INVALID_INPUT;
@@ -799,11 +811,11 @@ int IRSSuite::LoadData( IRSProgress pfnProgress )
     poScenario->m_NumResource = poScenario->m_VResource.size();
 
     /* TODO: Check signature vs struct array length */
-    poScenario->SetPreposition( pasPP[0], pasPP[1], pasPP[2], pasPP[3],
+    /******poScenario->SetPreposition( pasPP[0], pasPP[1], pasPP[2], pasPP[3],
                                 pasPP[4], pasPP[5], pasPP[6],
                                 pasDD[0], pasDD[1], pasDD[2], pasDD[3],
                                 pasDD[4], pasDD[5], pasDD[6], pasDD[7],
-                                pasPP[7], pasPP[8] );
+                                pasPP[7], pasPP[8] );*/
     poScenario->CreateDispTree();
     /* Put resources in tree */
     poScenario->ResourcesToDispatchers();

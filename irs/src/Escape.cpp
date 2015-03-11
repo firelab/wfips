@@ -56,7 +56,7 @@ CEscape::CEscape( const CEscape &Escape ) : m_Fire( Escape.m_Fire )
 }
 
 // Assignment operator (=) for CEscape
-const CEscape &CEscape::operator=( const CEscape &Escape )
+CEscape &CEscape::operator=( const CEscape &Escape )
 {
 	if ( &Escape != this )	{
 		m_EscapeDate = Escape.m_EscapeDate;
@@ -74,6 +74,33 @@ const CEscape &CEscape::operator=( const CEscape &Escape )
 
 	return *this;
 
+}
+
+bool CEscape::operator==(const CEscape &Escape)
+{
+	bool Result = true;
+	if (m_EscapeDate != Escape.m_EscapeDate)
+		Result = false;
+	if (m_EscapeTimeMSM != Escape.m_EscapeTimeMSM)
+		Result = false;
+	if (m_Fire != Escape.m_Fire)
+		Result = false;
+	if (m_Level != Escape.m_Level)
+		Result = false;
+	if (m_Duration = Escape.m_Duration)
+		Result = false;
+	if (m_Size != Escape.m_Size)
+		Result = false;
+	if (m_WUILevel != Escape.m_WUILevel)
+		Result = false;
+	if (m_HVRLevel != Escape.m_HVRLevel)
+		Result = false;
+	if (m_IsWFU != Escape.m_IsWFU)
+		Result = false;
+	if (m_VReqRescs != Escape.m_VReqRescs)
+		Result = false;
+
+	return Result;
 }
 
 // Set the escape date

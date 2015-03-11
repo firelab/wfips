@@ -41,7 +41,14 @@ CHelitack::CHelitack( const CHelitack &helitack ) : CAirDelivered( helitack )
 // Destructor for CHelitack
 CHelitack::~CHelitack(){}
 
+// Assignment Operator
+CHelitack& CHelitack::operator=(const CHelitack &rhs)
+{
+	if (&rhs != this)
+		CAirDelivered::operator=(rhs);
 
+	return *this;
+}
 
 // Calculate the initial arrival time for the resource (does not include first responder delay)
 int CHelitack::CalcInitArrival( CFire fire, double distance )

@@ -22,6 +22,8 @@ public:
 	CDispLogic( const CDispLogic &displogic );
 	~CDispLogic();													//destructor
 
+	CDispLogic& operator=(const CDispLogic &rhs);					//assignment operator
+
 	void SetLogicID( string logicid );								//set the dispatch logic id
 	string GetLogicID();											//get the dispatch logic id
 	void SetIndex( string index );									//set the index for the dispatch logic

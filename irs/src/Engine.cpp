@@ -47,6 +47,19 @@ CEngine::CEngine( const CEngine &engine ) : CGround( engine )
 // Destructor for CEngine
 CEngine::~CEngine() {}
 
+// Assignment Operator
+CEngine& CEngine::operator=(const CEngine &rhs)
+{
+	if (&rhs != this)	{
+		CGround::operator=(rhs);
+
+		m_Volume = rhs.m_Volume;
+		m_CrewProdRate = rhs.m_CrewProdRate;
+	}
+
+	return *this;
+}
+
 // Set volume for the engine
 void CEngine::SetVolume( int volume )
 {	m_Volume = volume;	}

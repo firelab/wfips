@@ -109,7 +109,6 @@ CDLDispatcher::CDLDispatcher( const CDLDispatcher &dldispatcher ) : CDispatchBas
 	m_VWeightPair = dldispatcher.m_VWeightPair;						
 	m_AltHelicopterDLs = dldispatcher.m_AltHelicopterDLs;	
 	CalcDistMethod = dldispatcher.CalcDistMethod;
-
 }
 
 // Destructor for CDLDispatcher

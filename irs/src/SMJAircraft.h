@@ -31,6 +31,8 @@ public:
 	CSMJAircraft( const CSMJAircraft &smjaircraft );
 	virtual ~CSMJAircraft();
 
+	CSMJAircraft& operator=(const CSMJAircraft &rhs);					// assignment operator
+	
 	virtual double DetermineProdRate( CFire fire, std::vector< CProdRates > &VProdRates, int timeMSM );		//abstract - get the fireline production rate for the fire
 	virtual int CreateContainValues( CFire fire, int firstarrival, std::vector< CProdRates > &VProdRates, std::list< CContainValues > &VContainValues, double Multiplier );	//determine the start time, production rate, and duration values for the resource to input into contain algorithm
 	int BestCarrier( std::list< int > &Carrier, std::vector< CResource * > &Resource, int crewstaffing, int crewtravel, CFire fire, CDispLoc Crewdisploc);	// Determine which smokejumper aircraft is best for deploying the crews to the fire

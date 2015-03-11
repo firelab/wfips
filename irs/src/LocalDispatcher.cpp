@@ -39,6 +39,15 @@ CLocalDispatcher::CLocalDispatcher( const CLocalDispatcher &localdispatcher ) : 
 CLocalDispatcher::~CLocalDispatcher()
 {}
 
+// Assignment Operator
+CLocalDispatcher& CLocalDispatcher::operator=(const CLocalDispatcher &rhs)
+{
+	if (&rhs != this)
+		CDispatchBase::operator=(rhs);
+
+	return *this;
+}
+
 // Determine the current resource level
 vector< int > CLocalDispatcher::DetermineCurRescLevel()
 {

@@ -27,6 +27,8 @@ public:
 	CAirDelivered( const CAirDelivered &airdelivered );				
 	virtual ~CAirDelivered();
 
+	CAirDelivered& operator=(const CAirDelivered &rhs);					// assignment operator
+
 
 	virtual void SetCarrierIndex( int carrierindex );					// Set the index for the carrier aircraft
 	virtual int GetCarrierIndex();										// Get the index for the carrier aircraft

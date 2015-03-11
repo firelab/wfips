@@ -44,6 +44,19 @@ CDispLogic::CDispLogic( const CDispLogic &displogic )
 
 }
 
+CDispLogic& CDispLogic::operator=(const CDispLogic &rhs)
+{
+	if (&rhs != this)	{
+		m_LogicID = rhs.m_LogicID;
+		m_Index = rhs.m_Index;
+		m_NumLevels = rhs.m_NumLevels;
+		m_BreakPoints = rhs.m_BreakPoints;
+		m_RescNums = rhs.m_RescNums;
+	}
+
+	return *this;
+}
+
 // Destructor for CDispLogic
 CDispLogic::~CDispLogic() {}
 

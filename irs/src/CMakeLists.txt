@@ -53,6 +53,7 @@ SET(IRS_SOURCES irs.cpp
                 ContainValues.cpp
                 CRescType.cpp
                 Crew.cpp
+				DataMaster.cpp
                 DispLoc.cpp
                 DispLogic.cpp
                 Engine.cpp

@@ -65,11 +65,80 @@ CFire::~CFire() {}
 // Assignment operator for CFire
 CFire& CFire::operator=( const CFire &thatfire )
 {
-	SetFWA( thatfire.m_FWA );										//set fire fwa
-	// Set the member variables 
-	SetMemVars( thatfire );
+	if (&thatfire != this)	{ 
+	
+		SetFWA( thatfire.m_FWA );										//set fire fwa
+		// Set the member variables 
+		SetMemVars( thatfire );
+	}
 
 	return *this;
+}
+
+// Equals operator
+bool CFire::operator==(const CFire &fire)
+{
+	bool Result = true;
+	if (m_Scenario != fire.m_Scenario)
+		Result = false;
+	if (m_FireNumber != fire.m_FireNumber)	
+		Result = false;
+	if (m_JulianDay != fire.m_JulianDay)
+		Result = false;
+	if (m_DayofWeek != fire.m_DayofWeek)
+		Result = false;
+	if (m_DiscoveryTime != fire.m_DiscoveryTime)
+		Result = false;
+	if (m_BI != fire.m_BI)
+		Result = false;
+	if (m_ROS != fire.m_ROS)
+		Result = false;
+	if (m_FuelModel != fire.m_FuelModel)
+		Result = false;
+	if (m_SpecificCondition != fire.m_SpecificCondition)
+		Result = false;
+	if (m_SlopePct != fire.m_SlopePct)
+		Result = false;
+	if (m_IsWalkIn != fire.m_IsWalkIn)
+		Result = false;
+	if (m_Tactic != fire.m_Tactic)
+		Result = false;
+	if (m_Distance != fire.m_Distance)
+		Result = false;
+	if (m_Elevation != fire.m_Elevation)
+		Result = false;
+	if (m_LtoWRatio != fire.m_LtoWRatio)
+		Result = false;
+	if (m_MinNumSteps != fire.m_MinNumSteps)
+		Result = false;
+	if (m_MaxNumSteps != fire.m_MaxNumSteps)
+		Result = false;
+	if (m_SunRise != fire.m_SunRise)
+		Result = false;
+	if (m_SunSet != fire.m_SunSet)
+		Result = false;
+	if (m_WaterDrops != fire.m_WaterDrops)
+		Result = false;
+	if (m_IsPumpNRoll != fire.m_IsPumpNRoll)
+		Result = false;
+	if (m_WTArrival != fire.m_WTArrival)
+		Result = false;
+    if (m_lat != fire.m_lat)
+		Result = false;
+    if (m_lon != fire.m_lon)
+		Result = false;
+    if (m_SimulateContain != fire.m_SimulateContain)
+		Result = false;
+    if (m_Treated != fire.m_Treated)
+		Result = false;
+
+	return Result;
+}
+
+// not equals operator
+bool CFire::operator!=(const CFire &fire)
+{
+	return !(*this == fire);
 }
 
 // Set the member variables

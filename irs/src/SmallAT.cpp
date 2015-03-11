@@ -47,6 +47,14 @@ CSmallAT::CSmallAT( const CSmallAT &smallat ) : CAerial( smallat )
 // Destructor for CSmallAT
 CSmallAT::~CSmallAT() {}
 
+// Assignment Operator
+CSmallAT& CSmallAT::operator=(const CSmallAT &rhs)
+{
+	if (&rhs != this)
+		CAerial::operator=(rhs);
+	return *this;
+}
+
 
 // Get the fireline production rate for the constant producer
 double CSmallAT::DetermineProdRate( CFire fire, std::vector< CProdRates > &VProdRates, int timeMSM ) 

@@ -25,7 +25,7 @@ public:
 	CTypeTwoIACrew( const CTypeTwoIACrew &rhs );
 
 	virtual ~CTypeTwoIACrew();
-	
+
 	bool operator==( const CTypeTwoIACrew &rhs );
 
 	void SetCrewID( string CrewID );
@@ -51,7 +51,7 @@ private:
 	vector< CResource* > m_VIACrews;								// vector of pointers to the 5 person IA crews created from the 20 person Type II IA crew
 	CDLDispatcher* m_DLDispatcherPtr;								// reference to the dispatch location dispatcher where the 5 person IA crews are located
 
-
+	//CTypeTwoIACrew& operator=(const CTypeTwoIACrew &rhs);			// assignment operator 
 
 };	// definition of class CTypeTwoIACrew
 

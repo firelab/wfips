@@ -45,6 +45,20 @@ CAirDelivered::CAirDelivered( const CAirDelivered &airdelivered ) : CResource( a
 // Destructor for Aerially delivered crews
 CAirDelivered::~CAirDelivered(){}
 
+// Assignment Operator
+CAirDelivered& CAirDelivered::operator=(const CAirDelivered &rhs)
+{
+	if (&rhs != this)	{
+		CResource::operator=(rhs);
+
+		m_CarrierIndex = rhs.m_CarrierIndex;
+	}
+
+	return *this;
+}
+
+
+
 // Set the index for the smokejumper aircraft
 void CAirDelivered::SetCarrierIndex( int carrierindex )
 {	m_CarrierIndex = carrierindex;	}

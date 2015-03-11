@@ -55,6 +55,7 @@ typedef int IRS_Err;
 #include "WaterTender.h"
 #include "Helicopter.h"
 #include "Helitack.h"
+#include "DataMaster.h"
 
 #ifdef _NOT_DEFINED
 #include "cpl_conv.h"
@@ -145,7 +146,7 @@ public:
     IRSDataAccess( const char *pszSource );
     virtual ~IRSDataAccess();
     int bSpatialEnabled;
-    virtual IRS_Err LoadAllData( CRunScenario *poScenario,
+    virtual IRS_Err LoadAllData( CDataMaster *poScenario,
                                  const char *pszExternalDb ) = 0;
     virtual IRS_Err SetSource( const char *pszSource,
                                const char * const *papszOptions );
@@ -155,7 +156,7 @@ public:
     virtual IRS_Err LoadDispatchLocation( std::vector<CFWA>&fwas,
                                           std::vector<CDispLoc>&loc, 
                                           const char * const *papszOptions ) = 0;
-     virtual IRS_Err LoadTankerBases( CRunScenario *poScenario,
+     virtual IRS_Err LoadTankerBases( CDataMaster *poScenario,
                                       std::vector<CFWA>&fwas,
                                       std::vector<CDispLoc>&loc, 
                                       double dfDist,
@@ -168,7 +169,7 @@ public:
                                   const char * const *papszOptions ) = 0;
     virtual IRS_Err LoadProdRates( std::vector<CProdRates>&rates,
                                    const char * const *papszOptions ) = 0;
-    virtual IRS_Err LoadResource( CRunScenario*,
+    virtual IRS_Err LoadResource( CDataMaster*,
                                   std::vector<CRescType>&types,
                                   std::vector<CDispLoc>&loc,
                                   std::vector<CResource*>&resc,
@@ -287,7 +288,7 @@ public:
     SpatialiteDataAccess();
     SpatialiteDataAccess( const char *pszSource );
     ~SpatialiteDataAccess();
-    virtual IRS_Err LoadAllData( CRunScenario *poScenario,
+    virtual IRS_Err LoadAllData( CDataMaster *poScenario,
                                  const char *pszExternalDb );
     virtual IRS_Err LoadDispatchLogic( std::vector<CDispLogic>&logic, 
                                        IRSProgress pfnProgress,
@@ -295,7 +296,7 @@ public:
     virtual IRS_Err LoadDispatchLocation( std::vector<CFWA>&fwas,
                                           std::vector<CDispLoc>&loc,
                                           const char * const *papszOptions );
-    virtual IRS_Err LoadTankerBases( CRunScenario *poScenario,
+    virtual IRS_Err LoadTankerBases( CDataMaster *poScenario,
                                      std::vector<CFWA>&fwas,
                                      std::vector<CDispLoc>&loc, 
                                      double dfDist,
@@ -316,7 +317,7 @@ public:
                                            std::vector<CResource*>&resc,
                                            int nATTCount,
                                            const char * const *papszOptions );
-    virtual IRS_Err LoadResource( CRunScenario*,
+    virtual IRS_Err LoadResource( CDataMaster*,
                                   std::vector<CRescType>&types,
                                   std::vector<CDispLoc>&loc,
                                   std::vector<CResource*>&resc,

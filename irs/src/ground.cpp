@@ -37,6 +37,15 @@ CGround::CGround( const CGround &ground ) : CResource( ground )
 // Destructor for CGround
 CGround::~CGround() {}
 
+// Assignment Operator
+CGround& CGround::operator=(const CGround &rhs)
+{
+	if (&rhs != this)	
+		CResource::operator=(rhs);
+
+	return *this;
+}
+
 // Calculate the initial arrival time for the resource (does not include first responder delay)
 int CGround::CalcInitArrival( CFire fire,  double distance )
 {

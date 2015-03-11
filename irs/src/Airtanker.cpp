@@ -44,9 +44,17 @@ CAirtanker::CAirtanker( string rescID, CRescType &resctype, int staffing, string
 CAirtanker::CAirtanker( const CAirtanker &airtanker ) : CAerial( airtanker )
 {}
 
-
 // Destructor for CAirtanker
 CAirtanker::~CAirtanker() {}
+
+// Assignment Operator
+CAirtanker& CAirtanker::operator=(const CAirtanker &rhs)
+{
+	if (&rhs != this)	
+		CAerial::operator=(rhs);
+	
+	return *this;
+}
 
 // Get the fireline production rate for the constant producer
 double CAirtanker::DetermineProdRate( CFire fire, std::vector< CProdRates > &VProdRates, int timeMSM ) 

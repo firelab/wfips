@@ -28,6 +28,7 @@ public:
 	CCrew( const CCrew &crew );
 	virtual ~CCrew();
 
+	CCrew& operator=(const CCrew &rhs);						//assignment operator
 
 	virtual double DetermineProdRate( CFire fire, std::vector< CProdRates > &VProdRates, int timeMSM );		//abstract - get the fireline production rate for the fire
 	virtual int CreateContainValues( CFire fire, int firstarrival, std::vector< CProdRates > &VProdRates, std::list< CContainValues > &VContainValues, double Multiplier );	//determine the start time, production rate, and duration values for the resource to input into contain algorithm

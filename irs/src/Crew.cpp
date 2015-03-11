@@ -41,6 +41,15 @@ CCrew::CCrew( const CCrew &crew ) : CGround( crew )
 // Destructor for CCrew
 CCrew::~CCrew(){}
 
+// Assignment Operator
+CCrew& CCrew::operator=(const CCrew &rhs)
+{
+	if (&rhs != this)
+		CCrew::operator=(rhs);
+
+	return *this;
+}
+
 // Get the fireline production rate for the constant producer
 double CCrew::DetermineProdRate( CFire fire, std::vector< CProdRates > &VProdRates, int timeMSM ) 
 {		

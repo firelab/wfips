@@ -16,6 +16,8 @@ public:
 		string enddayofweek, int startseason, int endseason, CDispLoc &dispatchloc, int percentavail, double daily, double hourly, int volume );		//constructor for ground resources
 	CAerial( const CAerial &Aerial );							// Copy Constructor
 	virtual ~CAerial();											//destructor
+
+	CAerial& operator=(const CAerial &rhs);						//assignment operator
 	
 	// Get and set functions for member variables
 	void SetVolume( int volume );								//set volume of aircraft - helicopter volume depends on altitude so set to 0 initially

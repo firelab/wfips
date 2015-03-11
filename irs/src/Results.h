@@ -24,6 +24,8 @@ public:
 		double numrescused, string Status, bool displogicfilled, bool InSeason );
 	CResults( const CResults &results );
 	~CResults();
+
+	CResults& operator=(const CResults  &rhs);						//assignment operator
 	
 	//void SetFire( CFire &fire );									// Set the fire for the results
 	CFire GetFire();												// Get the fire for the results
