@@ -347,5 +347,16 @@ BOOST_AUTO_TEST_CASE( run_small_1 )
     rc = poData->RunScenario( 0 );
 }
 
+BOOST_AUTO_TEST_CASE( run_full_1 )
+{
+    int rc;
+    rc = poData->LoadIrsData( NULL );
+    BOOST_REQUIRE( rc == 0 );
+    rc = poData->LoadScenario( 5, NULL, 0.0, 0, WFP_NO_TREAT, 0, 0 );
+    BOOST_REQUIRE( rc == 0 );
+    rc = poData->RunScenario( 0 );
+}
+
+
 BOOST_AUTO_TEST_SUITE_END() /* irs */
 
