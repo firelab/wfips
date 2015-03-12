@@ -874,6 +874,10 @@ WfipsData::LoadScenario( int nYearIdx, const char *pszTreatWkt,
         iFire++;
     }
     poScenario->m_NumFire = poScenario->m_VFire.size();
+    /* Do these go here */
+    poScenario->Reset();
+    poScenario->m_VResults.clear();
+
     //printf( "Warning. %d fires failed to load due to invalid fwa names\n", nInvalid );
 
     sqlite3_finalize( stmt );
@@ -924,5 +928,14 @@ WfipsData::SetAnalysisAreaMask( const char *pszMaskWkt )
         pszAnalysisAreaWkt = NULL;
     }
     return SQLITE_OK;
+}
+
+int
+WfipsData::RunScenario( int iYearIdx )
+{
+    int rc;
+    rc = poScenario->RunScenario( 0, iYearIdx, NULL );
+    poScenario->Output();
+    return rc;
 }
 
