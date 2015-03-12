@@ -302,6 +302,8 @@ IF(RUN_SLOW_TESTS)
                   --run_test=wfipsdata/load_scen_6 )
         ADD_TEST( wfips_load_scen_7 ${EXECUTABLE_OUTPUT_PATH}/test_main
                   --run_test=wfipsdata/load_scen_7 )
+        ADD_TEST( wfips_load_all_1 ${EXECUTABLE_OUTPUT_PATH}/test_main
+                  --run_test=wfipsdata/load_all_1 )
         #ADD_TEST(irs_test_avg_fires_1 ${EXECUTABLE_OUTPUT_PATH}/test_main
         #         --run_test=irs/avg_fires_1)
         ADD_TEST(irs_test_scenario_order ${EXECUTABLE_OUTPUT_PATH}/test_main

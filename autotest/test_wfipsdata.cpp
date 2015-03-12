@@ -330,6 +330,12 @@ BOOST_AUTO_TEST_CASE( load_resource_2 )
     BOOST_CHECK( poData->TestResourceLoad2() == 0 );
 }
 
+BOOST_AUTO_TEST_CASE( load_all_1 )
+{
+    int rc;
+    rc = poData->LoadIrsData( "POLYGON((-114 47, -113 47, -113 46, -114 46, -114 47))" );
+    BOOST_CHECK( rc == 0 );
+}
 
 BOOST_AUTO_TEST_SUITE_END() /* irs */
 

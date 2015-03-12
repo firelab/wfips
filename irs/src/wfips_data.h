@@ -236,7 +236,7 @@ public:
     /* Not implemented */
     int SetPrepositioning( double, double, double ){return 0;}
     /* int SetDrawdown(){return 0;} */
-    int LoadIrsStructs( const char *pszAnalysisAreaWkt );
+    int LoadIrsData( const char *pszAnalysisAreaWkt );
     int SampleLargeFire( int nJulStart, int nJulEnd, double dfNoRescProb,
                          double dfTimeLimitProb, double dfSizeLimitProb,
                          double dfExhaustProb ){return 0;}
@@ -316,6 +316,7 @@ private:
     int LoadDispatchLocations();
     int LoadTankerBases();
     int LoadResources();
+    int AssociateHelitack( std::multimap<std::string, CResource*>&resc_map );
     int CreateLargeAirTankers();
 
     /* Helper for Diane's structs */
