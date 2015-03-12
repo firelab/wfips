@@ -1,10 +1,8 @@
 #/*****************************************************************************
 # *
-# * $Id:
-# *
-# * Project:  WindNinja
+# * Project:  WFIPS
 # * Purpose:  CMake script
-# * Author:   Levi Malott <lmnn3@mst.edu
+# * Author:   Kyle Shannon <kyle at pobox dot com>
 # *
 # *****************************************************************************
 # *
@@ -297,9 +295,6 @@ ADD_TEST( wfips_load_resource_1 ${EXECUTABLE_OUTPUT_PATH}/test_main
 ADD_TEST( wfips_load_resource_2 ${EXECUTABLE_OUTPUT_PATH}/test_main
           --run_test=wfipsdata/load_resource_2 )
 IF(RUN_SLOW_TESTS)
-    # *************************************************************************
-    # IRS tests
-    # *************************************************************************
     IF(BUILD_IRS)
         ADD_TEST( wfips_load_all_1 ${EXECUTABLE_OUTPUT_PATH}/test_main
                   --run_test=wfipsdata/load_all_1 )
