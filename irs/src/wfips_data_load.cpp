@@ -704,7 +704,6 @@ WfipsData::LoadIrsData( const char *pszAnalysisAreaWkt )
     WFIPS_CHECK;
     rc = !poScenario->FWAsFindClosestAirtankerBases();
     WFIPS_CHECK;
-
 error:
     return rc;
 }
