@@ -238,6 +238,7 @@ public:
     int SetLargeFireParams( int nJulStart, int nJulEnd, double dfNoRescProb,
                             double dfTimeLimitProb, double dfSizeLimitProb,
                             double dfExhaustProb );
+    int RunScenario( int iYearIndex );
     /* Not implemented */
     int SetPrepositioning( double, double, double ){return 0;}
     /* int SetDrawdown(){return 0;} */
@@ -246,7 +247,6 @@ public:
                          double dfTimeLimitProb, double dfSizeLimitProb,
                          double dfExhaustProb ){return 0;}
 
-    int RunScenario( int iYearIndex ) { return 0;}
     int ExportResults( const char *pszDbName ) {return 0;}
 
     /* XXX TO BE IMPLEMENTED XXX */

@@ -927,3 +927,15 @@ WfipsData::SetAnalysisAreaMask( const char *pszMaskWkt )
     return SQLITE_OK;
 }
 
+int
+WfipsData::RunScenario( int iYearIdx )
+{
+    int rc;
+    /* XXX: DO THESE GO HERE?! XXX */
+    poScenario->Reset();
+    poScenario->m_VResults.clear();
+    rc = poScenario->RunScenario( 0, iYearIdx, NULL );
+    poScenario->Output();
+    return rc;
+}
+

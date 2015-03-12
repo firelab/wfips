@@ -229,7 +229,7 @@ WfipsData::LoadFwas()
                                      "WHERE fwa.name NOT LIKE '%unassign%'",
                                  -1, &stmt, NULL );
     }
-    const char *pszName;
+    const char *pszName, *pszFpu;
     int nWalkIn, nPumpRoll, nHead, nTail, nPara;
     double dfAttDist;
     int bWaterDrops, bExcluded;
@@ -243,7 +243,7 @@ WfipsData::LoadFwas()
     while( sqlite3_step( stmt ) == SQLITE_ROW )
     {
         pszName = (const char *)sqlite3_column_text( stmt, 1 );
-        // FPU 2
+        pszFpu = (const char *)sqlite3_column_text( stmt, 2 );
         // FMG 3
         nWalkIn = sqlite3_column_int( stmt, 4 );
         nPumpRoll = sqlite3_column_int( stmt, 5 );
@@ -321,7 +321,7 @@ WfipsData::LoadFwas()
                                             nFirstDelay, adfDiurn, aoRos,
                                             adfRosCoeff, iFwa,
                                             poScenario->m_VDispLogic[i],
-                                            std::string( "" ) ) );
+                                            std::string( pszFpu ) ) );
         FwaIndexMap.insert( std::pair<std::string, int>( pszName, iFwa ) );
         iFwa++;
     }
@@ -710,13 +710,12 @@ WfipsData::LoadIrsData( const char *pszAnalysisAreaWkt )
     poScenario->m_NumDispLoc = poScenario->m_VDispLoc.size();
     poScenario->m_NumProdRates = poScenario->m_VProdRates.size();
     poScenario->m_NumResource = poScenario->m_VResource.size();
-    rc = poScenario->CreateDispTree();
+    rc = !poScenario->CreateDispTree();
     WFIPS_CHECK;
-    rc = poScenario->ResourcesToDispatchers();
+    rc = !poScenario->ResourcesToDispatchers();
     WFIPS_CHECK;
-    rc = poScenario->FWAsFindClosestAirtankerBases();
+    rc = !poScenario->FWAsFindClosestAirtankerBases();
     WFIPS_CHECK;
-
 error:
     return rc;
 }
