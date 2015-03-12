@@ -436,7 +436,8 @@ WfipsData::LoadDispatchLocations()
 int
 WfipsData::LoadTankerBases()
 {
-    /* Implement later... */
+    sqlite3_stmt *stmt;
+    int rc;
     return 0;
 }
 /*
@@ -626,11 +627,51 @@ WfipsData::LoadResources()
         }
         sqlite3_reset( stmt );
     }
-    //AssociateHelitack( resc_map );
+    rc = AssociateHelitack( resc_map );
     sqlite3_finalize( stmt );
 
     return 0;
 }
+
+int
+WfipsData::AssociateHelitack( std::multimap<std::string, CResource*>&resc_map )
+{
+    sqlite3_stmt *stmt;
+    int rc;
+    rc = sqlite3_prepare_v2( db, "SELECT heli FROM heli_assign WHERE hel=?",
+                             -1, &stmt, NULL );
+    std::string key;
+    std::multimap<string, CResource*>::iterator it = resc_map.begin();
+    std::multimap<string, CResource*>::iterator find;
+    for( ; it != resc_map.end(); it++ )
+    {
+        if( EQUAL( it->second->GetRescType().GetRescType().c_str(), "HELI" ) )
+        {
+            continue;
+        }
+
+        sqlite3_bind_text( stmt, 1, it->first.c_str(), -1, SQLITE_TRANSIENT );
+        while( sqlite3_step( stmt ) == SQLITE_ROW )
+        {
+            key = (const char*)sqlite3_column_text( stmt, 0 );
+            find = resc_map.find( key );
+            if( find == resc_map.end() )
+            {
+                continue;
+            }
+            CHelicopter* poHelic = dynamic_cast<CHelicopter*>( it->second );
+            if( poHelic )
+            {
+                poHelic->AddAttachedCrew( find->second );
+            }
+        }
+        sqlite3_reset( stmt );
+    }
+    sqlite3_finalize( stmt );
+    stmt = NULL;
+    return 0;
+}
+
 int
 WfipsData::CreateLargeAirTankers()
 {
@@ -638,28 +679,45 @@ WfipsData::CreateLargeAirTankers()
     return 0;
 }
 
+#define WFIPS_CHECK if(rc) goto error
+
 int
-WfipsData::LoadIrsStructs( const char *pszAnalysisAreaWkt )
+WfipsData::LoadIrsData( const char *pszAnalysisAreaWkt )
 {
-    SetAnalysisAreaMask( pszAnalysisAreaWkt );
+    int rc = 0;
+    rc = SetAnalysisAreaMask( pszAnalysisAreaWkt );
+    WFIPS_CHECK;
     poScenario = new CRunScenario();
-    LoadRescTypes();
-    LoadProdRates();
-    LoadDispatchLogic();
-    LoadFwas();
-    LoadDispatchLocations();
-    LoadTankerBases();
-    LoadResources();
-    CreateLargeAirTankers();
+    WFIPS_CHECK;
+    rc = LoadRescTypes();
+    WFIPS_CHECK;
+    rc = LoadProdRates();
+    WFIPS_CHECK;
+    rc = LoadDispatchLogic();
+    WFIPS_CHECK;
+    rc = LoadFwas();
+    WFIPS_CHECK;
+    rc = LoadDispatchLocations();
+    WFIPS_CHECK;
+    rc = LoadTankerBases();
+    WFIPS_CHECK;
+    rc = LoadResources();
+    WFIPS_CHECK;
+    rc = CreateLargeAirTankers();
+    WFIPS_CHECK;
     poScenario->m_NumFWA = poScenario->m_VFWA.size();
     poScenario->m_NumRescType = poScenario->m_VRescType.size();
     poScenario->m_NumDispLoc = poScenario->m_VDispLoc.size();
     poScenario->m_NumProdRates = poScenario->m_VProdRates.size();
     poScenario->m_NumResource = poScenario->m_VResource.size();
-    poScenario->CreateDispTree();
-    poScenario->ResourcesToDispatchers();
-    poScenario->FWAsFindClosestAirtankerBases();
+    rc = poScenario->CreateDispTree();
+    WFIPS_CHECK;
+    rc = poScenario->ResourcesToDispatchers();
+    WFIPS_CHECK;
+    rc = poScenario->FWAsFindClosestAirtankerBases();
+    WFIPS_CHECK;
 
-    return 0;
+error:
+    return rc;
 }
 

@@ -130,6 +130,9 @@ static const char *apszWfipsDayOfWeek[] = { NULL,
 
 #define WFP_PRIORITY_COUNT    4
 
+static double WFP_NO_TREAT  [WFP_PRIORITY_COUNT] = {0.,0.,0.,0.};
+static double WFP_FULL_TREAT[WFP_PRIORITY_COUNT] = {1.,1.,1.,1.};
+
 /* Matt and Crystals Strategic Response */
 #define STR_RESP_1            (1 << 1)
 #define STR_RESP_2A           (1 << 2)
@@ -236,7 +239,7 @@ public:
     /* Not implemented */
     int SetPrepositioning( double, double, double ){return 0;}
     /* int SetDrawdown(){return 0;} */
-    int LoadIrsStructs( const char *pszAnalysisAreaWkt );
+    int LoadIrsData( const char *pszAnalysisAreaWkt );
     int SampleLargeFire( int nJulStart, int nJulEnd, double dfNoRescProb,
                          double dfTimeLimitProb, double dfSizeLimitProb,
                          double dfExhaustProb ){return 0;}
@@ -316,6 +319,7 @@ private:
     int LoadDispatchLocations();
     int LoadTankerBases();
     int LoadResources();
+    int AssociateHelitack( std::multimap<std::string, CResource*>&resc_map );
     int CreateLargeAirTankers();
 
     /* Helper for Diane's structs */
