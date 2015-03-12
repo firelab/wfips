@@ -368,17 +368,19 @@ WfipsData::LoadDispatchLocations()
                                      "X(geometry), Y(geometry) FROM disploc",
                                  -1, &stmt, NULL );
     }
-    rc = sqlite3_prepare_v2( db, "SELECT distance FROM assoc WHERE " \
-                                 "disploc_name=? AND fwa_name=?",
+    rc = sqlite3_prepare_v2( db, "SELECT fwa_name, distance FROM assoc WHERE " \
+                                 "disploc_name=?",
                              -1, &astmt, NULL );
     rc = sqlite3_prepare_v2( db, "SELECT COUNT(*) FROM resource WHERE disploc=?",
                              -1, &estmt, NULL );
     nFwaCount = poScenario->m_VFWA.size();
 
     const char *pszName, *pszFpu;
+    const char *pszFwa;
     int nCallBack;
     double dfX, dfY;
     double dfDist;
+    std::map<std::string, int>::iterator it;
     while( sqlite3_step( stmt ) == SQLITE_ROW )
     {
         pszName = (const char*)sqlite3_column_text( stmt, 0 );
@@ -395,26 +397,21 @@ WfipsData::LoadDispatchLocations()
         dfY = sqlite3_column_double( stmt, 4 );
         CDispLoc oDispLoc( std::string( pszName ), nCallBack,
                            std::string( pszFpu ), dfY, dfX );
-        for( i = 0; i < nFwaCount; i++ )
+
+        rc = sqlite3_bind_text( astmt, 1, pszName, -1, NULL );
+        while( sqlite3_step( astmt ) == SQLITE_ROW )
         {
-            rc = sqlite3_bind_text( astmt, 1, pszName, -1, NULL );
-            rc = sqlite3_bind_text( astmt, 2,
-                                    poScenario->m_VFWA[i].GetFWAID().c_str(),
-                                    -1, SQLITE_TRANSIENT );
-            rc = sqlite3_step( astmt );
-            if( rc == SQLITE_ROW )
+            pszFwa = (const char*)sqlite3_column_text( astmt, 0 );
+            dfDist = sqlite3_column_double( astmt, 1 );
+            it = FwaIndexMap.find( pszFwa );
+            if( it != FwaIndexMap.end() )
             {
-                dfDist = sqlite3_column_double( astmt, 0 );
+                i = it->second;
+                poScenario->m_VFWA[i].AddAssociation( std::string( pszName ), dfDist );
+                oDispLoc.AddAssocFWA( &(poScenario->m_VFWA[i]) );
             }
-            else
-            {
-                sqlite3_reset( astmt );
-                continue;
-            }
-            poScenario->m_VFWA[i].AddAssociation( std::string( pszName ), dfDist );
-            oDispLoc.AddAssocFWA( &(poScenario->m_VFWA[i]) );
-            sqlite3_reset( astmt );
         }
+        sqlite3_reset( astmt );
         sqlite3_reset( estmt );
         poScenario->m_VDispLoc.push_back( oDispLoc );
     }
