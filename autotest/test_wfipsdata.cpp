@@ -33,8 +33,9 @@ struct WfipsDataMock
 {
     WfipsDataMock()
     {
-        poData = new WfipsData(WFIPS_DATA_TEST_PATH);
+        poData = new WfipsData( WFIPS_DATA_TEST_PATH );
         poData->Open();
+        BOOST_REQUIRE( poData->Valid() );
     }
     ~WfipsDataMock()
     {
@@ -55,7 +56,7 @@ BOOST_AUTO_TEST_CASE( create_1 )
 
 BOOST_AUTO_TEST_CASE( create_2 )
 {
-    WfipsData *poData2 = new WfipsData(WFIPS_DATA_TEST_PATH);
+    WfipsData *poData2 = new WfipsData( WFIPS_DATA_TEST_PATH );
     int rc = poData2->Open();
     BOOST_CHECK( poData2->Valid() == 1 );
     BOOST_CHECK( rc == 0 );
