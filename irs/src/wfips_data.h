@@ -130,6 +130,9 @@ static const char *apszWfipsDayOfWeek[] = { NULL,
 
 #define WFP_PRIORITY_COUNT    4
 
+static double WFP_NO_TREAT  [WFP_PRIORITY_COUNT] = {0.,0.,0.,0.};
+static double WFP_FULL_TREAT[WFP_PRIORITY_COUNT] = {1.,1.,1.,1.};
+
 /* Matt and Crystals Strategic Response */
 #define STR_RESP_1            (1 << 1)
 #define STR_RESP_2A           (1 << 2)
