@@ -931,11 +931,11 @@ int
 WfipsData::RunScenario( int iYearIdx )
 {
     int rc;
+    rc = poScenario->RunScenario( 0, iYearIdx, NULL );
+    poScenario->Output();
     /* XXX: DO THESE GO HERE?! XXX */
     poScenario->Reset();
     poScenario->m_VResults.clear();
-    rc = poScenario->RunScenario( 0, iYearIdx, NULL );
-    poScenario->Output();
     return rc;
 }
 
