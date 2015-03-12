@@ -463,6 +463,7 @@ WfipsData::LoadResources()
     double dfNumPositions = 0;
     double dfAnnualCost = 0;
     double dfVehicleCost = 0;
+    const char *pszRescDispLoc;
 
     std::multimap<std::string, CResource*>resc_map;
 
@@ -473,9 +474,8 @@ WfipsData::LoadResources()
 
     for( i = 0; i < poScenario->m_VDispLoc.size(); i++ )
     {
-        rc = sqlite3_bind_text( stmt, 1,
-                                poScenario->m_VDispLoc[i].GetDispLocID().c_str(),
-                                -1, SQLITE_TRANSIENT );
+        pszRescDispLoc = poScenario->m_VDispLoc[i].GetDispLocID().c_str();
+        rc = sqlite3_bind_text( stmt, 1, pszRescDispLoc, -1, SQLITE_TRANSIENT );
         while( sqlite3_step( stmt ) == SQLITE_ROW )
         {
             pszName = (const char*)sqlite3_column_text( stmt, 0 );
@@ -508,7 +508,6 @@ WfipsData::LoadResources()
             }
             if( j == poScenario->m_VRescType.size() )
             {
-                sqlite3_reset( stmt );
                 continue;
             }
 
