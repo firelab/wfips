@@ -196,9 +196,9 @@ WfipsData::LoadFwas()
         n = CompileGeometry( pszAnalysisAreaWkt, &pGeom );
         if( n > 0 )
         {
-            rc = sqlite3_prepare_v2( db, "SELECT * FROM fwa JOIN delay.reload ON " \
+            rc = sqlite3_prepare_v2( db, "SELECT * FROM fwa JOIN reload ON " \
                                          "fwa.name=reload.fwa_name JOIN " \
-                                         "delay.walk_in ON " \
+                                         "walk_in ON " \
                                          "reload.fwa_name=walk_in.fwa_name " \
                                          "WHERE ST_Intersects(@geom, geometry) " \
                                          "AND fwa.name NOT LIKE '%unassign%' " \
@@ -222,9 +222,9 @@ WfipsData::LoadFwas()
     }
     else
     {
-        rc = sqlite3_prepare_v2( db, "SELECT * FROM fwa JOIN delay.reload ON " \
+        rc = sqlite3_prepare_v2( db, "SELECT * FROM fwa JOIN reload ON " \
                                      "fwa.name=reload.fwa_name JOIN " \
-                                     "delay.walk_in ON " \
+                                     "walk_in ON " \
                                      "reload.fwa_name=walk_in.fwa_name " \
                                      "WHERE fwa.name NOT LIKE '%unassign%'",
                                  -1, &stmt, NULL );
