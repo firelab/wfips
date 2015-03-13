@@ -29,6 +29,7 @@
 #define WFIPSMAINWINDOW_H
 
 #include <QtConcurrentRun>
+#include <QComboBox>
 #include <QFileDialog>
 #include <QMainWindow>
 #include <QMessageBox>
@@ -210,6 +211,9 @@ private:
     /* Handle to current mapcanvas */
     QgsMapCanvas *currentMapCanvas;
 
+    /* Collect run parameters */
+    double GetPrepositionValue( QComboBox *c );
+
     /* Async unknown progress for future */
     void UpdateAsyncProgress( QFuture<int>&future );
 
@@ -251,6 +255,7 @@ private slots:
     void EnableCustomFuelMask( int );
     void SelectFuelMask();
     void EnableFuelMaskAttr( int index );
+    char * GetTreatWkt();
 
     /* Run the sucker */
     int RunIrs();

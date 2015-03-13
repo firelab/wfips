@@ -355,7 +355,7 @@
          <enum>QFrame::Plain</enum>
         </property>
         <property name="currentIndex">
-         <number>10</number>
+         <number>5</number>
         </property>
         <widget class="QWidget" name="dataPage">
          <layout class="QVBoxLayout" name="verticalLayout_13">
@@ -704,7 +704,7 @@
         <widget class="QWidget" name="prepositionPage">
          <layout class="QVBoxLayout" name="verticalLayout_18">
           <item>
-           <widget class="QGroupBox" name="groupBox_4">
+           <widget class="QGroupBox" name="prePositionGroupBox">
             <property name="title">
              <string>Prepositioning</string>
             </property>
@@ -1143,7 +1143,7 @@
         <widget class="QWidget" name="fuelTreatmentPage">
          <layout class="QVBoxLayout" name="verticalLayout_10">
           <item>
-           <widget class="QGroupBox" name="fuelTreatSpatialGroupBox">
+           <widget class="QGroupBox" name="treatGroupBox">
             <property name="title">
              <string>Fuel Treatment</string>
             </property>

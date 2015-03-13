@@ -1307,6 +1307,8 @@ void WfipsMainWindow::SelectFuelMask()
     QgsVectorLayer layer(fuelMaskSource + "|layername=" + fuelMaskLayer, "", "ogr" );
     if( !layer.isValid() )
     {
+        fuelMaskSource = "";
+        fuelMaskLayer = "";
         return;
     }
     QgsFields fields;
@@ -1323,6 +1325,49 @@ void WfipsMainWindow::SelectFuelMask()
         ui->fuelAttComboBox->addItem( fields[i].name() );
     }
     return;
+}
+
+double WfipsMainWindow::GetPrepositionValue( QComboBox *c )
+{
+    int i = c->currentIndex();
+    double d;
+    switch( i )
+    {
+        case 0:
+            d = 0.5;
+        case 1:
+            d = 0.6;
+        case 2:
+            d = 0.7;
+        case 3:
+            d = 0.8;
+        case 4:
+            d = 0.9;
+        default:
+            d = 0.5;
+    }
+    return d;
+}
+
+char * WfipsMainWindow::GetTreatWkt()
+{
+    QgsVectorLayer layer(fuelMaskSource + "|layername=" + fuelMaskLayer, "", "ogr" );
+
+    QgsFeatureIterator fit = layer.getFeatures();
+    QList<QgsGeometry*>geometries;
+    QgsFeature feature;
+    while( fit.nextFeature( feature ) )
+    {
+        geometries.append( new QgsGeometry( *(feature.geometry()) ) );
+    }
+    QgsGeometry *multi = QgsGeometry::unaryUnion( geometries );
+    QString wkt = multi->exportToWkt();
+    delete multi;
+    if( wkt != "" )
+    {
+        return QStringToCString( wkt );
+    }
+    return NULL;
 }
 
 void WfipsMainWindow::UpdateAsyncProgress( QFuture<int>&future )
@@ -1345,6 +1390,72 @@ int WfipsMainWindow::RunIrs()
 {
     int rc, i;
     this->setDisabled( true );
+
+    /* Get all parameters from GUI */
+    /* Prepositioning */
+    double dfPpEng, dfPpCrw, dfPpHeli;
+    /* correct default? */
+    dfPpEng = dfPpCrw = dfPpHeli = 0.5;
+    if( ui->prePositionGroupBox->isChecked() )
+    {
+        dfPpEng = GetPrepositionValue( ui->enginePPComboBox );
+        dfPpCrw = GetPrepositionValue( ui->crewPPComboBox );
+        dfPpHeli = GetPrepositionValue( ui->helitackPPComboBox );
+    }
+    poData->SetPrepositioning( dfPpEng, dfPpCrw, dfPpHeli );
+
+    /* Fuel Treatment */
+    double dfTreatProb = 0.0;
+    const char *pszTreatWkt = NULL;
+    int nWfpMask = 0;
+    double adfWfpProb[4] = { 0.0, 0.0, 0.0, 0.0 };
+    if( ui->treatGroupBox->isChecked() )
+    {
+        if( ui->fuelComboBox->currentIndex() == 0 )
+        {
+            dfTreatProb = ui->fuelTreatSpinBox->value() / 100.;
+        }
+        else if( ui->fuelComboBox->currentIndex() == 1 )
+        {
+            pszTreatWkt = GetTreatWkt();
+            dfTreatProb = ui->fuelProbSpinBox->value() / 100.;
+        }
+        else if( ui->fuelComboBox->currentIndex() == 2 )
+        {
+            if( ui->wfpCat1CheckBox->isChecked() )
+            {
+                nWfpMask |= WFP_PRIORITY_1;
+                adfWfpProb[0] = ui->wfpCat1SpinBox->value() / 100.;
+            }
+            if( ui->wfpCat2CheckBox->isChecked() )
+            {
+                nWfpMask |= WFP_PRIORITY_2;
+                adfWfpProb[1] = ui->wfpCat2SpinBox->value() / 100.;
+            }
+            if( ui->wfpCat3CheckBox->isChecked() )
+            {
+                nWfpMask |= WFP_PRIORITY_3;
+                adfWfpProb[2] = ui->wfpCat3SpinBox->value() / 100.;
+            }
+            if( ui->wfpCat4CheckBox->isChecked() )
+            {
+                nWfpMask |= WFP_PRIORITY_4;
+                adfWfpProb[3] = ui->wfpCat4SpinBox->value() / 100.;
+            }
+            dfTreatProb = 0;
+        }
+    }
+
+    int nIgnOwnership = 0;
+    if( ui->agencyIgnUsfsCheckBox->isChecked() )
+        nIgnOwnership |= USFS;
+    if( ui->agencyIgnDoiCheckBox->isChecked() )
+        nIgnOwnership |= DOI_ALL;
+    if( ui->agencyIgnStateCheckBox->isChecked() )
+        nIgnOwnership |= AGENCY_OTHER;
+    /* Need some ignitions */
+    assert( nIgnOwnership );
+
     QFuture<int>future;
     if( 1 )
     {
@@ -1362,7 +1473,14 @@ int WfipsMainWindow::RunIrs()
                                                                       0, 0 );
         UpdateAsyncProgress( future );
         */
-        rc = poData->LoadScenario( 5, NULL, 0.0, 0, WFP_NO_TREAT, 0, 0 );
+        /*
+WfipsData::LoadScenario( int nYearIdx, const char *pszTreatWkt,
+                         double dfTreatProb, int nWfpTreatMask,
+                         double *padfWfpTreatProb, double dfStratProb,
+                         int nAgencyFilter )
+                         */
+        rc = poData->LoadScenario( 5, (const char*)pszTreatWkt, dfTreatProb,
+                                   nWfpMask, adfWfpProb, 0, nIgnOwnership );
         this->statusBar()->showMessage( "Fires loaded." );
         //rc = future.results()[0];
         this->statusBar()->showMessage( "Running Scenario..." );
@@ -1376,6 +1494,7 @@ int WfipsMainWindow::RunIrs()
         rc = poData->LoadScenario( 5, NULL, 0.0, 0, WFP_NO_TREAT, 0, 0 );
         rc = poData->RunScenario( 0 );
     }
+    free( (void*)pszTreatWkt );
     this->setEnabled( true );
     return rc;
 }
