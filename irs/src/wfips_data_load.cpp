@@ -676,6 +676,15 @@ WfipsData::LoadIrsData( const char *pszAnalysisAreaWkt )
     int rc = 0;
     rc = SetAnalysisAreaMask( pszAnalysisAreaWkt );
     WFIPS_CHECK;
+    rc = LoadIrsData();
+error:
+    return rc;
+}
+
+int
+WfipsData::LoadIrsData()
+{
+    int rc = 0;
     poScenario = new CRunScenario();
     WFIPS_CHECK;
     rc = LoadRescTypes();

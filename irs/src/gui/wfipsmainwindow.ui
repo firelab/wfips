@@ -355,7 +355,7 @@
          <enum>QFrame::Plain</enum>
         </property>
         <property name="currentIndex">
-         <number>8</number>
+         <number>10</number>
         </property>
         <widget class="QWidget" name="dataPage">
          <layout class="QVBoxLayout" name="verticalLayout_13">
@@ -2022,6 +2022,9 @@
               <layout class="QHBoxLayout" name="horizontalLayout_6">
                <item>
                 <widget class="QRadioButton" name="randomYearsRadioButton">
+                 <property name="enabled">
+                  <bool>false</bool>
+                 </property>
                  <property name="text">
                   <string>Random years</string>
                  </property>
@@ -2042,6 +2045,9 @@
                </item>
                <item>
                 <widget class="QLabel" name="ignPerDayLabel">
+                 <property name="enabled">
+                  <bool>false</bool>
+                 </property>
                  <property name="text">
                   <string>Ignitions per day</string>
                  </property>
@@ -2049,6 +2055,9 @@
                </item>
                <item>
                 <widget class="QComboBox" name="randomIgnPerDayComboBox">
+                 <property name="enabled">
+                  <bool>false</bool>
+                 </property>
                  <item>
                   <property name="text">
                    <string>Low</string>
@@ -2086,6 +2095,9 @@
                </item>
                <item>
                 <widget class="QLabel" name="label_13">
+                 <property name="enabled">
+                  <bool>false</bool>
+                 </property>
                  <property name="text">
                   <string>Number of years</string>
                  </property>
@@ -2093,6 +2105,9 @@
                </item>
                <item>
                 <widget class="QSpinBox" name="randomYearsSpinBox">
+                 <property name="enabled">
+                  <bool>false</bool>
+                 </property>
                  <property name="accelerated">
                   <bool>true</bool>
                  </property>
@@ -2252,6 +2267,33 @@
                 </size>
                </property>
               </spacer>
+             </item>
+             <item>
+              <layout class="QHBoxLayout" name="horizontalLayout_30">
+               <item>
+                <spacer name="horizontalSpacer_25">
+                 <property name="orientation">
+                  <enum>Qt::Horizontal</enum>
+                 </property>
+                 <property name="sizeHint" stdset="0">
+                  <size>
+                   <width>40</width>
+                   <height>20</height>
+                  </size>
+                 </property>
+                </spacer>
+               </item>
+               <item>
+                <widget class="QToolButton" name="runButton">
+                 <property name="text">
+                  <string>Run Simulation</string>
+                 </property>
+                 <property name="toolButtonStyle">
+                  <enum>Qt::ToolButtonTextBesideIcon</enum>
+                 </property>
+                </widget>
+               </item>
+              </layout>
              </item>
             </layout>
            </widget>

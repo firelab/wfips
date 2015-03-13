@@ -243,6 +243,7 @@ public:
     int SetPrepositioning( double, double, double ){return 0;}
     /* int SetDrawdown(){return 0;} */
     int LoadIrsData( const char *pszAnalysisAreaWkt );
+    int LoadIrsData();
     int SampleLargeFire( int nJulStart, int nJulEnd, double dfNoRescProb,
                          double dfTimeLimitProb, double dfSizeLimitProb,
                          double dfExhaustProb ){return 0;}

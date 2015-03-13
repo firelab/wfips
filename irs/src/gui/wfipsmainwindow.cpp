@@ -210,6 +210,8 @@ void WfipsMainWindow::CreateConnections()
     ui->treePreviousButton->setIcon( QIcon( ":/go-previous" ) );
     connect( ui->treePreviousButton, SIGNAL( clicked() ),
              this, SLOT( PrevTreeWidgetItem() ) );
+    connect( ui->runButton, SIGNAL( clicked() ),
+             this, SLOT( RunIrs() ) );
 
 }
 
@@ -1077,6 +1079,7 @@ void WfipsMainWindow::SetAnalysisArea()
     this->statusBar()->showMessage( "Searching for dispatch locations...", 1500 );
     ui->progressBar->setRange( 0, 0 );
     nFuture = QtConcurrent::run( poData, &WfipsData::GetAssociatedDispLoc, pszWkt, &panLocIds, &nLocCount );
+    poData->SetAnalysisAreaMask( pszWkt );
     i = 0;
     while( !nFuture.isFinished() && i < 1000 )
     {
@@ -1320,6 +1323,61 @@ void WfipsMainWindow::SelectFuelMask()
         ui->fuelAttComboBox->addItem( fields[i].name() );
     }
     return;
+}
+
+void WfipsMainWindow::UpdateAsyncProgress( QFuture<int>&future )
+{
+    int i = 0;
+    ui->progressBar->setRange( 0, 0 );
+    while( !future.isFinished() && i < 1000 )
+    {
+        CPLSleep( 0.1 );
+        ui->progressBar->setValue( 0 );
+        QCoreApplication::processEvents();
+        i++;
+    }
+    future.waitForFinished();
+    ui->progressBar->setRange( 0, 100 );
+    ui->progressBar->reset();
+}
+
+int WfipsMainWindow::RunIrs()
+{
+    int rc, i;
+    this->setDisabled( true );
+    QFuture<int>future;
+    if( 1 )
+    {
+        this->statusBar()->showMessage( "Loading data..." );
+        future = QtConcurrent::run( poData, &WfipsData::LoadIrsData );
+        UpdateAsyncProgress( future );
+        this->statusBar()->showMessage( "Data loaded." );
+        rc = future.results()[0];
+        this->statusBar()->showMessage( "Loading Fires..." );
+        /* FIXME */
+        /*
+        future = QtConcurrent::run( poData, &WfipsData::LoadScenario, 5, NULL,
+                                                                      0.0, 0,
+                                                                      WFP_NO_TREAT,
+                                                                      0, 0 );
+        UpdateAsyncProgress( future );
+        */
+        rc = poData->LoadScenario( 5, NULL, 0.0, 0, WFP_NO_TREAT, 0, 0 );
+        this->statusBar()->showMessage( "Fires loaded." );
+        //rc = future.results()[0];
+        this->statusBar()->showMessage( "Running Scenario..." );
+        future = QtConcurrent::run( poData, &WfipsData::RunScenario, 0 );
+        this->statusBar()->showMessage( "Simulation finished.", 1500 );
+        rc = future.results()[0];
+    }
+    else
+    {
+        rc = poData->LoadIrsData();
+        rc = poData->LoadScenario( 5, NULL, 0.0, 0, WFP_NO_TREAT, 0, 0 );
+        rc = poData->RunScenario( 0 );
+    }
+    this->setEnabled( true );
+    return rc;
 }
 
 /*

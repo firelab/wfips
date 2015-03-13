@@ -210,6 +210,9 @@ private:
     /* Handle to current mapcanvas */
     QgsMapCanvas *currentMapCanvas;
 
+    /* Async unknown progress for future */
+    void UpdateAsyncProgress( QFuture<int>&future );
+
 private slots:
     /* Main path designation */
     void OpenWfipsPath();
@@ -248,6 +251,9 @@ private slots:
     void EnableCustomFuelMask( int );
     void SelectFuelMask();
     void EnableFuelMaskAttr( int index );
+
+    /* Run the sucker */
+    int RunIrs();
 
     /* Settings */
     void ReadSettings();
