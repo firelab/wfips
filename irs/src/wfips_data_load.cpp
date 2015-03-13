@@ -299,6 +299,7 @@ WfipsData::LoadFwas()
         it = DispLogIndexMap.find( pszLogic );
         if( it == DispLogIndexMap.end() )
         {
+            printf("Failed to load logic: %s for fwa: %s\n", pszLogic, pszName);
             continue;
         }
         i = it->second;

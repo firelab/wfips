@@ -69,7 +69,7 @@
 #define COST_DB             "cost.db"
 #define DELAY_DB            "delay.db"
 #define DISPLOC_DB          "disploc.db"
-#define DISPLOG_DB          "displog.db"
+#define DISPLOG_DB          "kyledisplog.db"
 #define DISTRICT_DB         "district.db"
 #define FIG_DB              "fakefig.db"
 #define FOREST_DB           "forest.db"
