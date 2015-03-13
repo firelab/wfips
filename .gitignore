@@ -9,3 +9,4 @@ data
 # qt creator autosave
 *.autosave
 *.txt~
+.gitignore~
