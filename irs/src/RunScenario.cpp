@@ -1216,6 +1216,11 @@ bool CRunScenario::DeployResources( int Debugging, int f, int scenario )
 	double HelitackProdRateMultiplier = 1.2;							// Used to increase helitack production rate to account for helicotper drops. 1 = no increase	
 	double WaterDropMultiplier = 0.5;								// Water drops produce half the line retardant drops do	
 
+	// If this is a Fire Use Fire *****Monitor
+	bool monitor = m_VFire[f].GetUseStrategy();
+	int numMonitorResc = 1;
+	int monitorDurationMin = 10080;		//monitor duration
+
 	// Print the fire information to file if debuggins is set on
 	if ( Debugging > 0 )
 		PrintFireInfo( f );
@@ -1402,6 +1407,21 @@ bool CRunScenario::DeployResources( int Debugging, int f, int scenario )
 
 		// Is the dispatch logic filled?
 		bool filled = false;
+
+		// If this is a monitored fires *****Monitor
+		if (monitor)	{
+			// determine which resource types to deploy (crew, engine)
+			for (int l = 0; l < 15; l++)	{
+				if (l != 1 && l != 3)
+					RemainingDispLogic[l] = 0;
+				else	{
+					if (RemainingDispLogic[l] > 1)
+						RemainingDispLogic[l] = numMonitorResc;
+				}
+			}
+		}
+		//*****Monitor
+
 		list< CResource* > DropHelicopters;						// List of helicopters that can be used for dropping water
 		
 		// Iterate through the different levels of the tree in reverse order to fill dispatch logic
@@ -1474,13 +1494,21 @@ bool CRunScenario::DeployResources( int Debugging, int f, int scenario )
 						LDeployedResources.splice( LDeployedResources.end(), ThisDeployed );
 					}
 										
-					// Is the Dispatch Logic filled
 					filled = true;
-
+					
 					for ( int i = 0; i < 15; i++ )	{
 						if ( RemainingDispLogic[i] > 0 )
 							filled = false;
 					}
+
+					// Is the Dispatch Logic filled	*****Monitor 
+					int countResc = LDeployedResources.size();	
+					if (countResc >= numMonitorResc && monitor)	{
+						filled = true;
+						if (countResc > numMonitorResc)
+							LDeployedResources.resize(numMonitorResc);
+					}
+					//*****Monitor
 
 					AssIt++;
 
@@ -1736,10 +1764,30 @@ bool CRunScenario::DeployResources( int Debugging, int f, int scenario )
 	// Print the contain input information to file if debuggings is set on
 	if ( Debugging > 0 )
 		PrintContainInput( m_VFire[f], LContainValues, firstarrival );
+	 
+	// If is a monitor fire set values and save results (if no resources assume fire is still monitor) *****Monitor
+	if (monitor)	{
+		
+		string SimulationStatus = "Monitor";
+		double ffc=0.0;
+  		double ffl=0.0;
+  		double ffp=0.0;
+  		double ffsz=0.0;
+  		double ffsw=0.0;
+  		double fft= monitorDurationMin;	
+  		double fru=LDeployedResources.size();
 
-		// If there are no resources to deploy or there are only aerial resources deployed ( i.e. firstarrival = 10000 )
+		// Save the results to CResults
+		m_VResults.push_back( CResults( m_VFire[ f ], ffc, ffl, ffp, ffsz, ffsw, fft, fru, SimulationStatus, DispLogicFilled, InSeason ));
+		m_NumResults++;
 
-	if ( LContainValues.empty() || firstarrival > FWA.GetESLTime() || size > FWA.GetESLSize() )	{
+		// Print the final fire information to file if debuggins is set on
+		if ( Debugging > 0 )
+			m_VResults[ m_VResults.size()-1 ].PrintResults();
+	}		// end monitor fire *****Monitor
+	
+	// If there are no resources to deploy or there are only aerial resources deployed ( i.e. firstarrival = 10000 )
+	else if ( LContainValues.empty() || firstarrival > FWA.GetESLTime() || size > FWA.GetESLSize() )	{
 		
 		string SimulationStatus = "No Resources Sent";
 		double ffc=0.0;
