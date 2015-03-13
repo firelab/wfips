@@ -672,7 +672,8 @@ WfipsData::LoadScenario( int nYearIdx, const char *pszTreatWkt,
     }
 
     pszSql = sqlite3_mprintf( "SELECT *, X(geometry), Y(geometry) FROM " \
-                              "fig WHERE year=@yidx %s %s " \
+                              "fig WHERE year=@yidx AND fwa_name NOT " \
+                              "LIKE '%%unassign%%' %s %s " \
                               "ORDER BY jul_day, disc_time",
                               pszAnalysisAreaSql, pszOwnerSql );
 

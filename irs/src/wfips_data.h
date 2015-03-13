@@ -67,7 +67,8 @@
 
 #define ASSOC_DB            "assoc.db"
 #define COST_DB             "cost.db"
-#define DELAY_DB            "delay.db"
+/* Moved to fwa db */
+//#define DELAY_DB            "delay.db"
 #define DISPLOC_DB          "disploc.db"
 #define DISPLOG_DB          "kyledisplog.db"
 #define DISTRICT_DB         "district.db"
@@ -76,11 +77,12 @@
 #define FPU_DB              "fpu.db"
 #define FWA_DB              "kylefwa.db"
 #define GACC_DB             "gacc.db"
+#define LF_DB               "kylelargefire.db"
 #define STATIC_DB           "static.db"
 #define RESC_DB             "resc.db"
 #define COUNTY_DB           "us_county.db"
 #define STATE_DB            "us_state.db"
-#define WFIPS_DB_COUNT      12
+#define WFIPS_DB_COUNT      13
 
 #ifdef WIN32
 #define SPATIALITE_EXT "spatialite.dll"
@@ -167,7 +169,6 @@ struct WfipsResc
 /* Database connections are limited to 10 on the normal (default) SQLite */
 static const char *apszDbFiles[] = {ASSOC_DB,
                                     COST_DB,
-                                    DELAY_DB,
                                     DISPLOC_DB,
                                     DISPLOG_DB,
                                     //DISTRICT_DB,
@@ -176,6 +177,7 @@ static const char *apszDbFiles[] = {ASSOC_DB,
                                     //FPU_DB,
                                     FWA_DB,
                                     //GACC_DB,
+                                    LF_DB,
                                     STATIC_DB,
                                     RESC_DB,
                                     //COUNTY_DB,
