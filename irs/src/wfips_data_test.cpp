@@ -36,7 +36,7 @@ static double WFP_DEFAULT_PROB[WFP_PRIORITY_COUNT] = {1.,1.,1.,1.};
 int WfipsData::TestBuildAgencySet1()
 {
     const char* pszSet = BuildAgencySet( USFS );
-    return strncmp( pszSet, "'FS'", MAX_PATH );
+    return strncmp( pszSet, "'FS','USFS'", MAX_PATH );
 }
 
 int WfipsData::TestBuildAgencySet2()
@@ -48,13 +48,13 @@ int WfipsData::TestBuildAgencySet2()
 int WfipsData::TestBuildAgencySet3()
 {
     const char* pszSet = BuildAgencySet( FED_ALL );
-    return strncmp( pszSet, "'FS','BIA','BLM','FWS','NPS'", MAX_PATH );
+    return strncmp( pszSet, "'FS','USFS','BIA','BLM','FWS','NPS'", MAX_PATH );
 }
 
 int WfipsData::TestBuildAgencySet4()
 {
     const char* pszSet = BuildAgencySet( AGENCY_ALL );
-    return strncmp( pszSet, "'FS','BIA','BLM','FWS','NPS','STATE/LOCAL'", MAX_PATH );
+    return strncmp( pszSet, "'FS','USFS','BIA','BLM','FWS','NPS','STATE/LOCAL'", MAX_PATH );
 }
 
 int WfipsData::TestBuildAgencySet5()

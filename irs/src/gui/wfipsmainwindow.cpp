@@ -1456,8 +1456,14 @@ int WfipsMainWindow::RunIrs()
     /* Need some ignitions */
     assert( nIgnOwnership );
 
+    double dfModRespProb = 0;
+    if( ui->manageGroupBox->isChecked() )
+    {
+        dfModRespProb = ui->manageSpinBox->value() / 100.;
+    }
+
     QFuture<int>future;
-    if( 1 )
+    if( 0 )
     {
         this->statusBar()->showMessage( "Loading data..." );
         future = QtConcurrent::run( poData, &WfipsData::LoadIrsData );
@@ -1480,7 +1486,8 @@ WfipsData::LoadScenario( int nYearIdx, const char *pszTreatWkt,
                          int nAgencyFilter )
                          */
         rc = poData->LoadScenario( 5, (const char*)pszTreatWkt, dfTreatProb,
-                                   nWfpMask, adfWfpProb, 0, nIgnOwnership );
+                                   nWfpMask, adfWfpProb, dfModRespProb,
+                                   nIgnOwnership );
         this->statusBar()->showMessage( "Fires loaded." );
         //rc = future.results()[0];
         this->statusBar()->showMessage( "Running Scenario..." );
@@ -1491,7 +1498,9 @@ WfipsData::LoadScenario( int nYearIdx, const char *pszTreatWkt,
     else
     {
         rc = poData->LoadIrsData();
-        rc = poData->LoadScenario( 5, NULL, 0.0, 0, WFP_NO_TREAT, 0, 0 );
+        rc = poData->LoadScenario( 5, (const char*)pszTreatWkt, dfTreatProb,
+                                   nWfpMask, adfWfpProb, dfModRespProb,
+                                   nIgnOwnership );
         rc = poData->RunScenario( 0 );
     }
     free( (void*)pszTreatWkt );

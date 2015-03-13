@@ -355,7 +355,7 @@
          <enum>QFrame::Plain</enum>
         </property>
         <property name="currentIndex">
-         <number>5</number>
+         <number>10</number>
         </property>
         <widget class="QWidget" name="dataPage">
          <layout class="QVBoxLayout" name="verticalLayout_13">
@@ -1193,7 +1193,7 @@
              <item>
               <widget class="QStackedWidget" name="fuelStackWidget">
                <property name="currentIndex">
-                <number>2</number>
+                <number>0</number>
                </property>
                <widget class="QWidget" name="page">
                 <layout class="QVBoxLayout" name="verticalLayout_14">
@@ -1593,7 +1593,7 @@
                     </spacer>
                    </item>
                    <item>
-                    <widget class="QSpinBox" name="fuelTreatSpinBox_2">
+                    <widget class="QSpinBox" name="manageSpinBox">
                      <property name="accelerated">
                       <bool>true</bool>
                      </property>
@@ -2178,7 +2178,7 @@
                 <item>
                  <widget class="QCheckBox" name="agencyIgnStateCheckBox">
                   <property name="text">
-                   <string>Other</string>
+                   <string>State/Local/Other</string>
                   </property>
                   <property name="checked">
                    <bool>true</bool>

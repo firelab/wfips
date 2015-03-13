@@ -151,7 +151,7 @@ static double WFP_FULL_TREAT[WFP_PRIORITY_COUNT] = {1.,1.,1.,1.};
 ** Identifiers for resources in sql. NULL padded to align with shifts above.
 */
 static const char *aszAgencyNames[] = { NULL,
-                                        "'FS'",
+                                        "'FS','USFS'",
                                         "'BIA'",
                                         "'BLM'",
                                         "'FWS'",
