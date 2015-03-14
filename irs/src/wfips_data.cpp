@@ -136,6 +136,7 @@ WfipsData::BaseName( const char *pszPath )
 int
 WfipsData::Attach( const char *pszPath )
 {
+    return WfipsAttachDb( db, pszPath, BaseName( pszPath ) );
     char *pszSql;
     int rc;
     if( db == NULL )
@@ -928,14 +929,22 @@ WfipsData::SetAnalysisAreaMask( const char *pszMaskWkt )
 }
 
 int
+WfipsData::WriteResults()
+{
+    return 0;
+}
+
+int
 WfipsData::RunScenario( int iYearIdx )
 {
     int rc;
     rc = poScenario->RunScenario( 0, iYearIdx, NULL );
     poScenario->Output();
+    WriteResults();
     /* XXX: DO THESE GO HERE?! XXX */
     poScenario->Reset();
     poScenario->m_VResults.clear();
+
     return rc;
 }
 

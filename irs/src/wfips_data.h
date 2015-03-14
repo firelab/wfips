@@ -36,6 +36,7 @@
 
 /* SQLite/Spatialite */
 #include <sqlite3.h>
+#include "wfips_sqlite.h"
 
 /* IRS */
 #include "RunScenario.h"
@@ -51,6 +52,8 @@
 #include "Helitack.h"
 #include "Fire.h"
 
+#include "wfips_result.h"
+
 #ifndef MAX_PATH
 #define MAX_PATH 8192
 #endif
@@ -65,40 +68,6 @@
 
 #define WFIPS_SCRAP_BUFFER_SIZE 10
 
-#define ASSOC_DB            "assoc.db"
-#define COST_DB             "cost.db"
-/* Moved to fwa db */
-//#define DELAY_DB            "delay.db"
-#define DISPLOC_DB          "disploc.db"
-#define DISPLOG_DB          "kyledisplog.db"
-#define DISTRICT_DB         "district.db"
-#define FIG_DB              "fakefig.db"
-#define FOREST_DB           "forest.db"
-#define FPU_DB              "fpu.db"
-#define FWA_DB              "kylefwa.db"
-#define GACC_DB             "gacc.db"
-#define LF_DB               "kylelargefire.db"
-#define STATIC_DB           "static.db"
-#define RESC_DB             "resc.db"
-#define COUNTY_DB           "us_county.db"
-#define STATE_DB            "us_state.db"
-#define WFIPS_DB_COUNT      13
-
-#ifdef WIN32
-#define SPATIALITE_EXT "spatialite.dll"
-#else
-#define SPATIALITE_EXT "libspatialite.so"
-#endif
-
-/* String comparison macros */
-#ifndef EQUAL
-#define EQUAL(a,b) strcmp((a),(b))==0
-#endif
-
-#ifndef EQUALN
-#define EQUALN(a,b,n) strncmp((a),(b),(n))==0
-#endif
-
 /* Map day indices to names.  NULL padded for 1-based */
 static const char *apszWfipsDayOfWeek[] = { NULL,
                                            "Monday",
@@ -108,21 +77,6 @@ static const char *apszWfipsDayOfWeek[] = { NULL,
                                            "Friday",
                                            "Saturday",
                                            "Sunday" };
-
-/*
-** Agencies
-*/
-#define USFS                  (1 << 1)
-#define DOI_BIA               (1 << 2)
-#define DOI_BLM               (1 << 3)
-#define DOI_FWS               (1 << 4)
-#define DOI_NPS               (1 << 5)
-#define STATE_LOCAL           (1 << 6)
-//#define REGIONAL              (1 << 7)
-#define DOI_ALL               (DOI_BIA | DOI_BLM | DOI_FWS | DOI_NPS)
-#define FED_ALL               (USFS | DOI_ALL)
-#define AGENCY_ALL            (FED_ALL | STATE_LOCAL)
-#define AGENCY_OTHER          (AGENCY_ALL &~ FED_ALL)
 
 /* Greg Dillon's WFP values */
 #define WFP_PRIORITY_1        (1 << 1)
@@ -278,7 +232,7 @@ public:
     int TestScenLoad7();
     int TestScenLoad8();
     int TestScenLoad9();
-    //int TestScenLoad10();
+    int TestScenLoad10();
     //int TestScenLoad11();
     //int TestScenLoad12();
     //int TestScenLoad13();
@@ -312,6 +266,10 @@ private:
     /* SQLite/Spatialite convenience */
     int CompileGeometry( const char *pszWkt, void **pCompiled );
     double Random();
+
+    /* Results stuff */
+    WfipsResult *poResult;
+    int WriteResults();
 
     /* Diane's structs */
     CRunScenario *poScenario;

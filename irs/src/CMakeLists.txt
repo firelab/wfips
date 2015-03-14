@@ -81,6 +81,8 @@ SET(IRS_SOURCES irs.cpp
                 wfips_data.cpp
                 wfips_data_load.cpp
                 wfips_data_test.cpp
+                wfips_result.cpp
+                wfips_sqlite.cpp
                 $<TARGET_OBJECTS:omffr_conv>
                 $<TARGET_OBJECTS:omffr_rand>)
 IF(USE_INTERNAL_SQLITE)

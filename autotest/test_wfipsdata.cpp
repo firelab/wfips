@@ -258,6 +258,11 @@ BOOST_AUTO_TEST_CASE( load_scen_9 )
     BOOST_CHECK( poData->TestScenLoad9() == 0 );
 }
 
+BOOST_AUTO_TEST_CASE( load_scen_10 )
+{
+    BOOST_CHECK( poData->TestScenLoad10() == 0 );
+}
+
 BOOST_AUTO_TEST_CASE( set_resource_db_1 )
 {
     int anIds[] = {1,2,3,4,5,6,7,8,9,10};

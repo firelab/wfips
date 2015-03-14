@@ -372,3 +372,35 @@ int WfipsData::TestScenLoad9()
     return rc;
 }
 
+int WfipsData::TestScenLoad10()
+{
+    int i, rc, j, t;
+    poScenario = new CRunScenario();
+    rc = LoadIrsData( "POLYGON((-114 47, -113 47, -113 46, -114 46, -114 47))" );
+    if( rc != 0 )
+    {
+        delete poScenario;
+        return rc;
+    }
+    j = 0;
+    t = -1;
+    for( int i = 0; i < poScenario->m_VFire.size(); i++ )
+    {
+        if( j > poScenario->m_VFire[i].GetJulianDay() )
+        {
+            rc = 1;
+            break;
+        }
+        if( j != poScenario->m_VFire[i].GetJulianDay() )
+            t = -1;
+        j = poScenario->m_VFire[i].GetJulianDay();
+        if( t > atoi( poScenario->m_VFire[i].GetDiscoveryTime().c_str() ) )
+        {
+            rc = 1;
+            break;
+        }
+        t = atoi( poScenario->m_VFire[i].GetDiscoveryTime().c_str() );
+    }
+    return rc;
+}
+
