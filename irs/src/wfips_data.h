@@ -188,6 +188,7 @@ public:
                       int nAgencyFilter );
 
     int SetAnalysisAreaMask( const char *pszWkt );
+    int SetResultPath( const char *pszPath );
     /* XXX TO BE IMPLEMENTED XXX */
     int SetLargeFireParams( int nJulStart, int nJulEnd, double dfNoRescProb,
                             double dfTimeLimitProb, double dfSizeLimitProb,
@@ -202,7 +203,6 @@ public:
                          double dfTimeLimitProb, double dfSizeLimitProb,
                          double dfExhaustProb ){return 0;}
 
-    int ExportResults( const char *pszDbName ) {return 0;}
 
     /* XXX TO BE IMPLEMENTED XXX */
 
@@ -268,6 +268,7 @@ private:
     double Random();
 
     /* Results stuff */
+    char* pszResultPath;
     WfipsResult *poResult;
     int WriteResults();
 

@@ -79,6 +79,12 @@ int WfipsResult::Open()
                        NULL, NULL, NULL );
     WFIPS_CHECK_SQLITE;
 
+    rc = sqlite3_prepare_v2( db, "INSERT INTO fire_result(year, jul_day, "
+                                 "fire_num, arrtime, arrsize, finalsize, "
+                                 "finaltime, run_contain, treated, status) "
+                                 "VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?)", -1,
+                             &istmt, NULL );
+
 error:
     if( rc != SQLITE_OK )
     {
@@ -109,9 +115,38 @@ int WfipsResult::Close()
     return sqlite3_close( db );
 }
 
-int WfipsResult::WriteRecord()
+int WfipsResult::WriteRecord( CResults &oResults )
 {
-    return 0;
+    int rc;
+    int nYear, nFireNum, nJulDay, nArrTime;
+    std::string oStatus;
+    double dfArrSize;
+    double dfFinalSize, dfFinalTime;
+    int bTreated, bRunContain;
+    int nFullYear = oResults.GetFire().GetScenario();
+    nYear = oResults.GetFire().GetScenario();
+    nJulDay = oResults.GetFire().GetJulianDay();
+    nFireNum = oResults.GetFire().GetFireNumber();
+    nArrTime = (int)oResults.GetFireCost();
+    dfArrSize = oResults.GetFireSweep();
+    dfFinalSize = oResults.GetFireSize();
+    dfFinalTime = oResults.GetFireTime();
+    bTreated = oResults.GetFire().GetTreated();
+    bRunContain = oResults.GetFire().GetSimulateContain();
+    oStatus = oResults.GetStatus();
+    rc = sqlite3_bind_int( istmt, 1, nYear );
+    rc = sqlite3_bind_int( istmt, 2, nJulDay );
+    rc = sqlite3_bind_int( istmt, 3, nFireNum );
+    rc = sqlite3_bind_int( istmt, 4, nArrTime );
+    rc = sqlite3_bind_double( istmt, 5, dfArrSize );
+    rc = sqlite3_bind_double( istmt, 6, dfFinalSize );
+    rc = sqlite3_bind_double( istmt, 7, dfFinalTime );
+    rc = sqlite3_bind_int( istmt, 8, bRunContain );
+    rc = sqlite3_bind_int( istmt, 9, bTreated );
+    rc = sqlite3_bind_text( istmt, 10, oStatus.c_str(), -1, SQLITE_TRANSIENT );
+    rc = sqlite3_step( istmt );
+    rc = sqlite3_reset( istmt );
+    return SQLITE_OK;
 }
 
 WfipsResult::WfipsResult() {}

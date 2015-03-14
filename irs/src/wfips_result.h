@@ -34,6 +34,8 @@
 #include <sqlite3.h>
 #include "wfips_sqlite.h"
 
+#include "Results.h"
+
 class WfipsResult
 {
 
@@ -47,7 +49,9 @@ public:
     int StartTransaction();
     int Commit();
 
-    int WriteRecord();
+    int Valid() {return bValid;}
+
+    int WriteRecord( CResults &oResult );
 private:
     WfipsResult();
     WfipsResult( const WfipsResult &rhs );
@@ -60,6 +64,7 @@ private:
     int bValid;
 
     sqlite3 *db;
+    sqlite3_stmt *istmt;
 
 };
 

@@ -59,12 +59,17 @@ WfipsData::Init()
     bSpatialiteEnabled = 0;
     iScrap = 0;
     pszAnalysisAreaWkt = NULL;
+    poScenario = NULL;
+    pszRescPath = NULL;
+    poResult = NULL;
 }
 
 WfipsData::~WfipsData()
 {
     sqlite3_free( pszPath );
     sqlite3_free( pszRescPath );
+    sqlite3_free( pszResultPath );
+    delete poResult;
     sqlite3_close( db );
     sqlite3_free( (void*)pszAnalysisAreaWkt );
 }
@@ -929,8 +934,37 @@ WfipsData::SetAnalysisAreaMask( const char *pszMaskWkt )
 }
 
 int
+WfipsData::SetResultPath( const char *pszPath )
+{
+    if( pszPath == NULL )
+    {
+        return SQLITE_ERROR;
+    }
+    pszResultPath = sqlite3_mprintf( "%s", pszPath );
+    poResult = new WfipsResult( pszResultPath, this->pszPath );
+    if( !poResult->Valid() )
+    {
+        delete poResult;
+        poResult = NULL;
+        sqlite3_free( pszResultPath );
+        pszResultPath = NULL;
+        return SQLITE_ERROR;
+    }
+    return SQLITE_OK;
+}
+
+int
 WfipsData::WriteResults()
 {
+    int i, rc;
+    if( poResult == NULL )
+        return SQLITE_ERROR;
+    poResult->StartTransaction();
+    for( i = 0; i < poScenario->m_VResults.size(); i++ )
+    {
+        poResult->WriteRecord( poScenario->m_VResults[i] );
+    }
+    poResult->Commit();
     return 0;
 }
 
