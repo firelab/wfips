@@ -145,6 +145,11 @@ WfipsData::LoadDispatchLogic()
     int nLevels, anBps[4];
     int nBp, anRescCount[13][5];
     iLogic = 0;
+
+    /* Push a default displogic on so we avoid errors */
+    poScenario->m_VDispLogic.push_back( CDispLogic() );
+    DispLogIndexMap.insert( std::pair<std::string, int>( poScenario->m_VDispLogic[0].GetLogicID(), iLogic++ ) );
+
     while( sqlite3_step( stmt ) == SQLITE_ROW )
     {
         pszName = (const char*)sqlite3_column_text( stmt, 0 );
@@ -307,10 +312,13 @@ WfipsData::LoadFwas()
         it = DispLogIndexMap.find( pszLogic );
         if( it == DispLogIndexMap.end() )
         {
+            i = 0;
             printf("Failed to load logic: %s for fwa: %s\n", pszLogic, pszName);
-            continue;
         }
-        i = it->second;
+        else
+        {
+            i = it->second;
+        }
         poScenario->m_VFWA.push_back( CFWA( std::string( pszName ),
                                             std::string( "" ), nWalkIn,
                                             nPumpRoll, nHead, nTail, nPara,
