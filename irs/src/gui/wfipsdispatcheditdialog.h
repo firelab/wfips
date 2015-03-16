@@ -30,6 +30,7 @@
 
 #include <QDebug>
 #include <QDialog>
+#include <QFileDialog>
 #include <QListView>
 #include <QMouseEvent>
 #include <QString>
@@ -108,6 +109,7 @@ private slots:
     void ShowResources( QString dispLocName );
     void ClearEmptyLocations();
     void UpdateCost();
+    void SaveAs();
 
 signals:
     void SelectionChanged( const QgsFeatureIds &fids );

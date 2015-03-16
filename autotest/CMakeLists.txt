@@ -302,8 +302,14 @@ IF(RUN_SLOW_TESTS)
                   --run_test=wfipsdata/load_all_1 )
         ADD_TEST( wfips_run_small_1 ${EXECUTABLE_OUTPUT_PATH}/test_main
                   --run_test=wfipsdata/run_small_1 )
+        ADD_TEST( wfips_small_output_1 ${EXECUTABLE_OUTPUT_PATH}/test_main
+                  --run_test=wfipsdata/run_small_output_1 )
+        ADD_TEST( wfips_small_output_2 ${EXECUTABLE_OUTPUT_PATH}/test_main
+                  --run_test=wfipsdata/run_small_output_2 )
         ADD_TEST( wfips_run_gb_id_002 ${EXECUTABLE_OUTPUT_PATH}/test_main
                   --run_test=wfipsdata/run_gb_id_002 )
+        ADD_TEST( wfips_run_ca_ca_015 ${EXECUTABLE_OUTPUT_PATH}/test_main
+                  --run_test=wfipsdata/run_ca_ca_015 )
         #ADD_TEST( wfips_run_full_1 ${EXECUTABLE_OUTPUT_PATH}/test_main
                   #--run_test=wfipsdata/run_full_1 )
         #ADD_TEST(irs_test_avg_fires_1 ${EXECUTABLE_OUTPUT_PATH}/test_main

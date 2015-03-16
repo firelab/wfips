@@ -31,6 +31,7 @@ int
 WfipsData::LoadRescTypes()
 {
     sqlite3_stmt *stmt;
+    poScenario->m_VRescType.clear();
     sqlite3_prepare_v2( db, "SELECT * FROM resc_type", -1, &stmt,
                         NULL );
     poScenario->m_VRescType.clear();
@@ -43,9 +44,9 @@ WfipsData::LoadRescTypes()
         nDispDelay = sqlite3_column_int( stmt, 2 );
         nRespDelay = sqlite3_column_int( stmt, 3 );
         nSetupTime = sqlite3_column_int( stmt, 4 );
-        poScenario->m_VRescType.push_back( CRescType( pszName, nSpeed,
-                                                      nDispDelay, nRespDelay,
-                                                      nSetupTime ) );
+        poScenario->m_VRescType.push_back( CRescType( std::string( pszName ),
+                                                      nSpeed, nDispDelay,
+                                                      nRespDelay, nSetupTime ) );
     }
 
     sqlite3_finalize( stmt );
@@ -72,9 +73,10 @@ WfipsData::LoadProdRates()
         nFuel = sqlite3_column_int( stmt, 3 );
         pszSpecCond = (const char*)sqlite3_column_text( stmt, 4 );
         dfRate = sqlite3_column_double( stmt, 5 );
-        poScenario->m_VProdRates.push_back( CProdRates( pszName, nSlope, 
-                                                        nStaff, nFuel,
-                                                        pszSpecCond, dfRate ) );
+        poScenario->m_VProdRates.push_back( CProdRates( std::string( pszName ),
+                                                        nSlope, nStaff, nFuel,
+                                                        std::string( pszSpecCond ),
+                                                        dfRate ) );
     }
     sqlite3_finalize( stmt );
     stmt = NULL;
@@ -338,7 +340,8 @@ WfipsData::LoadFwas()
                                             adfRosCoeff, iFwa,
                                             poScenario->m_VDispLogic[i],
                                             std::string( pszFpu ) ) );
-        FwaIndexMap.insert( std::pair<std::string, int>( pszName, iFwa ) );
+        FwaIndexMap.insert( std::pair<std::string, int>( std::string( pszName ),
+                                                         iFwa ) );
         iFwa++;
     }
     assert( FwaIndexMap.size() == poScenario->m_VFWA.size() );
@@ -436,7 +439,7 @@ WfipsData::LoadDispatchLocations()
         {
             pszFwa = (const char*)sqlite3_column_text( astmt, 0 );
             dfDist = sqlite3_column_double( astmt, 1 );
-            it = FwaIndexMap.find( pszFwa );
+            it = FwaIndexMap.find( std::string( pszFwa ) );
             if( it != FwaIndexMap.end() )
             {
                 i = it->second;
@@ -530,6 +533,7 @@ WfipsData::LoadResources()
             }
             if( j == poScenario->m_VRescType.size() )
             {
+                printf( "Could not find resource type!\n" );
                 continue;
             }
 

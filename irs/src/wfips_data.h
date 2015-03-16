@@ -64,6 +64,7 @@
  #else
   #define WFIPS_DATA_TEST_PATH "/home/kyle/src/wfips/build/"
  #endif
+ #define WFIPS_TEST_OUTPUT_DB  "KYLE_WFIPS_TEST.DB"
 #endif
 
 #define WFIPS_SCRAP_BUFFER_SIZE 10
@@ -189,20 +190,19 @@ public:
 
     int SetAnalysisAreaMask( const char *pszWkt );
     int SetResultPath( const char *pszPath );
+    int WriteResults();
+    WfipsResult * GetResults() { return poResult; }
     /* XXX TO BE IMPLEMENTED XXX */
-    int SetLargeFireParams( int nJulStart, int nJulEnd, double dfNoRescProb,
-                            double dfTimeLimitProb, double dfSizeLimitProb,
-                            double dfExhaustProb );
     int RunScenario( int iYearIndex );
     /* Not implemented */
     int SetPrepositioning( double, double, double ){return 0;}
     /* int SetDrawdown(){return 0;} */
     int LoadIrsData( const char *pszAnalysisAreaWkt );
     int LoadIrsData();
-    int SampleLargeFire( int nJulStart, int nJulEnd, double dfNoRescProb,
-                         double dfTimeLimitProb, double dfSizeLimitProb,
-                         double dfExhaustProb ){return 0;}
-
+    int SimulateLargeFire( int nJulStart, int nJulEnd, double dfNoRescProb,
+                           double dfTimeLimitProb, double dfSizeLimitProb,
+                           double dfExhaustProb );
+    int Reset();
 
     /* XXX TO BE IMPLEMENTED XXX */
 
@@ -270,7 +270,6 @@ private:
     /* Results stuff */
     char* pszResultPath;
     WfipsResult *poResult;
-    int WriteResults();
 
     /* Diane's structs */
     CRunScenario *poScenario;

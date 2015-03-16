@@ -29,6 +29,32 @@
 
 #include "wfips_data.h"
 
+static char * GetFpuWkt( const char *pszFpu )
+{
+    int rc;
+    sqlite3 *db;
+    sqlite3_stmt *stmt;
+    const char *pszFpuDb = WFIPS_DATA_TEST_PATH FPU_DB;
+    char *pszWkt;
+    rc = sqlite3_open_v2( pszFpuDb, &db, SQLITE_OPEN_READONLY, NULL );
+    BOOST_REQUIRE( rc == 0 );
+    rc = sqlite3_enable_load_extension( db, 1 );
+    rc = sqlite3_load_extension( db, SPATIALITE_EXT, NULL, NULL );
+    rc = sqlite3_prepare_v2( db, "SELECT AsText(geometry) FROM fpu WHERE " \
+                                 "fpu_code=?",
+                             -1, &stmt, NULL );
+    BOOST_REQUIRE( rc == 0 );
+    rc = sqlite3_bind_text( stmt, 1, pszFpu, -1, NULL );
+    BOOST_REQUIRE( rc == 0 );
+    rc = sqlite3_bind_text( stmt, 1, pszFpu, -1, NULL );
+    rc = sqlite3_step( stmt );
+    BOOST_REQUIRE( rc == 100 );
+    pszWkt = sqlite3_mprintf( "%s", (const char*)sqlite3_column_text( stmt, 0 ) );
+    sqlite3_finalize( stmt );
+    sqlite3_close( db );
+    return pszWkt;
+}
+
 struct WfipsDataMock
 {
     WfipsDataMock()
@@ -351,7 +377,8 @@ BOOST_AUTO_TEST_CASE( run_small_1 )
     rc = poData->LoadScenario( 5, NULL, 0.0, 0, WFP_NO_TREAT, 0, 0 );
     BOOST_REQUIRE( rc == 0 );
     rc = poData->RunScenario( 0 );
-    BOOST_CHECK( rc == 0 );
+    BOOST_CHECK( rc == 1 );
+    poData->Reset();
 }
 
 BOOST_AUTO_TEST_CASE( run_full_1 )
@@ -362,36 +389,62 @@ BOOST_AUTO_TEST_CASE( run_full_1 )
     rc = poData->LoadScenario( 5, NULL, 0.0, 0, WFP_NO_TREAT, 0, 0 );
     BOOST_REQUIRE( rc == 0 );
     rc = poData->RunScenario( 0 );
-    BOOST_CHECK( rc == 0 );
+    BOOST_CHECK( rc == 1 );
 }
 
 BOOST_AUTO_TEST_CASE( run_gb_id_002 )
 {
     int rc;
-    sqlite3 *db;
-    sqlite3_stmt *stmt;
-    const char *pszFpuDb = WFIPS_DATA_TEST_PATH FPU_DB;
-    const char *pszWkt;
-    rc = sqlite3_open_v2( pszFpuDb, &db, SQLITE_OPEN_READONLY, NULL );
-    BOOST_REQUIRE( rc == 0 );
-    rc = sqlite3_enable_load_extension( db, 1 );
-    rc = sqlite3_load_extension( db, SPATIALITE_EXT, NULL, NULL );
-    rc = sqlite3_prepare_v2( db, "SELECT AsText(geometry) FROM fpu WHERE " \
-                                 "fpu_code='GB_ID_002'",
-                             -1, &stmt, NULL );
-    BOOST_REQUIRE( rc == 0 );
-    rc = sqlite3_step( stmt );
-    BOOST_REQUIRE( rc == 100 );
-    pszWkt = (const char*)sqlite3_column_text( stmt, 0 );
-
+    char *pszWkt;
+    pszWkt = GetFpuWkt( "GB_ID_002" );
     rc = poData->LoadIrsData( pszWkt );
     BOOST_REQUIRE( rc == 0 );
     rc = poData->LoadScenario( 5, pszWkt, 0.0, 0, WFP_NO_TREAT, 0, 0 );
     BOOST_REQUIRE( rc == 0 );
     rc = poData->RunScenario( 0 );
-    sqlite3_finalize( stmt );
-    sqlite3_close( db );
-    BOOST_CHECK( rc == 0 );
+    BOOST_CHECK( rc == 1 );
+}
+
+BOOST_AUTO_TEST_CASE( run_ca_ca_015 )
+{
+    int rc;
+    char *pszWkt;
+    pszWkt = GetFpuWkt( "CA_CA_015" );
+    rc = poData->LoadIrsData( pszWkt );
+    BOOST_REQUIRE( rc == 0 );
+    rc = poData->LoadScenario( 5, pszWkt, 0.0, 0, WFP_NO_TREAT, 0, 0 );
+    BOOST_REQUIRE( rc == 0 );
+    rc = poData->RunScenario( 0 );
+    BOOST_CHECK( rc == 1 );
+}
+
+BOOST_AUTO_TEST_CASE( run_small_output_1 )
+{
+    int rc;
+    rc = poData->LoadIrsData( "POLYGON((-114 47, -113 47, -113 46, -114 46, -114 47))" );
+    BOOST_REQUIRE( rc == 0 );
+    rc = poData->LoadScenario( 5, NULL, 0.0, 0, WFP_NO_TREAT, 0, 0 );
+    BOOST_REQUIRE( rc == 0 );
+    rc = poData->RunScenario( 0 );
+    BOOST_CHECK( rc == 1 );
+    poData->SetResultPath( WFIPS_TEST_OUTPUT_DB );
+    poData->WriteResults();
+    poData->Reset();
+}
+
+BOOST_AUTO_TEST_CASE( run_small_output_2 )
+{
+    int rc;
+    rc = poData->LoadIrsData( "POLYGON((-114 47, -113 47, -113 46, -114 46, -114 47))" );
+    BOOST_REQUIRE( rc == 0 );
+    rc = poData->LoadScenario( 5, NULL, 0.0, 0, WFP_NO_TREAT, 0, 0 );
+    BOOST_REQUIRE( rc == 0 );
+    rc = poData->RunScenario( 0 );
+    BOOST_CHECK( rc == 1 );
+    poData->SetResultPath( WFIPS_TEST_OUTPUT_DB );
+    poData->WriteResults();
+    poData->SimulateLargeFire( 1, 365, 1., 1., 1., 1. );
+    poData->Reset();
 }
 
 BOOST_AUTO_TEST_SUITE_END() /* irs */

@@ -28,6 +28,7 @@
 #ifndef WFIPS_RESULT_H_
 #define WFIPS_RESULT_H_
 
+#include <stdio.h>
 #include <stdlib.h>
 
 /* SQLite/Spatialite */
@@ -35,6 +36,18 @@
 #include "wfips_sqlite.h"
 
 #include "Results.h"
+
+#define NO_RESC_SENT_STR      "No Resources Sent"
+#define TIME_LIMIT_EXCEED_STR "TimeLimitExceeded"
+#define SIZE_LIMIT_EXCEED_STR "SizeLimitExceeded"
+#define EXHAUSTED_STR         "Exhausted"
+#define CONTAINED_STR         "Contained"
+
+static const char *apszEscapes[] = { NO_RESC_SENT_STR,
+                                   TIME_LIMIT_EXCEED_STR,
+                                   SIZE_LIMIT_EXCEED_STR,
+                                   EXHAUSTED_STR,
+                                   NULL };
 
 class WfipsResult
 {
@@ -52,6 +65,11 @@ public:
     int Valid() {return bValid;}
 
     int WriteRecord( CResults &oResult );
+
+    int SimulateLargeFire( int nJulStart, int nJulEnd, double dfNoRescProb,
+                           double dfTimeLimitProb, double dfSizeLimitProb,
+                           double dfExhaustProb );
+
 private:
     WfipsResult();
     WfipsResult( const WfipsResult &rhs );

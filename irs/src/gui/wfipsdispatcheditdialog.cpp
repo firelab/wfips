@@ -52,6 +52,8 @@ WfipsDispatchEditDialog::WfipsDispatchEditDialog( QWidget *parent ) :
              this, SLOT( ShowResources( QString ) ) );
     connect( ui->removeEmptyButton, SIGNAL( clicked() ),
              this, SLOT( ClearEmptyLocations() ) );
+    connect( ui->saveButton, SIGNAL( clicked() ),
+             this, SLOT( SaveAs() ) );
 }
 
 WfipsDispatchEditDialog::~WfipsDispatchEditDialog()
@@ -381,5 +383,13 @@ void WfipsDispatchEditDialog::UpdateCost()
     sqlite3_free( pszCostDbPath );
     rc = sqlite3_finalize( stmt );
     rc = sqlite3_close( db );
+}
+
+void WfipsDispatchEditDialog::SaveAs()
+{
+    QString rescOutPath =
+        QFileDialog::getSaveFileName( this, tr("Save resource data"),
+                                      ".", tr("WFIPS database file (*.db)") );
+    qDebug() << rescOutPath;
 }
 

@@ -62,6 +62,7 @@ WfipsData::Init()
     poScenario = NULL;
     pszRescPath = NULL;
     poResult = NULL;
+    pszResultPath = NULL;
 }
 
 WfipsData::~WfipsData()
@@ -968,17 +969,34 @@ WfipsData::WriteResults()
     return 0;
 }
 
+
+int
+WfipsData::SimulateLargeFire( int nJulStart, int nJulEnd, double dfNoRescProb,
+                              double dfTimeLimitProb, double dfSizeLimitProb,
+                              double dfExhaustProb )
+{
+    /* Check if we have a valid result object, and go. */
+    assert( poResult );
+    return poResult->SimulateLargeFire( nJulStart, nJulEnd, dfNoRescProb,
+                                        dfTimeLimitProb, dfSizeLimitProb,
+                                        dfExhaustProb );
+}
+
+int
+WfipsData::Reset()
+{
+    /* XXX: DO THESE GO HERE?! XXX */
+    poScenario->Reset();
+    poScenario->m_VResults.clear();
+    return 0;
+}
+
 int
 WfipsData::RunScenario( int iYearIdx )
 {
     int rc;
     rc = poScenario->RunScenario( 0, iYearIdx, NULL );
     poScenario->Output();
-    WriteResults();
-    /* XXX: DO THESE GO HERE?! XXX */
-    poScenario->Reset();
-    poScenario->m_VResults.clear();
-
     return rc;
 }
 

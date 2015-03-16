@@ -571,51 +571,50 @@ void WfipsMainWindow::SetStackIndex( QTreeWidgetItem *current,
         /* Resource map */
         case 3:
         case 4:
-            ui->stackedWidget->setCurrentIndex( 3 );
+            ui->stackedWidget->setCurrentIndex( 2 );
             ui->mapToolFrame->setEnabled( true );
             currentMapCanvas = dispatchMapCanvas;
             break;
         case 5:
-            ui->stackedWidget->setCurrentIndex( 4 );
+            ui->stackedWidget->setCurrentIndex( 3 );
             break;
         case 6:
-            ui->stackedWidget->setCurrentIndex( 5 );
+            ui->stackedWidget->setCurrentIndex( 4 );
             break;
         case 7:
-            ui->stackedWidget->setCurrentIndex( 6 );
+            ui->stackedWidget->setCurrentIndex( 5 );
             break;
         case 8:
-            ui->stackedWidget->setCurrentIndex( 7 );
+            ui->stackedWidget->setCurrentIndex( 6 );
             break;
         case 9:
-            ui->stackedWidget->setCurrentIndex( 8 );
+            ui->stackedWidget->setCurrentIndex( 7 );
             break;
         case 10:
-            ui->stackedWidget->setCurrentIndex( 9 );
+            ui->stackedWidget->setCurrentIndex( 8 );
             break;
         case 11:
-            ui->stackedWidget->setCurrentIndex( 10 );
+            ui->stackedWidget->setCurrentIndex( 9 );
             break;
         case 12:
-            ui->stackedWidget->setCurrentIndex( 11 );
+            ui->stackedWidget->setCurrentIndex( 10 );
             break;
         case 13:
-            ui->stackedWidget->setCurrentIndex( 12 );
+            ui->stackedWidget->setCurrentIndex( 11 );
             break;
         case 14:
-            ui->stackedWidget->setCurrentIndex( 13 );
+            ui->stackedWidget->setCurrentIndex( 12 );
             break;
         case 15:
         case 16:
         case 17:
         case 18:
-        case 19:
             break;
+        case 19:
         case 20:
         case 21:
         case 22:
         case 23:
-        case 24:
         /* 0 is the 'invisible root' */
         case 0:
         default:
@@ -1389,6 +1388,14 @@ void WfipsMainWindow::UpdateAsyncProgress( QFuture<int>&future )
 int WfipsMainWindow::RunIrs()
 {
     int rc, i;
+    QString outputFile =
+        QFileDialog::getSaveFileName( this, tr( "Save simulation as..." ),
+                                      "", tr( "WFIPS Database files (*.db)" ) );
+    if( outputFile == "" )
+        return 0;
+    char *pszPath = NULL;
+    char *pszDataPath = NULL;
+    pszPath = QStringToCString( outputFile );
     this->setDisabled( true );
 
     /* Get all parameters from GUI */
@@ -1497,16 +1504,41 @@ WfipsData::LoadScenario( int nYearIdx, const char *pszTreatWkt,
     }
     else
     {
+        this->statusBar()->showMessage( "Loading data..." );
         rc = poData->LoadIrsData();
+        this->statusBar()->showMessage( "Data loaded." );
+        this->statusBar()->showMessage( "Loading fires..." );
         rc = poData->LoadScenario( 5, (const char*)pszTreatWkt, dfTreatProb,
                                    nWfpMask, adfWfpProb, dfModRespProb,
                                    nIgnOwnership );
+        this->statusBar()->showMessage( "Fires loaded." );
+        rc = poData->SetResultPath( pszPath );
+        this->statusBar()->showMessage( "Running Scenario..." );
         rc = poData->RunScenario( 0 );
+        this->statusBar()->showMessage( "Simulation finished." );
+        this->statusBar()->showMessage( "Writing output..." );
+        rc = poData->WriteResults();
+        this->statusBar()->showMessage( "Output written." );
+        this->statusBar()->showMessage( "Simulating Large Fires..." );
+        //rc = poData->SimulateLargeFire();
+        this->statusBar()->showMessage( "Done." );
     }
     free( (void*)pszTreatWkt );
+    free( (void*)pszPath );
+    /* We should probably make our own, and leave this one alone */
+    poResults = poData->GetResults();
+    EnableResultsWidgets( outputFile );
     this->setEnabled( true );
     return rc;
 }
+
+void WfipsMainWindow::EnableResultsWidgets( QString resultsFile )
+{
+    ui->resultsFileEdit->setText( resultsFile );
+}
+
+
+
 
 /*
 ** XXX: Works when items aren't disabled.  Needs to be checked for disabled
