@@ -351,6 +351,7 @@ BOOST_AUTO_TEST_CASE( run_small_1 )
     rc = poData->LoadScenario( 5, NULL, 0.0, 0, WFP_NO_TREAT, 0, 0 );
     BOOST_REQUIRE( rc == 0 );
     rc = poData->RunScenario( 0 );
+    BOOST_CHECK( rc == 0 );
 }
 
 BOOST_AUTO_TEST_CASE( run_full_1 )
@@ -361,8 +362,37 @@ BOOST_AUTO_TEST_CASE( run_full_1 )
     rc = poData->LoadScenario( 5, NULL, 0.0, 0, WFP_NO_TREAT, 0, 0 );
     BOOST_REQUIRE( rc == 0 );
     rc = poData->RunScenario( 0 );
+    BOOST_CHECK( rc == 0 );
 }
 
+BOOST_AUTO_TEST_CASE( run_gb_id_002 )
+{
+    int rc;
+    sqlite3 *db;
+    sqlite3_stmt *stmt;
+    const char *pszFpuDb = WFIPS_DATA_TEST_PATH FPU_DB;
+    const char *pszWkt;
+    rc = sqlite3_open_v2( pszFpuDb, &db, SQLITE_OPEN_READONLY, NULL );
+    BOOST_REQUIRE( rc == 0 );
+    rc = sqlite3_enable_load_extension( db, 1 );
+    rc = sqlite3_load_extension( db, SPATIALITE_EXT, NULL, NULL );
+    rc = sqlite3_prepare_v2( db, "SELECT AsText(geometry) FROM fpu WHERE " \
+                                 "fpu_code='GB_ID_002'",
+                             -1, &stmt, NULL );
+    BOOST_REQUIRE( rc == 0 );
+    rc = sqlite3_step( stmt );
+    BOOST_REQUIRE( rc == 100 );
+    pszWkt = (const char*)sqlite3_column_text( stmt, 0 );
+
+    rc = poData->LoadIrsData( pszWkt );
+    sqlite3_finalize( stmt );
+    sqlite3_close( db );
+    BOOST_REQUIRE( rc == 0 );
+    rc = poData->LoadScenario( 5, pszWkt, 0.0, 0, WFP_NO_TREAT, 0, 0 );
+    BOOST_REQUIRE( rc == 0 );
+    rc = poData->RunScenario( 0 );
+    BOOST_CHECK( rc == 0 );
+}
 
 BOOST_AUTO_TEST_SUITE_END() /* irs */
 
