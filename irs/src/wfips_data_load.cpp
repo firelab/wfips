@@ -515,8 +515,8 @@ WfipsData::LoadResources()
             //nPercAvail = sqlite3_column_int( stmt, 11 );
             //dfDayCost = sqlite3_column_double( stmt, 12 );
             //dfHourCost = sqlite3_column_double( stmt, 13 );
-            nVolume = sqlite3_column_int( stmt, 9 );
-            bSeverity = sqlite3_column_int( stmt, 10 );
+			nVolume = sqlite3_column_int( stmt, 10 );
+            bSeverity = sqlite3_column_int( stmt, 11 );
             //pszVersion = (const char*)sqlite3_column_text( stmt, 16 );
             //dfFte = sqlite3_column_double( resc_stmt, 17 );
             //dfNumPositions = sqlite3_column_double( resc_stmt, 18 );

@@ -163,6 +163,7 @@ int CEngine::CreateContainValues( CFire fire, int firstarrival, std::vector< CPr
 	double walkinprodrate = crewprodrate * staffing / ( staffing - 1 ) * Multiplier;
 	int duration = CalcRemainingWorkshift( fire );
 	int pumptime = CalcEngProdTime();
+	assert( pumptime > 0 );
 	CFWA FWA = fire.GetFWA();
 	int engreloadtime = FWA.GetReloadDelay( 2 );
 	string description = GetRescID();
@@ -193,6 +194,7 @@ int CEngine::CreateContainValues( CFire fire, int firstarrival, std::vector< CPr
 		}
 	}
 	else	{
+		assert (m_Volume > 0);
 		// Is there a water tender in the analysis?  if so when does it arrive? 
 		int WTArrival = fire.GetWTArrivalTime();			// WTArrival = 10000 indicates no water tenders on the fire
 
