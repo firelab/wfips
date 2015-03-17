@@ -411,8 +411,6 @@ BOOST_AUTO_TEST_CASE( run_ca_ca_015 )
     char *pszWkt;
     pszWkt = GetFpuWkt( "CA_CA_015" );
     rc = poData->LoadIrsData( pszWkt );
-    sqlite3_finalize( stmt );
-    sqlite3_close( db );
     BOOST_REQUIRE( rc == 0 );
     rc = poData->LoadScenario( 5, pszWkt, 0.0, 0, WFP_NO_TREAT, 0, 0 );
     BOOST_REQUIRE( rc == 0 );
