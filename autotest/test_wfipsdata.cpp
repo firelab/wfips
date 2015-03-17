@@ -430,6 +430,7 @@ BOOST_AUTO_TEST_CASE( run_small_output_1 )
     poData->SetResultPath( WFIPS_TEST_OUTPUT_DB );
     poData->WriteResults();
     poData->Reset();
+    unlink( WFIPS_TEST_OUTPUT_DB );
 }
 
 BOOST_AUTO_TEST_CASE( run_small_output_2 )
@@ -443,8 +444,9 @@ BOOST_AUTO_TEST_CASE( run_small_output_2 )
     BOOST_CHECK( rc == 1 );
     poData->SetResultPath( WFIPS_TEST_OUTPUT_DB );
     poData->WriteResults();
-    poData->SimulateLargeFire( 1, 365, 1., 1., 1., 1. );
+    //poData->SimulateLargeFire( 1, 365, 1., 1., 1., 1. );
     poData->Reset();
+    unlink( WFIPS_TEST_OUTPUT_DB );
 }
 
 BOOST_AUTO_TEST_SUITE_END() /* irs */
