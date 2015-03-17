@@ -969,6 +969,21 @@ WfipsData::WriteResults()
     return 0;
 }
 
+int
+WfipsData::SpatialSummary( const char *pszWkt )
+{
+    int i, rc;
+    if( poResult == NULL )
+        return SQLITE_ERROR;
+    rc = poResult->SpatialSummary( "fpu" );
+    return rc;
+}
+
+int
+WfipsData::CloseResults()
+{
+    return poResult->Close();
+}
 
 int
 WfipsData::SimulateLargeFire( int nJulStart, int nJulEnd, double dfNoRescProb,

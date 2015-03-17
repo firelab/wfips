@@ -70,6 +70,8 @@ public:
                            double dfTimeLimitProb, double dfSizeLimitProb,
                            double dfExhaustProb );
 
+    int SpatialSummary( const char *pszKey );
+
 private:
     WfipsResult();
     WfipsResult( const WfipsResult &rhs );

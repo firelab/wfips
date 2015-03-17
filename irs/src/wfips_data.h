@@ -191,6 +191,8 @@ public:
     int SetAnalysisAreaMask( const char *pszWkt );
     int SetResultPath( const char *pszPath );
     int WriteResults();
+    int SpatialSummary( const char *pszKey );
+    int CloseResults();
     WfipsResult * GetResults() { return poResult; }
     /* XXX TO BE IMPLEMENTED XXX */
     int RunScenario( int iYearIndex );

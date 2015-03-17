@@ -1521,6 +1521,9 @@ WfipsData::LoadScenario( int nYearIdx, const char *pszTreatWkt,
         this->statusBar()->showMessage( "Output written." );
         this->statusBar()->showMessage( "Simulating Large Fires..." );
         //rc = poData->SimulateLargeFire();
+        this->statusBar()->showMessage( "Large Fire Simulation finished." );
+        this->statusBar()->showMessage( "Writing Spatial Summary Results..." );
+        rc = poData->SpatialSummary( "fpu" );
         this->statusBar()->showMessage( "Done." );
     }
     free( (void*)pszTreatWkt );

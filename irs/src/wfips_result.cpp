@@ -30,10 +30,19 @@
 WfipsResult::WfipsResult( const char *pszPath, const char *pszDataPath )
 {
     Init();
+    char c;
     if( pszPath )
+    {
         this->pszPath = sqlite3_mprintf( "%s", pszPath );
+    }
     if( pszDataPath )
-        this->pszDataPath = sqlite3_mprintf( "%s", pszDataPath );
+    {
+        c = pszDataPath[strlen(pszDataPath) -1];
+        if( c != '/' || c != '\\' )
+            this->pszDataPath = sqlite3_mprintf( "%s/", pszDataPath );
+        else
+            this->pszDataPath = sqlite3_mprintf( "%s", pszDataPath );
+    }
     Open();
 }
 
@@ -42,6 +51,7 @@ void WfipsResult::Init()
     pszPath = NULL;
     pszDataPath = NULL;
     bValid = 0;
+    db = NULL;
 }
 
 int WfipsResult::Open()
@@ -60,7 +70,6 @@ int WfipsResult::Open()
         db = NULL;
         return SQLITE_ERROR;
     }
-
     rc = sqlite3_enable_load_extension( db, 1 );
     WFIPS_CHECK_SQLITE;
     rc = sqlite3_load_extension( db, SPATIALITE_EXT, NULL, NULL );
@@ -85,12 +94,15 @@ int WfipsResult::Open()
                                  "VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?)", -1,
                              &istmt, NULL );
 
-    pszPath = sqlite3_mprintf( "%s%s", pszDataPath, FIG_DB );
-    WfipsAttachDb( db, pszPath, "fig" );
-    sqlite3_free( pszPath );
-    pszPath = sqlite3_mprintf( "%s%s", pszDataPath, LF_DB );
-    WfipsAttachDb( db, pszPath, "largefire" );
-    sqlite3_free( pszPath );
+    rc = sqlite3_exec( db, "SELECT InitSpatialMetadata(1)", NULL, NULL, NULL );
+
+    char *pszTmpPath;
+    pszTmpPath = sqlite3_mprintf( "%s%s", pszDataPath, FIG_DB );
+    WfipsAttachDb( db, pszTmpPath, "fig" );
+    sqlite3_free( pszTmpPath );
+    pszTmpPath = sqlite3_mprintf( "%s%s", pszDataPath, LF_DB );
+    WfipsAttachDb( db, pszTmpPath, "largefire" );
+    sqlite3_free( pszTmpPath );
 
 error:
     if( rc != SQLITE_OK )
@@ -116,7 +128,6 @@ int WfipsResult::Commit()
 
 WfipsResult::~WfipsResult()
 {
-    Close();
 }
 
 int WfipsResult::Close()
@@ -230,6 +241,110 @@ WfipsResult::SimulateLargeFire( int nJulStart, int nJulEnd, double dfNoRescProb,
     }
     sqlite3_finalize( stmt );
     sqlite3_finalize( lfstmt );
+    return 0;
+}
+
+int
+WfipsResult::SpatialSummary( const char *pszKey )
+{
+    pszKey = "fpu";
+    sqlite3_stmt *stmt, *sstmt;
+    int rc;
+    char szPath[8192];
+    char szFile[8192];
+    szPath[0] = '\0';
+    sprintf( szPath, "%s%s.db", pszDataPath, pszKey );
+    rc = WfipsAttachDb( db, szPath, pszKey );
+
+
+    if( rc != SQLITE_OK )
+        return rc;
+
+    /*
+    ** FIXME NEED TO ADD YEARS!
+    */
+
+    char *pszSql = sqlite3_mprintf( "SELECT fpu_code, %s.geometry, status, " \
+                                    "COUNT(status) FROM fire_result LEFT JOIN " \
+                                    "fig.fig USING(year, fire_num) JOIN %s ON " \
+                                    "ST_INTERSECTS(fig.geometry, %s.geometry) " \
+                                    "GROUP BY fpu_code, status", pszKey, pszKey,
+                                    pszKey );
+
+    rc = sqlite3_prepare_v2( db, pszSql, -1, &stmt, NULL );
+    rc = sqlite3_exec( db, "CREATE TABLE spatial_result(name,noresc,tlimit," \
+                           "slimit,exhaust,contain,contratio)", NULL, NULL, NULL );
+    rc = sqlite3_exec( db, "SELECT AddGeometryColumn('spatial_result','geometry', " \
+                           "4269,'MULTIPOLYGON','XY')", NULL, NULL, NULL );
+
+    rc = sqlite3_prepare_v2( db, "INSERT INTO spatial_result "
+                                 "VALUES(?,?,?,?,?,?,?,?)",
+                            -1, &sstmt, NULL );
+    char *pszName = NULL;
+    int nSize;
+    void *pGeom = NULL;
+    const char *pszStatus;
+    int nCount;
+    int nNoResc, nTimeLimit, nSizeLimit, nExhaust, nContain;
+    double dfRatio;
+    double dfSum;
+    while( sqlite3_step( stmt ) == SQLITE_ROW )
+    {
+        if( pszName == NULL || !EQUAL( pszName, (const char*)sqlite3_column_text( stmt, 0 ) ) )
+        {
+            if( pszName != NULL )
+            {
+                rc = sqlite3_bind_text( sstmt, 1, pszName, -1, NULL );
+                rc = sqlite3_bind_int( sstmt, 2, nNoResc );
+                rc = sqlite3_bind_int( sstmt, 3, nTimeLimit );
+                rc = sqlite3_bind_int( sstmt, 4, nSizeLimit );
+                rc = sqlite3_bind_int( sstmt, 5, nExhaust );
+                rc = sqlite3_bind_int( sstmt, 6, nContain );
+                dfSum = nNoResc + nTimeLimit + nSizeLimit + nExhaust + nContain;
+                dfRatio = (double)nContain / dfSum;
+                rc = sqlite3_bind_double( sstmt, 7, dfRatio );
+                rc = sqlite3_bind_blob( sstmt, 8, pGeom, nSize, NULL );
+                rc = sqlite3_step( sstmt );
+                rc = sqlite3_reset( sstmt );
+            }
+            sqlite3_free( pszName );
+            pszName = sqlite3_mprintf("%s", (const char*)sqlite3_column_text( stmt, 0 ) );
+            nSize = sqlite3_column_bytes( stmt, 1 );
+            sqlite3_free( pGeom );
+            pGeom = sqlite3_malloc( nSize );
+            memcpy( pGeom, sqlite3_column_blob( stmt, 1 ), nSize );
+            nNoResc = nTimeLimit = nSizeLimit = nNoResc = nExhaust = nContain = 0;
+        }
+        pszStatus = (const char *)sqlite3_column_text( stmt, 2 );
+        nCount = sqlite3_column_int( stmt, 3 );
+        if( EQUAL( pszStatus, "Contained" ) )
+            nContain += nCount;
+        if( EQUAL( pszStatus, "No Resources Sent" ) )
+            nNoResc += nCount;
+        if( EQUAL( pszStatus, "TimeLimitExceeded" ) )
+            nTimeLimit += nCount;
+        if( EQUAL( pszStatus, "SizeLimitExceeded" ) )
+            nSizeLimit += nCount;
+    }
+    rc = sqlite3_bind_text( sstmt, 1, pszName, -1, NULL );
+    rc = sqlite3_bind_int( sstmt, 2, nNoResc );
+    rc = sqlite3_bind_int( sstmt, 3, nTimeLimit );
+    rc = sqlite3_bind_int( sstmt, 4, nSizeLimit );
+    rc = sqlite3_bind_int( sstmt, 5, nExhaust );
+    rc = sqlite3_bind_int( sstmt, 6, nContain );
+    dfSum = nNoResc + nTimeLimit + nSizeLimit + nExhaust + nContain;
+    dfRatio = (double)nContain / dfSum;
+    rc = sqlite3_bind_double( sstmt, 7, dfRatio );
+    rc = sqlite3_bind_blob( sstmt, 8, pGeom, nSize, NULL );
+    rc = sqlite3_step( sstmt );
+
+    rc = sqlite3_reset( stmt );
+    rc = sqlite3_reset( sstmt );
+    rc = sqlite3_finalize( stmt );
+    rc = sqlite3_finalize( sstmt );
+    sqlite3_free( pszName );
+    sqlite3_free( pGeom );
+    sqlite3_free( pszSql );
     return 0;
 }
 
