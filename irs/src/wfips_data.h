@@ -64,7 +64,7 @@
  #else
   #define WFIPS_DATA_TEST_PATH "/home/kyle/src/wfips/build/"
  #endif
- #define WFIPS_TEST_OUTPUT_DB  "KYLE_WFIPS_TEST.DB"
+ #define WFIPS_TEST_OUTPUT_DB  ""
 #endif
 
 #define WFIPS_SCRAP_BUFFER_SIZE 10
