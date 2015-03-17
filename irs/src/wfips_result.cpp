@@ -123,7 +123,10 @@ int WfipsResult::Close()
 {
     sqlite3_free( pszPath );
     sqlite3_free( pszDataPath );
-    return sqlite3_close( db );
+    int rc = sqlite3_close( db );
+    db = NULL;
+    pszPath = pszDataPath = NULL;
+    return rc;
 }
 
 int WfipsResult::WriteRecord( CResults &oResults )
