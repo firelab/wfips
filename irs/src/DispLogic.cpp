@@ -18,9 +18,9 @@ CDispLogic::CDispLogic()
 {
 	m_LogicID = "DEFAULT DISPATCH LOGIC";
 	m_Index = "BI";
-	m_NumLevels = 3;
+	m_NumLevels = 5;
 	for ( int i = 0; i < 4; i++ )	
-		m_BreakPoints.push_back(i * 5);							
+		m_BreakPoints.push_back((i+1) * 5);							
 	m_BreakPoints.push_back(0);
 	
 	for ( int i = 0; i < 13; i++ )	{
