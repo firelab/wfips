@@ -385,12 +385,12 @@ BOOST_AUTO_TEST_CASE( run_gb_id_002 )
     pszWkt = (const char*)sqlite3_column_text( stmt, 0 );
 
     rc = poData->LoadIrsData( pszWkt );
+    sqlite3_finalize( stmt );
+    sqlite3_close( db );
     BOOST_REQUIRE( rc == 0 );
     rc = poData->LoadScenario( 5, pszWkt, 0.0, 0, WFP_NO_TREAT, 0, 0 );
     BOOST_REQUIRE( rc == 0 );
     rc = poData->RunScenario( 0 );
-    sqlite3_finalize( stmt );
-    sqlite3_close( db );
     BOOST_CHECK( rc == 0 );
 }
 
