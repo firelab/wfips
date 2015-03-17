@@ -105,5 +105,17 @@ static const char *apszStatusStrings[] = { NO_RESC_SENT_STR,
 
 int WfipsAttachDb( sqlite3 *db, const char *pszPath, const char *pszName );
 
+class WfipsSqlite
+{
+
+public:
+
+    char *pszPath;
+    char *pszDataPath;
+
+protected:
+    int Attach(){ return 0; }
+};
+
 #endif /* WFIPS_SQLITE_H_ */
 

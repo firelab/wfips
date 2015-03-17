@@ -85,11 +85,22 @@ int WfipsResult::Open()
                                  "VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?)", -1,
                              &istmt, NULL );
 
+    pszPath = sqlite3_mprintf( "%s%s", pszDataPath, FIG_DB );
+    WfipsAttachDb( db, pszPath, "fig" );
+    sqlite3_free( pszPath );
+    pszPath = sqlite3_mprintf( "%s%s", pszDataPath, LF_DB );
+    WfipsAttachDb( db, pszPath, "largefire" );
+    sqlite3_free( pszPath );
+
 error:
     if( rc != SQLITE_OK )
     {
         sqlite3_close( db );
         bValid = 0;
+    }
+    else
+    {
+        bValid = 1;
     }
     return rc;
 }
@@ -147,6 +158,76 @@ int WfipsResult::WriteRecord( CResults &oResults )
     rc = sqlite3_step( istmt );
     rc = sqlite3_reset( istmt );
     return SQLITE_OK;
+}
+int
+WfipsResult::SimulateLargeFire( int nJulStart, int nJulEnd, double dfNoRescProb,
+                              double dfTimeLimitProb, double dfSizeLimitProb,
+                              double dfExhaustProb )
+{
+    int rc, i;
+    sqlite3_stmt *stmt, *lfstmt;
+    double adfProbs[4] = { dfNoRescProb, dfTimeLimitProb, dfSizeLimitProb, dfExhaustProb };
+    rc = sqlite3_exec( db, "CREATE TABLE IF NOT EXISTS " \
+                           "large_fire_result(year,fire_num,cost_acre,acres,pop)",
+                       NULL, NULL, NULL );
+
+    double dfRadius = 0.085;
+    int nLimit = 20;
+    int nDayDelta = 7;
+
+    rc = sqlite3_prepare_v2( db, "SELECT fig.year,fig.fire_num,fig.jul_day," \
+                                 "fig.geometry FROM fire_result LEFT JOIN fig " \
+                                 "USING(year,fire_num) WHERE status=?1 "
+                                 "AND fig.jul_day BETWEEN ?2 AND ?3",
+                             -1, &stmt, NULL );
+
+    rc = sqlite3_bind_int( stmt, 2, nJulStart );
+    rc = sqlite3_bind_int( stmt, 3, nJulEnd );
+
+    rc = sqlite3_prepare_v2( db, "SELECT acres, pop, cost " \
+                                 "FROM largefire WHERE ST_Intersects(" \
+                                 "ST_Buffer(?1, ?2), largefire.geometry) " \
+                                 "AND largefire.jday BETWEEN ?3 AND ?4 " \
+                                 "AND (ABS(RANDOM())/9223372036854775807.) > ?5 " \
+                                 "AND largefire.ROWID IN (SELECT " \
+                                 "pkid FROM idx_largefire_geometry WHERE " \
+                                 "xmin <= MbrMaxX(ST_Buffer(?1, ?2)) AND " \
+                                 "xmax >= MbrMinX(ST_Buffer(?1, ?2)) AND " \
+                                 "ymin <= MbrMaxY(ST_Buffer(?1, ?2)) AND " \
+                                 "ymax >= MbrMinY(ST_Buffer(?1, ?2))) " \
+                                 "ORDER BY RANDOM() LIMIT ?6",
+                             -1, &lfstmt, NULL );
+
+    int nYear, nFire, nJulDay;
+    int nSize;
+    const void *pGeom;
+    int nAcres, nCost, nPop;
+    for( i = 0; i < 4; i++ )
+    {
+        rc = sqlite3_bind_text( stmt, 1, apszEscapes[i], -1, NULL );
+        while( sqlite3_step( stmt ) == SQLITE_ROW )
+        {
+            nYear = sqlite3_column_int( stmt, 0 );
+            nFire = sqlite3_column_int( stmt, 1 );
+            nJulDay = sqlite3_column_int( stmt, 2 );
+            nSize = sqlite3_column_bytes( stmt, 3 );
+            pGeom = sqlite3_column_blob( stmt, 3 );
+            rc = sqlite3_bind_blob( lfstmt, 1, pGeom, nSize, NULL );
+            rc = sqlite3_bind_double( lfstmt, 2, dfRadius );
+            rc = sqlite3_bind_int( lfstmt, 3, nJulDay - nDayDelta );
+            rc = sqlite3_bind_int( lfstmt, 4, nJulDay + nDayDelta );
+            rc = sqlite3_bind_double( lfstmt, 5, adfProbs[i] );
+            rc = sqlite3_bind_int( lfstmt, 6, nLimit );
+            while( sqlite3_step( lfstmt ) == SQLITE_ROW )
+            {
+            }
+            rc = sqlite3_reset( lfstmt );
+        }
+        rc = sqlite3_reset( stmt );
+    }
+    sqlite3_finalize( stmt );
+    sqlite3_finalize( lfstmt );
+    return 0;
 }
 
 WfipsResult::WfipsResult() {}

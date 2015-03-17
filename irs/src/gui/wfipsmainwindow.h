@@ -96,6 +96,7 @@
 
 /* Data access */
 #include "wfips_data.h"
+#include "wfips_result.h"
 
 namespace Ui {
 class WfipsMainWindow;
@@ -115,6 +116,7 @@ private:
 
     /* Wfips data access */
     WfipsData *poData;
+    WfipsResult *poResults;
 
     /* CRS for map canvases */
     QgsCoordinateReferenceSystem crs;
@@ -268,6 +270,8 @@ private slots:
     void ShowMessage( const int messageType,
                       const int messageFlags,
                       const QString &message );
+
+    void EnableResultsWidgets( QString resultsFile );
 
 protected:
     void closeEvent( QCloseEvent *event );
