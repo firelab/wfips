@@ -40,10 +40,15 @@ WfipsData::LoadRescTypes()
     while( sqlite3_step( stmt ) == SQLITE_ROW )
     {
         pszName = (const char*)sqlite3_column_text( stmt, 0 );
+        assert( pszName );
         nSpeed = sqlite3_column_int( stmt, 1 );
+        assert( nSpeed >= 0 );
         nDispDelay = sqlite3_column_int( stmt, 2 );
+        assert( nDispDelay >= 0 );
         nRespDelay = sqlite3_column_int( stmt, 3 );
+        assert( nRespDelay >= 0 );
         nSetupTime = sqlite3_column_int( stmt, 4 );
+        assert( nSetupTime >= 0 );
         poScenario->m_VRescType.push_back( CRescType( std::string( pszName ),
                                                       nSpeed, nDispDelay,
                                                       nRespDelay, nSetupTime ) );
@@ -68,11 +73,17 @@ WfipsData::LoadProdRates()
     while( sqlite3_step( stmt ) == SQLITE_ROW )
     {
         pszName = (const char*)sqlite3_column_text( stmt, 0 );
+        assert( pszName );
         nSlope = sqlite3_column_int( stmt, 1 );
+        assert( nSlope >= 0 );
         nStaff = sqlite3_column_int( stmt, 2 );
+        assert( nStaff >= 0 );
         nFuel = sqlite3_column_int( stmt, 3 );
+        assert( nFuel > 0 );
         pszSpecCond = (const char*)sqlite3_column_text( stmt, 4 );
+        /* No assertion ? */
         dfRate = sqlite3_column_double( stmt, 5 );
+        assert( dfRate >= 0 );
         poScenario->m_VProdRates.push_back( CProdRates( std::string( pszName ),
                                                         nSlope, nStaff, nFuel,
                                                         std::string( pszSpecCond ),
@@ -159,12 +170,16 @@ WfipsData::LoadDispatchLogic()
     while( sqlite3_step( stmt ) == SQLITE_ROW )
     {
         pszName = (const char*)sqlite3_column_text( stmt, 0 );
+        assert( pszName );
         pszIndice = (const char*)sqlite3_column_text( stmt, 1 );
+        /* No assert currently, but do we assume BI? */
         nLevels = sqlite3_column_int( stmt, 2 );
-        assert( nLevels <= 5 );
+        assert( nLevels >= 3 && nLevels <= 5 );
         memset( anBps, 0, sizeof( int ) * 4 );
         for( i = 0; i < nLevels - 1; i++ )
+        {
             anBps[i] = sqlite3_column_int( stmt, 3 + i );
+        }
         sqlite3_bind_text( rstmt, 1, pszName, -1, NULL );
         i = 0;
         memset( anRescCount, 0, sizeof( int ) * 13 * 5 );
@@ -173,6 +188,8 @@ WfipsData::LoadDispatchLogic()
             for( j = 0; j < 13; j++ )
             {
                 anRescCount[j][i] = sqlite3_column_int( rstmt, j+2 );
+                assert( anRescCount[j][i] >= 0 );
+                assert( i < 5 );
             }
             i++;
         }
@@ -257,31 +274,50 @@ WfipsData::LoadFwas()
     while( sqlite3_step( stmt ) == SQLITE_ROW )
     {
         pszName = (const char *)sqlite3_column_text( stmt, 1 );
+        assert( pszName );
         pszFpu = (const char *)sqlite3_column_text( stmt, 2 );
+        assert( pszFpu );
         // FMG 3
         nWalkIn = sqlite3_column_int( stmt, 4 );
+        assert( nWalkIn >= 0 || nWalkIn <= 100 );
         nPumpRoll = sqlite3_column_int( stmt, 5 );
+        assert( nPumpRoll >= 0 || nPumpRoll <= 100 );
         nHead = sqlite3_column_int( stmt, 6 );
+        assert( nHead >= 0 || nHead <= 100 );
         nTail = sqlite3_column_int( stmt, 7 );
+        assert( nTail >= 0 || nTail <= 100 );
         nPara = sqlite3_column_int( stmt, 8 );
+        assert( nPara >= 0 || nPara <= 100 );
+        assert( nPara + nTail + nHead < 101 );
         dfAttDist = sqlite3_column_double( stmt, 9 );
+        assert( dfAttDist >= 0.0 );
         bWaterDrops = sqlite3_column_int( stmt, 10 );
+        assert( bWaterDrops == 0 || bWaterDrops == 1 );
         bExcluded = sqlite3_column_int( stmt, 11 );
+        assert( bExcluded == 0 || bExcluded == 1 );
         dfDiscSize = sqlite3_column_double( stmt, 12 );
+        assert( dfDiscSize >= 0 );
         dfEslSize = sqlite3_column_double( stmt, 13 );
+        assert( dfEslSize >= 0 );
         dfEslTime = sqlite3_column_double( stmt, 14 );
+        assert( dfEslTime >= 0 );
         dfAirGrnd = sqlite3_column_double( stmt, 15 );
+        assert( dfAirGrnd >= 0 );
         nFirstDelay = sqlite3_column_int( stmt, 16 );
+        assert( nFirstDelay >= 0 );
         pszLogic = (const char *)sqlite3_column_text( stmt, 17 );
+        assert( pszLogic );
         memset( anReload, 0, sizeof( int ) * 5 );
         for( i = 0; i < 5; i++ )
         {
             anReload[i] = sqlite3_column_int( stmt, 18+i );
+            assert( anReload[i] >= 0 );
         }
         memset( anWalkIn, 0, sizeof( int ) * 6 );
         for( i = 0; i < 6; i++ )
         {
             anWalkIn[i] = sqlite3_column_int( stmt, 18+5+i );
+            assert( anWalkIn[i] >= 0 );
         }
         /*
         ** We use defaults now for some delays: From FPA:
@@ -298,6 +334,7 @@ WfipsData::LoadFwas()
         int anPostEscape[6] = {20,20, 20,20,20,120};
         int anPostUnused[6] = {10,10, 10,10,10,10};
         int anPostUsed[6]   = {30,120,30,30,30,120};
+        /* Fixed, no assert */
 
 
         /*
@@ -311,10 +348,12 @@ WfipsData::LoadFwas()
             aoRos[i] = std::string( "NA" );
             adfRosCoeff[i] = 1.0;
         }
+        /* Fixed, no assert */
         for( i = 0; i < 24; i++ )
         {
-            adfDiurn[i] = 0.;
+            adfDiurn[i] = 1.;
         }
+        /* Fixed, no assert */
 
         /*
         ** The value of this is up for discussion...
@@ -420,6 +459,7 @@ WfipsData::LoadDispatchLocations()
     while( sqlite3_step( stmt ) == SQLITE_ROW )
     {
         pszName = (const char*)sqlite3_column_text( stmt, 0 );
+        assert( pszName );
         rc = sqlite3_bind_text( estmt, 1, pszName, -1, NULL );
         if( sqlite3_step( estmt ) != SQLITE_ROW ||
             sqlite3_column_int( estmt, 0 ) < 1 )
@@ -428,9 +468,13 @@ WfipsData::LoadDispatchLocations()
             continue;
         }
         pszFpu = (const char*)sqlite3_column_text( stmt, 1 );
+        assert( pszFpu );
         nCallBack = sqlite3_column_int( stmt, 2 );
+        assert( nCallBack >= 0 );
         dfX = sqlite3_column_double( stmt, 3 );
+        assert( dfX > -180 && dfX < 360 );
         dfY = sqlite3_column_double( stmt, 4 );
+        assert( dfY > -180 && dfY < 360 );
         CDispLoc oDispLoc( std::string( pszName ), nCallBack,
                            std::string( pszFpu ), dfY, dfX );
 
@@ -438,7 +482,9 @@ WfipsData::LoadDispatchLocations()
         while( sqlite3_step( astmt ) == SQLITE_ROW )
         {
             pszFwa = (const char*)sqlite3_column_text( astmt, 0 );
+            assert( pszFwa );
             dfDist = sqlite3_column_double( astmt, 1 );
+            assert( dfDist >= 0 );
             it = FwaIndexMap.find( std::string( pszFwa ) );
             if( it != FwaIndexMap.end() )
             {
@@ -492,6 +538,7 @@ WfipsData::LoadResources()
 
     std::multimap<std::string, CResource*>resc_map;
 
+    /* Fix query for explicit columns */
     rc = sqlite3_prepare_v2( db, "SELECT * FROM resource WHERE disploc=?", -1,
                              &stmt, NULL );
 
@@ -504,24 +551,29 @@ WfipsData::LoadResources()
         while( sqlite3_step( stmt ) == SQLITE_ROW )
         {
             pszName = (const char*)sqlite3_column_text( stmt, 0 );
+            assert( pszName );
             pszType = (const char*)sqlite3_column_text( stmt, 1 );
+            assert( pszType );
             nStaffing = sqlite3_column_int( stmt, 2 );
+            /* Maybe should be > 0 */
+            assert( nStaffing >= 0 );
             pszStartTime = (const char*)sqlite3_column_text( stmt, 3 );
+            assert( pszStartTime && atoi( pszStartTime ) >= 0 && atoi( pszStartTime ) < 2400 );
             pszEndTime = (const char*)sqlite3_column_text( stmt, 4 );
+            assert( pszEndTime && atoi( pszEndTime ) >= 0 && atoi( pszEndTime ) < 2400 );
+            /*
+            ** XXX Add better checks.
+            */
             pszStartDay = apszWfipsDayOfWeek[sqlite3_column_int( stmt, 5 )];
             pszEndDay = apszWfipsDayOfWeek[sqlite3_column_int( stmt, 6 )];
             nStartSeason = sqlite3_column_int( stmt, 7 );
+            assert( nStartSeason > 0 && nStartSeason <= 365 );
             nEndSeason = sqlite3_column_int( stmt, 8 );
-            //nPercAvail = sqlite3_column_int( stmt, 11 );
-            //dfDayCost = sqlite3_column_double( stmt, 12 );
-            //dfHourCost = sqlite3_column_double( stmt, 13 );
-			nVolume = sqlite3_column_int( stmt, 10 );
+            assert( nEndSeason > 0 && nEndSeason <= 365 );
+            nVolume = sqlite3_column_int( stmt, 10 );
+            assert( nVolume >= 0 );
             bSeverity = sqlite3_column_int( stmt, 11 );
-            //pszVersion = (const char*)sqlite3_column_text( stmt, 16 );
-            //dfFte = sqlite3_column_double( resc_stmt, 17 );
-            //dfNumPositions = sqlite3_column_double( resc_stmt, 18 );
-            //dfAnnualCost = sqlite3_column_double( resc_stmt, 19 );
-            //dfVehicleCost = sqlite3_column_double( resc_stmt, 20 );
+            assert( bSeverity == 0 || bSeverity == 1 );
 
             /* We need a resc type object for the resource constructor */
             j = 0;
@@ -562,6 +614,7 @@ WfipsData::LoadResources()
             }
             else if( EQUALN( pszType, "EN", 2 ) )
             {
+                assert( nVolume > 0 );
                 poScenario->m_VResource.push_back( new CEngine( pszName,
                                                    poScenario->m_VRescType[j], nStaffing,
                                                    pszStartTime, pszEndTime, 
