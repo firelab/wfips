@@ -172,7 +172,7 @@ WfipsData::LoadDispatchLogic()
         {
             for( j = 0; j < 13; j++ )
             {
-                anRescCount[j][i] = sqlite3_column_int( stmt, j+2 );
+                anRescCount[j][i] = sqlite3_column_int( rstmt, j+2 );
             }
             i++;
         }
