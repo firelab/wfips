@@ -52,6 +52,7 @@ void WfipsResult::Init()
     pszDataPath = NULL;
     bValid = 0;
     db = NULL;
+    istmt = NULL;
 }
 
 int WfipsResult::Open()
@@ -150,6 +151,7 @@ int WfipsResult::Close()
 {
     sqlite3_free( pszPath );
     sqlite3_free( pszDataPath );
+    sqlite3_finalize( istmt );
     int rc = sqlite3_close( db );
     db = NULL;
     pszPath = pszDataPath = NULL;

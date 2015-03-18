@@ -390,6 +390,15 @@ BOOST_AUTO_TEST_CASE( run_full_1 )
     BOOST_REQUIRE( rc == 0 );
     rc = poData->RunScenario( 0 );
     BOOST_CHECK( rc == 1 );
+    rc = poData->SetResultPath( WFIPS_TEST_OUTPUT_DB );
+    BOOST_CHECK( rc == 0 );
+    rc = poData->WriteResults();
+    BOOST_CHECK( rc == 0 );
+    rc = poData->SpatialSummary( "fpu" );
+    BOOST_CHECK( rc == 0 );
+    rc = poData->CloseResults();
+    BOOST_CHECK( rc == 0 );
+    unlink( WFIPS_TEST_OUTPUT_DB );
 }
 
 BOOST_AUTO_TEST_CASE( run_gb_id_002 )
@@ -403,6 +412,15 @@ BOOST_AUTO_TEST_CASE( run_gb_id_002 )
     BOOST_REQUIRE( rc == 0 );
     rc = poData->RunScenario( 0 );
     BOOST_CHECK( rc == 1 );
+    rc = poData->SetResultPath( WFIPS_TEST_OUTPUT_DB );
+    BOOST_CHECK( rc == 0 );
+    rc = poData->WriteResults();
+    BOOST_CHECK( rc == 0 );
+    rc = poData->SpatialSummary( "fpu" );
+    BOOST_CHECK( rc == 0 );
+    rc = poData->CloseResults();
+    BOOST_CHECK( rc == 0 );
+    unlink( WFIPS_TEST_OUTPUT_DB );
 }
 
 BOOST_AUTO_TEST_CASE( run_ca_ca_015 )
@@ -416,6 +434,15 @@ BOOST_AUTO_TEST_CASE( run_ca_ca_015 )
     BOOST_REQUIRE( rc == 0 );
     rc = poData->RunScenario( 0 );
     BOOST_CHECK( rc == 1 );
+    rc = poData->SetResultPath( WFIPS_TEST_OUTPUT_DB );
+    BOOST_CHECK( rc == 0 );
+    rc = poData->WriteResults();
+    BOOST_CHECK( rc == 0 );
+    rc = poData->SpatialSummary( "fpu" );
+    BOOST_CHECK( rc == 0 );
+    rc = poData->CloseResults();
+    BOOST_CHECK( rc == 0 );
+    unlink( WFIPS_TEST_OUTPUT_DB );
 }
 
 BOOST_AUTO_TEST_CASE( run_small_output_1 )
@@ -427,10 +454,10 @@ BOOST_AUTO_TEST_CASE( run_small_output_1 )
     BOOST_REQUIRE( rc == 0 );
     rc = poData->RunScenario( 0 );
     BOOST_CHECK( rc == 1 );
-    poData->SetResultPath( WFIPS_TEST_OUTPUT_DB );
-    poData->WriteResults();
-    poData->CloseResults();
-    poData->Reset();
+    rc = poData->SetResultPath( WFIPS_TEST_OUTPUT_DB );
+    rc = poData->WriteResults();
+    rc = poData->CloseResults();
+    rc = poData->Reset();
     unlink( WFIPS_TEST_OUTPUT_DB );
 }
 
