@@ -1852,6 +1852,7 @@ bool CRunScenario::DeployResources( int Debugging, int f, int scenario )
 					}
 
 				}
+			}
 
 		// Change the workshift variables for the resources that were deployed: CResource m_AvailableTime and m_WorkshiftStartTime
 		double FireTime = m_VFire[ f ].FireStartTime() + m_VResults[ m_VResults.size()-1 ].GetFireTime();
@@ -1859,6 +1860,7 @@ bool CRunScenario::DeployResources( int Debugging, int f, int scenario )
 		int FireEndTime = static_cast< int >(FireTime);
 		if ( FireTime - FireEndTime > 0.5)
 			FireEndTime = FireEndTime + 1;
+		string Status = m_VResults[m_VResults.size()-1].GetStatus();
 		
 		for ( Iterator = LDeployedResources.begin(); Iterator != LDeployedResources.end(); Iterator++ )	{
 			// If the fire end time is before sunrise do not adjust aerial or aerial delivered resources
@@ -1869,14 +1871,14 @@ bool CRunScenario::DeployResources( int Debugging, int f, int scenario )
 		
 				// Determine the time when the resource will be available to deploy to another fire
 				int PostFireDelay = 0;
-				if ( m_VResults[ m_VResults.size()-1 ].GetStatus() == "Contained" )	{
+				if ( Status == "Contained" )	{
 			
 					if (FireEndTime < ( *Iterator )->GetInitArrivalTime() )	// Resource is deployed but not used on fire
 						PostFireDelay = m_VFire[ f ].GetFWA().GetPostContUnusedDelay( ( *Iterator )->GetDelayType() );
 					else
 						PostFireDelay = m_VFire[ f ].GetFWA().GetPostContUsedDelay( ( *Iterator )->GetDelayType() );
 				}
-				else
+				else if (Status != "Monitor")  
 					PostFireDelay = m_VFire[ f ].GetFWA().GetEscapeDelay( ( *Iterator )->GetDelayType() );
 	
 				// Determine the time when the resource is next available
@@ -1904,13 +1906,13 @@ bool CRunScenario::DeployResources( int Debugging, int f, int scenario )
 				int workshiftlength = ( *Iterator )->GetWorkshiftLength();		// Workshift length in minutes since midnight
 				int workshiftend = workshiftstart + workshiftlength;	// Workshift end time in minutes since midnight
 				int workshiftendyear = workshiftend + (24 * 60 * (julian-1));	// Workshift end time in minutes since beginning of year
-				if ( workshiftend < endtime )
+				if ( workshiftend < endtime && Status != "Monitor")
 					endtime = workshiftend;								// If the workshift end is reached before the fire containment effort ends
 
 				// Determine endtime for aerial resources
 				int endaerial = -1;
 				// Determine workshift end time for smokejumper aircraft
-				if ( ( *Iterator )->GetDispatchType() == 9	)	{
+				if ( ( *Iterator )->GetDispatchType() == 9 && Status != "Monitor"	)	{
 					CAerial *Aerial = dynamic_cast< CAerial * >( ( *Iterator ));
 					if ( Aerial != 0 )	{
 						int NextCrewArrival = Aerial->GetNextLoadArrival();		// This is the time the last crew arrived at the fire
@@ -1928,7 +1930,7 @@ bool CRunScenario::DeployResources( int Debugging, int f, int scenario )
 				}
 
 				// Determine workshift end time for helicopter 
-				if ( ( *Iterator )->GetDispatchType() == 6	)	{
+				if ( ( *Iterator )->GetDispatchType() == 6 && Status != "Monitor"	)	{
 
 					CHelicopter* Helic = dynamic_cast< CHelicopter* >( *Iterator );
 
@@ -1994,7 +1996,7 @@ bool CRunScenario::DeployResources( int Debugging, int f, int scenario )
 				}
 			
 				// Determine workshift end time for other aerial resources 
-				if ( ( *Iterator )->GetDispatchType() == 0 || ( *Iterator )->GetDispatchType() == 8	)	{
+				if ( (( *Iterator )->GetDispatchType() == 0 || ( *Iterator )->GetDispatchType() == 8) && Status != "Monitor")	{
 					// Aircraft used for drops, determine end time based on sunset
 						int DropsBegin = ( *Iterator )->GetInitArrivalTime();
 					if ( DropsBegin < firstarrival )
@@ -2094,7 +2096,7 @@ bool CRunScenario::DeployResources( int Debugging, int f, int scenario )
 	if ( Debugging > 0 )
 		PrintRescWorkYear( LDeployedResources, m_VFire[f], FireEndTime );
 		//cout << "Printed resource work year information \n";
-	}
+	
 
 	// If using the dispatchers to deploy resources
 	if ( DispMethod == 1 )
