@@ -615,6 +615,7 @@ WfipsData::LoadResources()
             else if( EQUALN( pszType, "EN", 2 ) )
             {
                 assert( nVolume > 0 );
+                assert( nStaffing < 6 );
                 poScenario->m_VResource.push_back( new CEngine( pszName,
                                                    poScenario->m_VRescType[j], nStaffing,
                                                    pszStartTime, pszEndTime, 
