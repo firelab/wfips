@@ -271,6 +271,7 @@ WfipsResult::SpatialSummary( const char *pszKey )
                                     "GROUP BY fpu_code, status", pszKey, pszKey,
                                     pszKey );
 
+    StartTransaction();
     rc = sqlite3_prepare_v2( db, pszSql, -1, &stmt, NULL );
     rc = sqlite3_exec( db, "CREATE TABLE spatial_result(name,noresc,tlimit," \
                            "slimit,exhaust,contain,contratio)", NULL, NULL, NULL );
@@ -342,6 +343,7 @@ WfipsResult::SpatialSummary( const char *pszKey )
     rc = sqlite3_reset( sstmt );
     rc = sqlite3_finalize( stmt );
     rc = sqlite3_finalize( sstmt );
+    Commit();
     sqlite3_free( pszName );
     sqlite3_free( pGeom );
     sqlite3_free( pszSql );

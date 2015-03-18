@@ -202,6 +202,20 @@ private:
 
     void ConstructDispatchWidgets();
 
+    /* Results location canvas */
+    QVBoxLayout *resultsMapLayout;
+    QgsMapCanvas *resultsMapCanvas;
+    QList<QgsMapCanvasLayer> resultsMapCanvasLayers;
+    QList<QgsMapLayer*> resultsLayers;
+
+    QgsMapTool *resultsPanTool;
+    QgsMapTool *resultsZoomInTool;
+    QgsMapTool *resultsZoomOutTool;
+    QgsMapTool *resultsIdentifyTool;
+    QgsMapTool *resultsSelectTool;
+
+    void ConstructResultsWidgets();
+
     /* Fuel mask related */
     QString fuelMaskSource;
     QString fuelMaskLayer;
@@ -261,6 +275,9 @@ private slots:
 
     /* Run the sucker */
     int RunIrs();
+
+    void ClearResults();
+    void ShowResults( QString qgisLayerPath );
 
     /* Settings */
     void ReadSettings();

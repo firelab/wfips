@@ -101,41 +101,6 @@
          <property name="text">
           <string>Results</string>
          </property>
-         <item>
-          <property name="text">
-           <string>Initial Attack Success</string>
-          </property>
-         </item>
-         <item>
-          <property name="text">
-           <string>Asset Utilization</string>
-          </property>
-         </item>
-         <item>
-          <property name="text">
-           <string>Large Fire Outcome</string>
-          </property>
-          <item>
-           <property name="text">
-            <string>Acreage</string>
-           </property>
-          </item>
-          <item>
-           <property name="text">
-            <string>Cost</string>
-           </property>
-          </item>
-          <item>
-           <property name="text">
-            <string>Population Affected</string>
-           </property>
-          </item>
-         </item>
-         <item>
-          <property name="text">
-           <string>Export</string>
-          </property>
-         </item>
         </item>
        </widget>
       </item>
@@ -355,7 +320,7 @@
          <enum>QFrame::Plain</enum>
         </property>
         <property name="currentIndex">
-         <number>10</number>
+         <number>9</number>
         </property>
         <widget class="QWidget" name="dataPage">
          <layout class="QVBoxLayout" name="verticalLayout_13">
@@ -2279,6 +2244,33 @@
               </layout>
              </item>
             </layout>
+           </widget>
+          </item>
+         </layout>
+        </widget>
+        <widget class="QWidget" name="page_4">
+         <layout class="QVBoxLayout" name="verticalLayout_7">
+          <item>
+           <widget class="QLabel" name="label_5">
+            <property name="text">
+             <string>Results</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QFrame" name="resultsMapFrame">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
+            <property name="frameShape">
+             <enum>QFrame::StyledPanel</enum>
+            </property>
+            <property name="frameShadow">
+             <enum>QFrame::Raised</enum>
+            </property>
            </widget>
           </item>
          </layout>

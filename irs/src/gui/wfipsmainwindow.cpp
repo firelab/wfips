@@ -47,6 +47,7 @@ WfipsMainWindow::WfipsMainWindow( QWidget *parent ) :
     ConstructToolButtons();
     ConstructAnalysisAreaWidgets();
     ConstructDispatchWidgets();
+    ConstructResultsWidgets();
 
     ConstructTreeWidget();
     AssignTreeWidgetIndices( ui->treeWidget->invisibleRootItem() );
@@ -100,6 +101,15 @@ WfipsMainWindow::~WfipsMainWindow()
     delete dispatchLocationMemLayer;
 
     delete dispatchEditDialog;
+
+    /* Dispatch Locations */
+    delete resultsMapCanvas;
+    delete resultsPanTool;
+    delete resultsZoomInTool;
+    delete resultsZoomOutTool;
+    delete resultsIdentifyTool;
+    delete resultsSelectTool;
+
     delete poData;
 }
 
@@ -521,6 +531,29 @@ void WfipsMainWindow::ConstructDispatchWidgets()
              this, SLOT( SelectDispatchLocations( QgsFeatureIds ) ) );
 }
 
+void WfipsMainWindow::ConstructResultsWidgets()
+{
+    resultsMapCanvas = new QgsMapCanvas( 0, 0 );
+    resultsMapCanvas->enableAntiAliasing( true );
+    resultsMapCanvas->setCanvasColor( Qt::white );
+    resultsMapCanvas->setDestinationCrs( crs );
+    resultsMapCanvas->freeze( false );
+    resultsMapCanvas->setVisible( true );
+    resultsMapCanvas->setWheelAction( QgsMapCanvas::WheelZoomToMouseCursor );
+    resultsMapCanvas->refresh();
+    resultsMapLayout = new QVBoxLayout( ui->resultsMapFrame );
+    resultsMapLayout->addWidget( resultsMapCanvas );
+
+    /* Map tools */
+    resultsPanTool = new QgsMapToolPan( resultsMapCanvas );
+    resultsZoomInTool = new QgsMapToolZoom( resultsMapCanvas, FALSE );
+    resultsZoomOutTool = new QgsMapToolZoom( resultsMapCanvas, TRUE);
+    resultsIdentifyTool = new WfipsIdentifyMapTool( resultsMapCanvas );
+    connect( resultsIdentifyTool, SIGNAL( WfipsIdentify( QList<QgsMapToolIdentify::IdentifyResult> ) ),
+             this, SLOT( Identify( QList<QgsMapToolIdentify::IdentifyResult> ) ) );
+    resultsSelectTool = new WfipsSelectMapTool( resultsMapCanvas );
+}
+
 void WfipsMainWindow::ConstructTreeWidget()
 {
     connect( ui->treeWidget,
@@ -598,23 +631,9 @@ void WfipsMainWindow::SetStackIndex( QTreeWidgetItem *current,
             break;
         case 12:
             ui->stackedWidget->setCurrentIndex( 10 );
-            break;
-        case 13:
-            ui->stackedWidget->setCurrentIndex( 11 );
-            break;
-        case 14:
-            ui->stackedWidget->setCurrentIndex( 12 );
-            break;
-        case 15:
-        case 16:
-        case 17:
-        case 18:
-            break;
-        case 19:
-        case 20:
-        case 21:
-        case 22:
-        case 23:
+            ui->mapToolFrame->setEnabled( true );
+            currentMapCanvas = resultsMapCanvas;
+             break;
         /* 0 is the 'invisible root' */
         case 0:
         default:
@@ -659,30 +678,35 @@ void WfipsMainWindow::UpdateMapToolType()
         qDebug() << "Setting map tool to pan";
         analysisAreaMapCanvas->setMapTool( analysisPanTool );
         dispatchMapCanvas->setMapTool( dispatchPanTool );
+        resultsMapCanvas->setMapTool( resultsPanTool );
     }
     else if( ui->mapZoomInToolButton->isChecked() )
     {
         qDebug() << "Setting map tool to zoom in";
         analysisAreaMapCanvas->setMapTool( analysisZoomInTool );
         dispatchMapCanvas->setMapTool( dispatchZoomInTool );
+        resultsMapCanvas->setMapTool( resultsZoomInTool );
     }
     else if( ui->mapZoomOutToolButton->isChecked() )
     {
         qDebug() << "Setting map tool to zoom out";
         analysisAreaMapCanvas->setMapTool( analysisZoomOutTool );
         dispatchMapCanvas->setMapTool( dispatchZoomOutTool );
+        resultsMapCanvas->setMapTool( resultsZoomOutTool );
     }
     else if( ui->mapIdentifyToolButton->isChecked() )
     {
         qDebug() << "Setting map tool to identify";
         analysisAreaMapCanvas->setMapTool( analysisIdentifyTool );
         dispatchMapCanvas->setMapTool( dispatchIdentifyTool );
+        resultsMapCanvas->setMapTool( resultsIdentifyTool );
     }
     else if( ui->mapSelectToolButton->isChecked() )
     {
         qDebug() << "Setting map tool to select";
         analysisAreaMapCanvas->setMapTool( analysisSelectTool );
         dispatchMapCanvas->setMapTool( dispatchSelectTool );
+        resultsMapCanvas->setMapTool( resultsSelectTool );
     }
 }
 
@@ -1250,7 +1274,6 @@ void WfipsMainWindow::UpdateSelectedDispatchLocations( const QgsFeatureIds &fids
     dispatchMapCanvas->refresh();
 }
 
-
 void WfipsMainWindow::HideDispatchLocations( QgsFeatureIds fids )
 {
     QgsVectorLayer *layer = dynamic_cast<QgsVectorLayer*>( dispatchLocationMemLayer );
@@ -1529,19 +1552,46 @@ WfipsData::LoadScenario( int nYearIdx, const char *pszTreatWkt,
     free( (void*)pszTreatWkt );
     free( (void*)pszPath );
     /* We should probably make our own, and leave this one alone */
-    poResults = poData->GetResults();
-    EnableResultsWidgets( outputFile );
+    ShowResults( outputFile + "|layername=spatial_result" );
     this->setEnabled( true );
     return rc;
+}
+
+void WfipsMainWindow::ClearResults()
+{
+    resultsMapCanvasLayers.clear();
+    resultsLayers.clear();
+    resultsMapCanvas->clear();
+    resultsMapCanvas->refresh();
+}
+
+void WfipsMainWindow::ShowResults( QString qgisResultPath )
+{
+    if( qgisResultPath == "" )
+        return;
+    QgsVectorLayer *layer = new QgsVectorLayer( qgisResultPath, "result", "ogr", true );
+    if( !layer->isValid() )
+    {
+        delete layer;
+        qDebug() << "Invalid result layer";
+        return;
+    }
+    ClearResults();
+    layer->setReadOnly( true );
+    QgsMapLayerRegistry::instance()->addMapLayer( layer, true );
+    resultsLayers.append( layer );
+    resultsMapCanvasLayers.append( QgsMapCanvasLayer( layer, true ) );
+    resultsMapCanvas->setLayerSet( resultsMapCanvasLayers );
+    resultsMapCanvas->setCurrentLayer( resultsMapCanvasLayers[0].layer() );
+    resultsMapCanvas->setExtent( layer->extent() );
+    resultsMapCanvas->refresh();
+    return;
 }
 
 void WfipsMainWindow::EnableResultsWidgets( QString resultsFile )
 {
     ui->resultsFileEdit->setText( resultsFile );
 }
-
-
-
 
 /*
 ** XXX: Works when items aren't disabled.  Needs to be checked for disabled
