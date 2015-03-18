@@ -72,6 +72,8 @@ public:
 
     int SpatialSummary( const char *pszKey );
 
+    int EnableVolatile( int bVolatile );
+
 private:
     WfipsResult();
     WfipsResult( const WfipsResult &rhs );

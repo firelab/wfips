@@ -126,6 +126,22 @@ int WfipsResult::Commit()
     return sqlite3_exec( db, "COMMIT", NULL, NULL, NULL );
 }
 
+int WfipsResult::EnableVolatile( int bVolatile )
+{
+    int rc;
+    if( bVolatile )
+    {
+        rc = sqlite3_exec( db, "PRAGMA synchronous=off", NULL, NULL, NULL );
+        rc = sqlite3_exec( db, "PRAGMA journal_mode=off", NULL, NULL, NULL );
+    }
+    else
+    {
+        rc = sqlite3_exec( db, "PRAGMA synchronous=on", NULL, NULL, NULL );
+        rc = sqlite3_exec( db, "PRAGMA journal_mode=delete", NULL, NULL, NULL );
+    }
+    return rc;
+}
+
 WfipsResult::~WfipsResult()
 {
 }
@@ -272,6 +288,7 @@ WfipsResult::SpatialSummary( const char *pszKey )
                                     pszKey );
 
     StartTransaction();
+    EnableVolatile( 1 );
     rc = sqlite3_prepare_v2( db, pszSql, -1, &stmt, NULL );
     rc = sqlite3_exec( db, "CREATE TABLE spatial_result(name,noresc,tlimit," \
                            "slimit,exhaust,contain,contratio)", NULL, NULL, NULL );
@@ -344,6 +361,7 @@ WfipsResult::SpatialSummary( const char *pszKey )
     rc = sqlite3_finalize( stmt );
     rc = sqlite3_finalize( sstmt );
     Commit();
+    EnableVolatile( 0 );
     sqlite3_free( pszName );
     sqlite3_free( pGeom );
     sqlite3_free( pszSql );
