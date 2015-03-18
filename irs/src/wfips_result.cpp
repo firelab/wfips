@@ -291,19 +291,20 @@ WfipsResult::SpatialSummary( const char *pszKey )
     EnableVolatile( 1 );
     rc = sqlite3_prepare_v2( db, pszSql, -1, &stmt, NULL );
     rc = sqlite3_exec( db, "CREATE TABLE spatial_result(name,noresc,tlimit," \
-                           "slimit,exhaust,contain,contratio)", NULL, NULL, NULL );
+                           "slimit,exhaust,contain,monitor,contratio)", NULL,
+                       NULL, NULL );
     rc = sqlite3_exec( db, "SELECT AddGeometryColumn('spatial_result','geometry', " \
                            "4269,'MULTIPOLYGON','XY')", NULL, NULL, NULL );
 
     rc = sqlite3_prepare_v2( db, "INSERT INTO spatial_result "
-                                 "VALUES(?,?,?,?,?,?,?,?)",
+                                 "VALUES(?,?,?,?,?,?,?,?,?)",
                             -1, &sstmt, NULL );
     char *pszName = NULL;
     int nSize;
     void *pGeom = NULL;
     const char *pszStatus;
     int nCount;
-    int nNoResc, nTimeLimit, nSizeLimit, nExhaust, nContain;
+    int nNoResc, nTimeLimit, nSizeLimit, nExhaust, nContain, nMonitor;
     double dfRatio;
     double dfSum;
     while( sqlite3_step( stmt ) == SQLITE_ROW )
@@ -319,7 +320,7 @@ WfipsResult::SpatialSummary( const char *pszKey )
                 rc = sqlite3_bind_int( sstmt, 5, nExhaust );
                 rc = sqlite3_bind_int( sstmt, 6, nContain );
                 dfSum = nNoResc + nTimeLimit + nSizeLimit + nExhaust + nContain;
-                dfRatio = (double)nContain / dfSum;
+                dfRatio = (double)(nContain + nMonitor) / dfSum;
                 rc = sqlite3_bind_double( sstmt, 7, dfRatio );
                 rc = sqlite3_bind_blob( sstmt, 8, pGeom, nSize, NULL );
                 rc = sqlite3_step( sstmt );
@@ -331,17 +332,20 @@ WfipsResult::SpatialSummary( const char *pszKey )
             sqlite3_free( pGeom );
             pGeom = sqlite3_malloc( nSize );
             memcpy( pGeom, sqlite3_column_blob( stmt, 1 ), nSize );
-            nNoResc = nTimeLimit = nSizeLimit = nNoResc = nExhaust = nContain = 0;
+            nNoResc = nTimeLimit = nSizeLimit = nNoResc = 0;
+            nExhaust = nMonitor = nContain = 0;
         }
         pszStatus = (const char *)sqlite3_column_text( stmt, 2 );
         nCount = sqlite3_column_int( stmt, 3 );
         if( EQUAL( pszStatus, "Contained" ) )
             nContain += nCount;
-        if( EQUAL( pszStatus, "No Resources Sent" ) )
+        else if( EQUAL( pszStatus, "Monitor" ) )
+            nMonitor += nCount;
+        else if( EQUAL( pszStatus, "No Resources Sent" ) )
             nNoResc += nCount;
-        if( EQUAL( pszStatus, "TimeLimitExceeded" ) )
+        else if( EQUAL( pszStatus, "TimeLimitExceeded" ) )
             nTimeLimit += nCount;
-        if( EQUAL( pszStatus, "SizeLimitExceeded" ) )
+        else if( EQUAL( pszStatus, "SizeLimitExceeded" ) )
             nSizeLimit += nCount;
     }
     rc = sqlite3_bind_text( sstmt, 1, pszName, -1, NULL );
@@ -350,6 +354,7 @@ WfipsResult::SpatialSummary( const char *pszKey )
     rc = sqlite3_bind_int( sstmt, 4, nSizeLimit );
     rc = sqlite3_bind_int( sstmt, 5, nExhaust );
     rc = sqlite3_bind_int( sstmt, 6, nContain );
+    rc = sqlite3_bind_int( sstmt, 7, nMonitor );
     dfSum = nNoResc + nTimeLimit + nSizeLimit + nExhaust + nContain;
     dfRatio = (double)nContain / dfSum;
     rc = sqlite3_bind_double( sstmt, 7, dfRatio );
