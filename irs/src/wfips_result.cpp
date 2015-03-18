@@ -282,13 +282,11 @@ WfipsResult::SpatialSummary( const char *pszKey )
 
     char *pszSql = sqlite3_mprintf( "SELECT fpu_code, %s.geometry, status, " \
                                     "COUNT(status) FROM fire_result LEFT JOIN " \
-                                    "fig.fig USING(year, fire_num) JOIN %s ON " \
-                                    "ST_INTERSECTS(fig.geometry, %s.geometry) " \
+                                    "fig.fig USING(year, fire_num) LEFT JOIN %s ON " \
+                                    "substr(fig.fwa_name,0,10)=fpu.fpu_code " \
                                     "GROUP BY fpu_code, status", pszKey, pszKey,
                                     pszKey );
 
-    StartTransaction();
-    EnableVolatile( 1 );
     rc = sqlite3_prepare_v2( db, pszSql, -1, &stmt, NULL );
     rc = sqlite3_exec( db, "CREATE TABLE spatial_result(name,noresc,tlimit," \
                            "slimit,exhaust,contain,monitor,contratio)", NULL,
@@ -307,6 +305,8 @@ WfipsResult::SpatialSummary( const char *pszKey )
     int nNoResc, nTimeLimit, nSizeLimit, nExhaust, nContain, nMonitor;
     double dfRatio;
     double dfSum;
+    StartTransaction();
+    EnableVolatile( 1 );
     while( sqlite3_step( stmt ) == SQLITE_ROW )
     {
         if( pszName == NULL || !EQUAL( pszName, (const char*)sqlite3_column_text( stmt, 0 ) ) )
@@ -319,10 +319,11 @@ WfipsResult::SpatialSummary( const char *pszKey )
                 rc = sqlite3_bind_int( sstmt, 4, nSizeLimit );
                 rc = sqlite3_bind_int( sstmt, 5, nExhaust );
                 rc = sqlite3_bind_int( sstmt, 6, nContain );
-                dfSum = nNoResc + nTimeLimit + nSizeLimit + nExhaust + nContain;
+                rc = sqlite3_bind_int( sstmt, 7, nMonitor );
+                dfSum = nNoResc + nTimeLimit + nSizeLimit + nExhaust + nContain + nMonitor;
                 dfRatio = (double)(nContain + nMonitor) / dfSum;
-                rc = sqlite3_bind_double( sstmt, 7, dfRatio );
-                rc = sqlite3_bind_blob( sstmt, 8, pGeom, nSize, NULL );
+                rc = sqlite3_bind_double( sstmt, 8, dfRatio );
+                rc = sqlite3_bind_blob( sstmt, 9, pGeom, nSize, NULL );
                 rc = sqlite3_step( sstmt );
                 rc = sqlite3_reset( sstmt );
             }
@@ -355,10 +356,10 @@ WfipsResult::SpatialSummary( const char *pszKey )
     rc = sqlite3_bind_int( sstmt, 5, nExhaust );
     rc = sqlite3_bind_int( sstmt, 6, nContain );
     rc = sqlite3_bind_int( sstmt, 7, nMonitor );
-    dfSum = nNoResc + nTimeLimit + nSizeLimit + nExhaust + nContain;
+    dfSum = nNoResc + nTimeLimit + nSizeLimit + nExhaust + nContain + nMonitor;
     dfRatio = (double)nContain / dfSum;
-    rc = sqlite3_bind_double( sstmt, 7, dfRatio );
-    rc = sqlite3_bind_blob( sstmt, 8, pGeom, nSize, NULL );
+    rc = sqlite3_bind_double( sstmt, 8, dfRatio );
+    rc = sqlite3_bind_blob( sstmt, 9, pGeom, nSize, NULL );
     rc = sqlite3_step( sstmt );
 
     rc = sqlite3_reset( stmt );
