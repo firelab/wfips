@@ -71,6 +71,7 @@ int WfipsResult::Open()
         db = NULL;
         return SQLITE_ERROR;
     }
+    //rc = sqlite3_exec( db, "PRAGMA threads=4", NULL, NULL, NULL );
     rc = sqlite3_enable_load_extension( db, 1 );
     WFIPS_CHECK_SQLITE;
     rc = sqlite3_load_extension( db, SPATIALITE_EXT, NULL, NULL );

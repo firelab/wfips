@@ -178,6 +178,7 @@ WfipsData::Open( const char *pszPath )
         rc = Attach( FormFileName( pszPath, apszDbFiles[i++] ) );
         WFIPS_CHECK_STATUS;
     }
+    //rc = sqlite3_exec( db, "PRAGMA threads=4", NULL, NULL, NULL );
     rc = sqlite3_enable_load_extension( db, 1 );
     if( rc != SQLITE_OK )
     {
@@ -960,12 +961,14 @@ WfipsData::WriteResults()
     int i, rc;
     if( poResult == NULL )
         return SQLITE_ERROR;
+    poResult->EnableVolatile( 1 );
     poResult->StartTransaction();
     for( i = 0; i < poScenario->m_VResults.size(); i++ )
     {
         poResult->WriteRecord( poScenario->m_VResults[i] );
     }
     poResult->Commit();
+    poResult->EnableVolatile( 0 );
     return 0;
 }
 
