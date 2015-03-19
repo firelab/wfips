@@ -471,7 +471,7 @@ int WfipsData::TestScenLoad12()
     WFIPS_CHECK_SQLITE;
     rc = sqlite3_enable_load_extension( gdb, 1 );
     WFIPS_CHECK_SQLITE;
-    rc = sqlite3_load_extension( gdb, "libspatialite.so", NULL, NULL );
+    rc = sqlite3_load_extension( gdb, SPATIALITE_EXT, NULL, NULL );
     WFIPS_CHECK_SQLITE;
     rc = sqlite3_prepare_v2( gdb, "SELECT AsText(ST_Union(geometry))," \
                                   "MbrMaxX(ST_Union(geometry))," \
