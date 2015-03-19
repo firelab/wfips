@@ -318,6 +318,8 @@ IF(RUN_SLOW_TESTS)
                   --run_test=wfipsdata/run_ca_ca_015 )
         ADD_TEST( wfips_run_full_1 ${EXECUTABLE_OUTPUT_PATH}/test_main
                   --run_test=wfipsdata/run_full_1 )
+        ADD_TEST( wfips_run_full_no_space_1 ${EXECUTABLE_OUTPUT_PATH}/test_main
+                  --run_test=wfipsdata/run_full_no_space_1 )
         #ADD_TEST(irs_test_avg_fires_1 ${EXECUTABLE_OUTPUT_PATH}/test_main
         #         --run_test=irs/avg_fires_1)
         ADD_TEST(irs_test_scenario_order ${EXECUTABLE_OUTPUT_PATH}/test_main
