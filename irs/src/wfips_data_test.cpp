@@ -213,12 +213,14 @@ int WfipsData::TestResourceLoad2()
 
 int WfipsData::TestScenLoad1()
 {
-    int rc;
+    int rc, n;
     poScenario = new CRunScenario();
     LoadDispatchLogic();
     LoadFwas();
     rc = LoadScenario( 5, NULL, 0.0, 0, WFP_DEFAULT_PROB, 0, 0 );
+    n = poScenario->m_VFire.size();
     delete poScenario;
+    rc = rc || n == 0;
     return rc;
 }
 
@@ -236,7 +238,7 @@ int WfipsData::TestScenLoad2()
 
 int WfipsData::TestScenLoad3()
 {
-    int rc;
+    int rc, n;
     poScenario = new CRunScenario();
     SetAnalysisAreaMask( "POLYGON((-114 47, -113 47, -113 46, -114 46, -114 47))" );
     LoadDispatchLogic();
@@ -285,14 +287,15 @@ int WfipsData::TestScenLoad5()
 
 int WfipsData::TestScenLoad6()
 {
-    int rc, i;
+    int rc, i, n;
     poScenario = new CRunScenario();
     const char *pszWkt = "POLYGON((-114 47, -113 47, -113 46, -114 46, -114 47))";
     SetAnalysisAreaMask( pszWkt );
     LoadDispatchLogic();
     LoadFwas();
     rc = LoadScenario( 5, NULL, 0.0, 0, WFP_DEFAULT_PROB, 0, AGENCY_ALL );
-    for( i = 0; i < poScenario->m_VFire.size(); i++ )
+    n = poScenario->m_VFire.size();
+    for( i = 0; i < n; i++ )
     {
         if( poScenario->m_VFire[i].GetTreated() != 0 )
         {
@@ -301,19 +304,21 @@ int WfipsData::TestScenLoad6()
         }
     }
     delete poScenario;
+    rc = rc || n == 0;
     return rc;
 }
 
 int WfipsData::TestScenLoad7()
 {
-    int rc, i;
+    int rc, i, n;
     poScenario = new CRunScenario();
     const char *pszWkt = "POLYGON((-114 47, -113 47, -113 46, -114 46, -114 47))";
     SetAnalysisAreaMask( pszWkt );
     LoadDispatchLogic();
     LoadFwas();
     rc = LoadScenario( 5, pszWkt, 1.0, 0, WFP_DEFAULT_PROB, 0, AGENCY_ALL );
-    for( i = 0; i < poScenario->m_VFire.size(); i++ )
+    n = poScenario->m_VFire.size();
+    for( i = 0; i < n; i++ )
     {
         if( poScenario->m_VFire[i].GetTreated() != 1 )
         {
@@ -322,17 +327,19 @@ int WfipsData::TestScenLoad7()
         }
     }
     delete poScenario;
+    rc = rc || n == 0;
     return rc;
 }
 
 int WfipsData::TestScenLoad8()
 {
-    int rc, i;
+    int rc, i, n;
     poScenario = new CRunScenario();
     LoadDispatchLogic();
     LoadFwas();
     rc = LoadScenario( 5, NULL, 0.0, 0, WFP_DEFAULT_PROB, 0, AGENCY_ALL );
-    for( i = 0; i < poScenario->m_VFire.size(); i++ )
+    n = poScenario->m_VFire.size();
+    for( i = 0; i < n; i++ )
     {
         if( poScenario->m_VFire[i].GetTreated() != 0 )
         {
@@ -341,18 +348,20 @@ int WfipsData::TestScenLoad8()
         }
     }
     delete poScenario;
+    rc = rc || n == 0;
     return rc;
 }
 
 int WfipsData::TestScenLoad9()
 {
-    int rc, i, nTreated, nUntreated;
+    int rc, i, nTreated, nUntreated, n;
     poScenario = new CRunScenario();
     LoadDispatchLogic();
     LoadFwas();
     rc = LoadScenario( 5, NULL, 0.5, 0, WFP_DEFAULT_PROB, 0, AGENCY_ALL );
+    n = poScenario->m_VFire.size();
     nTreated = nUntreated = 0;
-    for( i = 0; i < poScenario->m_VFire.size(); i++ )
+    for( i = 0; i < n; i++ )
     {
         if( poScenario->m_VFire[i].GetTreated() == 0 )
         {
@@ -365,7 +374,7 @@ int WfipsData::TestScenLoad9()
     }
     delete poScenario;
     int nDiff = abs( nTreated - nUntreated );
-    if( rc || (float)nDiff / (nTreated + nUntreated) > 0.1 )
+    if( rc || (float)nDiff / (nTreated + nUntreated) > 0.1 || n == 0 )
         rc = 1;
     else
         rc = 0;
@@ -374,17 +383,20 @@ int WfipsData::TestScenLoad9()
 
 int WfipsData::TestScenLoad10()
 {
-    int i, rc, j, t;
+    int i, rc, j, t, n;
     poScenario = new CRunScenario();
-    rc = LoadIrsData( "POLYGON((-114 47, -113 47, -113 46, -114 46, -114 47))" );
+    const char *pszWkt = "POLYGON((-114 47, -113 47, -113 46, -114 46, -114 47))";
+    rc = LoadIrsData( pszWkt );
     if( rc != 0 )
     {
         delete poScenario;
         return rc;
     }
+    rc = LoadScenario( 5, pszWkt, 0.0, 0, WFP_NO_TREAT, 0, AGENCY_ALL );
+    n = poScenario->m_VFire.size();
     j = 0;
     t = -1;
-    for( int i = 0; i < poScenario->m_VFire.size(); i++ )
+    for( i = 0; i < poScenario->m_VFire.size(); i++ )
     {
         if( j > poScenario->m_VFire[i].GetJulianDay() )
         {
@@ -401,6 +413,120 @@ int WfipsData::TestScenLoad10()
         }
         t = atoi( poScenario->m_VFire[i].GetDiscoveryTime().c_str() );
     }
+    rc = rc || n == 0;
+    return rc;
+}
+
+int WfipsData::TestScenLoad11()
+{
+    int i, rc, n;
+    poScenario = new CRunScenario();
+    const char *pszWkt = "POLYGON((-114 47, -113 47, -113 46, -114 46, -114 47))";
+    rc = LoadIrsData( pszWkt );
+    if( rc != 0 )
+    {
+        delete poScenario;
+        return rc;
+    }
+    rc = LoadScenario( 5, NULL, 0.0, 0, WFP_NO_TREAT, 0, AGENCY_ALL );
+    n = poScenario->m_VFire.size();
+    double dfX, dfY;
+    int nInvalid = 0;
+    for( i = 0; i < poScenario->m_VFire.size(); i++ )
+    {
+        dfX = poScenario->m_VFire[i].GetLongitude();
+        dfY = poScenario->m_VFire[i].GetLatitude();
+
+        if( dfX > -113 || dfX < -114 )
+        {
+            printf( "Invalid X: %lf\n", dfX );
+            nInvalid++;
+            continue;
+        }
+        if( dfY > 47 || dfY < 46 )
+        {
+            printf( "Invalid Y: %lf\n", dfY );
+            nInvalid++;
+            continue;
+        }
+    }
+    delete poScenario;
+    rc = nInvalid || n == 0;
+    return rc;
+}
+
+int WfipsData::TestScenLoad12()
+{
+    int i, rc, n;
+    poScenario = new CRunScenario();
+    const char *pszGbWkt;
+    double dfMaxX, dfMinX, dfMaxY, dfMinY;
+    double dfX, dfY;
+    int nInvalid = 0;
+
+    sqlite3 *gdb;
+    sqlite3_stmt *stmt;
+    rc = sqlite3_open_v2( WFIPS_DATA_TEST_PATH "/gacc.db", &gdb,
+                          SQLITE_OPEN_READONLY, NULL );
+    WFIPS_CHECK_SQLITE;
+    rc = sqlite3_enable_load_extension( gdb, 1 );
+    WFIPS_CHECK_SQLITE;
+    rc = sqlite3_load_extension( gdb, "libspatialite.so", NULL, NULL );
+    WFIPS_CHECK_SQLITE;
+    rc = sqlite3_prepare_v2( gdb, "SELECT AsText(ST_Union(geometry))," \
+                                  "MbrMaxX(ST_Union(geometry))," \
+                                  "MbrMinX(ST_Union(geometry))," \
+                                  "MbrMaxY(ST_Union(geometry))," \
+                                  "MbrMinY(ST_Union(geometry)) " \
+                                  "FROM gacc WHERE " \
+                                  "ga LIKE 'GREAT BASIN%'",
+                            -1, &stmt, NULL );
+    WFIPS_CHECK_SQLITE;
+    rc = sqlite3_step( stmt );
+    if( rc == SQLITE_ROW )
+        rc = SQLITE_OK;
+    WFIPS_CHECK_SQLITE;
+
+    pszGbWkt = (const char *)sqlite3_column_text( stmt, 0 );
+    dfMaxX = sqlite3_column_double( stmt, 1 );
+    dfMinX = sqlite3_column_double( stmt, 2 );
+    dfMaxY = sqlite3_column_double( stmt, 3 );
+    dfMinY = sqlite3_column_double( stmt, 4 );
+
+    rc = LoadIrsData( pszGbWkt );
+    WFIPS_CHECK_SQLITE;
+    rc = LoadScenario( 5, NULL, 0.0, 0, WFP_NO_TREAT, 0, AGENCY_ALL );
+    WFIPS_CHECK_SQLITE;
+    n = poScenario->m_VFire.size();
+    if( poScenario->m_VFire.size() == 0 )
+    {
+        rc = 1;
+        goto error;
+    }
+    for( i = 0; i < n; i++ )
+    {
+        dfX = poScenario->m_VFire[i].GetLongitude();
+        dfY = poScenario->m_VFire[i].GetLatitude();
+
+        if( dfX > dfMaxX || dfX < dfMinX )
+        {
+            printf( "Invalid X: %lf\n", dfX );
+            nInvalid++;
+            continue;
+        }
+        if( dfY > dfMaxY || dfY < dfMinY )
+        {
+            printf( "Invalid Y: %lf\n", dfY );
+            nInvalid++;
+            continue;
+        }
+    }
+
+error:
+    sqlite3_finalize( stmt );
+    sqlite3_close( gdb );
+    delete poScenario;
+    rc = rc || n == 0;
     return rc;
 }
 

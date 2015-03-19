@@ -235,8 +235,8 @@ public:
     int TestScenLoad8();
     int TestScenLoad9();
     int TestScenLoad10();
-    //int TestScenLoad11();
-    //int TestScenLoad12();
+    int TestScenLoad11();
+    int TestScenLoad12();
     //int TestScenLoad13();
     //int TestScenLoad14();
 
