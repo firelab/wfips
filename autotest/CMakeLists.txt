@@ -30,6 +30,7 @@
 # *****************************************************************************
 
 OPTION(RUN_SLOW_TESTS "Run slow tests" OFF)
+OPTION(RUN_ALL_WEST_TESTS "Run slow tests" OFF)
 
 Include(FindBoost)
 SET(Boost_DEBUG ON)
@@ -314,12 +315,10 @@ IF(RUN_SLOW_TESTS)
                   --run_test=wfipsdata/run_small_output_3 )
         ADD_TEST( wfips_run_gb_id_002 ${EXECUTABLE_OUTPUT_PATH}/test_main
                   --run_test=wfipsdata/run_gb_id_002 )
+        ADD_TEST( wfips_run_gb_id_002_no_spatial ${EXECUTABLE_OUTPUT_PATH}/test_main
+                  --run_test=wfipsdata/run_gb_id_002_no_spatial )
         ADD_TEST( wfips_run_ca_ca_015 ${EXECUTABLE_OUTPUT_PATH}/test_main
                   --run_test=wfipsdata/run_ca_ca_015 )
-        ADD_TEST( wfips_run_full_1 ${EXECUTABLE_OUTPUT_PATH}/test_main
-                  --run_test=wfipsdata/run_full_1 )
-        ADD_TEST( wfips_run_full_no_space_1 ${EXECUTABLE_OUTPUT_PATH}/test_main
-                  --run_test=wfipsdata/run_full_no_space_1 )
         ADD_TEST( wfips_preposition_1 ${EXECUTABLE_OUTPUT_PATH}/test_main
                   --run_test=wfipsdata/preposition_1 )
         #ADD_TEST(irs_test_avg_fires_1 ${EXECUTABLE_OUTPUT_PATH}/test_main
@@ -335,3 +334,9 @@ IF(RUN_SLOW_TESTS)
     ENDIF(BUILD_IRS)
 ENDIF(RUN_SLOW_TESTS)
 
+IF(RUN_ALL_WEST_TESTS)
+    ADD_TEST( wfips_run_full_1 ${EXECUTABLE_OUTPUT_PATH}/test_main
+              --run_test=wfipsdata/run_full_1 )
+    ADD_TEST( wfips_run_full_no_space_1 ${EXECUTABLE_OUTPUT_PATH}/test_main
+              --run_test=wfipsdata/run_full_no_space_1 )
+ENDIF(RUN_ALL_WEST_TESTS)

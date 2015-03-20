@@ -429,6 +429,26 @@ BOOST_AUTO_TEST_CASE( run_full_1 )
     unlink( WFIPS_TEST_OUTPUT_DB );
 }
 
+BOOST_AUTO_TEST_CASE( run_gb_id_002_no_spatial )
+{
+    int rc;
+    char *pszWkt;
+    pszWkt = GetFpuWkt( "GB_ID_002" );
+    rc = poData->LoadIrsData( pszWkt );
+    BOOST_REQUIRE( rc == 0 );
+    rc = poData->LoadScenario( 5, pszWkt, 0.0, 0, WFP_NO_TREAT, 0, 0 );
+    BOOST_REQUIRE( rc == 0 );
+    rc = poData->RunScenario( 0 );
+    BOOST_CHECK( rc == 1 );
+    rc = poData->SetResultPath( WFIPS_TEST_OUTPUT_DB );
+    BOOST_CHECK( rc == 0 );
+    rc = poData->WriteResults();
+    BOOST_CHECK( rc == 0 );
+    rc = poData->CloseResults();
+    BOOST_CHECK( rc == 0 );
+    unlink( WFIPS_TEST_OUTPUT_DB );
+}
+
 BOOST_AUTO_TEST_CASE( run_gb_id_002 )
 {
     int rc;
