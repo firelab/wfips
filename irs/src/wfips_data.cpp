@@ -640,6 +640,44 @@ WfipsData::WriteRescDb( const char *pszPath, int *panIds, int *panDispLocIds,
 }
 
 int
+WfipsData::SetPrepositioning( double dfEnginePP, double dfCrewPP,
+                              double dfHelitackPP )
+{
+    int i, rc, n;
+    double dfLevel;
+    PrepositionStruct pasPP[9];
+    DrawdownStruct sDummy;
+    for( i = 0; i < 9; i++ )
+    {
+        /* Default */
+        pasPP[i].rescType = apszPrePosKeys[i];
+        if( strstr( apszPrePosKeys[i], "Engine" ) )
+        {
+            pasPP[i].level = dfEnginePP;
+        }
+        else if( strstr( apszPrePosKeys[i], "Crew" ) )
+        {
+            pasPP[i].level = dfCrewPP;
+        }
+        else if( strstr( apszPrePosKeys[i], "HELI" ) )
+        {
+            pasPP[i].level = dfHelitackPP;
+        }
+        else
+        {
+            pasPP[i].level = 0.0;
+        }
+        pasPP[i].outOfSeason = false;
+    }
+    poScenario->SetPreposition( pasPP[0], pasPP[1], pasPP[2], pasPP[3],
+                                pasPP[4], pasPP[5], pasPP[6],
+                                sDummy, sDummy, sDummy, sDummy,
+                                sDummy, sDummy, sDummy, sDummy,
+                                pasPP[7], pasPP[8] );
+    return 0;
+}
+
+int
 WfipsData::LoadScenario( int nYearIdx, const char *pszTreatWkt,
                          double dfTreatProb, int nWfpTreatMask,
                          double *padfWfpTreatProb, double dfStratProb,

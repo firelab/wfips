@@ -102,6 +102,18 @@ static double WFP_FULL_TREAT[WFP_PRIORITY_COUNT] = {1.,1.,1.,1.};
 
 #define STR_RESP_COUNT        8
 
+/* Prepositioning */
+static const char * apszPrePosKeys [] = { "ATT",
+                                          "Regional Crew",
+                                          "Regional Helicotper",
+                                          "FS Crew",
+                                          "DOI Crew",
+                                          "FS Engine",
+                                          "DOI Engine",
+                                          "FS HELI",
+                                          "DOI HELI",
+                                          NULL };
+
 /*
 ** Identifiers for resources in sql. NULL padded to align with shifts above.
 */
@@ -197,7 +209,7 @@ public:
     /* XXX TO BE IMPLEMENTED XXX */
     int RunScenario( int iYearIndex );
     /* Not implemented */
-    int SetPrepositioning( double, double, double ){return 0;}
+    int SetPrepositioning( double, double, double );
     /* int SetDrawdown(){return 0;} */
     int LoadIrsData( const char *pszAnalysisAreaWkt );
     int LoadIrsData();
