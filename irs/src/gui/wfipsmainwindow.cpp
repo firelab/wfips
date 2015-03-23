@@ -1583,10 +1583,16 @@ WfipsData::LoadScenario( int nYearIdx, const char *pszTreatWkt,
 
 void WfipsMainWindow::ClearResults()
 {
-    resultsMapCanvasLayers.clear();
-    resultsLayers.clear();
-    resultsMapCanvas->clear();
-    resultsMapCanvas->refresh();
+    if( resultsMapCanvasLayers.size() > 0 )
+    {
+        QgsMapLayer *layer;
+        layer = resultsMapCanvasLayers[0].layer();
+        resultsMapCanvasLayers.removeAt( 0 );
+        QgsMapLayerRegistry::instance()->removeMapLayer( layer->id() );
+        resultsMapCanvasLayers.clear();
+        resultsLayers.clear();
+        resultsMapCanvas->refresh();
+    }
 }
 
 void WfipsMainWindow::ShowResults( QString qgisResultPath )
