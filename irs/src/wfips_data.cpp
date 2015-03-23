@@ -73,6 +73,7 @@ WfipsData::~WfipsData()
     delete poResult;
     sqlite3_close( db );
     sqlite3_free( (void*)pszAnalysisAreaWkt );
+    delete poScenario;
 }
 
 int
