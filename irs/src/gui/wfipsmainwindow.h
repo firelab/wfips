@@ -200,6 +200,8 @@ private:
     WfipsDispatchEditDialog *dispatchEditDialog;
     QMap<qint64, QString>dispatchLocationMap;
 
+    QString externRescDb;
+
     void ConstructDispatchWidgets();
 
     /* Results location canvas */
@@ -266,6 +268,8 @@ private slots:
     void SetAnalysisArea();
     void ClearAnalysisAreaSelection();
     void HideDispatchLocations( QgsFeatureIds fids );
+
+    void SetExternRescDb( QString path );
 
     /* Fuel mask related */
     void EnableCustomFuelMask( int );

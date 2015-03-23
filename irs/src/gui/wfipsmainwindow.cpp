@@ -235,6 +235,8 @@ void WfipsMainWindow::PostConstructionActions()
              SIGNAL( SelectionChanged( const QgsFeatureIds & ) ),
              this,
              SLOT( UpdateSelectedDispatchLocations( const QgsFeatureIds & ) ) );
+    connect( dispatchEditDialog, SIGNAL( SaveResourcesAs( QString ) ),
+             this, SLOT( SetExternRescDb( QString ) ) );
 
     /*
     ** Toggle tool button for dispatch location editor when we close the dialog
@@ -400,6 +402,7 @@ void WfipsMainWindow::LoadAnalysisAreaLayers()
     ** This should probably be moved, or this fx renamed, as we do some stuff
     ** here just because we have a path.
     */
+    //delete poData;
     poData = new WfipsData( wfipsPath.toLocal8Bit().data() );
     poData->Open();
     if( poData->Valid() == 0 )
@@ -529,6 +532,7 @@ void WfipsMainWindow::ConstructDispatchWidgets()
     dispatchSelectTool = new WfipsSelectMapTool( dispatchMapCanvas );
     connect( dispatchSelectTool, SIGNAL( WfipsSelect( QgsFeatureIds ) ),
              this, SLOT( SelectDispatchLocations( QgsFeatureIds ) ) );
+    externRescDb = "";
 }
 
 void WfipsMainWindow::ConstructResultsWidgets()
@@ -1293,6 +1297,11 @@ void WfipsMainWindow::HideDispatchLocations( QgsFeatureIds fids )
     analysisAreaMapCanvas->refresh();
 }
 
+void WfipsMainWindow::SetExternRescDb( QString path )
+{
+    externRescDb = path;
+}
+
 void WfipsMainWindow::EnableCustomFuelMask( int index )
 {
     ui->fuelStackWidget->setCurrentIndex( index );
@@ -1357,16 +1366,22 @@ double WfipsMainWindow::GetPrepositionValue( QComboBox *c )
     {
         case 0:
             d = 0.5;
+            break;
         case 1:
             d = 0.6;
+            break;
         case 2:
             d = 0.7;
+            break;
         case 3:
             d = 0.8;
+            break;
         case 4:
             d = 0.9;
+            break;
         default:
             d = 0.5;
+            break;
     }
     return d;
 }
@@ -1420,6 +1435,13 @@ int WfipsMainWindow::RunIrs()
     char *pszDataPath = NULL;
     pszPath = QStringToCString( outputFile );
     this->setDisabled( true );
+
+    if( externRescDb != "" )
+    {
+        char *pszExternRescDb = QStringToCString( externRescDb );
+        poData->SetRescDb( pszExternRescDb );
+        free( pszExternRescDb );
+    }
 
     /* Get all parameters from GUI */
     /* Prepositioning */
@@ -1475,7 +1497,6 @@ int WfipsMainWindow::RunIrs()
             dfTreatProb = 0;
         }
     }
-
     int nIgnOwnership = 0;
     if( ui->agencyIgnUsfsCheckBox->isChecked() )
         nIgnOwnership |= USFS;

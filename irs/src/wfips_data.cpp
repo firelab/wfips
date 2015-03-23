@@ -513,14 +513,14 @@ WfipsData::SetRescDb( const char *pszPath )
 }
 
 int
-WfipsData::WriteRescDb( const char *pszPath, int *panIds, int *panDispLocIds,
+WfipsData::WriteRescDb( const char *pszNewPath, int *panIds, int *panDispLocIds,
                         int nCount )
 {
     int i, n, rc;
     sqlite3 *brdb;
     sqlite3 *rdb;
     sqlite3_stmt *stmt;
-    char *pszSchema;
+    const unsigned char *pszSchema;
     char szRescId[128];
     char *pszRescSet;
 
@@ -531,7 +531,7 @@ WfipsData::WriteRescDb( const char *pszPath, int *panIds, int *panDispLocIds,
 
     int bUseExtResc = pszRescPath ? 1 : 0;
 
-    rc = sqlite3_open_v2( pszPath, &rdb,
+    rc = sqlite3_open_v2( pszNewPath, &rdb,
                           SQLITE_OPEN_CREATE | SQLITE_OPEN_READWRITE,
                           NULL );
     if( rc != SQLITE_OK )
@@ -547,29 +547,25 @@ WfipsData::WriteRescDb( const char *pszPath, int *panIds, int *panDispLocIds,
             return rc;
         }
         rc = sqlite3_prepare_v2( brdb, "SELECT sql FROM sqlite_master " \
-                                       "WHERE type='table' AND name='resource'",
+                                       "WHERE type='table' AND name " \
+                                       "IN ('resource', 'heli_assign')",
                                  -1, &stmt, NULL );
     }
     else
     {
         brdb = db;
         rc = sqlite3_prepare_v2( brdb, "SELECT sql FROM resc.sqlite_master " \
-                                       "WHERE type='table' AND name='resource'",
+                                       "WHERE type='table' AND name " \
+                                       "IN ('resource', 'heli_assign')",
                                  -1, &stmt, NULL );
     }
-    rc = sqlite3_step( stmt );
-    if( rc != SQLITE_ROW )
+    while( sqlite3_step( stmt ) == SQLITE_ROW )
     {
-        sqlite3_finalize( stmt );
-        sqlite3_close( db );
-        sqlite3_close( rdb );
-        return rc;
+        pszSchema = sqlite3_column_text( stmt, 0 );
+        rc = sqlite3_exec( rdb, (char*)pszSchema, NULL, NULL, NULL );
+        assert( rc == SQLITE_OK );
     }
-    pszSchema = sqlite3_mprintf( "%s", (char*)sqlite3_column_text( stmt, 0 ) );
     sqlite3_finalize( stmt );
-    rc = sqlite3_exec( rdb, pszSchema, NULL, NULL, NULL );
-    assert( rc == SQLITE_OK );
-    sqlite3_free( pszSchema );
 
     pszRescSet = BuildFidSet( panIds, nCount );
 
@@ -643,6 +639,7 @@ int
 WfipsData::SetPrepositioning( double dfEnginePP, double dfCrewPP,
                               double dfHelitackPP )
 {
+    return 0;
     int i, rc, n;
     double dfLevel;
     PrepositionStruct pasPP[9];
@@ -974,13 +971,13 @@ WfipsData::SetAnalysisAreaMask( const char *pszMaskWkt )
 }
 
 int
-WfipsData::SetResultPath( const char *pszPath )
+WfipsData::SetResultPath( const char *pszNewPath )
 {
-    if( pszPath == NULL )
+    if( pszNewPath == NULL )
     {
         return SQLITE_ERROR;
     }
-    pszResultPath = sqlite3_mprintf( "%s", pszPath );
+    pszResultPath = sqlite3_mprintf( "%s", pszNewPath );
     poResult = new WfipsResult( pszResultPath, this->pszPath );
     if( !poResult->Valid() )
     {

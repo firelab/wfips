@@ -115,6 +115,7 @@ signals:
     void SelectionChanged( const QgsFeatureIds &fids );
     void Hiding();
     void HiddenChanged( const QgsFeatureIds &fids );
+    void SaveResourcesAs( QString );
 };
 
 #endif /* WFIPSDISPATCHEDITDIALOG_H */

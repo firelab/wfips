@@ -391,5 +391,29 @@ void WfipsDispatchEditDialog::SaveAs()
         QFileDialog::getSaveFileName( this, tr("Save resource data"),
                                       ".", tr("WFIPS database file (*.db)") );
     qDebug() << rescOutPath;
+    if( rescOutPath == "" )
+        return;
+    QgsFeatureIds fids;
+    fids = GetResourceFids( WFIPS_RESC_SUBSET_INCLUDE );
+    int n = fids.size();
+    int *panIds = (int*)malloc( sizeof( int ) * n );
+
+    QSetIterator<qint64>it( fids );
+    int i = 0;
+    while( it.hasNext() )
+    {
+        panIds[i++] = it.next();
+    }
+    char *pszOutputFile = QStringToCString( rescOutPath );
+    char *pszPath;
+    pszPath = QStringToCString( wfipsDataPath + "/" );
+    WfipsData oData( pszPath );
+    oData.Open();
+    oData.WriteRescDb( pszOutputFile, panIds, NULL, n );
+    oData.Close();
+    emit SaveResourcesAs( rescOutPath );
+    free( (void*)panIds );
+    free( (void*)pszOutputFile );
+    free( (void*)pszPath );
 }
 
