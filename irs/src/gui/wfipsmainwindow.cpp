@@ -1365,22 +1365,25 @@ double WfipsMainWindow::GetPrepositionValue( QComboBox *c )
     switch( i )
     {
         case 0:
-            d = 0.5;
+            d = 0.0;
             break;
         case 1:
-            d = 0.6;
+            d = 0.5;
             break;
         case 2:
-            d = 0.7;
+            d = 0.6;
             break;
         case 3:
-            d = 0.8;
+            d = 0.7;
             break;
         case 4:
+            d = 0.8;
+            break;
+        case 5:
             d = 0.9;
             break;
         default:
-            d = 0.5;
+            d = 0.0;
             break;
     }
     return d;
