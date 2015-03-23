@@ -1454,7 +1454,6 @@ int WfipsMainWindow::RunIrs()
         dfPpCrw = GetPrepositionValue( ui->crewPPComboBox );
         dfPpHeli = GetPrepositionValue( ui->helitackPPComboBox );
     }
-    poData->SetPrepositioning( dfPpEng, dfPpCrw, dfPpHeli );
 
     /* Fuel Treatment */
     double dfTreatProb = 0.0;
@@ -1551,6 +1550,7 @@ WfipsData::LoadScenario( int nYearIdx, const char *pszTreatWkt,
         this->statusBar()->showMessage( "Loading data..." );
         rc = poData->LoadIrsData();
         this->statusBar()->showMessage( "Data loaded." );
+        poData->SetPrepositioning( dfPpEng, dfPpCrw, dfPpHeli );
         this->statusBar()->showMessage( "Loading fires..." );
         rc = poData->LoadScenario( 5, (const char*)pszTreatWkt, dfTreatProb,
                                    nWfpMask, adfWfpProb, dfModRespProb,

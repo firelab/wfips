@@ -95,6 +95,14 @@ PrepositionStruct::PrepositionStruct()
     outOfSeason = false;
 }
 
+PrepositionStruct::PrepositionStruct( std::string type, double lev,
+                                      bool season )
+{
+    rescType = type;
+    level = lev;
+    outOfSeason = season;
+}
+
 PrepositionStruct & PrepositionStruct::operator = ( const PrepositionStruct &rhs )
 {
     if( &rhs != this )

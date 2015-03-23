@@ -639,38 +639,42 @@ int
 WfipsData::SetPrepositioning( double dfEnginePP, double dfCrewPP,
                               double dfHelitackPP )
 {
-    return 0;
     int i, rc, n;
     double dfLevel;
-    PrepositionStruct pasPP[9];
+    bool bOutOfSeason;
+    PrepositionStruct asPP[9];
     DrawdownStruct sDummy;
+    std::string osKey;
+    if( poScenario == NULL )
+    {
+        return SQLITE_ERROR;
+    }
     for( i = 0; i < 9; i++ )
     {
-        /* Default */
-        pasPP[i].rescType = apszPrePosKeys[i];
+        osKey = std::string( apszPrePosKeys[i] );
         if( strstr( apszPrePosKeys[i], "Engine" ) )
         {
-            pasPP[i].level = dfEnginePP;
+            dfLevel = dfEnginePP;
         }
         else if( strstr( apszPrePosKeys[i], "Crew" ) )
         {
-            pasPP[i].level = dfCrewPP;
+            dfLevel = dfCrewPP;
         }
         else if( strstr( apszPrePosKeys[i], "HELI" ) )
         {
-            pasPP[i].level = dfHelitackPP;
+            dfLevel = dfHelitackPP;
         }
         else
         {
-            pasPP[i].level = 0.0;
+            dfLevel = 0.0;
         }
-        pasPP[i].outOfSeason = false;
+        asPP[i] = PrepositionStruct( osKey, dfLevel, false );
     }
-    poScenario->SetPreposition( pasPP[0], pasPP[1], pasPP[2], pasPP[3],
-                                pasPP[4], pasPP[5], pasPP[6],
+    poScenario->SetPreposition( asPP[0], asPP[1], asPP[2], asPP[3],
+                                asPP[4], asPP[5], asPP[6],
                                 sDummy, sDummy, sDummy, sDummy,
                                 sDummy, sDummy, sDummy, sDummy,
-                                pasPP[7], pasPP[8] );
+                                asPP[7], asPP[8] );
     return 0;
 }
 
