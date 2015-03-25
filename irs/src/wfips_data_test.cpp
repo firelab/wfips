@@ -84,6 +84,7 @@ int WfipsData::TestRescTypeLoad1()
     if( poScenario->m_VRescType.size() == 0 )
         rc = 1;
     delete poScenario;
+    poScenario = NULL;
     return rc;
 }
 
@@ -95,6 +96,7 @@ int WfipsData::TestProdLoad1()
     if( poScenario->m_VProdRates.size() == 0 )
         rc = 1;
     delete poScenario;
+    poScenario = NULL;
     return rc;
 }
 
@@ -106,6 +108,7 @@ int WfipsData::TestDispLogLoad1()
     if( poScenario->m_VDispLogic.size() == 0 )
         rc = 1;
     delete poScenario;
+    poScenario = NULL;
     return rc;
 }
 
@@ -120,6 +123,7 @@ int WfipsData::TestDispLogLoad2()
     LoadDispatchLogic();
     int b = poScenario->m_VDispLogic.size();
     delete poScenario;
+    poScenario = NULL;
     if( a <= b || a == 0 || b == 0 )
         rc = 1;
     return rc;
@@ -134,6 +138,7 @@ int WfipsData::TestFwaLoad1()
     if( poScenario->m_VFWA.size() == 0 )
         rc = 1;
     delete poScenario;
+    poScenario = NULL;
     return rc;
 }
 
@@ -149,6 +154,7 @@ int WfipsData::TestFwaLoad2()
     LoadFwas();
     int b = poScenario->m_VFWA.size();
     delete poScenario;
+    poScenario = NULL;
     if( a <= b || a == 0 || b == 0 )
         rc = 1;
     return rc;
@@ -164,6 +170,7 @@ int WfipsData::TestDispLocLoad1()
     if( poScenario->m_VDispLoc.size() == 0 )
         rc = 1;
     delete poScenario;
+    poScenario = NULL;
     return rc;
 }
 
@@ -177,6 +184,7 @@ int WfipsData::TestDispLocLoad2()
     if( poScenario->m_VDispLoc.size() > 1000 )
         rc = 1;
     delete poScenario;
+    poScenario = NULL;
     return rc;
 }
 
@@ -192,6 +200,7 @@ int WfipsData::TestResourceLoad1()
     if( poScenario->m_VResource.size() == 0 )
         rc = 1;
     delete poScenario;
+    poScenario = NULL;
     return rc;
 }
 
@@ -208,6 +217,7 @@ int WfipsData::TestResourceLoad2()
     if( poScenario->m_VResource.size() > 1000 )
         rc = 1;
     delete poScenario;
+    poScenario = NULL;
     return rc;
 }
 
@@ -220,6 +230,7 @@ int WfipsData::TestScenLoad1()
     rc = LoadScenario( 5, NULL, 0.0, 0, WFP_DEFAULT_PROB, 0, 0 );
     n = poScenario->m_VFire.size();
     delete poScenario;
+    poScenario = NULL;
     rc = rc || n == 0;
     return rc;
 }
@@ -233,6 +244,7 @@ int WfipsData::TestScenLoad2()
     rc = LoadScenario( 1, NULL, 0.0, 0, WFP_DEFAULT_PROB, 0, 0 );
     n =  poScenario->m_VFire.size();
     delete poScenario;
+    poScenario = NULL;
     return n;
 }
 
@@ -247,6 +259,7 @@ int WfipsData::TestScenLoad3()
     if( poScenario->m_VFire.size() == 0 )
         rc = 1;
     delete poScenario;
+    poScenario = NULL;
     return rc;
 }
 
@@ -265,6 +278,7 @@ int WfipsData::TestScenLoad4()
     if( a == 0 || b == 0 || a < b )
         rc = 1;
     delete poScenario;
+    poScenario = NULL;
     return rc;
 }
 
@@ -282,6 +296,7 @@ int WfipsData::TestScenLoad5()
     if( a == 0 || b == 0 || a < b )
         rc = 1;
     delete poScenario;
+    poScenario = NULL;
     return rc;
 }
 
@@ -304,6 +319,7 @@ int WfipsData::TestScenLoad6()
         }
     }
     delete poScenario;
+    poScenario = NULL;
     rc = rc || n == 0;
     return rc;
 }
@@ -327,6 +343,7 @@ int WfipsData::TestScenLoad7()
         }
     }
     delete poScenario;
+    poScenario = NULL;
     rc = rc || n == 0;
     return rc;
 }
@@ -348,6 +365,7 @@ int WfipsData::TestScenLoad8()
         }
     }
     delete poScenario;
+    poScenario = NULL;
     rc = rc || n == 0;
     return rc;
 }
@@ -373,6 +391,7 @@ int WfipsData::TestScenLoad9()
         }
     }
     delete poScenario;
+    poScenario = NULL;
     int nDiff = abs( nTreated - nUntreated );
     if( rc || (float)nDiff / (nTreated + nUntreated) > 0.1 || n == 0 )
         rc = 1;
@@ -390,6 +409,7 @@ int WfipsData::TestScenLoad10()
     if( rc != 0 )
     {
         delete poScenario;
+        poScenario = NULL;
         return rc;
     }
     rc = LoadScenario( 5, pszWkt, 0.0, 0, WFP_NO_TREAT, 0, AGENCY_ALL );
@@ -426,6 +446,7 @@ int WfipsData::TestScenLoad11()
     if( rc != 0 )
     {
         delete poScenario;
+        poScenario = NULL;
         return rc;
     }
     rc = LoadScenario( 5, NULL, 0.0, 0, WFP_NO_TREAT, 0, AGENCY_ALL );
@@ -451,6 +472,7 @@ int WfipsData::TestScenLoad11()
         }
     }
     delete poScenario;
+    poScenario = NULL;
     rc = nInvalid || n == 0;
     return rc;
 }
@@ -526,6 +548,7 @@ error:
     sqlite3_finalize( stmt );
     sqlite3_close( gdb );
     delete poScenario;
+    poScenario = NULL;
     rc = rc || n == 0;
     return rc;
 }
