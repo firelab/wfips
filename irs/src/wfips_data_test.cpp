@@ -486,8 +486,8 @@ int WfipsData::TestScenLoad12()
     double dfX, dfY;
     int nInvalid = 0;
 
-    sqlite3 *gdb;
-    sqlite3_stmt *stmt;
+    sqlite3 *gdb = NULL;
+    sqlite3_stmt *stmt = NULL;
     rc = sqlite3_open_v2( WFIPS_DATA_TEST_PATH "/gacc.db", &gdb,
                           SQLITE_OPEN_READONLY, NULL );
     WFIPS_CHECK_SQLITE;
