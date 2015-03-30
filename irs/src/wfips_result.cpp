@@ -519,7 +519,7 @@ WfipsResult::SpatialSummary( const char *pszKey )
 
     rc = sqlite3_prepare_v2( db, "INSERT INTO spatial_result "
                                  "VALUES(?,?,?,?,?,?,?,?,?)",
-                            -1, &sstmt, NULL );
+                             -1, &sstmt, NULL );
     char *pszName = NULL;
     int nSize;
     void *pGeom = NULL;
