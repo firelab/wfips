@@ -544,7 +544,7 @@ WfipsResult::SpatialSummary( const char *pszKey )
                            "slimit,exhaust,contain,monitor,contratio," \
                            "lfacre,lfpop,lfcost)",
                        NULL, NULL, NULL );
-    rc = sqlite3_exec( db, "SELECT AddGeometryColumn('spatial_result','geometry', " \
+    rc = sqlite3_exec( db, "SELECT AddGeometryColumn('spatial_result','geometry'," \
                            "4269,'MULTIPOLYGON','XY')", NULL, NULL, NULL );
 
     rc = sqlite3_prepare_v2( db, "INSERT INTO spatial_result "
@@ -560,6 +560,10 @@ WfipsResult::SpatialSummary( const char *pszKey )
                                      "WHERE fpu.fpu_code=?",
                                  -1, &lfstmt, NULL );
     }
+    else
+    {
+        lfstmt = NULL;
+    }
     char *pszName = NULL;
     int nSize;
     void *pGeom = NULL;
@@ -574,7 +578,6 @@ WfipsResult::SpatialSummary( const char *pszKey )
     int nLfPop;
     double dfLfCost;
     StartTransaction();
-    EnableVolatile( 1 );
     while( sqlite3_step( stmt ) == SQLITE_ROW )
     {
         if( pszName == NULL || !EQUAL( pszName, (const char*)sqlite3_column_text( stmt, 0 ) ) )
@@ -668,11 +671,10 @@ WfipsResult::SpatialSummary( const char *pszKey )
 
     rc = sqlite3_reset( stmt );
     rc = sqlite3_reset( sstmt );
-    rc = sqlite3_reset( lfstmt );
     rc = sqlite3_finalize( stmt );
     rc = sqlite3_finalize( sstmt );
+    rc = sqlite3_finalize( lfstmt );
     Commit();
-    EnableVolatile( 0 );
     sqlite3_free( pszName );
     sqlite3_free( pGeom );
     sqlite3_free( pszSql );

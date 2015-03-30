@@ -1209,6 +1209,8 @@ bool CRunScenario::DeployResources( int Debugging, int f, int scenario )
 	// Presets for options
 	// Indicate the method used to dispatch resources 0 = original method, 1 uses dispatcher tree
 	int DispMethod = 1;
+    bool bRunContain = true;
+    m_VFire[f].SetSimulateContain( bRunContain );
 	
 	// Set values for the new options
 	bool CrewDrawDown = false;										// Apply Type II IA Crew draw down to analysis?
@@ -1830,7 +1832,6 @@ bool CRunScenario::DeployResources( int Debugging, int f, int scenario )
 	else	{
 
                 string Status;
-                bool bRunContain = true;
 #ifdef IRS_ALLOW_SKIP_CONTAIN
                 bRunContain = SimulateContain( firstarrival, size, m_VFire[f] );
 #endif
