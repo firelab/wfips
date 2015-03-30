@@ -1514,7 +1514,19 @@ int WfipsMainWindow::RunIrs()
     {
         dfModRespProb = ui->manageSpinBox->value() / 100.;
     }
-
+    /* Large Fire */
+    int nJulStart, nJulEnd;
+    double dfNoRescProb, dfTimeProb, dfSizeProb, dfExhProb;
+    dfNoRescProb = dfTimeProb = dfSizeProb = dfExhProb = 0.;
+    if( ui->largeFireGroupBox->isChecked() )
+    {
+        nJulStart = ui->largeFireStartDateEdit->date().dayOfYear();
+        nJulEnd = ui->largeFireEndDateEdit->date().dayOfYear();
+        dfNoRescProb = ui->noRescSentSpinBox->value() / 100.;
+        dfTimeProb = ui->timeLimitSpinBox->value() / 100.;
+        dfSizeProb = ui->sizeLimitSpinBox->value() / 100.;
+        dfExhProb = ui->exhaustedSpinBox->value() / 100.;
+    }
     QFuture<int>future;
     if( 0 )
     {
@@ -1567,7 +1579,8 @@ WfipsData::LoadScenario( int nYearIdx, const char *pszTreatWkt,
         rc = poData->WriteResults();
         this->statusBar()->showMessage( "Output written." );
         this->statusBar()->showMessage( "Simulating Large Fires..." );
-        //rc = poData->SimulateLargeFire();
+        rc = poData->SimulateLargeFire( nJulStart, nJulEnd, dfNoRescProb,
+                                        dfTimeProb, dfSizeProb, dfExhProb );
         this->statusBar()->showMessage( "Large Fire Simulation finished." );
         this->statusBar()->showMessage( "Writing Spatial Summary Results..." );
         rc = poData->SpatialSummary( "fpu" );

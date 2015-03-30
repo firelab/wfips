@@ -363,6 +363,15 @@ WfipsResult::SimulateLargeFire( int nJulStart, int nJulEnd, double dfNoRescProb,
     int rc, n, i, j, k;
     sqlite3_stmt *stmt, *lfstmt, *lfistmt;
     double adfProbs[4] = { dfNoRescProb, dfTimeLimitProb, dfSizeLimitProb, dfExhaustProb };
+    /*
+    ** FIXME: Check inputs
+    */
+    /* All 0 probabilities is a no-op */
+    if( dfNoRescProb == 0. && dfTimeLimitProb == 0. &&
+        dfSizeLimitProb == 0. && dfExhaustProb == 0. )
+    {
+        return SQLITE_OK;
+    }
     rc = sqlite3_exec( db, "CREATE TABLE IF NOT EXISTS " \
                            "large_fire_result(year,fire_num,acres,pop,cost)",
                        NULL, NULL, NULL );
@@ -406,6 +415,7 @@ WfipsResult::SimulateLargeFire( int nJulStart, int nJulEnd, double dfNoRescProb,
     int nAcres, nCost, nPop;
     double dfTreated;
     int nValidFires;
+    StartTransaction();
     for( i = 0; i < 4; i++ )
     {
         rc = sqlite3_bind_text( stmt, 1, apszEscapes[i], -1, NULL );
@@ -480,6 +490,7 @@ WfipsResult::SimulateLargeFire( int nJulStart, int nJulEnd, double dfNoRescProb,
     sqlite3_finalize( lfstmt );
     sqlite3_finalize( lfistmt );
     sqlite3_free( pasFires );
+    Commit();
     return 0;
 }
 
@@ -487,7 +498,7 @@ int
 WfipsResult::SpatialSummary( const char *pszKey )
 {
     pszKey = "fpu";
-    sqlite3_stmt *stmt, *sstmt;
+    sqlite3_stmt *stmt, *sstmt, *lfstmt;
     int rc;
     char szPath[8192];
     char szFile[8192];
@@ -498,6 +509,24 @@ WfipsResult::SpatialSummary( const char *pszKey )
 
     if( rc != SQLITE_OK )
         return rc;
+
+    int bWriteLargeFire = 0;
+    rc = sqlite3_prepare_v2( db, "SELECT count() FROM sqlite_master WHERE " \
+                                 "type='table' AND name='large_fire_result'",
+                             -1, &stmt, NULL );
+    rc = sqlite3_step( stmt );
+    if( rc != SQLITE_ROW )
+    {
+        bWriteLargeFire = 0;
+    }
+    else
+    {
+        rc = sqlite3_column_int( stmt, 0 );
+        if( rc > 0 )
+        {
+            bWriteLargeFire = 1;
+        }
+    }
 
     /*
     ** FIXME NEED TO ADD YEARS!
@@ -512,14 +541,25 @@ WfipsResult::SpatialSummary( const char *pszKey )
 
     rc = sqlite3_prepare_v2( db, pszSql, -1, &stmt, NULL );
     rc = sqlite3_exec( db, "CREATE TABLE spatial_result(name,noresc,tlimit," \
-                           "slimit,exhaust,contain,monitor,contratio)", NULL,
-                       NULL, NULL );
+                           "slimit,exhaust,contain,monitor,contratio," \
+                           "lfacre,lfpop,lfcost)",
+                       NULL, NULL, NULL );
     rc = sqlite3_exec( db, "SELECT AddGeometryColumn('spatial_result','geometry', " \
                            "4269,'MULTIPOLYGON','XY')", NULL, NULL, NULL );
 
     rc = sqlite3_prepare_v2( db, "INSERT INTO spatial_result "
-                                 "VALUES(?,?,?,?,?,?,?,?,?)",
+                                 "VALUES(?,?,?,?,?,?,?,?,?,?,?,?)",
                              -1, &sstmt, NULL );
+    if( bWriteLargeFire )
+    {
+        rc = sqlite3_prepare_v2( db, "SELECT fpu.fpu_code, SUM(acres), SUM(pop), " \
+                                     "SUM(cost) FROM large_fire_result " \
+                                     "LEFT JOIN fig.fig USING(year,fire_num) " \
+                                     "LEFT JOIN fpu.fpu ON "
+                                     "substr(fig.fwa_name,0,10)=fpu.fpu_code " \
+                                     "WHERE fpu.fpu_code=?",
+                                 -1, &lfstmt, NULL );
+    }
     char *pszName = NULL;
     int nSize;
     void *pGeom = NULL;
@@ -530,6 +570,9 @@ WfipsResult::SpatialSummary( const char *pszKey )
     nExhaust = nMonitor = nContain = 0;
     double dfRatio;
     double dfSum;
+    int nLfAcre;
+    int nLfPop;
+    double dfLfCost;
     StartTransaction();
     EnableVolatile( 1 );
     while( sqlite3_step( stmt ) == SQLITE_ROW )
@@ -548,10 +591,28 @@ WfipsResult::SpatialSummary( const char *pszKey )
                 dfSum = nNoResc + nTimeLimit + nSizeLimit + nExhaust + nContain + nMonitor;
                 dfRatio = (double)(nContain + nMonitor) / dfSum;
                 rc = sqlite3_bind_double( sstmt, 8, dfRatio );
-                rc = sqlite3_bind_blob( sstmt, 9, pGeom, nSize, NULL );
+                /* large fire */
+                nLfAcre = nLfPop = dfLfCost = 0.;
+                if( bWriteLargeFire )
+                {
+                    rc = sqlite3_bind_text( lfstmt, 1, pszName, -1, NULL );
+
+                    rc = sqlite3_step( lfstmt );
+                    if( rc == SQLITE_ROW )
+                    {
+                        nLfAcre = sqlite3_column_int( lfstmt, 1 );
+                        nLfPop = sqlite3_column_int( lfstmt, 2 );
+                        dfLfCost = sqlite3_column_double( lfstmt, 3 );
+                    }
+                    sqlite3_reset( lfstmt );
+                }
+                rc = sqlite3_bind_int( sstmt, 9, nLfAcre );
+                rc = sqlite3_bind_int( sstmt, 10, nLfPop );
+                rc = sqlite3_bind_int( sstmt, 11, dfLfCost );
+                rc = sqlite3_bind_blob( sstmt, 12, pGeom, nSize, NULL );
                 rc = sqlite3_step( sstmt );
                 rc = sqlite3_reset( sstmt );
-            }
+             }
             sqlite3_free( pszName );
             pszName = sqlite3_mprintf("%s", (const char*)sqlite3_column_text( stmt, 0 ) );
             nSize = sqlite3_column_bytes( stmt, 1 );
@@ -584,11 +645,30 @@ WfipsResult::SpatialSummary( const char *pszKey )
     dfSum = nNoResc + nTimeLimit + nSizeLimit + nExhaust + nContain + nMonitor;
     dfRatio = (double)nContain / dfSum;
     rc = sqlite3_bind_double( sstmt, 8, dfRatio );
-    rc = sqlite3_bind_blob( sstmt, 9, pGeom, nSize, NULL );
+    /* large fire */
+    nLfAcre = nLfPop = dfLfCost = 0.;
+    if( bWriteLargeFire )
+    {
+        rc = sqlite3_bind_text( lfstmt, 1, pszName, -1, NULL );
+        rc = sqlite3_step( lfstmt );
+        if( rc == SQLITE_ROW )
+        {
+            nLfAcre = sqlite3_column_int( lfstmt, 1 );
+            nLfPop = sqlite3_column_int( lfstmt, 2 );
+            dfLfCost = sqlite3_column_double( lfstmt, 3 );
+        }
+        sqlite3_reset( lfstmt );
+    }
+    rc = sqlite3_bind_int( sstmt, 9, nLfAcre );
+    rc = sqlite3_bind_int( sstmt, 10, nLfPop );
+    rc = sqlite3_bind_int( sstmt, 11, dfLfCost );
+    rc = sqlite3_bind_blob( sstmt, 12, pGeom, nSize, NULL );
+
     rc = sqlite3_step( sstmt );
 
     rc = sqlite3_reset( stmt );
     rc = sqlite3_reset( sstmt );
+    rc = sqlite3_reset( lfstmt );
     rc = sqlite3_finalize( stmt );
     rc = sqlite3_finalize( sstmt );
     Commit();
