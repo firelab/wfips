@@ -35,6 +35,8 @@
 #include <sqlite3.h>
 #include "wfips_sqlite.h"
 
+#include "omffr_conv.h"
+
 #include "Results.h"
 
 #define NO_RESC_SENT_STR      "No Resources Sent"
@@ -87,6 +89,8 @@ private:
 
     sqlite3 *db;
     sqlite3_stmt *istmt;
+
+    GDALDatasetH hTreatDS;
 
 };
 

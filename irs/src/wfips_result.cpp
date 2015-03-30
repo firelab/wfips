@@ -53,6 +53,7 @@ void WfipsResult::Init()
     bValid = 0;
     db = NULL;
     istmt = NULL;
+    hTreatDS = NULL;
 }
 
 int WfipsResult::Open()
@@ -105,7 +106,13 @@ int WfipsResult::Open()
     pszTmpPath = sqlite3_mprintf( "%s%s", pszDataPath, LF_DB );
     WfipsAttachDb( db, pszTmpPath, "largefire" );
     sqlite3_free( pszTmpPath );
-
+    pszTmpPath = sqlite3_mprintf( "%s%s", pszDataPath, "treat_perc.tif" );
+    hTreatDS = GDALOpen( pszTmpPath, GA_ReadOnly );
+    sqlite3_free( pszTmpPath );
+    if( hTreatDS == NULL )
+    {
+        rc = SQLITE_ERROR;
+    }
 error:
     if( rc != SQLITE_OK )
     {
@@ -155,6 +162,8 @@ int WfipsResult::Close()
     sqlite3_finalize( istmt );
     int rc = sqlite3_close( db );
     db = NULL;
+    GDALClose( hTreatDS );
+    hTreatDS = NULL;
     pszPath = pszDataPath = NULL;
     return rc;
 }
@@ -192,24 +201,185 @@ int WfipsResult::WriteRecord( CResults &oResults )
     rc = sqlite3_reset( istmt );
     return SQLITE_OK;
 }
+
+typedef struct LargeFireData LargeFireData;
+struct LargeFireData
+{
+    double dfCost;
+    double dfSize;
+    double dfPop;
+    int bExcluded;
+};
+
+static int CompareLargeFireSize( const void *a, const void *b )
+{
+    assert( a && b );
+    if( ((LargeFireData*)a)->dfSize > ((LargeFireData*)b)->dfSize )
+        return -1;
+    else if( ((LargeFireData*)a)->dfSize < ((LargeFireData*)b)->dfSize )
+        return 1;
+    else
+        return 0;
+}
+
+static int AvgLargeFireSize( LargeFireData *pasFires, int nSize,
+                             double *dfAvgSize, double *dfSumSize )
+{
+    assert( pasFires && dfAvgSize && dfSumSize );
+    *dfAvgSize = 0;
+    *dfSumSize = 0;
+    int i;
+    for( i = 0; i < nSize; i++ )
+    {
+        if( pasFires[i].bExcluded )
+        {
+            continue;
+        }
+        *dfAvgSize += pasFires[i].dfSize;
+    }
+    *dfSumSize = *dfAvgSize;
+    *dfAvgSize /= nSize;
+    return SQLITE_OK;
+}
+
+static const double LargeFireTreatPerc[] = { 0.0,
+                                             0.1,
+                                             0.2,
+                                             0.3,
+                                             0.4,
+                                             0.5,
+                                             0.6,
+                                             0.7,
+                                             0.8,
+                                             0.9,
+                                             1.0, };
+static const double LargeFireTreatRed[] =  { 1.00,
+                                             0.92,
+                                             0.74,
+                                             0.52,
+                                             0.37,
+                                             0.30,
+                                             0.25,
+                                             0.22,
+                                             0.21,
+                                             0.20,
+                                             0.20 };
+
+static double LargeFireTargetAverage( double dfTreatPerc )
+{
+    assert( dfTreatPerc >= 0.0 && dfTreatPerc <= 1.0 );
+    int nIndex = (int)(dfTreatPerc * 10);
+    if( nIndex == 10 )
+        return 0.20;
+    assert( nIndex < 10 );
+    double dX, dY, dfVal;
+    dX = dfTreatPerc - LargeFireTreatPerc[nIndex];
+    dY = (LargeFireTreatRed[nIndex] - LargeFireTreatRed[nIndex+1]) * dX;
+    dfVal = LargeFireTreatRed[nIndex] - dY;
+    return dfVal;
+}
+
+/*
+ * Decrease the size of the large fire sampling due to the affect of
+ * treatments.  I am not sure about the post condition here.  Do we *have* to
+ * meat the target size?  Or do we just try and if we don't hit it due to
+ * randomness, we don't hit it.  The initial size also influences the ability
+ * to meet the target correctly.
+ *
+ * Using the following table:
+ * % treated    % average fire size
+ *   0.0          1.00
+ *   0.1          0.92
+ *   0.2          0.74
+ *   0.3          0.52
+ *   0.4          0.37
+ *   0.5          0.30
+ *   0.6          0.25
+ *   0.7          0.22
+ *   0.8          0.21
+ *   0.9          0.20
+ *   1.0          0.20
+ */
+
+static int DecreaseLargeFireSize( LargeFireData *pasFires, int nSize,
+                                  double dfPercTreat )
+{
+    assert( pasFires && nSize > 0 && dfPercTreat >= 0.0 && dfPercTreat <= 1.0 );
+    int i = 0;
+    int nRemoved = 0;
+    int nTries;
+    double dfAvgSize, dfSumSize;
+    if( AvgLargeFireSize( pasFires, nSize, &dfAvgSize, &dfSumSize ) != 0 )
+        return SQLITE_ERROR;
+    double dfAvgRed = LargeFireTargetAverage( dfPercTreat );
+    double dfTargetAvg = dfAvgSize * dfAvgRed;
+    qsort( pasFires, nSize, sizeof( LargeFireData ), CompareLargeFireSize );
+    double dfProb;
+    double r;
+
+    nTries = 0;
+    while( dfAvgSize > dfTargetAvg && nTries < 5 )
+    {
+        for( i = 0; i < nSize; i++ )
+        {
+            if( pasFires[i].bExcluded )
+                continue;
+            /*
+            ** FIXME: Not sure about calculation of the prob for removal.  Needs to
+            ** be revisited.  Right now it's relative to the max size * 1.1, which
+            ** is arbitrary.  It used to be relative to the sum of the sizes, which
+            ** was artificially low.
+            */
+            //dfProb = pasFires[i].dfSize / (pasFires[0].dfSize * 1.1);
+            dfProb = pasFires[i].dfSize / dfSumSize;
+
+            r = WfipsRandom();
+            if( r * dfPercTreat < dfProb && !pasFires[i].bExcluded )
+            {
+                pasFires[i].bExcluded = TRUE;
+                nRemoved++;
+            }
+            if( nRemoved == nSize )
+            {
+                return SQLITE_ERROR;
+            }
+            if( AvgLargeFireSize( pasFires, nSize, &dfAvgSize, &dfSumSize ) != SQLITE_OK )
+                return SQLITE_ERROR;
+            if( dfAvgSize < dfTargetAvg )
+            {
+                break;
+            }
+        }
+        nTries++;
+    }
+    return SQLITE_OK;
+}
+
 int
 WfipsResult::SimulateLargeFire( int nJulStart, int nJulEnd, double dfNoRescProb,
-                              double dfTimeLimitProb, double dfSizeLimitProb,
-                              double dfExhaustProb )
+                                double dfTimeLimitProb, double dfSizeLimitProb,
+                                double dfExhaustProb )
 {
-    int rc, i;
-    sqlite3_stmt *stmt, *lfstmt;
+    int rc, n, i, j, k;
+    sqlite3_stmt *stmt, *lfstmt, *lfistmt;
     double adfProbs[4] = { dfNoRescProb, dfTimeLimitProb, dfSizeLimitProb, dfExhaustProb };
     rc = sqlite3_exec( db, "CREATE TABLE IF NOT EXISTS " \
-                           "large_fire_result(year,fire_num,cost_acre,acres,pop)",
+                           "large_fire_result(year,fire_num,acres,pop,cost)",
                        NULL, NULL, NULL );
+    rc = sqlite3_prepare_v2( db, "INSERT INTO large_fire_result VALUES(?,?,?,?,?)",
+                             -1, &lfistmt, NULL );
 
-    double dfRadius = 0.085;
-    int nLimit = 20;
+    double dfRadius = 0.1;
+    int nLimit = 40;
     int nDayDelta = 7;
 
+    double dfX, dfY;
+
+    LargeFireData *pasFires = (LargeFireData*)sqlite3_malloc( sizeof( LargeFireData ) * nLimit );
+
     rc = sqlite3_prepare_v2( db, "SELECT fig.year,fig.fire_num,fig.jul_day," \
-                                 "fig.geometry FROM fire_result LEFT JOIN fig " \
+                                 "fig.geometry, X(fig.geometry), Y(fig.geometry) " \
+                                 "FROM fire_result LEFT JOIN fig " \
                                  "USING(year,fire_num) WHERE status=?1 "
                                  "AND fig.jul_day BETWEEN ?2 AND ?3",
                              -1, &stmt, NULL );
@@ -221,45 +391,95 @@ WfipsResult::SimulateLargeFire( int nJulStart, int nJulEnd, double dfNoRescProb,
                                  "FROM largefire WHERE ST_Intersects(" \
                                  "ST_Buffer(?1, ?2), largefire.geometry) " \
                                  "AND largefire.jday BETWEEN ?3 AND ?4 " \
-                                 "AND (ABS(RANDOM())/9223372036854775807.) > ?5 " \
                                  "AND largefire.ROWID IN (SELECT " \
                                  "pkid FROM idx_largefire_geometry WHERE " \
                                  "xmin <= MbrMaxX(ST_Buffer(?1, ?2)) AND " \
                                  "xmax >= MbrMinX(ST_Buffer(?1, ?2)) AND " \
                                  "ymin <= MbrMaxY(ST_Buffer(?1, ?2)) AND " \
                                  "ymax >= MbrMinY(ST_Buffer(?1, ?2))) " \
-                                 "ORDER BY RANDOM() LIMIT ?6",
+                                 "ORDER BY RANDOM() LIMIT ?5",
                              -1, &lfstmt, NULL );
 
     int nYear, nFire, nJulDay;
     int nSize;
     const void *pGeom;
     int nAcres, nCost, nPop;
+    double dfTreated;
+    int nValidFires;
     for( i = 0; i < 4; i++ )
     {
         rc = sqlite3_bind_text( stmt, 1, apszEscapes[i], -1, NULL );
+        rc = sqlite3_bind_int( stmt, 2, nJulStart );
+        rc = sqlite3_bind_int( stmt, 3, nJulEnd );
         while( sqlite3_step( stmt ) == SQLITE_ROW )
         {
+            if( WfipsRandom() > adfProbs[i] )
+            {
+                continue;
+            }
             nYear = sqlite3_column_int( stmt, 0 );
             nFire = sqlite3_column_int( stmt, 1 );
             nJulDay = sqlite3_column_int( stmt, 2 );
             nSize = sqlite3_column_bytes( stmt, 3 );
             pGeom = sqlite3_column_blob( stmt, 3 );
+            dfX = sqlite3_column_double( stmt, 4 );
+            dfY = sqlite3_column_double( stmt, 5 );
+            rc = PixelValue( hTreatDS, 1, dfX, dfY, &dfTreated, NULL );
             rc = sqlite3_bind_blob( lfstmt, 1, pGeom, nSize, NULL );
             rc = sqlite3_bind_double( lfstmt, 2, dfRadius );
             rc = sqlite3_bind_int( lfstmt, 3, nJulDay - nDayDelta );
             rc = sqlite3_bind_int( lfstmt, 4, nJulDay + nDayDelta );
-            rc = sqlite3_bind_double( lfstmt, 5, adfProbs[i] );
-            rc = sqlite3_bind_int( lfstmt, 6, nLimit );
+            rc = sqlite3_bind_int( lfstmt, 5, nLimit );
+            /* Populate the large fire structures */
+            j = 0;
             while( sqlite3_step( lfstmt ) == SQLITE_ROW )
             {
+                pasFires[j].dfSize = sqlite3_column_double( lfstmt, 0 );
+                pasFires[j].dfPop = sqlite3_column_double( lfstmt, 1 );
+                pasFires[j].dfCost = sqlite3_column_double( lfstmt, 2 );
+                pasFires[j].bExcluded = 0;
+                j++;
             }
             rc = sqlite3_reset( lfstmt );
+            if( j < 1 )
+            {
+                continue;
+            }
+            rc = DecreaseLargeFireSize( pasFires, j, dfTreated / 100. );
+            if( rc == SQLITE_OK )
+            {
+                nValidFires = 0;
+                for( j = 0; j < nLimit; j++ )
+                {
+                    if( !pasFires[j].bExcluded )
+                        nValidFires++;
+                }
+                n = (int)(WfipsRandom() * nValidFires);
+                assert( n < nValidFires && n >= 0 );
+                k = j = 0;
+                while( k < n )
+                {
+                    if( !pasFires[j].bExcluded )
+                    {
+                        k++;
+                    }
+                    j++;
+                }
+                rc = sqlite3_bind_int( lfistmt, 1, nYear );
+                rc = sqlite3_bind_int( lfistmt, 2, nFire );
+                rc = sqlite3_bind_int( lfistmt, 3, pasFires[k].dfSize );
+                rc = sqlite3_bind_int( lfistmt, 4, pasFires[k].dfPop );
+                rc = sqlite3_bind_double( lfistmt, 5, pasFires[k].dfCost );
+                rc = sqlite3_step( lfistmt );
+                sqlite3_reset( lfistmt );
+            }
         }
         rc = sqlite3_reset( stmt );
     }
     sqlite3_finalize( stmt );
     sqlite3_finalize( lfstmt );
+    sqlite3_finalize( lfistmt );
+    sqlite3_free( pasFires );
     return 0;
 }
 
@@ -306,6 +526,8 @@ WfipsResult::SpatialSummary( const char *pszKey )
     const char *pszStatus;
     int nCount;
     int nNoResc, nTimeLimit, nSizeLimit, nExhaust, nContain, nMonitor;
+    nNoResc = nTimeLimit = nSizeLimit = nNoResc = 0;
+    nExhaust = nMonitor = nContain = 0;
     double dfRatio;
     double dfSum;
     StartTransaction();

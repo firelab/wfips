@@ -28,7 +28,9 @@
 #ifndef WFIPS_SQLITE_H_
 #define WFIPS_SQLITE_H_
 
+#include <assert.h>
 #include <stdlib.h>
+#include <limits.h>
 #include "sqlite3.h"
 
 #ifdef WIN32
@@ -49,7 +51,8 @@
 #define FPU_DB              "fpu.db"
 #define FWA_DB              "kylefwa.db"
 #define GACC_DB             "gacc.db"
-#define LF_DB               "kylelargefire.db"
+//#define LF_DB               "kylelargefire.db"
+#define LF_DB               "largefire.db"
 #define STATIC_DB           "static.db"
 #define RESC_DB             "resc.db"
 #define COUNTY_DB           "us_county.db"
@@ -104,6 +107,8 @@ static const char *apszStatusStrings[] = { NO_RESC_SENT_STR,
 #define WFIPS_CHECK_SQLITE if(rc)goto error
 
 int WfipsAttachDb( sqlite3 *db, const char *pszPath, const char *pszName );
+
+double WfipsRandom();
 
 class WfipsSqlite
 {

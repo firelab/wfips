@@ -41,3 +41,13 @@ int WfipsAttachDb( sqlite3 *db, const char *pszPath, const char *pszName )
     return rc;
 }
 
+double WfipsRandom()
+{
+    double d;
+    int n;
+    sqlite3_randomness( sizeof( int ), &n );
+    d = (double)abs(n)/(double)INT_MAX;
+    assert( d >= 0.0  && d <= 1.0 );
+    return d;
+}
+

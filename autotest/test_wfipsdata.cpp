@@ -59,6 +59,7 @@ struct WfipsDataMock
 {
     WfipsDataMock()
     {
+        GDALAllRegister();
         poData = new WfipsData( WFIPS_DATA_TEST_PATH );
         poData->Open();
         BOOST_REQUIRE( poData->Valid() );
@@ -438,7 +439,6 @@ BOOST_AUTO_TEST_CASE( run_small_output_2 )
     BOOST_CHECK( rc == 1 );
     poData->SetResultPath( WFIPS_TEST_OUTPUT_DB );
     poData->WriteResults();
-    //poData->SimulateLargeFire( 1, 365, 1., 1., 1., 1. );
     poData->CloseResults();
     poData->Reset();
     unlink( WFIPS_TEST_OUTPUT_DB );
@@ -455,7 +455,24 @@ BOOST_AUTO_TEST_CASE( run_small_output_3 )
     BOOST_CHECK( rc == 1 );
     poData->SetResultPath( WFIPS_TEST_OUTPUT_DB );
     poData->WriteResults();
-    //poData->SimulateLargeFire( 1, 365, 1., 1., 1., 1. );
+    poData->SpatialSummary( "fpu" );
+    poData->CloseResults();
+    poData->Reset();
+    unlink( WFIPS_TEST_OUTPUT_DB );
+}
+
+BOOST_AUTO_TEST_CASE( run_small_output_lf_1 )
+{
+    int rc;
+    rc = poData->LoadIrsData( "POLYGON((-114 47, -113 47, -113 46, -114 46, -114 47))" );
+    BOOST_REQUIRE( rc == 0 );
+    rc = poData->LoadScenario( 5, NULL, 0.0, 0, WFP_NO_TREAT, 0, 0 );
+    BOOST_REQUIRE( rc == 0 );
+    rc = poData->RunScenario( 0 );
+    BOOST_CHECK( rc == 1 );
+    poData->SetResultPath( WFIPS_TEST_OUTPUT_DB );
+    poData->WriteResults();
+    poData->SimulateLargeFire( 1, 365, 1., 1., 1., 1. );
     poData->SpatialSummary( "fpu" );
     poData->CloseResults();
     poData->Reset();
