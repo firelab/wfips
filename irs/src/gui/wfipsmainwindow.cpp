@@ -778,6 +778,13 @@ int WfipsMainWindow::WfipsIsVisible( QgsMapLayer *layer )
             }
         }
     }
+    else if( currentMapCanvas == resultsMapCanvas )
+    {
+        /* We only have one layer right now. */
+        if( resultsMapCanvasLayers.size() > 0 )
+            return 1;
+        return 0;
+    }
     return 0;
 }
 
