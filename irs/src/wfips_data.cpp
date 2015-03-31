@@ -695,8 +695,8 @@ WfipsData::LoadScenario( int nYearIdx, const char *pszTreatWkt,
     int nTreatSize;
     void *pTreatGeom = NULL;
     assert( nYearIdx >= 0 );
-    assert( nJulStart <= nJulEnd && nJulStart > 0 && nJulStart <= 365 &&
-            nJulEnd > 0 && nJulEnd <= 365 );
+    assert( nJulStart <= nJulEnd && nJulStart > 0 && nJulStart <= 366 &&
+            nJulEnd > 0 && nJulEnd <= 366 );
 
     poScenario->m_VFire.clear();
     if( pszAnalysisAreaWkt != NULL )
@@ -1023,12 +1023,12 @@ WfipsData::WriteResults()
 }
 
 int
-WfipsData::SpatialSummary( const char *pszWkt )
+WfipsData::SpatialSummary( const char *pszKey )
 {
     int i, rc;
     if( poResult == NULL )
         return SQLITE_ERROR;
-    rc = poResult->SpatialSummary( "fpu" );
+    rc = poResult->SpatialSummary( pszKey );
     return rc;
 }
 

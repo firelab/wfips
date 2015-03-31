@@ -484,6 +484,24 @@ BOOST_AUTO_TEST_CASE( run_small_output_lf_1 )
     unlink( WFIPS_TEST_OUTPUT_DB );
 }
 
+BOOST_AUTO_TEST_CASE( run_small_output_fwa_1 )
+{
+    int rc;
+    rc = poData->LoadIrsData( "POLYGON((-114 47, -113 47, -113 46, -114 46, -114 47))" );
+    BOOST_REQUIRE( rc == 0 );
+    rc = poData->LoadScenario( 5, NULL, 0.0, 0, WFP_NO_TREAT, 0, 1, 365, 0 );
+    BOOST_REQUIRE( rc == 0 );
+    rc = poData->RunScenario( 0 );
+    BOOST_CHECK( rc == 1 );
+    poData->SetResultPath( WFIPS_TEST_OUTPUT_DB );
+    poData->WriteResults();
+    poData->SimulateLargeFire( 1, 365, 1., 1., 1., 1. );
+    poData->SpatialSummary( "fwa" );
+    poData->CloseResults();
+    poData->Reset();
+    unlink( WFIPS_TEST_OUTPUT_DB );
+}
+
 BOOST_AUTO_TEST_CASE( preposition_1 )
 {
     int rc;

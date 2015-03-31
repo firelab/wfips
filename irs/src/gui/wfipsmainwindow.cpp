@@ -1588,7 +1588,14 @@ WfipsData::LoadScenario( int nYearIdx, const char *pszTreatWkt,
                                         dfTimeProb, dfSizeProb, dfExhProb );
         this->statusBar()->showMessage( "Large Fire Simulation finished." );
         this->statusBar()->showMessage( "Writing Spatial Summary Results..." );
-        rc = poData->SpatialSummary( "fpu" );
+        if( ui->spatSumGroupBox->isChecked() )
+        {
+            int nIdx = ui->spatSumComboBox->currentIndex();
+            if( nIdx == 0 )
+                rc = poData->SpatialSummary( "fpu" );
+            else
+                rc = poData->SpatialSummary( "fwa" );
+        }
         this->statusBar()->showMessage( "Done." );
     }
     free( (void*)pszTreatWkt );

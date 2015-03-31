@@ -415,6 +415,7 @@ WfipsResult::SimulateLargeFire( int nJulStart, int nJulEnd, double dfNoRescProb,
     int nAcres, nCost, nPop;
     double dfTreated;
     int nValidFires;
+    int nActualCount;
     StartTransaction();
     for( i = 0; i < 4; i++ )
     {
@@ -450,16 +451,17 @@ WfipsResult::SimulateLargeFire( int nJulStart, int nJulEnd, double dfNoRescProb,
                 pasFires[j].bExcluded = 0;
                 j++;
             }
+            nActualCount = j;
             rc = sqlite3_reset( lfstmt );
-            if( j < 1 )
+            if( nActualCount < 1 )
             {
                 continue;
             }
-            rc = DecreaseLargeFireSize( pasFires, j, dfTreated / 100. );
+            rc = DecreaseLargeFireSize( pasFires, nActualCount, dfTreated / 100. );
             if( rc == SQLITE_OK )
             {
                 nValidFires = 0;
-                for( j = 0; j < nLimit; j++ )
+                for( j = 0; j < nActualCount; j++ )
                 {
                     if( !pasFires[j].bExcluded )
                         nValidFires++;
@@ -497,15 +499,17 @@ WfipsResult::SimulateLargeFire( int nJulStart, int nJulEnd, double dfNoRescProb,
 int
 WfipsResult::SpatialSummary( const char *pszKey )
 {
-    pszKey = "fpu";
     sqlite3_stmt *stmt, *sstmt, *lfstmt;
     int rc;
     char szPath[8192];
     char szFile[8192];
     szPath[0] = '\0';
-    sprintf( szPath, "%s%s.db", pszDataPath, pszKey );
-    rc = WfipsAttachDb( db, szPath, pszKey );
+    sprintf( szPath, "%s%s", pszDataPath, FPU_DB );
+    rc = WfipsAttachDb( db, szPath, "fpu" );
+    sprintf( szPath, "%s%s", pszDataPath, FWA_DB );
+    rc = WfipsAttachDb( db, szPath, "fwa" );
 
+    assert( EQUAL( pszKey, "fwa" ) || EQUAL( pszKey, "fpu" ) );
 
     if( rc != SQLITE_OK )
         return rc;
@@ -531,14 +535,47 @@ WfipsResult::SpatialSummary( const char *pszKey )
     /*
     ** FIXME NEED TO ADD YEARS!
     */
+    char *pszSql;
+    if( EQUAL( pszKey, "fpu" ) )
+    {
 
-    char *pszSql = sqlite3_mprintf( "SELECT fpu_code, %s.geometry, status, " \
-                                    "COUNT(status) FROM fire_result LEFT JOIN " \
-                                    "fig.fig USING(year, fire_num) LEFT JOIN %s ON " \
-                                    "substr(fig.fwa_name,0,10)=fpu.fpu_code " \
-                                    "GROUP BY fpu_code, status", pszKey, pszKey,
-                                    pszKey );
+        pszSql = sqlite3_mprintf( "SELECT fpu_code, %s.geometry, status, " \
+                                  "COUNT(status) FROM fire_result LEFT JOIN " \
+                                  "fig.fig USING(year, fire_num) LEFT JOIN %s ON " \
+                                  "substr(fig.fwa_name,0,10)=fpu.fpu_code " \
+                                  "GROUP BY fpu_code, status", pszKey, pszKey,
+                                  pszKey );
+        if( bWriteLargeFire )
+        {
+            rc = sqlite3_prepare_v2( db, "SELECT fpu.fpu_code, SUM(acres), SUM(pop), " \
+                                         "SUM(cost) FROM large_fire_result " \
+                                         "LEFT JOIN fig.fig USING(year,fire_num) " \
+                                         "LEFT JOIN fpu.fpu ON "
+                                         "substr(fig.fwa_name,0,10)=fpu.fpu_code " \
+                                         "WHERE fpu.fpu_code=?",
+                                     -1, &lfstmt, NULL );
+        }
+    }
+    else if( EQUAL( pszKey, "fwa" ) )
+    {
+        pszSql = sqlite3_mprintf( "SELECT fwa.name, %s.geometry, status, " \
+                                  "COUNT(status) FROM fire_result LEFT JOIN " \
+                                  "fig.fig USING(year, fire_num) LEFT JOIN %s ON " \
+                                  "fig.fwa_name=fwa.name " \
+                                  "GROUP BY fwa.name, status", pszKey, pszKey,
+                                  pszKey );
 
+        if( bWriteLargeFire )
+        {
+            rc = sqlite3_prepare_v2( db, "SELECT fwa.name, SUM(acres), SUM(pop), " \
+                                         "SUM(cost) FROM large_fire_result " \
+                                         "LEFT JOIN fig.fig USING(year,fire_num) " \
+                                         "LEFT JOIN fwa.fwa ON "
+                                         "fig.fwa_name=fwa.name " \
+                                         "WHERE fwa.name=?",
+                                     -1, &lfstmt, NULL );
+        }
+    }
     rc = sqlite3_prepare_v2( db, pszSql, -1, &stmt, NULL );
     rc = sqlite3_exec( db, "CREATE TABLE spatial_result(name,noresc,tlimit," \
                            "slimit,exhaust,contain,monitor,contratio," \
@@ -550,17 +587,8 @@ WfipsResult::SpatialSummary( const char *pszKey )
     rc = sqlite3_prepare_v2( db, "INSERT INTO spatial_result "
                                  "VALUES(?,?,?,?,?,?,?,?,?,?,?,?)",
                              -1, &sstmt, NULL );
-    if( bWriteLargeFire )
-    {
-        rc = sqlite3_prepare_v2( db, "SELECT fpu.fpu_code, SUM(acres), SUM(pop), " \
-                                     "SUM(cost) FROM large_fire_result " \
-                                     "LEFT JOIN fig.fig USING(year,fire_num) " \
-                                     "LEFT JOIN fpu.fpu ON "
-                                     "substr(fig.fwa_name,0,10)=fpu.fpu_code " \
-                                     "WHERE fpu.fpu_code=?",
-                                 -1, &lfstmt, NULL );
-    }
-    else
+
+    if( !bWriteLargeFire )
     {
         lfstmt = NULL;
     }

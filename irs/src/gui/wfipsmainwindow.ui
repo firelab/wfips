@@ -1958,7 +1958,7 @@
             <property name="title">
              <string>Fire Ignitions</string>
             </property>
-            <layout class="QVBoxLayout" name="verticalLayout_11">
+            <layout class="QVBoxLayout" name="verticalLayout_16">
              <item>
               <widget class="QRadioButton" name="figAllRadioButton">
                <property name="text">
@@ -2207,6 +2207,32 @@
                    </size>
                   </property>
                  </spacer>
+                </item>
+               </layout>
+              </widget>
+             </item>
+             <item>
+              <widget class="QGroupBox" name="spatSumGroupBox">
+               <property name="title">
+                <string>Spatial Summary</string>
+               </property>
+               <property name="checkable">
+                <bool>true</bool>
+               </property>
+               <layout class="QVBoxLayout" name="verticalLayout_11">
+                <item>
+                 <widget class="QComboBox" name="spatSumComboBox">
+                  <item>
+                   <property name="text">
+                    <string>FPU (Fire Planning Unit)</string>
+                   </property>
+                  </item>
+                  <item>
+                   <property name="text">
+                    <string>FWA (Fire Workload Area)</string>
+                   </property>
+                  </item>
+                 </widget>
                 </item>
                </layout>
               </widget>
