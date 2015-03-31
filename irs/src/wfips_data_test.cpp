@@ -227,7 +227,7 @@ int WfipsData::TestScenLoad1()
     poScenario = new CRunScenario();
     LoadDispatchLogic();
     LoadFwas();
-    rc = LoadScenario( 5, NULL, 0.0, 0, WFP_DEFAULT_PROB, 0, 0 );
+    rc = LoadScenario( 5, NULL, 0.0, 0, WFP_DEFAULT_PROB, 0, 1, 365, 0 );
     n = poScenario->m_VFire.size();
     delete poScenario;
     poScenario = NULL;
@@ -241,7 +241,7 @@ int WfipsData::TestScenLoad2()
     poScenario = new CRunScenario();
     LoadDispatchLogic();
     LoadFwas();
-    rc = LoadScenario( 1, NULL, 0.0, 0, WFP_DEFAULT_PROB, 0, 0 );
+    rc = LoadScenario( 1, NULL, 0.0, 0, WFP_DEFAULT_PROB, 0, 1, 365, 0 );
     n =  poScenario->m_VFire.size();
     delete poScenario;
     poScenario = NULL;
@@ -255,7 +255,7 @@ int WfipsData::TestScenLoad3()
     SetAnalysisAreaMask( "POLYGON((-114 47, -113 47, -113 46, -114 46, -114 47))" );
     LoadDispatchLogic();
     LoadFwas();
-    rc = LoadScenario( 5, NULL, 0.0, 0, WFP_DEFAULT_PROB, 0, 0 );
+    rc = LoadScenario( 5, NULL, 0.0, 0, WFP_DEFAULT_PROB, 0, 1, 365, 0 );
     if( poScenario->m_VFire.size() == 0 )
         rc = 1;
     delete poScenario;
@@ -270,10 +270,10 @@ int WfipsData::TestScenLoad4()
     poScenario = new CRunScenario();
     LoadDispatchLogic();
     LoadFwas();
-    LoadScenario( 5, NULL, 0.0, 0, WFP_DEFAULT_PROB, 0, 0 );
+    LoadScenario( 5, NULL, 0.0, 0, WFP_DEFAULT_PROB, 0, 1, 365, 0 );
     a = poScenario->m_VFire.size();
     SetAnalysisAreaMask( "POLYGON((-114 47, -113 47, -113 46, -114 46, -114 47))" );
-    LoadScenario( 5, NULL, 0.0, 0, WFP_DEFAULT_PROB, 0, 0 );
+    LoadScenario( 5, NULL, 0.0, 0, WFP_DEFAULT_PROB, 0, 1, 365, 0 );
     b = poScenario->m_VFire.size();
     if( a == 0 || b == 0 || a < b )
         rc = 1;
@@ -289,9 +289,9 @@ int WfipsData::TestScenLoad5()
     poScenario = new CRunScenario();
     LoadDispatchLogic();
     LoadFwas();
-    LoadScenario( 5, NULL, 0.0, 0, WFP_DEFAULT_PROB, 0, AGENCY_ALL );
+    LoadScenario( 5, NULL, 0.0, 0, WFP_DEFAULT_PROB, 0, 1, 365, AGENCY_ALL );
     a = poScenario->m_VFire.size();
-    b = LoadScenario( 5, NULL, 0.0, 0, WFP_DEFAULT_PROB, 0, DOI_BLM );
+    b = LoadScenario( 5, NULL, 0.0, 0, WFP_DEFAULT_PROB, 0, 1, 365, DOI_BLM );
     b = poScenario->m_VFire.size();
     if( a == 0 || b == 0 || a < b )
         rc = 1;
@@ -308,7 +308,7 @@ int WfipsData::TestScenLoad6()
     SetAnalysisAreaMask( pszWkt );
     LoadDispatchLogic();
     LoadFwas();
-    rc = LoadScenario( 5, NULL, 0.0, 0, WFP_DEFAULT_PROB, 0, AGENCY_ALL );
+    rc = LoadScenario( 5, NULL, 0.0, 0, WFP_DEFAULT_PROB, 0, 1, 365, AGENCY_ALL );
     n = poScenario->m_VFire.size();
     for( i = 0; i < n; i++ )
     {
@@ -332,7 +332,7 @@ int WfipsData::TestScenLoad7()
     SetAnalysisAreaMask( pszWkt );
     LoadDispatchLogic();
     LoadFwas();
-    rc = LoadScenario( 5, pszWkt, 1.0, 0, WFP_DEFAULT_PROB, 0, AGENCY_ALL );
+    rc = LoadScenario( 5, pszWkt, 1.0, 0, WFP_DEFAULT_PROB, 0, 1, 365, AGENCY_ALL );
     n = poScenario->m_VFire.size();
     for( i = 0; i < n; i++ )
     {
@@ -354,7 +354,7 @@ int WfipsData::TestScenLoad8()
     poScenario = new CRunScenario();
     LoadDispatchLogic();
     LoadFwas();
-    rc = LoadScenario( 5, NULL, 0.0, 0, WFP_DEFAULT_PROB, 0, AGENCY_ALL );
+    rc = LoadScenario( 5, NULL, 0.0, 0, WFP_DEFAULT_PROB, 0, 1, 365, AGENCY_ALL );
     n = poScenario->m_VFire.size();
     for( i = 0; i < n; i++ )
     {
@@ -376,7 +376,7 @@ int WfipsData::TestScenLoad9()
     poScenario = new CRunScenario();
     LoadDispatchLogic();
     LoadFwas();
-    rc = LoadScenario( 5, NULL, 0.5, 0, WFP_DEFAULT_PROB, 0, AGENCY_ALL );
+    rc = LoadScenario( 5, NULL, 0.5, 0, WFP_DEFAULT_PROB, 0, 1, 365, AGENCY_ALL );
     n = poScenario->m_VFire.size();
     nTreated = nUntreated = 0;
     for( i = 0; i < n; i++ )
@@ -412,7 +412,7 @@ int WfipsData::TestScenLoad10()
         poScenario = NULL;
         return rc;
     }
-    rc = LoadScenario( 5, pszWkt, 0.0, 0, WFP_NO_TREAT, 0, AGENCY_ALL );
+    rc = LoadScenario( 5, pszWkt, 0.0, 0, WFP_NO_TREAT, 0, 1, 365, AGENCY_ALL );
     n = poScenario->m_VFire.size();
     j = 0;
     t = -1;
@@ -449,7 +449,7 @@ int WfipsData::TestScenLoad11()
         poScenario = NULL;
         return rc;
     }
-    rc = LoadScenario( 5, NULL, 0.0, 0, WFP_NO_TREAT, 0, AGENCY_ALL );
+    rc = LoadScenario( 5, NULL, 0.0, 0, WFP_NO_TREAT, 0, 1, 365, AGENCY_ALL );
     n = poScenario->m_VFire.size();
     double dfX, dfY;
     int nInvalid = 0;
@@ -517,7 +517,7 @@ int WfipsData::TestScenLoad12()
 
     rc = LoadIrsData( pszGbWkt );
     WFIPS_CHECK_SQLITE;
-    rc = LoadScenario( 5, NULL, 0.0, 0, WFP_NO_TREAT, 0, AGENCY_ALL );
+    rc = LoadScenario( 5, NULL, 0.0, 0, WFP_NO_TREAT, 0, 1, 365, AGENCY_ALL );
     WFIPS_CHECK_SQLITE;
     n = poScenario->m_VFire.size();
     if( poScenario->m_VFire.size() == 0 )
@@ -550,6 +550,24 @@ error:
     delete poScenario;
     poScenario = NULL;
     rc = rc || n == 0;
+    return rc;
+}
+
+int WfipsData::TestScenLoad13()
+{
+    int rc, a, b;
+    rc = 0;
+    poScenario = new CRunScenario();
+    LoadDispatchLogic();
+    LoadFwas();
+    LoadScenario( 5, NULL, 0.0, 0, WFP_DEFAULT_PROB, 0, 1, 365, AGENCY_ALL );
+    a = poScenario->m_VFire.size();
+    b = LoadScenario( 5, NULL, 0.0, 0, WFP_DEFAULT_PROB, 0, 180, 220, AGENCY_ALL );
+    b = poScenario->m_VFire.size();
+    if( a == 0 || b == 0 || a < b )
+        rc = 1;
+    delete poScenario;
+    poScenario = NULL;
     return rc;
 }
 

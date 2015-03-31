@@ -683,6 +683,7 @@ int
 WfipsData::LoadScenario( int nYearIdx, const char *pszTreatWkt,
                          double dfTreatProb, int nWfpTreatMask,
                          double *padfWfpTreatProb, double dfStratProb,
+                         int nJulStart, int nJulEnd,
                          int nAgencyFilter )
 {
     sqlite3_stmt *stmt;
@@ -693,6 +694,10 @@ WfipsData::LoadScenario( int nYearIdx, const char *pszTreatWkt,
     void *pAnalysisGeom = NULL;
     int nTreatSize;
     void *pTreatGeom = NULL;
+    assert( nYearIdx >= 0 );
+    assert( nJulStart <= nJulEnd && nJulStart > 0 && nJulStart <= 365 &&
+            nJulEnd > 0 && nJulEnd <= 365 );
+
     poScenario->m_VFire.clear();
     if( pszAnalysisAreaWkt != NULL )
     {
@@ -720,7 +725,8 @@ WfipsData::LoadScenario( int nYearIdx, const char *pszTreatWkt,
     }
 
     pszSql = sqlite3_mprintf( "SELECT *, X(geometry), Y(geometry) FROM " \
-                              "fig WHERE year=@yidx AND fwa_name NOT " \
+                              "fig WHERE year=@yidx AND jul_day "
+                              "BETWEEN @jstart AND @jend AND fwa_name NOT " \
                               "LIKE '%%unassign%%' %s %s " \
                               "ORDER BY jul_day, disc_time",
                               pszAnalysisAreaSql, pszOwnerSql );
@@ -728,6 +734,10 @@ WfipsData::LoadScenario( int nYearIdx, const char *pszTreatWkt,
     rc = sqlite3_prepare_v2( db, pszSql, -1, &stmt, NULL );
     rc = sqlite3_bind_int( stmt, sqlite3_bind_parameter_index( stmt, "@yidx" ),
                            nYearIdx );
+    rc = sqlite3_bind_int( stmt, sqlite3_bind_parameter_index( stmt, "@jstart" ),
+                           nJulStart );
+    rc = sqlite3_bind_int( stmt, sqlite3_bind_parameter_index( stmt, "@jend" ),
+                           nJulEnd );
     if( pszAnalysisAreaWkt != NULL )
     {
         nAnalysisGeomSize = CompileGeometry( pszAnalysisAreaWkt, &pAnalysisGeom );

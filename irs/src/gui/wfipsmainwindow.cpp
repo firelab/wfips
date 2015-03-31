@@ -1509,19 +1509,24 @@ int WfipsMainWindow::RunIrs()
     /* Need some ignitions */
     assert( nIgnOwnership );
 
+    /* Limit by days */
+    int nIgnStart, nIgnEnd;
+    nIgnStart = ui->ignStartDayDateEdit->date().dayOfYear();
+    nIgnEnd = ui->ignEndDayDateEdit->date().dayOfYear();
+
     double dfModRespProb = 0;
     if( ui->manageGroupBox->isChecked() )
     {
         dfModRespProb = ui->manageSpinBox->value() / 100.;
     }
     /* Large Fire */
-    int nJulStart, nJulEnd;
+    int nLfJulStart, nLfJulEnd;
     double dfNoRescProb, dfTimeProb, dfSizeProb, dfExhProb;
     dfNoRescProb = dfTimeProb = dfSizeProb = dfExhProb = 0.;
     if( ui->largeFireGroupBox->isChecked() )
     {
-        nJulStart = ui->largeFireStartDateEdit->date().dayOfYear();
-        nJulEnd = ui->largeFireEndDateEdit->date().dayOfYear();
+        nLfJulStart = ui->largeFireStartDateEdit->date().dayOfYear();
+        nLfJulEnd = ui->largeFireEndDateEdit->date().dayOfYear();
         dfNoRescProb = ui->noRescSentSpinBox->value() / 100.;
         dfTimeProb = ui->timeLimitSpinBox->value() / 100.;
         dfSizeProb = ui->sizeLimitSpinBox->value() / 100.;
@@ -1552,7 +1557,7 @@ WfipsData::LoadScenario( int nYearIdx, const char *pszTreatWkt,
                          */
         rc = poData->LoadScenario( 5, (const char*)pszTreatWkt, dfTreatProb,
                                    nWfpMask, adfWfpProb, dfModRespProb,
-                                   nIgnOwnership );
+                                   1, 365, nIgnOwnership );
         this->statusBar()->showMessage( "Fires loaded." );
         //rc = future.results()[0];
         this->statusBar()->showMessage( "Running Scenario..." );
@@ -1569,7 +1574,7 @@ WfipsData::LoadScenario( int nYearIdx, const char *pszTreatWkt,
         this->statusBar()->showMessage( "Loading fires..." );
         rc = poData->LoadScenario( 5, (const char*)pszTreatWkt, dfTreatProb,
                                    nWfpMask, adfWfpProb, dfModRespProb,
-                                   nIgnOwnership );
+                                   nIgnStart, nIgnEnd, nIgnOwnership );
         this->statusBar()->showMessage( "Fires loaded." );
         rc = poData->SetResultPath( pszPath );
         this->statusBar()->showMessage( "Running Scenario..." );
@@ -1579,7 +1584,7 @@ WfipsData::LoadScenario( int nYearIdx, const char *pszTreatWkt,
         rc = poData->WriteResults();
         this->statusBar()->showMessage( "Output written." );
         this->statusBar()->showMessage( "Simulating Large Fires..." );
-        rc = poData->SimulateLargeFire( nJulStart, nJulEnd, dfNoRescProb,
+        rc = poData->SimulateLargeFire( nLfJulStart, nLfJulEnd, dfNoRescProb,
                                         dfTimeProb, dfSizeProb, dfExhProb );
         this->statusBar()->showMessage( "Large Fire Simulation finished." );
         this->statusBar()->showMessage( "Writing Spatial Summary Results..." );

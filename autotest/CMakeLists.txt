@@ -280,6 +280,8 @@ ADD_TEST( wfips_load_scen_11 ${EXECUTABLE_OUTPUT_PATH}/test_main
           --run_test=wfipsdata/load_scen_11 )
 ADD_TEST( wfips_load_scen_12 ${EXECUTABLE_OUTPUT_PATH}/test_main
           --run_test=wfipsdata/load_scen_12 )
+ADD_TEST( wfips_load_scen_13 ${EXECUTABLE_OUTPUT_PATH}/test_main
+          --run_test=wfipsdata/load_scen_13 )
 ADD_TEST( wfips_set_resource_db_1 ${EXECUTABLE_OUTPUT_PATH}/test_main
           --run_test=wfipsdata/set_resource_db_1 )
 ADD_TEST( wfips_scen_count_1 ${EXECUTABLE_OUTPUT_PATH}/test_main

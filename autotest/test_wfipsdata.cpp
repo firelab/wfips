@@ -300,6 +300,11 @@ BOOST_AUTO_TEST_CASE( load_scen_12 )
     BOOST_CHECK( poData->TestScenLoad12() == 0 );
 }
 
+BOOST_AUTO_TEST_CASE( load_scen_13 )
+{
+    BOOST_CHECK( poData->TestScenLoad13() == 0 );
+}
+
 BOOST_AUTO_TEST_CASE( set_resource_db_1 )
 {
     int anIds[] = {1,2,3,4,5,6,7,8,9,10};
@@ -385,7 +390,7 @@ BOOST_AUTO_TEST_CASE( run_small_1 )
     int rc;
     rc = poData->LoadIrsData( "POLYGON((-114 47, -113 47, -113 46, -114 46, -114 47))" );
     BOOST_REQUIRE( rc == 0 );
-    rc = poData->LoadScenario( 5, NULL, 0.0, 0, WFP_NO_TREAT, 0, 0 );
+    rc = poData->LoadScenario( 5, NULL, 0.0, 0, WFP_NO_TREAT, 0, 1, 365, 0 );
     BOOST_REQUIRE( rc == 0 );
     rc = poData->RunScenario( 0 );
     BOOST_CHECK( rc == 1 );
@@ -399,7 +404,7 @@ BOOST_AUTO_TEST_CASE( run_gb_id_002_no_spatial )
     pszWkt = GetFpuWkt( "GB_ID_002" );
     rc = poData->LoadIrsData( pszWkt );
     BOOST_REQUIRE( rc == 0 );
-    rc = poData->LoadScenario( 5, pszWkt, 0.0, 0, WFP_NO_TREAT, 0, 0 );
+    rc = poData->LoadScenario( 5, pszWkt, 0.0, 0, WFP_NO_TREAT, 0, 1, 365, 0 );
     BOOST_REQUIRE( rc == 0 );
     rc = poData->RunScenario( 0 );
     BOOST_CHECK( rc == 1 );
@@ -417,7 +422,7 @@ BOOST_AUTO_TEST_CASE( run_small_output_1 )
     int rc;
     rc = poData->LoadIrsData( "POLYGON((-114 47, -113 47, -113 46, -114 46, -114 47))" );
     BOOST_REQUIRE( rc == 0 );
-    rc = poData->LoadScenario( 5, NULL, 0.0, 0, WFP_NO_TREAT, 0, 0 );
+    rc = poData->LoadScenario( 5, NULL, 0.0, 0, WFP_NO_TREAT, 0, 1, 365, 0 );
     BOOST_REQUIRE( rc == 0 );
     rc = poData->RunScenario( 0 );
     BOOST_CHECK( rc == 1 );
@@ -433,7 +438,7 @@ BOOST_AUTO_TEST_CASE( run_small_output_2 )
     int rc;
     rc = poData->LoadIrsData( "POLYGON((-114 47, -113 47, -113 46, -114 46, -114 47))" );
     BOOST_REQUIRE( rc == 0 );
-    rc = poData->LoadScenario( 5, NULL, 0.0, 0, WFP_NO_TREAT, 0, 0 );
+    rc = poData->LoadScenario( 5, NULL, 0.0, 0, WFP_NO_TREAT, 0, 1, 365, 0 );
     BOOST_REQUIRE( rc == 0 );
     rc = poData->RunScenario( 0 );
     BOOST_CHECK( rc == 1 );
@@ -449,7 +454,7 @@ BOOST_AUTO_TEST_CASE( run_small_output_3 )
     int rc;
     rc = poData->LoadIrsData( "POLYGON((-114 47, -113 47, -113 46, -114 46, -114 47))" );
     BOOST_REQUIRE( rc == 0 );
-    rc = poData->LoadScenario( 5, NULL, 0.0, 0, WFP_NO_TREAT, 0, 0 );
+    rc = poData->LoadScenario( 5, NULL, 0.0, 0, WFP_NO_TREAT, 0, 1, 365, 0 );
     BOOST_REQUIRE( rc == 0 );
     rc = poData->RunScenario( 0 );
     BOOST_CHECK( rc == 1 );
@@ -466,7 +471,7 @@ BOOST_AUTO_TEST_CASE( run_small_output_lf_1 )
     int rc;
     rc = poData->LoadIrsData( "POLYGON((-114 47, -113 47, -113 46, -114 46, -114 47))" );
     BOOST_REQUIRE( rc == 0 );
-    rc = poData->LoadScenario( 5, NULL, 0.0, 0, WFP_NO_TREAT, 0, 0 );
+    rc = poData->LoadScenario( 5, NULL, 0.0, 0, WFP_NO_TREAT, 0, 1, 365, 0 );
     BOOST_REQUIRE( rc == 0 );
     rc = poData->RunScenario( 0 );
     BOOST_CHECK( rc == 1 );
@@ -484,7 +489,7 @@ BOOST_AUTO_TEST_CASE( preposition_1 )
     int rc;
     rc = poData->LoadIrsData( "POLYGON((-114 47, -113 47, -113 46, -114 46, -114 47))" );
     BOOST_REQUIRE( rc == 0 );
-    rc = poData->LoadScenario( 5, NULL, 0.0, 0, WFP_NO_TREAT, 0, 0 );
+    rc = poData->LoadScenario( 5, NULL, 0.0, 0, WFP_NO_TREAT, 0, 1, 365, 0 );
     BOOST_REQUIRE( rc == 0 );
     rc = poData->SetPrepositioning( 0.5, 0.6, 0.7 );
     BOOST_CHECK( rc == 0 );
@@ -502,7 +507,7 @@ BOOST_AUTO_TEST_CASE( run_ca_ca_015 )
     pszWkt = GetFpuWkt( "CA_CA_015" );
     rc = poData->LoadIrsData( pszWkt );
     BOOST_REQUIRE( rc == 0 );
-    rc = poData->LoadScenario( 5, pszWkt, 0.0, 0, WFP_NO_TREAT, 0, 0 );
+    rc = poData->LoadScenario( 5, pszWkt, 0.0, 0, WFP_NO_TREAT, 0, 1, 365, 0 );
     BOOST_REQUIRE( rc == 0 );
     rc = poData->RunScenario( 0 );
     BOOST_CHECK( rc == 1 );
@@ -524,7 +529,7 @@ BOOST_AUTO_TEST_CASE( run_gb_id_002 )
     pszWkt = GetFpuWkt( "GB_ID_002" );
     rc = poData->LoadIrsData( pszWkt );
     BOOST_REQUIRE( rc == 0 );
-    rc = poData->LoadScenario( 5, pszWkt, 0.0, 0, WFP_NO_TREAT, 0, 0 );
+    rc = poData->LoadScenario( 5, pszWkt, 0.0, 0, WFP_NO_TREAT, 0, 1, 365, 0 );
     BOOST_REQUIRE( rc == 0 );
     rc = poData->RunScenario( 0 );
     BOOST_CHECK( rc == 1 );
@@ -544,7 +549,7 @@ BOOST_AUTO_TEST_CASE( run_full_no_space_1 )
     int rc;
     rc = poData->LoadIrsData( NULL );
     BOOST_REQUIRE( rc == 0 );
-    rc = poData->LoadScenario( 5, NULL, 0.0, 0, WFP_NO_TREAT, 0, 0 );
+    rc = poData->LoadScenario( 5, NULL, 0.0, 0, WFP_NO_TREAT, 0, 1, 365, 0 );
     BOOST_REQUIRE( rc == 0 );
     rc = poData->RunScenario( 0 );
     BOOST_CHECK( rc == 1 );
@@ -562,7 +567,7 @@ BOOST_AUTO_TEST_CASE( run_full_1 )
     int rc;
     rc = poData->LoadIrsData( NULL );
     BOOST_REQUIRE( rc == 0 );
-    rc = poData->LoadScenario( 5, NULL, 0.0, 0, WFP_NO_TREAT, 0, 0 );
+    rc = poData->LoadScenario( 5, NULL, 0.0, 0, WFP_NO_TREAT, 0, 1, 365, 0 );
     BOOST_REQUIRE( rc == 0 );
     rc = poData->RunScenario( 0 );
     BOOST_CHECK( rc == 1 );

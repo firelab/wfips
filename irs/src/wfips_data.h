@@ -198,6 +198,7 @@ public:
     int LoadScenario( int nYearIdx, const char *pszTreatWkt,
                       double dfTreatProb, int nWfpTreatMask,
                       double *padfWfpTreatProb, double dfStratProb,
+                      int nJulStart, int nJulEnd,
                       int nAgencyFilter );
 
     int SetAnalysisAreaMask( const char *pszWkt );
@@ -249,8 +250,7 @@ public:
     int TestScenLoad10();
     int TestScenLoad11();
     int TestScenLoad12();
-    //int TestScenLoad13();
-    //int TestScenLoad14();
+    int TestScenLoad13();
 
 private:
     void Init();
