@@ -353,6 +353,34 @@
            </layout>
           </item>
           <item>
+           <layout class="QHBoxLayout" name="horizontalLayout_33">
+            <item>
+             <widget class="QLabel" name="label_6">
+              <property name="text">
+               <string>Open Custom Resource Database</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QLineEdit" name="lineEdit">
+              <property name="readOnly">
+               <bool>true</bool>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QToolButton" name="openCustomRescButton">
+              <property name="toolTip">
+               <string>Open the main path for WFIPS</string>
+              </property>
+              <property name="text">
+               <string>Open</string>
+              </property>
+             </widget>
+            </item>
+           </layout>
+          </item>
+          <item>
            <spacer name="verticalSpacer_7">
             <property name="orientation">
              <enum>Qt::Vertical</enum>
@@ -1209,7 +1237,11 @@
                     </widget>
                    </item>
                    <item>
-                    <widget class="QLineEdit" name="fuelMaskSourceLineEdit"/>
+                    <widget class="QLineEdit" name="fuelMaskSourceLineEdit">
+                     <property name="readOnly">
+                      <bool>true</bool>
+                     </property>
+                    </widget>
                    </item>
                    <item>
                     <widget class="QLabel" name="label_11">
@@ -1219,7 +1251,11 @@
                     </widget>
                    </item>
                    <item>
-                    <widget class="QLineEdit" name="fuelMaskLayerLineEdit"/>
+                    <widget class="QLineEdit" name="fuelMaskLayerLineEdit">
+                     <property name="readOnly">
+                      <bool>true</bool>
+                     </property>
+                    </widget>
                    </item>
                   </layout>
                  </item>
@@ -1517,7 +1553,7 @@
              <item>
               <widget class="QStackedWidget" name="fuelStackWidget_2">
                <property name="currentIndex">
-                <number>0</number>
+                <number>1</number>
                </property>
                <widget class="QWidget" name="page_3">
                 <layout class="QVBoxLayout" name="verticalLayout_19">
@@ -1588,7 +1624,11 @@
                     </widget>
                    </item>
                    <item>
-                    <widget class="QLineEdit" name="fuelMaskSourceLineEdit_2"/>
+                    <widget class="QLineEdit" name="fuelMaskSourceLineEdit_2">
+                     <property name="readOnly">
+                      <bool>true</bool>
+                     </property>
+                    </widget>
                    </item>
                    <item>
                     <widget class="QLabel" name="label_23">
@@ -1598,7 +1638,11 @@
                     </widget>
                    </item>
                    <item>
-                    <widget class="QLineEdit" name="fuelMaskLayerLineEdit_2"/>
+                    <widget class="QLineEdit" name="fuelMaskLayerLineEdit_2">
+                     <property name="readOnly">
+                      <bool>true</bool>
+                     </property>
+                    </widget>
                    </item>
                   </layout>
                  </item>
