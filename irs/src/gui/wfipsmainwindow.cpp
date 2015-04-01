@@ -226,6 +226,10 @@ void WfipsMainWindow::CreateConnections()
     /* Results button */
     connect( ui->openResultsButton, SIGNAL( clicked() ),
              this, SLOT( OpenResults() ) );
+    connect( ui->exportResultButton, SIGNAL( clicked() ),
+             this, SLOT( ExportResults() ) );
+    connect( ui->resultAttComboBox, SIGNAL(currentIndexChanged( QString ) ),
+             this, SLOT( SetResultColorRamp( QString ) ) );
 }
 
 void WfipsMainWindow::PostConstructionActions()
@@ -559,6 +563,10 @@ void WfipsMainWindow::ConstructResultsWidgets()
     connect( resultsIdentifyTool, SIGNAL( WfipsIdentify( QList<QgsMapToolIdentify::IdentifyResult> ) ),
              this, SLOT( Identify( QList<QgsMapToolIdentify::IdentifyResult> ) ) );
     resultsSelectTool = new WfipsSelectMapTool( resultsMapCanvas );
+    /* Set these to NULL, so we can reset them without delete worrite */
+    resultRenderer = NULL;
+    resultRamp = NULL;
+    resultSymbol = NULL;
 }
 
 void WfipsMainWindow::ConstructTreeWidget()
@@ -1629,7 +1637,44 @@ void WfipsMainWindow::ClearResults()
         resultsMapCanvasLayers.clear();
         resultsLayers.clear();
         resultsMapCanvas->refresh();
+        ui->exportResultButton->setDisabled( true );
+        currentResultPath = "";
+        ui->resultAttComboBox->clear();
     }
+}
+
+void WfipsMainWindow::SetResultColorRamp( QString attribute )
+{
+    if( attribute == "" || resultsMapCanvas->layers().size() < 1 )
+    {
+        return;
+    }
+    QgsVectorLayer *layer;
+    QList<QgsMapLayer*>mapLayers = resultsMapCanvas->layers();
+    layer = dynamic_cast<QgsVectorLayer*>( mapLayers[0] );
+
+    //layer = dynamic_cast<QgsVectorLayer>( resultsMapCanvas->layers()[0] );
+    if( !layer->isValid() )
+    {
+        return;
+    }
+    /* Good/bad?  high contain ratio is good, others are usually bad. */
+    bool invert = false;
+    if( attribute != "contratio" && attribute != "contain" )
+        invert = true;
+    /* Do we own these?  It appears the layer owns the actual renderer... */
+    //delete resultRamp;
+    //delete resultSymbol;
+    //delete resultRenderer;
+    resultRamp = new QgsVectorGradientColorRampV2( Qt::red, Qt::blue );
+    resultSymbol = QgsSymbolV2::defaultSymbol( layer->geometryType() );
+    resultRenderer =
+        QgsGraduatedSymbolRendererV2::createRenderer( layer, attribute, 5,
+                                                      QgsGraduatedSymbolRendererV2::EqualInterval,
+                                                      resultSymbol, resultRamp, invert );
+    layer->setRendererV2( resultRenderer );
+    resultsMapCanvas->refresh();
+    return;
 }
 
 void WfipsMainWindow::ShowResults( QString qgisResultPath )
@@ -1651,7 +1696,20 @@ void WfipsMainWindow::ShowResults( QString qgisResultPath )
     resultsMapCanvas->setLayerSet( resultsMapCanvasLayers );
     resultsMapCanvas->setCurrentLayer( resultsMapCanvasLayers[0].layer() );
     resultsMapCanvas->setExtent( layer->extent() );
+    layer->setRendererV2( resultRenderer );
     resultsMapCanvas->refresh();
+    ui->exportResultButton->setEnabled( true );
+    currentResultPath = qgisResultPath;
+    QgsFields fields = layer->dataProvider()->fields();
+    disconnect( ui->resultAttComboBox, SIGNAL( currentIndexChanged( QString ) ),
+                this, SLOT( SetResultColorRamp( QString ) ) );
+    for( int i = 0; i < fields.size(); i++ )
+    {
+        ui->resultAttComboBox->addItem( fields[i].name() );
+    }
+    connect( ui->resultAttComboBox, SIGNAL( currentIndexChanged( QString ) ),
+             this, SLOT( SetResultColorRamp( QString ) ) );
+    ui->resultAttComboBox->setCurrentIndex( 0 );
     return;
 }
 
@@ -1666,9 +1724,48 @@ void WfipsMainWindow::OpenResults()
     ShowResults( resultsFile );
 }
 
-void WfipsMainWindow::EnableResultsWidgets( QString resultsFile )
+void WfipsMainWindow::ExportResults()
 {
-    ui->resultsFileEdit->setText( resultsFile );
+    /* Get our OGR available drivers for output */
+    QStringList formats;
+    QString format;
+    QStringList exts;
+    QStringList files;
+    QString exportFile;
+    OGRDataSourceH hSrcDS, hDstDS;
+    OGRLayerH hSrcLyr, hDstLyr;
+    OGRFeatureH hSrcFeat, hDstFeat;
+    OGRFeatureDefnH hFeatDefn;
+    char *pszFormat;
+    OGRRegisterAll();
+    int i;
+    OGRSFDriverH hDrv;
+    for( i = 0; i < OGRGetDriverCount(); i++ )
+    {
+        hDrv = OGRGetDriver( i );
+        if( OGR_Dr_TestCapability( hDrv, ODrCCreateDataSource ) )
+        {
+            formats << OGR_Dr_GetName( hDrv );
+        }
+    }
+    QFileDialog dialog( this );
+    dialog.setNameFilters( formats );
+    dialog.setFileMode( QFileDialog::AnyFile );
+    dialog.exec();
+    files = dialog.selectedFiles();
+    if( files.size() < 1 )
+        return;
+    exportFile = files[0];
+    format = dialog.selectedNameFilter();
+    qDebug() << "Using OGR to write" << exportFile << "as a" << format;
+    pszFormat = QStringToCString( format );
+    hDrv = OGRGetDriverByName( pszFormat );
+    free( pszFormat );
+    if( hDrv == NULL )
+    {}
+    
+
+
 }
 
 /*

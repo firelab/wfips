@@ -68,6 +68,7 @@
 #include <qgssinglesymbolrendererv2.h>
 #include <qgscategorizedsymbolrendererv2.h>
 #include <qgssymbolv2.h>
+#include <qgsvectorcolorrampv2.h>
 
 /* QGIS Map Canvas */
 #include <qgsmapcanvas.h>
@@ -125,6 +126,7 @@ private:
     /* WFIPS root/default path */
     QString wfipsPath;
     QString customLayerPath;
+    QString currentResultPath;
 
     /* Database paths */
     QStringList analysisAreaLayers;
@@ -204,7 +206,7 @@ private:
 
     void ConstructDispatchWidgets();
 
-    /* Results location canvas */
+    /* Results canvas */
     QVBoxLayout *resultsMapLayout;
     QgsMapCanvas *resultsMapCanvas;
     QList<QgsMapCanvasLayer> resultsMapCanvasLayers;
@@ -216,6 +218,10 @@ private:
     QgsMapTool *resultsIdentifyTool;
     QgsMapTool *resultsSelectTool;
 
+    QgsGraduatedSymbolRendererV2 *resultRenderer;
+    QgsVectorGradientColorRampV2 *resultRamp;
+    QgsSymbolV2 *resultSymbol;
+ 
     void ConstructResultsWidgets();
 
     /* Fuel mask related */
@@ -286,6 +292,8 @@ private slots:
     void ClearResults();
     void ShowResults( QString qgisLayerPath );
     void OpenResults();
+    void ExportResults();
+    void SetResultColorRamp( QString attribute );
 
     /* Settings */
     void ReadSettings();
@@ -295,8 +303,6 @@ private slots:
     void ShowMessage( const int messageType,
                       const int messageFlags,
                       const QString &message );
-
-    void EnableResultsWidgets( QString resultsFile );
 
 protected:
     void closeEvent( QCloseEvent *event );
