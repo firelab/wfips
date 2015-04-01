@@ -679,6 +679,19 @@ WfipsData::SetPrepositioning( double dfEnginePP, double dfCrewPP,
     return 0;
 }
 
+static int AddGmtOffset( char *pszTime, double dfOffset )
+{
+    int nMinute, nHour;
+    nMinute =  atoi( &pszTime[2] );
+    pszTime[2] = '\0';
+    nHour = atoi( pszTime );
+    nHour = nHour + dfOffset;
+    if( nHour < 0 )
+        nHour = 24 + nHour;
+    sprintf( pszTime, "%02d%02d", (int)nHour, (int)nMinute );
+    return 0;
+}
+
 int
 WfipsData::LoadScenario( int nYearIdx, const char *pszTreatWkt,
                          double dfTreatProb, int nWfpTreatMask,
@@ -784,7 +797,6 @@ WfipsData::LoadScenario( int nYearIdx, const char *pszTreatWkt,
     int nSlope, bWalkIn;
     const char *pszTactic;
     double dfAttDist, dfRatio;
-    const char *pszSunrise, *pszSunset;
     int bWaterDrops, bPumpRoll;
     const char *pszFwa;
     double dfGmtOffset;
@@ -810,6 +822,11 @@ WfipsData::LoadScenario( int nYearIdx, const char *pszTreatWkt,
     int nProb;
     double dfProb, dfUserProb;
 
+    int nTime;
+
+    char szSunrise[128];
+    char szSunset[128];
+
     while( sqlite3_step( stmt ) == SQLITE_ROW )
     {
         nYear = sqlite3_column_int( stmt, 0 );
@@ -827,8 +844,10 @@ WfipsData::LoadScenario( int nYearIdx, const char *pszTreatWkt,
         pszTactic = (const char*)sqlite3_column_text( stmt, 12 );
         dfAttDist = sqlite3_column_double( stmt, 13 );
         dfRatio = sqlite3_column_double( stmt, 14 );
-        pszSunrise = (const char*)sqlite3_column_text( stmt, 15 );
-        pszSunset = (const char*)sqlite3_column_text( stmt, 16 );
+        nTime = sqlite3_column_int( stmt, 15 );
+        sprintf( szSunrise, "%04d", nTime );
+        nTime = sqlite3_column_int( stmt, 16 );
+        sprintf( szSunset, "%04d", nTime );
         bWaterDrops = sqlite3_column_int( stmt, 17 );
         bPumpRoll = sqlite3_column_int( stmt, 18 );
         pszFwa = (const char*)sqlite3_column_text( stmt, 19 );
@@ -847,6 +866,9 @@ WfipsData::LoadScenario( int nYearIdx, const char *pszTreatWkt,
         /* X and Y from spatialite */
         dfX = sqlite3_column_double( stmt, 30 );
         dfY = sqlite3_column_double( stmt, 31 );
+
+        AddGmtOffset( szSunrise, dfGmtOffset );
+        AddGmtOffset( szSunset, dfGmtOffset );
 
         bTreated = 0;
 
@@ -917,8 +939,8 @@ WfipsData::LoadScenario( int nYearIdx, const char *pszTreatWkt,
                                               std::string( pszTactic ),
                                               dfAttDist, nElev, dfRatio,
                                               nMinSteps, nMaxSteps,
-                                              std::string( pszSunrise ),
-                                              std::string( pszSunset ),
+                                              std::string( szSunrise ),
+                                              std::string( szSunset ),
                                               (bool)bWaterDrops, (bool)bPumpRoll,
                                               (CFWA&)(poScenario->m_VFWA[i]),
                                               dfY, dfX ) );
