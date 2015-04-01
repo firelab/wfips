@@ -285,6 +285,7 @@ private slots:
 
     void ClearResults();
     void ShowResults( QString qgisLayerPath );
+    void OpenResults();
 
     /* Settings */
     void ReadSettings();

@@ -320,7 +320,7 @@
          <enum>QFrame::Plain</enum>
         </property>
         <property name="currentIndex">
-         <number>0</number>
+         <number>10</number>
         </property>
         <widget class="QWidget" name="dataPage">
          <layout class="QVBoxLayout" name="verticalLayout_13">
@@ -2355,11 +2355,22 @@
         <widget class="QWidget" name="page_4">
          <layout class="QVBoxLayout" name="verticalLayout_7">
           <item>
-           <widget class="QLabel" name="label_5">
-            <property name="text">
-             <string>Results</string>
-            </property>
-           </widget>
+           <layout class="QHBoxLayout" name="horizontalLayout_33">
+            <item>
+             <widget class="QLabel" name="label_5">
+              <property name="text">
+               <string>Results</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QToolButton" name="openResultsButton">
+              <property name="text">
+               <string>Open</string>
+              </property>
+             </widget>
+            </item>
+           </layout>
           </item>
           <item>
            <widget class="QFrame" name="resultsMapFrame">

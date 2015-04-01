@@ -223,7 +223,9 @@ void WfipsMainWindow::CreateConnections()
              this, SLOT( PrevTreeWidgetItem() ) );
     connect( ui->runButton, SIGNAL( clicked() ),
              this, SLOT( RunIrs() ) );
-
+    /* Results button */
+    connect( ui->openResultsButton, SIGNAL( clicked() ),
+             this, SLOT( OpenResults() ) );
 }
 
 void WfipsMainWindow::PostConstructionActions()
@@ -1653,6 +1655,17 @@ void WfipsMainWindow::ShowResults( QString qgisResultPath )
     return;
 }
 
+void WfipsMainWindow::OpenResults()
+{
+    int rc, i;
+    QString resultsFile =
+        QFileDialog::getOpenFileName( this, tr( "Open WFIPS results..." ),
+                                      "", tr( "WFIPS Database files (*.db)" ) );
+    if( resultsFile == "" )
+        return;
+    ShowResults( resultsFile );
+}
+
 void WfipsMainWindow::EnableResultsWidgets( QString resultsFile )
 {
     ui->resultsFileEdit->setText( resultsFile );
@@ -1710,10 +1723,13 @@ void WfipsMainWindow::PrevTreeWidgetItem()
 void WfipsMainWindow::EnableAnalysisLeaves( bool enable )
 {
     QTreeWidgetItemIterator it( ui->treeWidget );
+    /* Skip data and analysis area */
     it += 2;
     while( *it )
     {
-        (*it)->setDisabled( !enable );
+        /* Also skip results */
+        if( (*it)->text( 0 ) != "Results" )
+            (*it)->setDisabled( !enable );
         it++;
     }
 }
