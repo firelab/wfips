@@ -64,6 +64,7 @@ WfipsMainWindow::WfipsMainWindow( QWidget *parent ) :
     /* Call *after* construction */
     CreateConnections();
     PostConstructionActions();
+    EnableAnalysisLeaves( false );
     ui->threadSpinBox->setRange( 1, QThread::idealThreadCount() );
     ReadSettings();
     this->setWindowIcon( QIcon( ":/osu" ) );
@@ -901,6 +902,7 @@ void WfipsMainWindow::ClearAnalysisAreaSelection()
     ui->bufferAnalysisCheckBox->setEnabled( true );
     ui->bufferAnalysisSpinBox->setEnabled( true );
     selectedFids.clear();
+    EnableAnalysisLeaves( false );
     analysisAreaMapCanvas->refresh();
 }
 
@@ -1181,6 +1183,7 @@ void WfipsMainWindow::SetAnalysisArea()
     ui->bufferAnalysisSpinBox->setDisabled( true );
     ui->analysisAreaComboBox->setCurrentIndex( ui->analysisAreaComboBox->count() - 1 );
     this->statusBar()->showMessage( "Done.", 3000 );
+    EnableAnalysisLeaves( true );
     this->setEnabled( true );
 }
 
@@ -1702,6 +1705,17 @@ void WfipsMainWindow::NextTreeWidgetItem()
 void WfipsMainWindow::PrevTreeWidgetItem()
 {
     return FindTreeWidget( 0 );
+}
+
+void WfipsMainWindow::EnableAnalysisLeaves( bool enable )
+{
+    QTreeWidgetItemIterator it( ui->treeWidget );
+    it += 2;
+    while( *it )
+    {
+        (*it)->setDisabled( !enable );
+        it++;
+    }
 }
 
 void WfipsMainWindow::ShowMessage( const int messageType,

@@ -247,6 +247,9 @@ private slots:
     void NextTreeWidgetItem();
     void PrevTreeWidgetItem();
 
+    /* Disable/Enable the widgets that have to have an analysis area */
+    void EnableAnalysisLeaves( bool );
+
     /* Slot for tool button to map tool mapping */
     void UpdateMapToolType();
     /* Zoom to layer extent */
