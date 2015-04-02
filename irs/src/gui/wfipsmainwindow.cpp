@@ -1696,14 +1696,14 @@ void WfipsMainWindow::ShowResults( QString qgisResultPath )
     resultsMapCanvas->setLayerSet( resultsMapCanvasLayers );
     resultsMapCanvas->setCurrentLayer( resultsMapCanvasLayers[0].layer() );
     resultsMapCanvas->setExtent( layer->extent() );
-    layer->setRendererV2( resultRenderer );
     resultsMapCanvas->refresh();
     ui->exportResultButton->setEnabled( true );
     currentResultPath = qgisResultPath;
     QgsFields fields = layer->dataProvider()->fields();
     disconnect( ui->resultAttComboBox, SIGNAL( currentIndexChanged( QString ) ),
                 this, SLOT( SetResultColorRamp( QString ) ) );
-    for( int i = 0; i < fields.size(); i++ )
+    /* Skip name */
+    for( int i = 1; i < fields.size(); i++ )
     {
         ui->resultAttComboBox->addItem( fields[i].name() );
     }
