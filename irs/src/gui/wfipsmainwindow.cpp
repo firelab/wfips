@@ -103,7 +103,7 @@ WfipsMainWindow::~WfipsMainWindow()
 
     delete dispatchEditDialog;
 
-    /* Dispatch Locations */
+    /* Results */
     delete resultsMapCanvas;
     delete resultsPanTool;
     delete resultsZoomInTool;
@@ -563,10 +563,6 @@ void WfipsMainWindow::ConstructResultsWidgets()
     connect( resultsIdentifyTool, SIGNAL( WfipsIdentify( QList<QgsMapToolIdentify::IdentifyResult> ) ),
              this, SLOT( Identify( QList<QgsMapToolIdentify::IdentifyResult> ) ) );
     resultsSelectTool = new WfipsSelectMapTool( resultsMapCanvas );
-    /* Set these to NULL, so we can reset them without delete worrite */
-    resultRenderer = NULL;
-    resultRamp = NULL;
-    resultSymbol = NULL;
 }
 
 void WfipsMainWindow::ConstructTreeWidget()
@@ -1662,17 +1658,22 @@ void WfipsMainWindow::SetResultColorRamp( QString attribute )
     bool invert = false;
     if( attribute != "contratio" && attribute != "contain" )
         invert = true;
-    /* Do we own these?  It appears the layer owns the actual renderer... */
-    //delete resultRamp;
-    //delete resultSymbol;
-    //delete resultRenderer;
-    resultRamp = new QgsVectorGradientColorRampV2( Qt::red, Qt::blue );
-    resultSymbol = QgsSymbolV2::defaultSymbol( layer->geometryType() );
-    resultRenderer =
-        QgsGraduatedSymbolRendererV2::createRenderer( layer, attribute, 5,
-                                                      QgsGraduatedSymbolRendererV2::EqualInterval,
-                                                      resultSymbol, resultRamp, invert );
-    layer->setRendererV2( resultRenderer );
+    /*
+    ** Do we own these?  It appears the layer owns the actual renderer and
+    ** calls delete.  I am guessing the renderer owns the ramp and symbol.  We
+    ** don't need to keep these as members.
+    */
+
+    QgsGraduatedSymbolRendererV2 *renderer;
+    QgsVectorGradientColorRampV2 *ramp;
+    QgsSymbolV2 *symbol;
+ 
+    ramp = new QgsVectorGradientColorRampV2( Qt::red, Qt::blue );
+    symbol = QgsSymbolV2::defaultSymbol( layer->geometryType() );
+    renderer = QgsGraduatedSymbolRendererV2::createRenderer( layer, attribute, 5,
+                                                             QgsGraduatedSymbolRendererV2::EqualInterval,
+                                                             symbol, ramp, invert );
+    layer->setRendererV2( renderer );
     resultsMapCanvas->refresh();
     return;
 }
