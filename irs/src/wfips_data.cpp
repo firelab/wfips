@@ -692,6 +692,52 @@ static int AddGmtOffset( char *pszTime, double dfOffset )
     return 0;
 }
 
+/**
+** \brief Load fires for the simulation.
+**
+** Fires are loaded based on a simulation area.  Masks may be provided to
+** affect if the properties of the fire, or how the fire is fought.  Fires may
+** also be subsetting in time by specifying a start and end julian day.
+** Ownership of the land the ignition occurs on can be specified by using
+** agency mask flags.  0 == AGENCY_ALL.  All non-federal land is considered
+** state or local.
+**
+** \param nYearIdx the year in the database to load.  SELECT DISTINCT(year)
+**                 from fig; will provide you with valid indices.
+**
+** \param pszTreatWkt WKT representation of a polygon for fires to be
+**                    considered treated (along with a probability).
+**
+** \param dfTreatProb the probability that a fire is treated within the
+**                    treatment mask.  If the mask is NULL, then the
+**                    probability affects all fires.
+**
+** \param nWfpTreatMask the WFP class(es) that get a treatment assignment.  For
+**                      example, WFP_PRIORITY_1 and a value of 1.0 in
+**                      padfWfpTreatProb[0] means all WFP Priotry of 1 values
+**                      are assigned a treatment.
+**
+** \note this flag value can be removed and use the probability array[i] > 0.
+**       in it's place.
+**
+** \param padfWfpTreatProb probabilites associated with WFP Priorities from
+**                         1-4.  This is assumed to be an array with 4
+**                         elements.
+**
+** \param dfStatProb the probability that a fire with a 3A or 3B Strategic
+**                   value (from Calkin's group) gets assigned a monitor only
+**                   tactic.  There is no mask for this, each fire has been
+**                   assigned a strategic value in the db.
+**
+** \param nJulStart the earliest day a fire can have to be loaded.
+**
+** \param nJulEnd the latest day a fire can have to be loaded.
+**
+** \param nAgencyFilter a bit mask representing ownership.  Ownership is
+**                      classified as one of the 5 federal fire agencies, or
+**                      other/state/local.
+*/
+
 int
 WfipsData::LoadScenario( int nYearIdx, const char *pszTreatWkt,
                          double dfTreatProb, int nWfpTreatMask,
