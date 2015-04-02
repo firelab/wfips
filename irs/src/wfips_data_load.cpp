@@ -119,7 +119,7 @@ WfipsData::LoadDispatchLogic()
                                          "displog.name=brk_point.name " \
                                          "WHERE ST_Intersects(@geom, geometry) " \
                                          "AND fwa.name NOT LIKE '%unassign%' " \
-                                         "AND substr(fwa.name, 0, 2) NOT IN " \
+                                         "AND substr(fwa.name, 0, 3) NOT IN " \
                                          "('EA','SA','AK') " \
                                          "AND fwa.ROWID IN " \
                                          "(SELECT pkid FROM " \
@@ -150,7 +150,7 @@ WfipsData::LoadDispatchLogic()
                                      "JOIN brk_point ON " \
                                      "displog.name=brk_point.name " \
                                      "WHERE fwa.name NOT LIKE '%unassign%' " \
-                                     "AND substr(fwa.name, 0, 2) NOT IN " \
+                                     "AND substr(fwa.name, 0, 3) NOT IN " \
                                      "('EA','SA','AK') " \
                                      "GROUP BY displog.name",
                                  -1, &stmt, NULL );
@@ -229,7 +229,7 @@ WfipsData::LoadFwas()
                                          "reload.fwa_name=walk_in.fwa_name " \
                                          "WHERE ST_Intersects(@geom, geometry) " \
                                          "AND name NOT LIKE '%unassigned%' " \
-                                         "AND substr(fwa.name, 0, 2) NOT IN " \
+                                         "AND substr(fwa.name, 0, 3) NOT IN " \
                                          "('EA','SA','AK') " \
                                          "AND fwa.ROWID IN " \
                                          "(SELECT pkid FROM " \
@@ -256,7 +256,7 @@ WfipsData::LoadFwas()
                                      "walk_in ON " \
                                      "reload.fwa_name=walk_in.fwa_name " \
                                      "WHERE fwa.name NOT LIKE '%unassigned%' " \
-                                     "AND substr(fwa.name, 0, 2) NOT IN " \
+                                     "AND substr(fwa.name, 0, 3) NOT IN " \
                                      "('EA','SA','AK')",
                                  -1, &stmt, NULL );
     }
@@ -409,7 +409,7 @@ WfipsData::LoadDispatchLocations()
                                          "disploc JOIN assoc ON " \
                                          "name=disploc_name " \
                                          "WHERE fwa_name NOT LIKE '%unassign%' " \
-                                         "AND substr(fwa_name, 0, 2) NOT IN " \
+                                         "AND substr(fwa_name, 0, 3) NOT IN " \
                                          "('EA','SA','AK') " \
                                          "AND fwa_name IN " \
                                          "(SELECT name FROM fwa WHERE " \
@@ -438,7 +438,7 @@ WfipsData::LoadDispatchLocations()
                                      "X(geometry), Y(geometry) FROM disploc " \
                                      "JOIN assoc ON name=disploc_name WHERE "\
                                      "fwa_name NOT LIKE '%unassign%' " \
-                                     "AND substr(fwa_name, 0, 2) NOT IN " \
+                                     "AND substr(fwa_name, 0, 3) NOT IN " \
                                      "('EA','SA','AK') " \
                                      "GROUP BY disploc.name",
                                  -1, &stmt, NULL );
