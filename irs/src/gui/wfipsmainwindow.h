@@ -43,6 +43,7 @@
 /* Our custom widgets and such */
 #include "wfipsaddlayerdialog.h"
 #include "wfipsdispatcheditdialog.h"
+#include "wfipsexportdialog.h"
 
 #include "wfipsidentifymaptool.h"
 #include "wfipsidentifydialog.h"
@@ -218,10 +219,7 @@ private:
     QgsMapTool *resultsIdentifyTool;
     QgsMapTool *resultsSelectTool;
 
-    QgsGraduatedSymbolRendererV2 *resultRenderer;
-    QgsVectorGradientColorRampV2 *resultRamp;
-    QgsSymbolV2 *resultSymbol;
- 
+
     void ConstructResultsWidgets();
 
     /* Fuel mask related */

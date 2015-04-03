@@ -894,6 +894,7 @@ void WfipsMainWindow::ClearAnalysisAreaSelection()
 
     ((WfipsSelectMapTool*)analysisSelectTool)->clear();
     dispatchEditDialog->Clear();
+    poData->SetRescDb( NULL );
 
     /* Dispatch Layer */
     if( dispatchMapCanvasLayers.size() > 0 )
@@ -1727,7 +1728,7 @@ void WfipsMainWindow::OpenResults()
 
 void WfipsMainWindow::ExportResults()
 {
-    /* Get our OGR available drivers for output */
+    /*
     QStringList formats;
     QString format;
     QStringList exts;
@@ -1764,7 +1765,12 @@ void WfipsMainWindow::ExportResults()
     free( pszFormat );
     if( hDrv == NULL )
     {}
-    
+    */
+    WfipsExportDialog dialog;
+    dialog.exec();
+
+    //QString format = dialog.GetFormat();
+    //QString exportFile = dialog.GetFilename();
 
 
 }
@@ -1825,9 +1831,14 @@ void WfipsMainWindow::EnableAnalysisLeaves( bool enable )
     it += 2;
     while( *it )
     {
-        /* Also skip results */
-        if( (*it)->text( 0 ) != "Results" )
+        /* Also skip results, and any permanently disabled leaves */
+        if( (*it)->text( 0 ) != "Results" &&
+            (*it)->text( 0 ) != "National Aviation Resources" &&
+            (*it)->text( 0 ) != "Large Fire Drawdown" )
+        {
             (*it)->setDisabled( !enable );
+        }
+
         it++;
     }
 }
