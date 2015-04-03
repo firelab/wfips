@@ -311,11 +311,11 @@ WfipsData::GetAssociatedDispLoc( const char *pszWkt,
     }
 
     /* Find the associated locations */
-    rc = sqlite3_prepare_v2( db, "SELECT DISTINCT(disploc.ROWID) FROM " \
-                                 "disploc JOIN assoc ON name=disploc_name " \
-                                 "WHERE fwa_name IN " \
-                                 "(SELECT name FROM fwa WHERE " \
-                                 "ST_Intersects(?1, fwa.geometry) AND " \
+    rc = sqlite3_prepare_v2( db, "SELECT DISTINCT(disploc.ROWID) FROM "
+                                 "disploc JOIN assoc ON name=disploc_name "
+                                 "WHERE fwa_name IN "
+                                 "(SELECT name FROM fwa WHERE "
+                                 "ST_Intersects(?1, fwa.geometry) AND "
                                  "fwa.ROWID IN(SELECT pkid FROM "
                                  "idx_fwa_geometry WHERE "
                                  "xmin <= MbrMaxX(?1) AND "
@@ -431,11 +431,11 @@ WfipsData::GetAssociatedResources( int *panDispLocIds, int nDispLocCount,
 
     rc = sqlite3_finalize( stmt );
 
-    pszSql = sqlite3_mprintf( "SELECT disploc.name, resource.ROWID, " \
-                              "resource.name, resource.resc_type " \
-                              "FROM resource LEFT JOIN disploc ON " \
-                              "resource.disploc=disploc.name " \
-                              "WHERE disploc.ROWID=? AND " \
+    pszSql = sqlite3_mprintf( "SELECT disploc.name, resource.ROWID, "
+                              "resource.name, resource.resc_type "
+                              "FROM resource LEFT JOIN disploc ON "
+                              "resource.disploc=disploc.name "
+                              "WHERE disploc.ROWID=? AND "
                               "resource.agency IN(%s)", pszAgencySet );
 
     rc = sqlite3_prepare_v2( db, pszSql, -1, &stmt, NULL );
@@ -547,16 +547,16 @@ WfipsData::WriteRescDb( const char *pszNewPath, int *panIds, int *panDispLocIds,
             sqlite3_close( rdb );
             return rc;
         }
-        rc = sqlite3_prepare_v2( brdb, "SELECT sql FROM sqlite_master " \
-                                       "WHERE type='table' AND name " \
+        rc = sqlite3_prepare_v2( brdb, "SELECT sql FROM sqlite_master "
+                                       "WHERE type='table' AND name "
                                        "IN ('resource', 'heli_assign')",
                                  -1, &stmt, NULL );
     }
     else
     {
         brdb = db;
-        rc = sqlite3_prepare_v2( brdb, "SELECT sql FROM resc.sqlite_master " \
-                                       "WHERE type='table' AND name " \
+        rc = sqlite3_prepare_v2( brdb, "SELECT sql FROM resc.sqlite_master "
+                                       "WHERE type='table' AND name "
                                        "IN ('resource', 'heli_assign')",
                                  -1, &stmt, NULL );
     }
@@ -584,8 +584,8 @@ WfipsData::WriteRescDb( const char *pszNewPath, int *panIds, int *panDispLocIds,
     sqlite3_free( pszSql );
 
     rc = sqlite3_exec( rdb, "BEGIN", NULL, NULL, NULL );
-    pszSql = sqlite3_mprintf( "INSERT INTO resource SELECT * FROM " \
-                              "baseresc.resource WHERE ROWID " \
+    pszSql = sqlite3_mprintf( "INSERT INTO resource SELECT * FROM "
+                              "baseresc.resource WHERE ROWID "
                               "IN (%s)", pszRescSet );
     sqlite3_free( pszRescSet );
     rc = sqlite3_exec( rdb, pszSql, NULL, NULL, NULL );
@@ -606,7 +606,7 @@ WfipsData::WriteRescDb( const char *pszNewPath, int *panIds, int *panDispLocIds,
         sqlite3_stmt *ustmt, *sstmt;
         rc = sqlite3_prepare_v2( rdb, "SELECT name FROM disploc WHERE ROWID=?",
                                  -1, &sstmt, NULL );
-        rc = sqlite3_prepare_v2( rdb, "UPDATE resource SET disploc=?" \
+        rc = sqlite3_prepare_v2( rdb, "UPDATE resource SET disploc=?"
                                       "WHERE ROWID=?",
                                  -1, &ustmt, NULL );
         rc = sqlite3_exec( rdb, "BEGIN", NULL, NULL, NULL );
@@ -761,9 +761,9 @@ WfipsData::LoadScenario( int nYearIdx, const char *pszTreatWkt,
     if( pszAnalysisAreaWkt != NULL )
     {
         pszAnalysisAreaSql =
-            sqlite3_mprintf( "AND ST_Contains(@geom, geometry) AND " \
-                             "fig.ROWID IN(SELECT pkid FROM " \
-                             "idx_fig_geometry WHERE " \
+            sqlite3_mprintf( "AND ST_Contains(@geom, geometry) AND "
+                             "fig.ROWID IN(SELECT pkid FROM "
+                             "idx_fig_geometry WHERE "
                              "xmin <= MbrMaxX(@geom) AND "
                              "xmax >= MbrMinX(@geom) AND "
                              "ymin <= MbrMaxY(@geom) AND "
@@ -783,12 +783,12 @@ WfipsData::LoadScenario( int nYearIdx, const char *pszTreatWkt,
         pszOwnerSql = sqlite3_mprintf( "%s", "" );
     }
 
-    pszSql = sqlite3_mprintf( "SELECT *, X(geometry), Y(geometry) FROM " \
+    pszSql = sqlite3_mprintf( "SELECT *, X(geometry), Y(geometry) FROM "
                               "fig WHERE year=@yidx AND jul_day "
-                              "BETWEEN @jstart AND @jend AND fwa_name NOT " \
-                              "LIKE '%%unassign%%' " \
-                              "AND substr(fwa_name, 0, 3) NOT IN " \
-                              "('AK','SA','EA') " \
+                              "BETWEEN @jstart AND @jend AND fwa_name NOT "
+                              "LIKE '%%unassign%%' "
+                              "AND substr(fwa_name, 0, 3) NOT IN "
+                              "('AK','SA','EA') "
                               "%s %s ORDER BY jul_day, disc_time",
                               pszAnalysisAreaSql, pszOwnerSql );
 
@@ -816,11 +816,11 @@ WfipsData::LoadScenario( int nYearIdx, const char *pszTreatWkt,
 
     if( pszTreatWkt != NULL && dfTreatProb > 0. )
     {
-        rc = sqlite3_prepare_v2( db, "SELECT 1 WHERE " \
-                                     "ST_Contains(@treat, @fig) AND " \
-                                     "X(@fig) <= MbrMaxX(@treat) AND " \
-                                     "X(@fig) >= MbrMinX(@treat) AND " \
-                                     "Y(@fig) <= MbrMaxY(@treat) AND " \
+        rc = sqlite3_prepare_v2( db, "SELECT 1 WHERE "
+                                     "ST_Contains(@treat, @fig) AND "
+                                     "X(@fig) <= MbrMaxX(@treat) AND "
+                                     "X(@fig) >= MbrMinX(@treat) AND "
+                                     "Y(@fig) <= MbrMaxY(@treat) AND "
                                      "Y(@fig) >= MbrMinY(@treat)",
                                  -1, &gstmt, NULL );
         nTreatSize = CompileGeometry( pszTreatWkt, &pTreatGeom );

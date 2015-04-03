@@ -112,22 +112,22 @@ WfipsData::LoadDispatchLogic()
         n = CompileGeometry( pszAnalysisAreaWkt, &pGeom );
         if( n > 0 )
         {
-            rc = sqlite3_prepare_v2( db, "SELECT displog.name,indice,num_lev,bp_1," \
-                                         "bp_2,bp_3,bp_4 FROM fwa JOIN displog " \
-                                         "ON fwa.displogic_name=displog.name " \
-                                         "JOIN brk_point ON " \
-                                         "displog.name=brk_point.name " \
-                                         "WHERE ST_Intersects(@geom, geometry) " \
-                                         "AND fwa.name NOT LIKE '%unassign%' " \
-                                         "AND substr(fwa.name, 0, 3) NOT IN " \
-                                         "('EA','SA','AK') " \
-                                         "AND fwa.ROWID IN " \
-                                         "(SELECT pkid FROM " \
-                                         "idx_fwa_geometry WHERE " \
-                                         "xmin <= MbrMaxX(@geom) AND " \
-                                         "xmax >= MbrMinX(@geom) AND " \
-                                         "ymin <= MbrMaxY(@geom) AND " \
-                                         "ymax >= MbrMinY(@geom)) " \
+            rc = sqlite3_prepare_v2( db, "SELECT displog.name,indice,num_lev,bp_1,"
+                                         "bp_2,bp_3,bp_4 FROM fwa JOIN displog "
+                                         "ON fwa.displogic_name=displog.name "
+                                         "JOIN brk_point ON "
+                                         "displog.name=brk_point.name "
+                                         "WHERE ST_Intersects(@geom, geometry) "
+                                         "AND fwa.name NOT LIKE '%unassign%' "
+                                         "AND substr(fwa.name, 0, 3) NOT IN "
+                                         "('EA','SA','AK') "
+                                         "AND fwa.ROWID IN "
+                                         "(SELECT pkid FROM "
+                                         "idx_fwa_geometry WHERE "
+                                         "xmin <= MbrMaxX(@geom) AND "
+                                         "xmax >= MbrMinX(@geom) AND "
+                                         "ymin <= MbrMaxY(@geom) AND "
+                                         "ymax >= MbrMinY(@geom)) "
                                          "group by displog.name",
                                      -1, &stmt, NULL );
 
@@ -143,15 +143,15 @@ WfipsData::LoadDispatchLogic()
     }
     else
     {
-        rc = sqlite3_prepare_v2( db, "SELECT displog.name,indice," \
-                                     "num_lev,bp_1,bp_2,bp_3,bp_4 FROM " \
-                                     "fwa JOIN displog ON " \
-                                     "fwa.displogic_name=displog.name " \
-                                     "JOIN brk_point ON " \
-                                     "displog.name=brk_point.name " \
-                                     "WHERE fwa.name NOT LIKE '%unassign%' " \
-                                     "AND substr(fwa.name, 0, 3) NOT IN " \
-                                     "('EA','SA','AK') " \
+        rc = sqlite3_prepare_v2( db, "SELECT displog.name,indice,"
+                                     "num_lev,bp_1,bp_2,bp_3,bp_4 FROM "
+                                     "fwa JOIN displog ON "
+                                     "fwa.displogic_name=displog.name "
+                                     "JOIN brk_point ON "
+                                     "displog.name=brk_point.name "
+                                     "WHERE fwa.name NOT LIKE '%unassign%' "
+                                     "AND substr(fwa.name, 0, 3) NOT IN "
+                                     "('EA','SA','AK') "
                                      "GROUP BY displog.name",
                                  -1, &stmt, NULL );
     }
@@ -223,20 +223,20 @@ WfipsData::LoadFwas()
         n = CompileGeometry( pszAnalysisAreaWkt, &pGeom );
         if( n > 0 )
         {
-            rc = sqlite3_prepare_v2( db, "SELECT * FROM fwa JOIN reload ON " \
-                                         "fwa.name=reload.fwa_name JOIN " \
-                                         "walk_in ON " \
-                                         "reload.fwa_name=walk_in.fwa_name " \
-                                         "WHERE ST_Intersects(@geom, geometry) " \
-                                         "AND name NOT LIKE '%unassigned%' " \
-                                         "AND substr(fwa.name, 0, 3) NOT IN " \
-                                         "('EA','SA','AK') " \
-                                         "AND fwa.ROWID IN " \
-                                         "(SELECT pkid FROM " \
-                                         "idx_fwa_geometry WHERE " \
-                                         "xmin <= MbrMaxX(@geom) AND " \
-                                         "xmax >= MbrMinX(@geom) AND " \
-                                         "ymin <= MbrMaxY(@geom) AND " \
+            rc = sqlite3_prepare_v2( db, "SELECT * FROM fwa JOIN reload ON "
+                                         "fwa.name=reload.fwa_name JOIN "
+                                         "walk_in ON "
+                                         "reload.fwa_name=walk_in.fwa_name "
+                                         "WHERE ST_Intersects(@geom, geometry) "
+                                         "AND name NOT LIKE '%unassigned%' "
+                                         "AND substr(fwa.name, 0, 3) NOT IN "
+                                         "('EA','SA','AK') "
+                                         "AND fwa.ROWID IN "
+                                         "(SELECT pkid FROM "
+                                         "idx_fwa_geometry WHERE "
+                                         "xmin <= MbrMaxX(@geom) AND "
+                                         "xmax >= MbrMinX(@geom) AND "
+                                         "ymin <= MbrMaxY(@geom) AND "
                                          "ymax >= MbrMinY(@geom))",
                                      -1, &stmt, NULL );
 
@@ -251,12 +251,12 @@ WfipsData::LoadFwas()
     }
     else
     {
-        rc = sqlite3_prepare_v2( db, "SELECT * FROM fwa JOIN reload ON " \
-                                     "fwa.name=reload.fwa_name JOIN " \
-                                     "walk_in ON " \
-                                     "reload.fwa_name=walk_in.fwa_name " \
-                                     "WHERE fwa.name NOT LIKE '%unassigned%' " \
-                                     "AND substr(fwa.name, 0, 3) NOT IN " \
+        rc = sqlite3_prepare_v2( db, "SELECT * FROM fwa JOIN reload ON "
+                                     "fwa.name=reload.fwa_name JOIN "
+                                     "walk_in ON "
+                                     "reload.fwa_name=walk_in.fwa_name "
+                                     "WHERE fwa.name NOT LIKE '%unassigned%' "
+                                     "AND substr(fwa.name, 0, 3) NOT IN "
                                      "('EA','SA','AK')",
                                  -1, &stmt, NULL );
     }
@@ -403,23 +403,23 @@ WfipsData::LoadDispatchLocations()
         n = CompileGeometry( pszAnalysisAreaWkt, &pGeom );
         if( n > 0 )
         {
-            rc = sqlite3_prepare_v2( db, "SELECT disploc.name,fpu_code," \
-                                         "callback,X(disploc.geometry)," \
-                                         "Y(disploc.geometry) FROM " \
-                                         "disploc JOIN assoc ON " \
-                                         "name=disploc_name " \
-                                         "WHERE fwa_name NOT LIKE '%unassign%' " \
-                                         "AND substr(fwa_name, 0, 3) NOT IN " \
-                                         "('EA','SA','AK') " \
-                                         "AND fwa_name IN " \
-                                         "(SELECT name FROM fwa WHERE " \
-                                         "ST_Intersects(@geom, fwa.geometry) AND " \
+            rc = sqlite3_prepare_v2( db, "SELECT disploc.name,fpu_code,"
+                                         "callback,X(disploc.geometry),"
+                                         "Y(disploc.geometry) FROM "
+                                         "disploc JOIN assoc ON "
+                                         "name=disploc_name "
+                                         "WHERE fwa_name NOT LIKE '%unassign%' "
+                                         "AND substr(fwa_name, 0, 3) NOT IN "
+                                         "('EA','SA','AK') "
+                                         "AND fwa_name IN "
+                                         "(SELECT name FROM fwa WHERE "
+                                         "ST_Intersects(@geom, fwa.geometry) AND "
                                          "fwa.ROWID IN(SELECT pkid FROM "
                                          "idx_fwa_geometry WHERE "
                                          "xmin <= MbrMaxX(@geom) AND "
                                          "xmax >= MbrMinX(@geom) AND "
                                          "ymin <= MbrMaxY(@geom) AND "
-                                         "ymax >= MbrMinY(@geom))) GROUP BY " \
+                                         "ymax >= MbrMinY(@geom))) GROUP BY "
                                          "disploc.name",
                                      -1, &stmt, NULL );
 
@@ -434,16 +434,16 @@ WfipsData::LoadDispatchLocations()
     }
     else
     {
-        rc = sqlite3_prepare_v2( db, "SELECT name,fpu_code,callback," \
-                                     "X(geometry), Y(geometry) FROM disploc " \
-                                     "JOIN assoc ON name=disploc_name WHERE "\
-                                     "fwa_name NOT LIKE '%unassign%' " \
-                                     "AND substr(fwa_name, 0, 3) NOT IN " \
-                                     "('EA','SA','AK') " \
+        rc = sqlite3_prepare_v2( db, "SELECT name,fpu_code,callback,"
+                                     "X(geometry), Y(geometry) FROM disploc "
+                                     "JOIN assoc ON name=disploc_name WHERE "
+                                     "fwa_name NOT LIKE '%unassign%' "
+                                     "AND substr(fwa_name, 0, 3) NOT IN "
+                                     "('EA','SA','AK') "
                                      "GROUP BY disploc.name",
                                  -1, &stmt, NULL );
     }
-    rc = sqlite3_prepare_v2( db, "SELECT fwa_name, distance FROM assoc WHERE " \
+    rc = sqlite3_prepare_v2( db, "SELECT fwa_name, distance FROM assoc WHERE "
                                  "disploc_name=?",
                              -1, &astmt, NULL );
     rc = sqlite3_prepare_v2( db, "SELECT COUNT(*) FROM resource WHERE disploc=?",
