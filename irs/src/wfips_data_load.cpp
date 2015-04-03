@@ -297,10 +297,10 @@ WfipsData::LoadFwas()
         assert( bExcluded == 0 || bExcluded == 1 );
         dfDiscSize = sqlite3_column_double( stmt, 12 );
         assert( dfDiscSize >= 0 );
-        dfEslSize = sqlite3_column_double( stmt, 13 );
-        assert( dfEslSize >= 0 );
-        dfEslTime = sqlite3_column_double( stmt, 14 );
+        dfEslTime = sqlite3_column_double( stmt, 13 );
         assert( dfEslTime >= 0 );
+        dfEslSize = sqlite3_column_double( stmt, 14 );
+        assert( dfEslSize >= 0 );
         dfAirGrnd = sqlite3_column_double( stmt, 15 );
         assert( dfAirGrnd >= 0 );
         nFirstDelay = sqlite3_column_int( stmt, 16 );
