@@ -1711,6 +1711,7 @@ void WfipsMainWindow::ShowResults( QString qgisResultPath )
     }
     connect( ui->resultAttComboBox, SIGNAL( currentIndexChanged( QString ) ),
              this, SLOT( SetResultColorRamp( QString ) ) );
+    ui->resultAttComboBox->setCurrentIndex( 1 );
     ui->resultAttComboBox->setCurrentIndex( 0 );
     return;
 }
