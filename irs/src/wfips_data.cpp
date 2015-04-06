@@ -995,7 +995,7 @@ WfipsData::LoadScenario( int nYearIdx, const char *pszTreatWkt,
         poScenario->m_VFire[iFire].SetTreated( bTreated );
         poScenario->m_VFire[iFire].SetManageObjective( dfManObj );
         /* XXX: Set up properly (3A or 3B) */
-        if( Random() < dfStratProb  && dfManObj >= 2.9 && dfManObj < 4.0 )
+        if( Random() < dfStratProb  && dfManObj > 2.9 && dfManObj < 4.0 )
             poScenario->m_VFire[iFire].SetUseStrategy( 1 );
         else
             poScenario->m_VFire[iFire].SetUseStrategy( 0 );
@@ -1101,6 +1101,16 @@ WfipsData::SpatialSummary( const char *pszKey )
     if( poResult == NULL )
         return SQLITE_ERROR;
     rc = poResult->SpatialSummary( pszKey );
+    return rc;
+}
+
+int
+WfipsData::ExportFires( const char *pszOutFile, const char *pszDrv )
+{
+    int i, rc;
+    if( poResult == NULL )
+        return SQLITE_ERROR;
+    rc = poResult->ExportFires( pszOutFile, pszDrv );
     return rc;
 }
 

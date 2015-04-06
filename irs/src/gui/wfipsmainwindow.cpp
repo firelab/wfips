@@ -1618,7 +1618,7 @@ WfipsData::LoadScenario( int nYearIdx, const char *pszTreatWkt,
     free( (void*)pszTreatWkt );
     free( (void*)pszPath );
     /* We should probably make our own, and leave this one alone */
-    ShowResults( outputFile + "|layername=spatial_result" );
+    ShowResults( outputFile );
     this->setEnabled( true );
     return rc;
 }
@@ -1683,7 +1683,8 @@ void WfipsMainWindow::ShowResults( QString qgisResultPath )
 {
     if( qgisResultPath == "" )
         return;
-    QgsVectorLayer *layer = new QgsVectorLayer( qgisResultPath, "result", "ogr", true );
+    QString layerPath = qgisResultPath + "|layername=spatial_result";
+    QgsVectorLayer *layer = new QgsVectorLayer( layerPath, "result", "ogr", true );
     if( !layer->isValid() )
     {
         delete layer;
@@ -1729,51 +1730,17 @@ void WfipsMainWindow::OpenResults()
 
 void WfipsMainWindow::ExportResults()
 {
-    /*
-    QStringList formats;
-    QString format;
-    QStringList exts;
-    QStringList files;
-    QString exportFile;
-    OGRDataSourceH hSrcDS, hDstDS;
-    OGRLayerH hSrcLyr, hDstLyr;
-    OGRFeatureH hSrcFeat, hDstFeat;
-    OGRFeatureDefnH hFeatDefn;
-    char *pszFormat;
-    OGRRegisterAll();
-    int i;
-    OGRSFDriverH hDrv;
-    for( i = 0; i < OGRGetDriverCount(); i++ )
-    {
-        hDrv = OGRGetDriver( i );
-        if( OGR_Dr_TestCapability( hDrv, ODrCCreateDataSource ) )
-        {
-            formats << OGR_Dr_GetName( hDrv );
-        }
-    }
-    QFileDialog dialog( this );
-    dialog.setNameFilters( formats );
-    dialog.setFileMode( QFileDialog::AnyFile );
-    dialog.exec();
-    files = dialog.selectedFiles();
-    if( files.size() < 1 )
-        return;
-    exportFile = files[0];
-    format = dialog.selectedNameFilter();
-    qDebug() << "Using OGR to write" << exportFile << "as a" << format;
-    pszFormat = QStringToCString( format );
-    hDrv = OGRGetDriverByName( pszFormat );
-    free( pszFormat );
-    if( hDrv == NULL )
-    {}
-    */
     WfipsExportDialog dialog;
     dialog.exec();
 
-    //QString format = dialog.GetFormat();
-    //QString exportFile = dialog.GetFilename();
-
-
+    QString format = dialog.GetFormat();
+    QString exportFile = dialog.GetFilename();
+    if( !poData || format == "" || exportFile == ""  || currentResultPath == "" )
+        return;
+    char *pszDrv, *pszOut;
+    pszDrv = QStringToCString( format );
+    pszOut = QStringToCString( exportFile );
+    poData->ExportFires( pszOut, pszDrv );
 }
 
 /*

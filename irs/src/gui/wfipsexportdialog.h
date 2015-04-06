@@ -22,7 +22,8 @@ public:
     explicit WfipsExportDialog( QWidget *parent = 0 );
     ~WfipsExportDialog();
 
-    
+    QString GetFormat() {return driver;}
+    QString GetFilename() {return filename;}
 
 private:
     Ui::WfipsExportDialog *ui;

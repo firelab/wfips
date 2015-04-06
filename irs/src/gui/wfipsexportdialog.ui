@@ -30,16 +30,6 @@
          <string>All fires</string>
         </property>
        </item>
-       <item>
-        <property name="text">
-         <string>Spatial Summary</string>
-        </property>
-       </item>
-       <item>
-        <property name="text">
-         <string>Spatial Summary Average</string>
-        </property>
-       </item>
       </widget>
      </item>
     </layout>

@@ -217,6 +217,7 @@ public:
     int SimulateLargeFire( int nJulStart, int nJulEnd, double dfNoRescProb,
                            double dfTimeLimitProb, double dfSizeLimitProb,
                            double dfExhaustProb );
+    int ExportFires( const char *pszOutFile, const char *pszDrv );
     int Reset();
 
     /* XXX TO BE IMPLEMENTED XXX */
