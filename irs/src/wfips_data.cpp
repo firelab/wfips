@@ -501,7 +501,7 @@ WfipsData::SetRescDb( const char *pszNewRescPath )
     sqlite3_free( pszRescPath );
     if( pszNewRescPath )
     {
-        pszRescPath = sqlite3_mprintf( "%s", pszRescPath );
+        pszRescPath = sqlite3_mprintf( "%s", pszNewRescPath );
     }
     else
     {
