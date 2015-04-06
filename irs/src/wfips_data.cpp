@@ -494,20 +494,21 @@ WfipsData::Close()
 }
 
 int
-WfipsData::SetRescDb( const char *pszPath )
+WfipsData::SetRescDb( const char *pszNewRescPath )
 {
     int rc;
     char *pszSql = NULL;
     sqlite3_free( pszRescPath );
-    if( pszPath )
-        pszRescPath = sqlite3_mprintf( "%s", pszPath );
+    if( pszNewRescPath )
+    {
+        pszRescPath = sqlite3_mprintf( "%s", pszRescPath );
+    }
     else
     {
-        pszRescPath = NULL;
-        return SQLITE_ERROR;
+        pszRescPath = sqlite3_mprintf( "%s/%s", this->pszPath, RESC_DB );
     }
     rc = sqlite3_exec( db, "DETACH resc", NULL, NULL, NULL );
-    pszSql = sqlite3_mprintf( "ATTACH %Q AS resc", pszPath );
+    pszSql = sqlite3_mprintf( "ATTACH %Q AS resc", pszRescPath );
     rc = sqlite3_exec( db, pszSql, NULL, NULL, NULL );
     sqlite3_free( pszSql );
     return rc;
