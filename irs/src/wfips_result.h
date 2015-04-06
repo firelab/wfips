@@ -35,6 +35,8 @@
 #include <sqlite3.h>
 #include "wfips_sqlite.h"
 
+#include "ogr_api.h"
+
 #include "omffr_conv.h"
 
 #include "Results.h"
@@ -75,6 +77,8 @@ public:
     int SpatialSummary( const char *pszKey );
 
     int EnableVolatile( int bVolatile );
+
+    int ExportFires( const char *pszFile, const char *pszDriver );
 
 private:
     WfipsResult();

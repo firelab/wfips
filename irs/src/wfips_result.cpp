@@ -355,6 +355,9 @@ static int DecreaseLargeFireSize( LargeFireData *pasFires, int nSize,
     return SQLITE_OK;
 }
 
+/*
+** TODO:  Need to add treatment mask and prob?
+*/
 int
 WfipsResult::SimulateLargeFire( int nJulStart, int nJulEnd, double dfNoRescProb,
                                 double dfTimeLimitProb, double dfSizeLimitProb,
@@ -706,6 +709,111 @@ WfipsResult::SpatialSummary( const char *pszKey )
     sqlite3_free( pszName );
     sqlite3_free( pGeom );
     sqlite3_free( pszSql );
+    return 0;
+}
+
+int WfipsResult::ExportFires( const char *pszFile, const char *pszDriver )
+{
+    if( pszFile == NULL || pszDriver == NULL )
+    {
+        return SQLITE_ERROR;
+    }
+    OGRSFDriverH hDrv;
+    OGRDataSourceH hDS;
+    OGRLayerH hLayer;
+    OGRFeatureH hFeature;
+    OGRFeatureDefnH hFeatDefn;
+    OGRFieldDefnH hFieldDefn;
+    OGRGeometryH hGeom;
+
+    OGRSpatialReferenceH hSRS;
+
+    /* Make sure we have fires */
+    sqlite3_stmt *stmt;
+    int rc = sqlite3_prepare_v2( db, "SELECT COUNT() FROM fire_result", -1,
+                                 &stmt, NULL );
+    rc = sqlite3_step( stmt );
+    if( rc != SQLITE_ROW )
+    {
+        sqlite3_finalize( stmt );
+        return SQLITE_ERROR;
+    }
+    rc = sqlite3_column_int( stmt, 0 );
+    if( rc < 1 )
+    {
+        sqlite3_finalize( stmt );
+        return SQLITE_ERROR;
+    }
+    rc = sqlite3_finalize( stmt );
+    hDrv = OGRGetDriverByName( pszDriver );
+    if( hDrv == NULL )
+    {
+        return SQLITE_ERROR;
+    }
+    hDS = OGR_Dr_CreateDataSource( hDrv, pszFile, NULL );
+    if( hDS == NULL )
+    {
+        return SQLITE_ERROR;
+    }
+    hSRS = OSRNewSpatialReference( NULL );
+    OSRImportFromEPSG( hSRS, 4269 );
+    hLayer = OGR_DS_CreateLayer( hDS, "fire_result", hSRS, wkbPoint, NULL );
+    OSRDestroySpatialReference( hSRS );
+    if( hLayer == NULL )
+    {
+        OGR_DS_Destroy( hDS );
+        return SQLITE_ERROR;
+    }
+    rc = sqlite3_prepare_v2( db, "PRAGMA table_info(fire_result)", -1, &stmt,
+                             NULL );
+
+    const char *pszColName, *pszDataType;
+    OGRFieldType eFieldType;
+    while( sqlite3_step( stmt ) == SQLITE_ROW )
+    {
+        pszColName = (const char*)sqlite3_column_text( stmt, 1 );
+        pszDataType = (const char*)sqlite3_column_text( stmt, 2 );
+        /* We only have int, real, text right now */
+        if( EQUAL( pszDataType, "integer" ) )
+            eFieldType = OFTInteger;
+        else if( EQUAL( pszDataType, "real" ) )
+            eFieldType = OFTReal;
+        else if( EQUAL( pszDataType, "text" ) )
+            eFieldType = OFTString;
+        else
+            eFieldType = OFTString;
+        hFieldDefn = OGR_Fld_Create( pszColName, eFieldType );
+        OGR_L_CreateField( hLayer, hFieldDefn, TRUE );
+        OGR_Fld_Destroy( hFieldDefn );
+    }
+    rc = sqlite3_finalize( stmt );
+    rc = sqlite3_prepare_v2( db, "SELECT X(geometry), Y(geometry), fire_result.* "
+                                 "FROM fire_result LEFT JOIN fig "
+                                 "USING(year,fire_num)",
+                             -1, &stmt, NULL );
+    hFeatDefn = OGR_L_GetLayerDefn( hLayer );
+    while( sqlite3_step( stmt ) == SQLITE_ROW )
+    {
+        hFeature = OGR_F_Create( hFeatDefn );
+        hGeom = OGR_G_CreateGeometry( wkbPoint );
+        OGR_G_SetPoint_2D( hGeom, 0, sqlite3_column_double( stmt, 0 ),
+                           sqlite3_column_double( stmt, 1 ) );
+        OGR_F_SetGeometry( hFeature, hGeom );
+        for( int i = 0; i < OGR_FD_GetFieldCount( hFeatDefn ); i++ )
+        {
+            hFieldDefn = OGR_FD_GetFieldDefn( hFeatDefn, i );
+            if( OGR_Fld_GetType( hFieldDefn ) == OFTInteger )
+                OGR_F_SetFieldInteger( hFeature, i, sqlite3_column_int( stmt, i + 2 ) );
+            else if( OGR_Fld_GetType( hFieldDefn ) == OFTReal )
+                OGR_F_SetFieldDouble( hFeature, i, sqlite3_column_double( stmt, i + 2 ) );
+            else if( OGR_Fld_GetType( hFieldDefn ) == OFTString )
+                OGR_F_SetFieldString( hFeature, i, (const char*)sqlite3_column_text( stmt, i + 2 ) );
+        }
+        OGR_L_CreateFeature( hLayer, hFeature );
+        OGR_G_DestroyGeometry( hGeom );
+        OGR_F_Destroy( hFeature );
+    }
+    OGR_DS_Destroy( hDS );
     return 0;
 }
 
