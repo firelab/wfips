@@ -658,16 +658,18 @@ WfipsResult::SpatialSummary( const char *pszKey )
         }
         pszStatus = (const char *)sqlite3_column_text( stmt, 2 );
         nCount = sqlite3_column_int( stmt, 3 );
-        if( EQUAL( pszStatus, "Contained" ) )
+        if( EQUAL( pszStatus, CONTAINED_STR ) )
             nContain += nCount;
-        else if( EQUAL( pszStatus, "Monitor" ) )
+        else if( EQUAL( pszStatus, MONITOR_STR ) )
             nMonitor += nCount;
-        else if( EQUAL( pszStatus, "No Resources Sent" ) )
+        else if( EQUAL( pszStatus, NO_RESC_SENT_STR ) )
             nNoResc += nCount;
-        else if( EQUAL( pszStatus, "TimeLimitExceeded" ) )
+        else if( EQUAL( pszStatus, TIME_LIMIT_EXCEED_STR ) )
             nTimeLimit += nCount;
-        else if( EQUAL( pszStatus, "SizeLimitExceeded" ) )
+        else if( EQUAL( pszStatus, SIZE_LIMIT_EXCEED_STR ) )
             nSizeLimit += nCount;
+        else if( EQUAL( pszStatus, EXHAUSTED_STR ) )
+            nExhaust += nCount;
     }
     rc = sqlite3_bind_text( sstmt, 1, pszName, -1, NULL );
     rc = sqlite3_bind_int( sstmt, 2, nNoResc );

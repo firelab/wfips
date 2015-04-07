@@ -97,6 +97,7 @@
 #define SIZE_LIMIT_EXCEED_STR "SizeLimitExceeded"
 #define EXHAUSTED_STR         "Exhausted"
 #define CONTAINED_STR         "Contained"
+#define MONITOR_STR           "Monitor"
 
 static const char *apszStatusStrings[] = { NO_RESC_SENT_STR,
                                            TIME_LIMIT_EXCEED_STR,
