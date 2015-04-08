@@ -895,6 +895,7 @@ void WfipsMainWindow::ClearAnalysisAreaSelection()
     ((WfipsSelectMapTool*)analysisSelectTool)->clear();
     dispatchEditDialog->Clear();
     poData->SetRescDb( NULL );
+    externRescDb = "";
 
     /* Dispatch Layer */
     if( dispatchMapCanvasLayers.size() > 0 )
