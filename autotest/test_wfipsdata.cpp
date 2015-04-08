@@ -564,6 +564,7 @@ BOOST_AUTO_TEST_CASE( compile_geom_1 )
     sqlite3_free( pGeom );
 }
 
+/* Should fail due to invalid wkt */
 BOOST_AUTO_TEST_CASE( compile_geom_2 )
 {
     const char *pszWkt = "KYLE((-114 47, -113 47, -113 46, -114 46, -114 47))";
@@ -571,7 +572,50 @@ BOOST_AUTO_TEST_CASE( compile_geom_2 )
     void *pGeom;
     rc = WfipsCompileGeometry( NULL, pszWkt, &pGeom );
     BOOST_CHECK( rc == 0 );
-    pGeom = NULL;
+}
+
+/* Should fail due to invalid db */
+BOOST_AUTO_TEST_CASE( compile_geom_3 )
+{
+    const char *pszWkt = "POLYGON((-114 47, -113 47, -113 46, -114 46, -114 47))";
+    int rc;
+    void *pGeom;
+    sqlite3 *db;
+    rc = WfipsCompileGeometry( db, pszWkt, &pGeom );
+    BOOST_CHECK( rc == 0 );
+}
+
+/* Should fail due to no spatialite */
+BOOST_AUTO_TEST_CASE( compile_geom_4 )
+{
+    const char *pszWkt = "POLYGON((-114 47, -113 47, -113 46, -114 46, -114 47))";
+    int rc;
+    void *pGeom;
+    sqlite3 *db;
+    rc = sqlite3_open_v2( ":memory:", &db,
+                          SQLITE_OPEN_CREATE | SQLITE_OPEN_READWRITE, NULL );
+    BOOST_REQUIRE( rc == SQLITE_OK );
+    rc = WfipsCompileGeometry( db, pszWkt, &pGeom );
+    BOOST_CHECK( rc == 0 );
+}
+
+/* Should pass with external db */
+BOOST_AUTO_TEST_CASE( compile_geom_5 )
+{
+    const char *pszWkt = "POLYGON((-114 47, -113 47, -113 46, -114 46, -114 47))";
+    int rc;
+    void *pGeom;
+    sqlite3 *db;
+    rc = sqlite3_open_v2( ":memory:", &db,
+                          SQLITE_OPEN_CREATE | SQLITE_OPEN_READWRITE, NULL );
+    BOOST_REQUIRE( rc == SQLITE_OK );
+    rc = sqlite3_enable_load_extension( db, 1 );
+    BOOST_REQUIRE( rc == SQLITE_OK );
+    rc = sqlite3_load_extension( db, SPATIALITE_EXT, NULL, NULL );
+    BOOST_REQUIRE( rc == SQLITE_OK );
+    rc = WfipsCompileGeometry( db, pszWkt, &pGeom );
+    BOOST_CHECK( rc > 0 );
+    sqlite3_free( pGeom );
 }
 
 #ifdef RUN_REALLY_SLOW_TESTS
