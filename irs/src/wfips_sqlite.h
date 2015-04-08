@@ -115,6 +115,8 @@ double WfipsRandom();
 
 int WfipsCompileGeometry( sqlite3 *db, const char *pszWkt, void **pGeometry );
 
+int WfipsHasTable( sqlite3 *db, const char *pszName );
+
 class WfipsSqlite
 {
 

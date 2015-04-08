@@ -597,6 +597,7 @@ BOOST_AUTO_TEST_CASE( compile_geom_4 )
     BOOST_REQUIRE( rc == SQLITE_OK );
     rc = WfipsCompileGeometry( db, pszWkt, &pGeom );
     BOOST_CHECK( rc == 0 );
+    sqlite3_close( db );
 }
 
 /* Should pass with external db */
@@ -616,6 +617,35 @@ BOOST_AUTO_TEST_CASE( compile_geom_5 )
     rc = WfipsCompileGeometry( db, pszWkt, &pGeom );
     BOOST_CHECK( rc > 0 );
     sqlite3_free( pGeom );
+    sqlite3_close( db );
+}
+
+BOOST_AUTO_TEST_CASE( has_table_1 )
+{
+    int rc;
+    sqlite3 *db;
+    rc = sqlite3_open_v2( ":memory:", &db,
+                          SQLITE_OPEN_CREATE | SQLITE_OPEN_READWRITE, NULL );
+    BOOST_REQUIRE( rc == SQLITE_OK );
+    rc = sqlite3_exec( db, "CREATE TABLE foo(a)", NULL, NULL, NULL );
+    BOOST_REQUIRE( rc == SQLITE_OK );
+    rc = WfipsHasTable( db, "foo" );
+    BOOST_CHECK( rc == 1 );
+    sqlite3_close( db );
+}
+
+BOOST_AUTO_TEST_CASE( has_table_2 )
+{
+    int rc;
+    sqlite3 *db;
+    rc = sqlite3_open_v2( ":memory:", &db,
+                          SQLITE_OPEN_CREATE | SQLITE_OPEN_READWRITE, NULL );
+    BOOST_REQUIRE( rc == SQLITE_OK );
+    rc = sqlite3_exec( db, "CREATE TABLE foo(a)", NULL, NULL, NULL );
+    BOOST_REQUIRE( rc == SQLITE_OK );
+    rc = WfipsHasTable( db, "bar" );
+    BOOST_CHECK( rc == 0 );
+    sqlite3_close( db );
 }
 
 #ifdef RUN_REALLY_SLOW_TESTS

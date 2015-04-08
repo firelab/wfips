@@ -71,6 +71,8 @@ public:
 
     int WriteRecord( CResults &oResult );
 
+    int CreateIndices();
+
     int SimulateLargeFire( int nJulStart, int nJulEnd, double dfNoRescProb,
                            double dfTimeLimitProb, double dfSizeLimitProb,
                            double dfExhaustProb, const char *pszTreatWkt,

@@ -316,6 +316,10 @@ ADD_TEST( wfips_compile_geom_4 ${EXECUTABLE_OUTPUT_PATH}/test_main
           --run_test=wfipsdata/compile_geom_4 )
 ADD_TEST( wfips_compile_geom_5 ${EXECUTABLE_OUTPUT_PATH}/test_main
           --run_test=wfipsdata/compile_geom_5 )
+ADD_TEST( wfips_has_table_1 ${EXECUTABLE_OUTPUT_PATH}/test_main
+          --run_test=wfipsdata/has_table_1 )
+ADD_TEST( wfips_has_table_2 ${EXECUTABLE_OUTPUT_PATH}/test_main
+          --run_test=wfipsdata/has_table_2 )
 IF(RUN_SLOW_TESTS)
     IF(BUILD_IRS)
         ADD_TEST( wfips_load_all_1 ${EXECUTABLE_OUTPUT_PATH}/test_main

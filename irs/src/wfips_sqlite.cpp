@@ -101,3 +101,34 @@ int WfipsCompileGeometry( sqlite3 *db, const char *pszWkt, void **pCompiled )
     return n;
 }
 
+int WfipsHasTable( sqlite3 *db, const char *pszName )
+{
+    if( db == NULL || pszName == NULL )
+    {
+        return 0;
+    }
+    sqlite3_stmt *stmt;
+    int rc;
+    rc = sqlite3_prepare_v2( db, "SELECT COUNT() FROM sqlite_master WHERE "
+                                 "type='table' AND name=?",
+                             -1, &stmt, NULL );
+    if( rc != SQLITE_OK )
+    {
+        sqlite3_finalize( stmt );
+        return 0;
+    }
+    rc = sqlite3_bind_text( stmt, 1, pszName, -1, NULL );
+    if(rc != SQLITE_OK )
+    {
+        sqlite3_finalize( stmt );
+        return 0;
+    }
+    rc = sqlite3_step( stmt );
+    if( rc == SQLITE_ROW && sqlite3_column_int( stmt, 0 ) > 0 )
+        rc = 1;
+    else
+        rc = 0;
+    sqlite3_finalize( stmt );
+    return rc;
+}
+

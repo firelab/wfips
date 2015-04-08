@@ -1073,6 +1073,7 @@ WfipsData::WriteResults()
         poResult->WriteRecord( poScenario->m_VResults[i] );
     }
     poResult->Commit();
+    poResult->CreateIndices();
     poResult->EnableVolatile( 0 );
     return 0;
 }

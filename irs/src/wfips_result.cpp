@@ -202,6 +202,21 @@ int WfipsResult::WriteRecord( CResults &oResults )
     return SQLITE_OK;
 }
 
+int WfipsResult::CreateIndices()
+{
+    int rc;
+    rc = sqlite3_exec( db, "CREATE INDEX idx_fire_result_year_fire_num "
+                           "ON fire_result(year,fire_num)",
+                       NULL, NULL, NULL );
+    if( WfipsHasTable( db, "large_fire_result" ) )
+    {
+        rc = sqlite3_exec( db, "CREATE INDEX idx_large_fire_result_year_fire_num "
+                               "ON large_fire_result(year,fire_num)",
+                           NULL, NULL, NULL );
+    }
+    return rc;
+}
+
 typedef struct LargeFireData LargeFireData;
 struct LargeFireData
 {
@@ -581,24 +596,7 @@ WfipsResult::SpatialSummary( const char *pszKey )
     if( rc != SQLITE_OK )
         return rc;
 
-    int bWriteLargeFire = 0;
-    rc = sqlite3_prepare_v2( db, "SELECT count() FROM sqlite_master WHERE " \
-                                 "type='table' AND name='large_fire_result'",
-                             -1, &stmt, NULL );
-    rc = sqlite3_step( stmt );
-    if( rc != SQLITE_ROW )
-    {
-        bWriteLargeFire = 0;
-    }
-    else
-    {
-        rc = sqlite3_column_int( stmt, 0 );
-        if( rc > 0 )
-        {
-            bWriteLargeFire = 1;
-        }
-    }
-
+    int bWriteLargeFire = WfipsHasTable( db, "large_fire_result" );
     /*
     ** FIXME NEED TO ADD YEARS!
     */
