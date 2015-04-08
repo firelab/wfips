@@ -306,6 +306,10 @@ ADD_TEST( wfips_load_resource_1 ${EXECUTABLE_OUTPUT_PATH}/test_main
           --run_test=wfipsdata/load_resource_1 )
 ADD_TEST( wfips_load_resource_2 ${EXECUTABLE_OUTPUT_PATH}/test_main
           --run_test=wfipsdata/load_resource_2 )
+ADD_TEST( wfips_compile_geom_1 ${EXECUTABLE_OUTPUT_PATH}/test_main
+          --run_test=wfipsdata/compile_geom_1 )
+ADD_TEST( wfips_compile_geom_2 ${EXECUTABLE_OUTPUT_PATH}/test_main
+          --run_test=wfipsdata/compile_geom_2 )
 IF(RUN_SLOW_TESTS)
     IF(BUILD_IRS)
         ADD_TEST( wfips_load_all_1 ${EXECUTABLE_OUTPUT_PATH}/test_main
@@ -323,7 +327,9 @@ IF(RUN_SLOW_TESTS)
         ADD_TEST( wfips_small_output_fwa_1 ${EXECUTABLE_OUTPUT_PATH}/test_main
                   --run_test=wfipsdata/run_small_output_fwa_1 )
         ADD_TEST( wfips_small_output_fires_1 ${EXECUTABLE_OUTPUT_PATH}/test_main
-                  --run_test=wfipsdata/run_small_output_fires_1 )
+                  --run_test=wfipsdata/run_small_output_fwa_1 )
+        ADD_TEST( wfips_small_output_lf_treat_1 ${EXECUTABLE_OUTPUT_PATH}/test_main
+                  --run_test=wfipsdata/run_small_output_lf_treat_1 )
         ADD_TEST( wfips_run_gb_id_002_no_spatial ${EXECUTABLE_OUTPUT_PATH}/test_main
                   --run_test=wfipsdata/run_gb_id_002_no_spatial )
         ADD_TEST( wfips_preposition_1 ${EXECUTABLE_OUTPUT_PATH}/test_main

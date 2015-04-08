@@ -51,3 +51,53 @@ double WfipsRandom()
     return d;
 }
 
+/**
+ ** Compile a well-known text geometry into one we can use with spatialite.
+ **
+ ** \note if db is null, an in memory one is used
+ */
+int WfipsCompileGeometry( sqlite3 *db, const char *pszWkt, void **pCompiled )
+{
+    const void *p;
+    int n, rc;
+    sqlite3 *db2 = NULL;
+    sqlite3_stmt *stmt;
+    if( !db )
+    {
+        rc = sqlite3_open_v2( ":memory:", &db2,
+                              SQLITE_OPEN_CREATE | SQLITE_OPEN_READWRITE,
+                              NULL );
+        rc = sqlite3_enable_load_extension( db2, 1 );
+        rc = sqlite3_load_extension( db2, SPATIALITE_EXT, NULL, NULL );
+        db = db2;
+    }
+    rc = sqlite3_prepare_v2( db, "SELECT GeomFromText(?)", -1, &stmt, NULL );
+    if( rc != SQLITE_OK )
+    {
+        sqlite3_finalize( stmt );
+        sqlite3_close( db2 );
+        return 0;
+    }
+    rc = sqlite3_bind_text( stmt, 1, pszWkt, -1, NULL );
+    if( rc != SQLITE_OK )
+    {
+        sqlite3_finalize( stmt );
+        sqlite3_close( db2 );
+        return 0;
+    }
+    rc = sqlite3_step( stmt );
+    if( rc != SQLITE_ROW )
+    {
+        sqlite3_finalize( stmt );
+        sqlite3_close( db2 );
+        return 0;
+    }
+    n = sqlite3_column_bytes( stmt, 0 );
+    p = sqlite3_column_blob( stmt, 0 );
+    *pCompiled = sqlite3_malloc( n );
+    memcpy( *pCompiled, p, n );
+    sqlite3_finalize( stmt );
+    sqlite3_close( db2 );
+    return n;
+}
+

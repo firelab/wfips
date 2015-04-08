@@ -33,6 +33,7 @@
 
 /* SQLite/Spatialite */
 #include <sqlite3.h>
+
 #include "wfips_sqlite.h"
 
 #include "ogr_api.h"
@@ -72,7 +73,8 @@ public:
 
     int SimulateLargeFire( int nJulStart, int nJulEnd, double dfNoRescProb,
                            double dfTimeLimitProb, double dfSizeLimitProb,
-                           double dfExhaustProb );
+                           double dfExhaustProb, const char *pszTreatWkt,
+                           double dfTreatProb );
 
     int SpatialSummary( const char *pszKey );
 

@@ -477,7 +477,7 @@ BOOST_AUTO_TEST_CASE( run_small_output_lf_1 )
     BOOST_CHECK( rc == 1 );
     poData->SetResultPath( WFIPS_TEST_OUTPUT_DB );
     poData->WriteResults();
-    poData->SimulateLargeFire( 1, 365, 1., 1., 1., 1. );
+    poData->SimulateLargeFire( 1, 365, 1., 1., 1., 1., NULL, 0. );
     poData->SpatialSummary( "fpu" );
     poData->CloseResults();
     poData->Reset();
@@ -495,7 +495,26 @@ BOOST_AUTO_TEST_CASE( run_small_output_fwa_1 )
     BOOST_CHECK( rc == 1 );
     poData->SetResultPath( WFIPS_TEST_OUTPUT_DB );
     poData->WriteResults();
-    poData->SimulateLargeFire( 1, 365, 1., 1., 1., 1. );
+    poData->SimulateLargeFire( 1, 365, 1., 1., 1., 1., NULL, 0. );
+    poData->SpatialSummary( "fwa" );
+    poData->CloseResults();
+    poData->Reset();
+    unlink( WFIPS_TEST_OUTPUT_DB );
+}
+
+BOOST_AUTO_TEST_CASE( run_small_output_lf_treat_1 )
+{
+    int rc;
+    const char *pszTreatWkt = "POLYGON((-113.75 46.75,-113.25 46.75,-113.25 46.25,-113.75 46.25,-113.75 46.75))";
+    rc = poData->LoadIrsData( "POLYGON((-114    47,   -113    47,   -113    46,   -114    46,   -114    47))" );
+    BOOST_REQUIRE( rc == 0 );
+    rc = poData->LoadScenario( 5, pszTreatWkt, 1.0, 0, WFP_NO_TREAT, 0, 1, 365, 0 );
+    BOOST_REQUIRE( rc == 0 );
+    rc = poData->RunScenario( 0 );
+    BOOST_CHECK( rc == 1 );
+    poData->SetResultPath( WFIPS_TEST_OUTPUT_DB );
+    poData->WriteResults();
+    poData->SimulateLargeFire( 1, 365, 1., 1., 1., 1., pszTreatWkt, 1. );
     poData->SpatialSummary( "fwa" );
     poData->CloseResults();
     poData->Reset();
@@ -532,6 +551,27 @@ BOOST_AUTO_TEST_CASE( preposition_1 )
     BOOST_CHECK( rc == 1 );
     poData->Reset();
     unlink( WFIPS_TEST_OUTPUT_DB );
+}
+
+BOOST_AUTO_TEST_CASE( compile_geom_1 )
+{
+    const char *pszWkt = "POLYGON((-114 47, -113 47, -113 46, -114 46, -114 47))";
+    int rc;
+    void *pGeom;
+    rc = WfipsCompileGeometry( NULL, pszWkt, &pGeom );
+    BOOST_CHECK( rc > 0 );
+    pGeom = rc > 0 ? pGeom : NULL;
+    sqlite3_free( pGeom );
+}
+
+BOOST_AUTO_TEST_CASE( compile_geom_2 )
+{
+    const char *pszWkt = "KYLE((-114 47, -113 47, -113 46, -114 46, -114 47))";
+    int rc;
+    void *pGeom;
+    rc = WfipsCompileGeometry( NULL, pszWkt, &pGeom );
+    BOOST_CHECK( rc == 0 );
+    pGeom = NULL;
 }
 
 #ifdef RUN_REALLY_SLOW_TESTS

@@ -53,6 +53,7 @@
 #include "Fire.h"
 
 #include "wfips_result.h"
+#include "wfips_sqlite.h"
 
 #ifndef MAX_PATH
 #define MAX_PATH 8192
@@ -216,7 +217,8 @@ public:
     int LoadIrsData();
     int SimulateLargeFire( int nJulStart, int nJulEnd, double dfNoRescProb,
                            double dfTimeLimitProb, double dfSizeLimitProb,
-                           double dfExhaustProb );
+                           double dfExhaustProb, const char *pszTreatWkt,
+                           double dfTreatProb );
     int ExportFires( const char *pszOutFile, const char *pszDrv );
     int Reset();
 

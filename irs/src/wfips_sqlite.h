@@ -29,8 +29,10 @@
 #define WFIPS_SQLITE_H_
 
 #include <assert.h>
-#include <stdlib.h>
 #include <limits.h>
+#include <stdlib.h>
+#include <string.h>
+
 #include "sqlite3.h"
 
 #ifdef WIN32
@@ -110,6 +112,8 @@ static const char *apszStatusStrings[] = { NO_RESC_SENT_STR,
 int WfipsAttachDb( sqlite3 *db, const char *pszPath, const char *pszName );
 
 double WfipsRandom();
+
+int WfipsCompileGeometry( sqlite3 *db, const char *pszWkt, void **pGeometry );
 
 class WfipsSqlite
 {

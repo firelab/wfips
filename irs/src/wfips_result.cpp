@@ -361,10 +361,11 @@ static int DecreaseLargeFireSize( LargeFireData *pasFires, int nSize,
 int
 WfipsResult::SimulateLargeFire( int nJulStart, int nJulEnd, double dfNoRescProb,
                                 double dfTimeLimitProb, double dfSizeLimitProb,
-                                double dfExhaustProb )
+                                double dfExhaustProb, const char *pszTreatWkt,
+                                double dfTreatProb )
 {
     int rc, n, i, j, k;
-    sqlite3_stmt *stmt, *lfstmt, *lfistmt;
+    sqlite3_stmt *stmt, *lfstmt, *lfistmt, *gstmt;
     double adfProbs[4] = { dfNoRescProb, dfTimeLimitProb, dfSizeLimitProb, dfExhaustProb };
     /*
     ** FIXME: Check inputs
@@ -411,6 +412,19 @@ WfipsResult::SimulateLargeFire( int nJulStart, int nJulEnd, double dfNoRescProb,
                                  "ymax >= MbrMinY(ST_Buffer(?1, ?2))) " \
                                  "ORDER BY RANDOM() LIMIT ?5",
                              -1, &lfstmt, NULL );
+
+    rc = sqlite3_prepare_v2( db, "SELECT 1 WHERE "
+                                 "ST_Contains(@treat,"
+                                 "MakePoint(@figX,@figY,4269)) AND "
+                                 "@figX <= MbrMaxX(@treat) AND "
+                                 "@figX >= MbrMinX(@treat) AND "
+                                 "@figY <= MbrMaxY(@treat) AND "
+                                 "@figY >= MbrMinY(@treat)", -1,
+                             &gstmt, NULL );
+
+    void *pTreatGeom;
+    int nTreatGeomSize = WfipsCompileGeometry( db, pszTreatWkt, &pTreatGeom );
+    int bTreated;
 
     int nYear, nFire, nJulDay;
     int nSize;
@@ -460,7 +474,55 @@ WfipsResult::SimulateLargeFire( int nJulStart, int nJulEnd, double dfNoRescProb,
             {
                 continue;
             }
-            rc = DecreaseLargeFireSize( pasFires, nActualCount, dfTreated / 100. );
+            /*
+            ** If we have a mask or a prob, we need to apply treatments.  A
+            ** NULL mask and a prob means 'gloabal' treatments
+            */
+            /* Valid mask */
+            if( (pszTreatWkt && nTreatGeomSize) )
+            {
+                rc = sqlite3_bind_blob( gstmt,
+                                        sqlite3_bind_parameter_index( gstmt, "@treat" ),
+                                        pTreatGeom, nTreatGeomSize, NULL );
+                rc = sqlite3_bind_double( gstmt,
+                                          sqlite3_bind_parameter_index( gstmt, "@figX" ),
+                                          dfX );
+                rc = sqlite3_bind_double( gstmt,
+                                          sqlite3_bind_parameter_index( gstmt, "@figY" ),
+                                          dfY );
+                rc = sqlite3_step( gstmt );
+                if( rc == SQLITE_ROW && sqlite3_column_int( gstmt, 0 ) )
+                {
+                    bTreated = 1;
+                }
+                else
+                {
+                    bTreated = 0;
+                }
+                sqlite3_reset( gstmt );
+                rc = SQLITE_OK;
+            }
+            /* No mask, but treatment probability */
+            else if( dfTreatProb > 0 )
+            {
+                /* for sqlite3_free() */
+                pTreatGeom = NULL;
+                bTreated = 1;
+                rc = SQLITE_OK;
+            }
+            /* No treatment */
+            else
+            {
+                /* for sqlite3_free() */
+                pTreatGeom = NULL;
+                bTreated = 0;
+                rc = SQLITE_OK;
+            }
+            if( bTreated )
+            {
+                rc = DecreaseLargeFireSize( pasFires, nActualCount,
+                                            dfTreated / 100. * dfTreatProb );
+            }
             if( rc == SQLITE_OK )
             {
                 nValidFires = 0;
@@ -494,6 +556,8 @@ WfipsResult::SimulateLargeFire( int nJulStart, int nJulEnd, double dfNoRescProb,
     sqlite3_finalize( stmt );
     sqlite3_finalize( lfstmt );
     sqlite3_finalize( lfistmt );
+    sqlite3_finalize( gstmt );
+    sqlite3_free( pTreatGeom );
     sqlite3_free( pasFires );
     Commit();
     return 0;

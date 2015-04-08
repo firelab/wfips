@@ -239,25 +239,7 @@ WfipsData::Random()
 int
 WfipsData::CompileGeometry( const char *pszWkt, void **pCompiled )
 {
-    const void *p;
-    int n, rc;
-    sqlite3_stmt *stmt;
-    rc = sqlite3_prepare_v2( db, "SELECT GeomFromText(?)", -1, &stmt, NULL );
-    WFIPS_CHECK_STATUS;
-    rc = sqlite3_bind_text( stmt, 1, pszWkt, -1, NULL );
-    WFIPS_CHECK_STATUS;
-    rc = sqlite3_step( stmt );
-    if( rc != SQLITE_ROW )
-        goto error;
-    n = sqlite3_column_bytes( stmt, 0 );
-    p = sqlite3_column_blob( stmt, 0 );
-    *pCompiled = sqlite3_malloc( n );
-    memcpy( *pCompiled, p, n );
-    sqlite3_finalize( stmt );
-    return n;
-error:
-    sqlite3_finalize( stmt );
-    return 0;
+    return WfipsCompileGeometry( db, pszWkt, pCompiled );
 }
 
 /*
@@ -1124,13 +1106,15 @@ WfipsData::CloseResults()
 int
 WfipsData::SimulateLargeFire( int nJulStart, int nJulEnd, double dfNoRescProb,
                               double dfTimeLimitProb, double dfSizeLimitProb,
-                              double dfExhaustProb )
+                              double dfExhaustProb, const char *pszTreatWkt,
+                              double dfTreatProb )
 {
     /* Check if we have a valid result object, and go. */
     assert( poResult );
     return poResult->SimulateLargeFire( nJulStart, nJulEnd, dfNoRescProb,
                                         dfTimeLimitProb, dfSizeLimitProb,
-                                        dfExhaustProb );
+                                        dfExhaustProb, pszTreatWkt,
+                                        dfTreatProb );
 }
 
 int

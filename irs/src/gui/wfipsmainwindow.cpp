@@ -1603,7 +1603,8 @@ WfipsData::LoadScenario( int nYearIdx, const char *pszTreatWkt,
         this->statusBar()->showMessage( "Output written." );
         this->statusBar()->showMessage( "Simulating Large Fires..." );
         rc = poData->SimulateLargeFire( nLfJulStart, nLfJulEnd, dfNoRescProb,
-                                        dfTimeProb, dfSizeProb, dfExhProb );
+                                        dfTimeProb, dfSizeProb, dfExhProb,
+                                        pszTreatWkt, dfTreatProb );
         this->statusBar()->showMessage( "Large Fire Simulation finished." );
         this->statusBar()->showMessage( "Writing Spatial Summary Results..." );
         if( ui->spatSumGroupBox->isChecked() )
