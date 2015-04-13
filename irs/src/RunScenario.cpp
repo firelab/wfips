@@ -6816,17 +6816,16 @@ void CRunScenario::DLDispatcherExpectedWeights()
 	}	// Could open output file
 
 }
-
 // Read in the files with the names of the Airtanker bases, and dispatch locations with 20 person crews, Type I, II and III helicopter and smokejumpers
 // Create vectors in CRunScenario with this information for moving these types of resources
-void CRunScenario::CreateRescTypeVectors(string auxFileFolder )
+void CRunScenario::CreateRescTypeVectors(std::string auxFileFolder )
 {
 	string BaseID;
 	string fileName;
 
 	// Open the Airtanker File
 	fileName = auxFileFolder + "Airtankers.dat";
-	ifstream ATTFile(fileName, ios::in);
+	ifstream ATTFile(fileName.c_str(), ios::in);
 
 	if ( !ATTFile )
 		cout << "Cannot open file with IDs for airtanker bases";
@@ -6841,7 +6840,7 @@ void CRunScenario::CreateRescTypeVectors(string auxFileFolder )
 
 	// Open the Regions Crew File
 	fileName = auxFileFolder + "Crew20.dat";
-	ifstream CrewFile( fileName, ios::in );
+	ifstream CrewFile( fileName.c_str(), ios::in );
 
 	if ( !CrewFile )
 		cout << "Cannot open file with IDs for Regional Crew bases";
@@ -6856,7 +6855,7 @@ void CRunScenario::CreateRescTypeVectors(string auxFileFolder )
 
 	// Open the Regional Helicopter File
 	fileName = auxFileFolder + "RegionalHeli.dat";
-	ifstream HELFile( fileName, ios::in );
+	ifstream HELFile( fileName.c_str(), ios::in );
 
 	if ( !HELFile )
 		cout << "Cannot open file with IDs for Regional Helicopter bases";
@@ -6871,7 +6870,7 @@ void CRunScenario::CreateRescTypeVectors(string auxFileFolder )
 
 	// Open the Smokejumper File
 	fileName = auxFileFolder + "SMJR.dat";
-	ifstream SMJRFile( fileName, ios::in );
+	ifstream SMJRFile( fileName.c_str(), ios::in );
 
 	if ( !SMJRFile )
 		cout << "Cannot open file with IDs for Smokejumper bases";
@@ -6886,7 +6885,7 @@ void CRunScenario::CreateRescTypeVectors(string auxFileFolder )
 
 	// Open the DOI Crew File
 	fileName = auxFileFolder + "DOICRW.dat";
-	ifstream DOICRWFile( fileName, ios::in );
+	ifstream DOICRWFile( fileName.c_str(), ios::in );
 
 	if ( !DOICRWFile )
 		cout << "Cannot open file with IDs for DOI Crew bases";
@@ -6901,7 +6900,7 @@ void CRunScenario::CreateRescTypeVectors(string auxFileFolder )
 
 	// Open the DOI Dozer File
 	fileName = auxFileFolder + "DOIDZR.dat";
-	ifstream DOIDZRFile( fileName, ios::in );
+	ifstream DOIDZRFile( fileName.c_str(), ios::in );
 
 	if ( !DOIDZRFile )
 		cout << "Cannot open file with IDs for DOI Dozer bases";
@@ -6916,7 +6915,7 @@ void CRunScenario::CreateRescTypeVectors(string auxFileFolder )
 
 	// Open the DOI Engine File
 	fileName = auxFileFolder + "DOIENG.dat";
-	ifstream DOIENGFile( fileName, ios::in );
+	ifstream DOIENGFile( fileName.c_str(), ios::in );
 
 	if ( !DOIENGFile )
 		cout << "Cannot open file with IDs for DOI Engine bases";
@@ -6931,7 +6930,7 @@ void CRunScenario::CreateRescTypeVectors(string auxFileFolder )
 
 	// Open the DOI Helicopter File
 	fileName = auxFileFolder + "DOIHel.dat";
-	ifstream DOIHelFile( fileName, ios::in );
+	ifstream DOIHelFile( fileName.c_str(), ios::in );
 
 	if ( !DOIHelFile )
 		cout << "Cannot open file with IDs for DOI Helicopter bases";
@@ -6946,7 +6945,7 @@ void CRunScenario::CreateRescTypeVectors(string auxFileFolder )
 
 	// Open the DOI Helitack File
 	fileName = auxFileFolder + "DOIHELI.dat";
-	ifstream DOIHELIFile( fileName, ios::in );
+	ifstream DOIHELIFile( fileName.c_str(), ios::in );
 
 	if ( !DOIHELIFile )
 		cout << "Cannot open file with IDs for DOI Helitack bases";
@@ -6961,7 +6960,7 @@ void CRunScenario::CreateRescTypeVectors(string auxFileFolder )
 
 	// Open the DOI SEAT File
 	fileName = auxFileFolder + "DOISEAT.dat";
-	ifstream DOISEATFile( fileName, ios::in );
+	ifstream DOISEATFile( fileName.c_str(), ios::in );
 
 	if ( !DOISEATFile )
 		cout << "Cannot open file with IDs for DOI SEAT bases";
@@ -6976,7 +6975,7 @@ void CRunScenario::CreateRescTypeVectors(string auxFileFolder )
 
 	// Open the FS Crew File
 	fileName = auxFileFolder + "FSCRW.dat";
-	ifstream FSCRWFile( fileName, ios::in );
+	ifstream FSCRWFile( fileName.c_str(), ios::in );
 
 	if ( !FSCRWFile )
 		cout << "Cannot open file with IDs for FS Crew bases";
@@ -6991,7 +6990,7 @@ void CRunScenario::CreateRescTypeVectors(string auxFileFolder )
 
 	// Open the FS Dozer File
 	fileName = auxFileFolder + "FSDZR.dat";
-	ifstream FSDZRFile( fileName, ios::in );
+	ifstream FSDZRFile( fileName.c_str(), ios::in );
 
 	if ( !FSDZRFile )
 		cout << "Cannot open file with IDs for FS Dozer bases";
@@ -7006,7 +7005,7 @@ void CRunScenario::CreateRescTypeVectors(string auxFileFolder )
 
 	// Open the FS EngineFile
 	fileName = auxFileFolder + "FSENG.dat";
-	ifstream FSENGFile( fileName, ios::in );
+	ifstream FSENGFile( fileName.c_str(), ios::in );
 
 	if ( !FSENGFile )
 		cout << "Cannot open file with IDs for FS Engine bases";
@@ -7021,7 +7020,7 @@ void CRunScenario::CreateRescTypeVectors(string auxFileFolder )
 
 	// Open the FS Helicopter File
 	fileName = auxFileFolder + "FSHel.dat";
-	ifstream FSHelFile( fileName, ios::in );
+	ifstream FSHelFile( fileName.c_str(), ios::in );
 
 	if ( !FSHelFile )
 		cout << "Cannot open file with IDs for FS Helicopter bases";
@@ -7036,7 +7035,7 @@ void CRunScenario::CreateRescTypeVectors(string auxFileFolder )
 
 	// Open the FS Helitack File
 	fileName = auxFileFolder + "FSHELI.dat";
-	ifstream FSHELIFile( fileName, ios::in );
+	ifstream FSHELIFile( fileName.c_str(), ios::in );
 
 	if ( !FSHELIFile )
 		cout << "Cannot open file with IDs for FS Helitack bases";
@@ -7051,7 +7050,7 @@ void CRunScenario::CreateRescTypeVectors(string auxFileFolder )
 
 	// Open the FS SEAT File
 	fileName = auxFileFolder + "FSSEAT.dat";
-	ifstream FSSEATFile( fileName, ios::in );
+	ifstream FSSEATFile( fileName.c_str(), ios::in );
 
 	if ( !FSSEATFile )
 		cout << "Cannot open file with IDs for FS SEAT bases";
@@ -7080,7 +7079,7 @@ void CRunScenario::LoadExpectedLevels( int Scenario, int BaseForcast, string aux
 #endif
 
 	string fileName = auxFileFolder + ExpectedFile;
-	ifstream InExp( fileName, ios::in );
+	ifstream InExp( fileName.c_str(), ios::in );
 
 	if ( !InExp )
 		cout << "Could not open the Expected Level files for the interior nodes. \n";
@@ -9226,7 +9225,7 @@ bool CRunScenario::AltHelicDLs( std::map<std::string, OmffrNode<CDispatchBase*>*
 	// Use the dispatch map to assign alternate dispatch locations for helicopters to a dispatch location
 	// Open the file containing the assignments
 	string fileName = auxFileFolder + "HeliBases.dat";
-	ifstream inFile( fileName, ios::in );
+	ifstream inFile( fileName.c_str(), ios::in );
 
 	if ( !inFile )	{
 		cout << "Could not open the file containing alternate helibases for helicopters to deploy helitack \n";
