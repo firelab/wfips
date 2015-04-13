@@ -618,6 +618,7 @@ WfipsData::WriteRescDb( const char *pszNewPath, int *panIds, int *panDispLocIds,
     sqlite3_close( rdb );
     return rc;
 }
+    int SetThreadCount( unsigned int nThreads );
 
 int
 WfipsData::SetPrepositioning( double dfEnginePP, double dfCrewPP,
@@ -1133,6 +1134,63 @@ WfipsData::RunScenario( int iYearIdx )
     int rc;
     rc = poScenario->RunScenario( 0, iYearIdx, NULL );
     poScenario->Output();
+    return rc;
+}
+
+int
+WfipsData::RunScenario( int nYearIdx, const char *pszTreatWkt,
+                        double dfTreatProb, int nWfpTreatMask,
+                        double *padfWfpTreatProb, double dfStratProb,
+                        int nJulStart, int nJulEnd, int nAgencyFilter )
+{
+    int rc;
+    rc = LoadScenario( nYearIdx, pszTreatWkt, dfTreatProb, nWfpTreatMask,
+                       padfWfpTreatProb, dfStratProb, nJulStart, nJulEnd,
+                       nAgencyFilter );
+    if( rc != SQLITE_OK )
+    {
+        return rc;
+    }
+    rc = poScenario->RunScenario( 0, nYearIdx, NULL );
+    if( rc != 1 )
+    {
+        return rc;
+    }
+    poScenario->Output();
+    WriteResults();
+    Reset();
+    return rc;
+}
+
+int
+WfipsData::RunScenarios( int nCount, const char *pszTreatWkt,
+                         double dfTreatProb, int nWfpTreatMask,
+                         double *padfWfpTreatProb, double dfStratProb,
+                         int nJulStart, int nJulEnd, int nAgencyFilter )
+{
+    if( nCount < 1 )
+    {
+        return 1;
+    }
+    int *panIndices;
+    int nTotalYears = GetScenarioIndices( &panIndices );
+    if( nCount > nTotalYears )
+    {
+        sqlite3_free( panIndices );
+        return 1;
+    }
+    int rc;
+    for( int i = 0; i < nCount; i++ )
+    {
+        rc = RunScenario( panIndices[i], pszTreatWkt, dfTreatProb, nWfpTreatMask,
+                          padfWfpTreatProb, dfStratProb, nJulStart, nJulEnd,
+                          nAgencyFilter );
+        if( rc != 1 )
+        {
+            break;
+        }
+    }
+    sqlite3_free( panIndices );
     return rc;
 }
 

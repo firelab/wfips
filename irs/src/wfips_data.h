@@ -208,10 +208,20 @@ public:
     int SpatialSummary( const char *pszKey );
     int CloseResults();
     WfipsResult * GetResults() { return poResult; }
-    /* XXX TO BE IMPLEMENTED XXX */
     int RunScenario( int iYearIndex );
-    /* Not implemented */
+    int RunScenarios( int nCount, const char *pszTreatWkt,
+                      double dfTreatProb, int nWfpTreatMask,
+                      double *padfWfpTreatProb, double dfStratProb,
+                      int nJulStart, int nJulEnd, int nAgencyFilter );
+
+    int RunScenario( int nYearIdx, const char *pszTreatWkt,
+                     double dfTreatProb, int nWfpTreatMask,
+                     double *padfWfpTreatProb, double dfStratProb,
+                     int nJulStart, int nJulEnd,
+                     int nAgencyFilter );
+
     int SetPrepositioning( double, double, double );
+    /* Not implemented */
     /* int SetDrawdown(){return 0;} */
     int LoadIrsData( const char *pszAnalysisAreaWkt );
     int LoadIrsData();

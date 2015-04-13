@@ -91,13 +91,19 @@ int WfipsResult::Open()
                        NULL, NULL, NULL );
     WFIPS_CHECK_SQLITE;
 
+    rc = sqlite3_exec( db, "SELECT InitSpatialMetadata(1)", NULL, NULL, NULL );
+    WFIPS_CHECK_SQLITE;
+    rc = sqlite3_exec( db, "SELECT AddGeometryColumn('fire_result', 'geometry',"
+                           "4269, 'POINT', 'XY')",
+                       NULL, NULL, NULL );
+    WFIPS_CHECK_SQLITE;
     rc = sqlite3_prepare_v2( db, "INSERT INTO fire_result(year, jul_day, "
                                  "fire_num, arrtime, arrsize, finalsize, "
-                                 "finaltime, run_contain, treated, status) "
-                                 "VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?)", -1,
-                             &istmt, NULL );
+                                 "finaltime, run_contain, treated, status,geometry) "
+                                 "VALUES(?,?,?,?,?,?,?,?,?,?,MakePoint(?,?,4269))",
+                             -1, &istmt, NULL );
 
-    rc = sqlite3_exec( db, "SELECT InitSpatialMetadata(1)", NULL, NULL, NULL );
+    WFIPS_CHECK_SQLITE;
 
     char *pszTmpPath;
     pszTmpPath = sqlite3_mprintf( "%s%s", pszDataPath, FIG_DB );
@@ -177,6 +183,7 @@ int WfipsResult::WriteRecord( CResults &oResults )
     double dfFinalSize, dfFinalTime;
     int bTreated, bRunContain;
     int nFullYear = oResults.GetFire().GetScenario();
+    double dfX, dfY;
     nYear = oResults.GetFire().GetScenario();
     nJulDay = oResults.GetFire().GetJulianDay();
     nFireNum = oResults.GetFire().GetFireNumber();
@@ -187,6 +194,8 @@ int WfipsResult::WriteRecord( CResults &oResults )
     bTreated = oResults.GetFire().GetTreated();
     bRunContain = oResults.GetFire().GetSimulateContain();
     oStatus = oResults.GetStatus();
+    dfX = oResults.GetFire().GetLongitude();
+    dfY = oResults.GetFire().GetLatitude();
     rc = sqlite3_bind_int( istmt, 1, nYear );
     rc = sqlite3_bind_int( istmt, 2, nJulDay );
     rc = sqlite3_bind_int( istmt, 3, nFireNum );
@@ -197,6 +206,8 @@ int WfipsResult::WriteRecord( CResults &oResults )
     rc = sqlite3_bind_int( istmt, 8, bRunContain );
     rc = sqlite3_bind_int( istmt, 9, bTreated );
     rc = sqlite3_bind_text( istmt, 10, oStatus.c_str(), -1, SQLITE_TRANSIENT );
+    rc = sqlite3_bind_double( istmt, 11, dfX );
+    rc = sqlite3_bind_double( istmt, 12, dfY );
     rc = sqlite3_step( istmt );
     rc = sqlite3_reset( istmt );
     return SQLITE_OK;
@@ -205,9 +216,17 @@ int WfipsResult::WriteRecord( CResults &oResults )
 int WfipsResult::CreateIndices()
 {
     int rc;
-    rc = sqlite3_exec( db, "CREATE INDEX idx_fire_result_year_fire_num "
-                           "ON fire_result(year,fire_num)",
-                       NULL, NULL, NULL );
+    if( !WfipsHasTable( db, "idx_fire_result_year_fire_num" ) )
+    {
+        rc = sqlite3_exec( db, "CREATE INDEX idx_fire_result_year_fire_num "
+                               "ON fire_result(year,fire_num)",
+                           NULL, NULL, NULL );
+    }
+    if( !WfipsHasTable( db, "idx_fire_result_geometry" ) )
+    {
+        rc = sqlite3_exec( db, "SELECT CreateSpatialIndex('fire_result', 'geometry')",
+                           NULL, NULL, NULL );
+    }
     if( WfipsHasTable( db, "large_fire_result" ) )
     {
         rc = sqlite3_exec( db, "CREATE INDEX idx_large_fire_result_year_fire_num "
@@ -370,9 +389,6 @@ static int DecreaseLargeFireSize( LargeFireData *pasFires, int nSize,
     return SQLITE_OK;
 }
 
-/*
-** TODO:  Need to add treatment mask and prob?
-*/
 int
 WfipsResult::SimulateLargeFire( int nJulStart, int nJulEnd, double dfNoRescProb,
                                 double dfTimeLimitProb, double dfSizeLimitProb,
@@ -604,12 +620,18 @@ WfipsResult::SpatialSummary( const char *pszKey )
     if( EQUAL( pszKey, "fpu" ) )
     {
 
-        pszSql = sqlite3_mprintf( "SELECT fpu_code, %s.geometry, status, " \
-                                  "COUNT(status) FROM fire_result LEFT JOIN " \
-                                  "fig.fig USING(year, fire_num) LEFT JOIN %s ON " \
-                                  "substr(fig.fwa_name,0,10)=fpu.fpu_code " \
-                                  "GROUP BY fpu_code, status", pszKey, pszKey,
-                                  pszKey );
+        pszSql = sqlite3_mprintf( "%s", "SELECT fpu_code, fpu.geometry, status, " \
+                                        "COUNT(status) FROM fire_result, fpu WHERE "
+                                        "ST_Intersects(fire_result.geometry,"
+                                        "fpu.geometry) AND "
+                                        "fire_result.ROWID IN "
+                                        "(SELECT pkid FROM idx_fire_result_geometry WHERE "
+                                        "xmin <= MbrMaxX(fpu.geometry) AND "
+                                        "xmax >= MbrMinX(fpu.geometry) AND "
+                                        "ymin <= MbrMaxY(fpu.geometry) AND "
+                                        "ymax >= MbrMinY(fpu.geometry)) "
+                                        "GROUP BY fpu_code, status" );
+
         if( bWriteLargeFire )
         {
             rc = sqlite3_prepare_v2( db, "SELECT fpu.fpu_code, SUM(acres), SUM(pop), " \
@@ -623,12 +645,16 @@ WfipsResult::SpatialSummary( const char *pszKey )
     }
     else if( EQUAL( pszKey, "fwa" ) )
     {
-        pszSql = sqlite3_mprintf( "SELECT fwa.name, %s.geometry, status, " \
-                                  "COUNT(status) FROM fire_result LEFT JOIN " \
-                                  "fig.fig USING(year, fire_num) LEFT JOIN %s ON " \
-                                  "fig.fwa_name=fwa.name " \
-                                  "GROUP BY fwa.name, status", pszKey, pszKey,
-                                  pszKey );
+        pszSql = sqlite3_mprintf( "%s", "SELECT fwa.name, fwa.geometry, status, " \
+                                        "COUNT(status) FROM fire_result, fwa " \
+                                        "WHERE ST_Intersects(fire_result.geometry,"
+                                        "fwa.geometry) AND fire_result.ROWID IN "
+                                        "(SELECT pkid FROM idx_fire_result_geometry WHERE "
+                                        "xmin <= MbrMaxX(fwa.geometry) AND "
+                                        "xmax >= MbrMinX(fwa.geometry) AND "
+                                        "ymin <= MbrMaxY(fwa.geometry) AND "
+                                        "ymax >= MbrMinY(fwa.geometry)) "
+                                        "GROUP BY fwa.name, status" );
 
         if( bWriteLargeFire )
         {
@@ -852,8 +878,7 @@ int WfipsResult::ExportFires( const char *pszFile, const char *pszDriver )
     }
     rc = sqlite3_finalize( stmt );
     rc = sqlite3_prepare_v2( db, "SELECT X(geometry), Y(geometry), fire_result.* "
-                                 "FROM fire_result LEFT JOIN fig "
-                                 "USING(year,fire_num)",
+                                 "FROM fire_result",
                              -1, &stmt, NULL );
     hFeatDefn = OGR_L_GetLayerDefn( hLayer );
     while( sqlite3_step( stmt ) == SQLITE_ROW )

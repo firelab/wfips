@@ -320,12 +320,18 @@ ADD_TEST( wfips_has_table_1 ${EXECUTABLE_OUTPUT_PATH}/test_main
           --run_test=wfipsdata/has_table_1 )
 ADD_TEST( wfips_has_table_2 ${EXECUTABLE_OUTPUT_PATH}/test_main
           --run_test=wfipsdata/has_table_2 )
+ADD_TEST( wfips_has_table_3 ${EXECUTABLE_OUTPUT_PATH}/test_main
+          --run_test=wfipsdata/has_table_3 )
+ADD_TEST( wfips_has_table_4 ${EXECUTABLE_OUTPUT_PATH}/test_main
+          --run_test=wfipsdata/has_table_4 )
 IF(RUN_SLOW_TESTS)
     IF(BUILD_IRS)
         ADD_TEST( wfips_load_all_1 ${EXECUTABLE_OUTPUT_PATH}/test_main
                   --run_test=wfipsdata/load_all_1 )
         ADD_TEST( wfips_run_small_1 ${EXECUTABLE_OUTPUT_PATH}/test_main
                   --run_test=wfipsdata/run_small_1 )
+        ADD_TEST( wfips_run_small_multi_1 ${EXECUTABLE_OUTPUT_PATH}/test_main
+                  --run_test=wfipsdata/run_small_multi_1 )
         ADD_TEST( wfips_small_output_1 ${EXECUTABLE_OUTPUT_PATH}/test_main
                   --run_test=wfipsdata/run_small_output_1 )
               #ADD_TEST( wfips_small_output_2 ${EXECUTABLE_OUTPUT_PATH}/test_main

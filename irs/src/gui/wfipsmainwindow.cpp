@@ -1550,73 +1550,59 @@ int WfipsMainWindow::RunIrs()
         dfSizeProb = ui->sizeLimitSpinBox->value() / 100.;
         dfExhProb = ui->exhaustedSpinBox->value() / 100.;
     }
-    QFuture<int>future;
-    if( 0 )
+    /* Years */
+    int nSpecificYear = -1;
+    int nYearCount = 0;
+    if( ui->figAllRadioButton->isChecked() )
     {
-        this->statusBar()->showMessage( "Loading data..." );
-        future = QtConcurrent::run( poData, &WfipsData::LoadIrsData );
-        UpdateAsyncProgress( future );
-        this->statusBar()->showMessage( "Data loaded." );
-        rc = future.results()[0];
-        this->statusBar()->showMessage( "Loading Fires..." );
-        /* FIXME */
-        /*
-        future = QtConcurrent::run( poData, &WfipsData::LoadScenario, 5, NULL,
-                                                                      0.0, 0,
-                                                                      WFP_NO_TREAT,
-                                                                      0, 0 );
-        UpdateAsyncProgress( future );
-        */
-        /*
-WfipsData::LoadScenario( int nYearIdx, const char *pszTreatWkt,
-                         double dfTreatProb, int nWfpTreatMask,
-                         double *padfWfpTreatProb, double dfStratProb,
-                         int nAgencyFilter )
-                         */
-        rc = poData->LoadScenario( 5, (const char*)pszTreatWkt, dfTreatProb,
-                                   nWfpMask, adfWfpProb, dfModRespProb,
-                                   1, 365, nIgnOwnership );
-        this->statusBar()->showMessage( "Fires loaded." );
-        //rc = future.results()[0];
-        this->statusBar()->showMessage( "Running Scenario..." );
-        future = QtConcurrent::run( poData, &WfipsData::RunScenario, 0 );
-        this->statusBar()->showMessage( "Simulation finished.", 1500 );
-        rc = future.results()[0];
+        nYearCount = ui->singleYearComboBox->count();
     }
     else
     {
-        this->statusBar()->showMessage( "Loading data..." );
-        rc = poData->LoadIrsData();
-        this->statusBar()->showMessage( "Data loaded." );
-        poData->SetPrepositioning( dfPpEng, dfPpCrw, dfPpHeli );
-        this->statusBar()->showMessage( "Loading fires..." );
-        rc = poData->LoadScenario( 5, (const char*)pszTreatWkt, dfTreatProb,
-                                   nWfpMask, adfWfpProb, dfModRespProb,
-                                   nIgnStart, nIgnEnd, nIgnOwnership );
-        this->statusBar()->showMessage( "Fires loaded." );
-        rc = poData->SetResultPath( pszPath );
-        this->statusBar()->showMessage( "Running Scenario..." );
-        rc = poData->RunScenario( 0 );
-        this->statusBar()->showMessage( "Simulation finished." );
-        this->statusBar()->showMessage( "Writing output..." );
-        rc = poData->WriteResults();
-        this->statusBar()->showMessage( "Output written." );
-        this->statusBar()->showMessage( "Simulating Large Fires..." );
-        rc = poData->SimulateLargeFire( nLfJulStart, nLfJulEnd, dfNoRescProb,
-                                        dfTimeProb, dfSizeProb, dfExhProb,
-                                        pszTreatWkt, dfTreatProb );
-        this->statusBar()->showMessage( "Large Fire Simulation finished." );
-        this->statusBar()->showMessage( "Writing Spatial Summary Results..." );
-        if( ui->spatSumGroupBox->isChecked() )
-        {
-            int nIdx = ui->spatSumComboBox->currentIndex();
-            if( nIdx == 0 )
-                rc = poData->SpatialSummary( "fpu" );
-            else
-                rc = poData->SpatialSummary( "fwa" );
-        }
-        this->statusBar()->showMessage( "Done." );
+        nYearCount = 1;
+        nSpecificYear = ui->singleYearComboBox->currentText().toInt();
     }
+    /* Fix this for QFuture stuff, like:
+    future = QtConcurrent::run( poData, &WfipsData::LoadIrsData );
+    */
+    this->statusBar()->showMessage( "Loading data..." );
+    rc = poData->LoadIrsData();
+    this->statusBar()->showMessage( "Data loaded." );
+    poData->SetPrepositioning( dfPpEng, dfPpCrw, dfPpHeli );
+    rc = poData->SetResultPath( pszPath );
+    this->statusBar()->showMessage( "Loading fires..." );
+    this->statusBar()->showMessage( "Running Scenario..." );
+    if( nSpecificYear >= 0 )
+    {
+        rc = poData->RunScenario( nSpecificYear, (const char*)pszTreatWkt,
+                                  dfTreatProb, nWfpMask, adfWfpProb,
+                                  dfModRespProb, nIgnStart, nIgnEnd,
+                                  nIgnOwnership );
+    }
+    else
+    {
+        rc = poData->RunScenarios( nYearCount, (const char*)pszTreatWkt,
+                                   dfTreatProb, nWfpMask, adfWfpProb,
+                                   dfModRespProb, nIgnStart, nIgnEnd,
+                                   nIgnOwnership );
+    }
+    this->statusBar()->showMessage( "Simulation finished." );
+    this->statusBar()->showMessage( "Writing output..." );
+    this->statusBar()->showMessage( "Simulating Large Fires..." );
+    rc = poData->SimulateLargeFire( nLfJulStart, nLfJulEnd, dfNoRescProb,
+                                    dfTimeProb, dfSizeProb, dfExhProb,
+                                    pszTreatWkt, dfTreatProb );
+    this->statusBar()->showMessage( "Large Fire Simulation finished." );
+    this->statusBar()->showMessage( "Writing Spatial Summary Results..." );
+    if( ui->spatSumGroupBox->isChecked() )
+    {
+        int nIdx = ui->spatSumComboBox->currentIndex();
+        if( nIdx == 0 )
+            rc = poData->SpatialSummary( "fpu" );
+        else
+            rc = poData->SpatialSummary( "fwa" );
+    }
+    this->statusBar()->showMessage( "Done." );
     free( (void*)pszTreatWkt );
     free( (void*)pszPath );
     /* We should probably make our own, and leave this one alone */

@@ -323,7 +323,7 @@ BOOST_AUTO_TEST_CASE( scen_count_1 )
     int rc;
     rc = poData->GetScenarioIndices( &panIndices );
     /* Will change */
-    BOOST_CHECK( rc == 1 );
+    BOOST_CHECK( rc == 5 );
     BOOST_CHECK( panIndices[0] == 5 );
     WfipsData::Free( panIndices );
 }
@@ -393,6 +393,16 @@ BOOST_AUTO_TEST_CASE( run_small_1 )
     rc = poData->LoadScenario( 5, NULL, 0.0, 0, WFP_NO_TREAT, 0, 1, 365, 0 );
     BOOST_REQUIRE( rc == 0 );
     rc = poData->RunScenario( 0 );
+    BOOST_CHECK( rc == 1 );
+    poData->Reset();
+}
+
+BOOST_AUTO_TEST_CASE( run_small_multi_1 )
+{
+    int rc;
+    rc = poData->LoadIrsData( "POLYGON((-114 47, -113 47, -113 46, -114 46, -114 47))" );
+    BOOST_REQUIRE( rc == 0 );
+    rc = poData->RunScenarios( 2, NULL, 0.0, 0, WFP_NO_TREAT, 0, 1, 365, 0 );
     BOOST_CHECK( rc == 1 );
     poData->Reset();
 }
@@ -634,6 +644,8 @@ BOOST_AUTO_TEST_CASE( has_table_1 )
     sqlite3_close( db );
 }
 
+
+
 BOOST_AUTO_TEST_CASE( has_table_2 )
 {
     int rc;
@@ -644,6 +656,38 @@ BOOST_AUTO_TEST_CASE( has_table_2 )
     rc = sqlite3_exec( db, "CREATE TABLE foo(a)", NULL, NULL, NULL );
     BOOST_REQUIRE( rc == SQLITE_OK );
     rc = WfipsHasTable( db, "bar" );
+    BOOST_CHECK( rc == 0 );
+    sqlite3_close( db );
+}
+
+BOOST_AUTO_TEST_CASE( has_table_3 )
+{
+    int rc;
+    sqlite3 *db;
+    rc = sqlite3_open_v2( ":memory:", &db,
+                          SQLITE_OPEN_CREATE | SQLITE_OPEN_READWRITE, NULL );
+    BOOST_REQUIRE( rc == SQLITE_OK );
+    rc = sqlite3_exec( db, "CREATE TABLE foo(a)", NULL, NULL, NULL );
+    BOOST_REQUIRE( rc == SQLITE_OK );
+    rc = sqlite3_exec( db, "CREATE INDEX idx_foo_a ON foo(a)", NULL, NULL, NULL );
+    BOOST_REQUIRE( rc == SQLITE_OK );
+    rc = WfipsHasTable( db, "idx_foo_a" );
+    BOOST_CHECK( rc == 1 );
+    sqlite3_close( db );
+}
+
+BOOST_AUTO_TEST_CASE( has_table_4 )
+{
+    int rc;
+    sqlite3 *db;
+    rc = sqlite3_open_v2( ":memory:", &db,
+                          SQLITE_OPEN_CREATE | SQLITE_OPEN_READWRITE, NULL );
+    BOOST_REQUIRE( rc == SQLITE_OK );
+    rc = sqlite3_exec( db, "CREATE TABLE foo(a)", NULL, NULL, NULL );
+    BOOST_REQUIRE( rc == SQLITE_OK );
+    rc = sqlite3_exec( db, "CREATE INDEX idx_foo_a ON foo(a)", NULL, NULL, NULL );
+    BOOST_REQUIRE( rc == SQLITE_OK );
+    rc = WfipsHasTable( db, "idx_foo_b" );
     BOOST_CHECK( rc == 0 );
     sqlite3_close( db );
 }

@@ -110,7 +110,7 @@ int WfipsHasTable( sqlite3 *db, const char *pszName )
     sqlite3_stmt *stmt;
     int rc;
     rc = sqlite3_prepare_v2( db, "SELECT COUNT() FROM sqlite_master WHERE "
-                                 "type='table' AND name=?",
+                                 "name=?",
                              -1, &stmt, NULL );
     if( rc != SQLITE_OK )
     {
