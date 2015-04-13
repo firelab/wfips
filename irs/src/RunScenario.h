@@ -134,7 +134,7 @@ public:
 		// Functions added for dispatcher class and tree
 		//bool AssignHelitack( std::unordered_multimap< string, CResource* > ResourceMap );				// Assign helitack to a helicopter
 		bool AssignHelitack( std::multimap< string, CResource* > ResourceMap );
-		bool AltHelicDLs( std::map<std::string, OmffrNode<CDispatchBase*>*> DLDispMap );				// Add alternate dispatch locations for helicopters to deploy helitack to DLDispatcher list
+		bool AltHelicDLs( std::map<std::string, OmffrNode<CDispatchBase*>*> DLDispMap, string auxFileFolder );				// Add alternate dispatch locations for helicopters to deploy helitack to DLDispatcher list
 		bool CreateDispTree();																			// Create a tree from the vectors in this class
 		bool ResourcesToDispatchers();																	// Create the resource maps for the dispatch location dispatchers
 		bool FWAsFindClosestAirtankerBases();															// Find the closest airtanker base for each FWA, store as FWA member
@@ -162,8 +162,8 @@ public:
 		int PrepositionAirtankersIA( double MoveLevel, int Julian );		// preposition airtankers
 		int PrepositionResourceIA( string RescType, double MoveLevel, bool OutSeason, int Julian );		// Preposition large airtankers at the beginning of each day
 		void DLDispatcherExpectedWeights();								// Create a file that contains the FPU weights for the DLDispatchers to be used for calculating the IA Expected Levels
-		void CreateRescTypeVectors();									// Create vectors with the ids for the dispatch locations that house the types
-		void LoadExpectedLevels( int Scenario, int BaseForcast );		// Load the expected levels into the nodes for all the years
+		void CreateRescTypeVectors(string auxFileFolder);				// Create vectors with the ids for the dispatch locations that house the types
+		void LoadExpectedLevels( int Scenario, int BaseForcast, string auxFileFolder );		// Load the expected levels into the nodes for all the years
 		void  DailyDrawDown( list< int > VOrderedEscapeFires );		// Daily Draw Down for escape fires
 		list< int > OrderEscapeFires();								// Order the escape fires for each internal node of the tree
 		void AddEscapeFire( int EscapeDate, int EscapeTime, CFire &Fire );	// Add an escape fire to the list

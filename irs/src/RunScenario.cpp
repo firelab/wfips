@@ -971,7 +971,7 @@ bool CRunScenario::CreateDispTree()
 	m_InMap = BuildInternalIndex( &m_DispTree );
 
 	// Call Function to add alternate dispatch locations for helicopters to deploy helitack
-	AltHelicDLs( m_DispMap );
+	AltHelicDLs( m_DispMap,"C:/wfips/data/" );
 
 	return true;
 }
@@ -1197,7 +1197,7 @@ void CRunScenario::ReadFiles( std::string oPath )
 
 	// Find the closest airtanker base for each dispatch location
 	FWAsFindClosestAirtankerBases();
-	CreateRescTypeVectors();
+	CreateRescTypeVectors("C:/wfips/data/");
 	ReadFireSeason();
 
 }
@@ -2300,7 +2300,7 @@ try{
                   pfnProgress(-1, "Running Scenarios...", NULL);
 		// iterate through the fires and run each one
 
-                LoadExpectedLevels( Scenario, 2 );
+                LoadExpectedLevels( Scenario, 5, "C:/wfips/data/" );
 		for ( int j = 0; j < m_VFire.size(); j++ )
 		{
 			// Run each individual fire
@@ -6819,314 +6819,271 @@ void CRunScenario::DLDispatcherExpectedWeights()
 
 // Read in the files with the names of the Airtanker bases, and dispatch locations with 20 person crews, Type I, II and III helicopter and smokejumpers
 // Create vectors in CRunScenario with this information for moving these types of resources
-void CRunScenario::CreateRescTypeVectors()
+void CRunScenario::CreateRescTypeVectors(string auxFileFolder )
 {
 	string BaseID;
+	string fileName;
 
 	// Open the Airtanker File
-	ifstream ATTFile( "Airtankers.dat", ios::in );
+	fileName = auxFileFolder + "Airtankers.dat";
+	ifstream ATTFile(fileName, ios::in);
 
 	if ( !ATTFile )
 		cout << "Cannot open file with IDs for airtanker bases";
 
 	else	{
-
-		while ( ATTFile >> BaseID )	{
-
+		while (!ATTFile.eof())	{
+			getline(ATTFile, BaseID);
 			m_AirtankerDLs.push_back( BaseID );
-
 		}
-
 	}
-
 	ATTFile.close();
 
 	// Open the Regions Crew File
-	ifstream CrewFile( "Crew20.dat", ios::in );
+	fileName = auxFileFolder + "Crew20.dat";
+	ifstream CrewFile( fileName, ios::in );
 
 	if ( !CrewFile )
 		cout << "Cannot open file with IDs for Regional Crew bases";
 
 	else	{
-
-		while ( CrewFile >> BaseID )	{
-
+		while (!CrewFile.eof())	{
+			getline(CrewFile, BaseID);
 			m_RegionalCrewDLs.push_back( BaseID );
-
 		}
-
 	}
-
 	CrewFile.close();
 
 	// Open the Regional Helicopter File
-	ifstream HELFile( "RegionalHeli.dat", ios::in );
+	fileName = auxFileFolder + "RegionalHeli.dat";
+	ifstream HELFile( fileName, ios::in );
 
 	if ( !HELFile )
 		cout << "Cannot open file with IDs for Regional Helicopter bases";
 
 	else	{
-
-		while ( HELFile >> BaseID )	{
-
+		while (!HELFile.eof())	{
+			getline(HELFile, BaseID);
 			m_RegionalHelicopterDLs.push_back( BaseID );
-
 		}
-
 	}
+	HELFile.close();
 
 	// Open the Smokejumper File
-	ifstream SMJRFile( "SMJR.dat", ios::in );
+	fileName = auxFileFolder + "SMJR.dat";
+	ifstream SMJRFile( fileName, ios::in );
 
 	if ( !SMJRFile )
 		cout << "Cannot open file with IDs for Smokejumper bases";
 
 	else	{
-
-		while ( SMJRFile >> BaseID )	{
-
+		while (!SMJRFile.eof())	{
+			getline(SMJRFile,BaseID);
 			m_SmokejumperDLs.push_back( BaseID );
-
 		}
-
 	}
-
 	SMJRFile.close();
 
 	// Open the DOI Crew File
-	ifstream DOICRWFile( "DOICRW.dat", ios::in );
+	fileName = auxFileFolder + "DOICRW.dat";
+	ifstream DOICRWFile( fileName, ios::in );
 
 	if ( !DOICRWFile )
 		cout << "Cannot open file with IDs for DOI Crew bases";
 
 	else	{
-
-		while ( DOICRWFile >> BaseID )	{
-
+		while (!DOICRWFile.eof())	{
+			getline(DOICRWFile, BaseID);
 			m_DOICRWDLs.push_back( BaseID );
-
 		}
-
 	}
-
 	DOICRWFile.close();
 
 	// Open the DOI Dozer File
-	ifstream DOIDZRFile( "DOIDZR.dat", ios::in );
+	fileName = auxFileFolder + "DOIDZR.dat";
+	ifstream DOIDZRFile( fileName, ios::in );
 
 	if ( !DOIDZRFile )
 		cout << "Cannot open file with IDs for DOI Dozer bases";
 
 	else	{
-
-		while ( DOIDZRFile >> BaseID )	{
-
+		while (!DOIDZRFile.eof())	{
+			getline(DOIDZRFile, BaseID);
 			m_DOIDZRDLs.push_back( BaseID );
-
 		}
-
 	}
-
 	DOIDZRFile.close();
 
 	// Open the DOI Engine File
-	ifstream DOIENGFile( "DOIENG.dat", ios::in );
+	fileName = auxFileFolder + "DOIENG.dat";
+	ifstream DOIENGFile( fileName, ios::in );
 
 	if ( !DOIENGFile )
 		cout << "Cannot open file with IDs for DOI Engine bases";
 
 	else	{
-
-		while ( DOIENGFile >> BaseID )	{
-
+		while (!DOIENGFile.eof())	{
+			getline(DOIENGFile, BaseID);
 			m_DOIENGDLs.push_back( BaseID );
-
 		}
-
 	}
-
 	DOIENGFile.close();
 
 	// Open the DOI Helicopter File
-	ifstream DOIHelFile( "DOIHel.dat", ios::in );
+	fileName = auxFileFolder + "DOIHel.dat";
+	ifstream DOIHelFile( fileName, ios::in );
 
 	if ( !DOIHelFile )
 		cout << "Cannot open file with IDs for DOI Helicopter bases";
 
 	else	{
-
-		while ( DOIHelFile >> BaseID )	{
-
+		while (!DOIHelFile.eof())	{
+			getline(DOIHelFile, BaseID);
 			m_DOIHelDLs.push_back( BaseID );
-
 		}
-
 	}
-
 	DOIHelFile.close();
 
 	// Open the DOI Helitack File
-	ifstream DOIHELIFile( "DOIHELI.dat", ios::in );
+	fileName = auxFileFolder + "DOIHELI.dat";
+	ifstream DOIHELIFile( fileName, ios::in );
 
 	if ( !DOIHELIFile )
 		cout << "Cannot open file with IDs for DOI Helitack bases";
 
 	else	{
-
-		while ( DOIHELIFile >> BaseID )	{
-
+		while (!DOIHELIFile.eof())	{
+			getline(DOIHELIFile, BaseID);
 			m_DOIHELIDLs.push_back( BaseID );
-
 		}
-
 	}
-
 	DOIHELIFile.close();
 
 	// Open the DOI SEAT File
-	ifstream DOISEATFile( "DOISEAT.dat", ios::in );
+	fileName = auxFileFolder + "DOISEAT.dat";
+	ifstream DOISEATFile( fileName, ios::in );
 
 	if ( !DOISEATFile )
 		cout << "Cannot open file with IDs for DOI SEAT bases";
 
 	else	{
-
-		while ( DOISEATFile >> BaseID )	{
-
+		while (!DOISEATFile.eof())	{
+			getline(DOISEATFile, BaseID);
 			m_DOISEATDLs.push_back( BaseID );
-
 		}
-
 	}
-
 	DOISEATFile.close();
 
 	// Open the FS Crew File
-	ifstream FSCRWFile( "FSCRW.dat", ios::in );
+	fileName = auxFileFolder + "FSCRW.dat";
+	ifstream FSCRWFile( fileName, ios::in );
 
 	if ( !FSCRWFile )
 		cout << "Cannot open file with IDs for FS Crew bases";
 
 	else	{
-
-		while ( FSCRWFile >> BaseID )	{
-
+		while (!FSCRWFile.eof())	{
+			getline(FSCRWFile, BaseID);
 			m_FSCRWDLs.push_back( BaseID );
-
 		}
-
 	}
-
 	FSCRWFile.close();
 
 	// Open the FS Dozer File
-	ifstream FSDZRFile( "FSDZR.dat", ios::in );
+	fileName = auxFileFolder + "FSDZR.dat";
+	ifstream FSDZRFile( fileName, ios::in );
 
 	if ( !FSDZRFile )
 		cout << "Cannot open file with IDs for FS Dozer bases";
 
 	else	{
-
-		while ( FSDZRFile >> BaseID )	{
-
+		while (!FSDZRFile.eof())	{
+			getline(FSDZRFile, BaseID);
 			m_FSDZRDLs.push_back( BaseID );
-
 		}
-
 	}
-
 	FSDZRFile.close();
 
 	// Open the FS EngineFile
-	ifstream FSENGFile( "FSENG.dat", ios::in );
+	fileName = auxFileFolder + "FSENG.dat";
+	ifstream FSENGFile( fileName, ios::in );
 
 	if ( !FSENGFile )
 		cout << "Cannot open file with IDs for FS Engine bases";
 
 	else	{
-
-		while ( FSENGFile >> BaseID )	{
-
+		while (!FSENGFile.eof())	{
+			getline(FSENGFile, BaseID);
 			m_FSENGDLs.push_back( BaseID );
-
 		}
-
 	}
-
 	FSENGFile.close();
 
 	// Open the FS Helicopter File
-	ifstream FSHelFile( "FSHel.dat", ios::in );
+	fileName = auxFileFolder + "FSHel.dat";
+	ifstream FSHelFile( fileName, ios::in );
 
 	if ( !FSHelFile )
 		cout << "Cannot open file with IDs for FS Helicopter bases";
 
 	else	{
-
-		while ( FSHelFile >> BaseID )	{
-
+		while (!FSHelFile.eof())	{
+			getline(FSHelFile, BaseID);
 			m_FSHelDLs.push_back( BaseID );
-
 		}
-
 	}
-
 	FSHelFile.close();
 
 	// Open the FS Helitack File
-	ifstream FSHELIFile( "FSHELI.dat", ios::in );
+	fileName = auxFileFolder + "FSHELI.dat";
+	ifstream FSHELIFile( fileName, ios::in );
 
 	if ( !FSHELIFile )
 		cout << "Cannot open file with IDs for FS Helitack bases";
 
 	else	{
-
-		while ( FSHELIFile >> BaseID )	{
-
+		while (!FSHELIFile.eof())	{
+			getline(FSHELIFile, BaseID);
 			m_FSHELIDLs.push_back( BaseID );
-
 		}
-
 	}
-
 	FSHELIFile.close();
 
 	// Open the FS SEAT File
-	ifstream FSSEATFile( "FSSEAT.dat", ios::in );
+	fileName = auxFileFolder + "FSSEAT.dat";
+	ifstream FSSEATFile( fileName, ios::in );
 
 	if ( !FSSEATFile )
 		cout << "Cannot open file with IDs for FS SEAT bases";
 
 	else	{
-
-		while ( FSSEATFile >> BaseID )	{
-
+		while (!FSSEATFile.eof())	{
+			getline(FSSEATFile, BaseID);
 			m_FSSEATDLs.push_back( BaseID );
-
 		}
-
 	}
-
 	FSSEATFile.close();
 
 }
 	
 // Load the expected levels for the year into all the nodes in the tree - the BaseForcast indicates the number of days for the forcast for the internal and level 3 dispatchers
-void CRunScenario::LoadExpectedLevels( int Scenario, int BaseForcast )
+void CRunScenario::LoadExpectedLevels( int Scenario, int BaseForcast, string auxFileFolder )
 {
 	// Load the expected levels for the the Internal Nodes
 	char ExpectedFile[512];
+	
 #ifdef WIN32
-	sprintf( ExpectedFile, "/Cprogramming/Expected/Expected/Expected/DataFiles/Year%dExpected%d.dat", Scenario, BaseForcast );
+	sprintf( ExpectedFile, "Year%dExpected%d.dat", Scenario, BaseForcast );
 #else
         BaseForcast = 2;
 	sprintf( ExpectedFile, "Year%dExpected%d.txt", Scenario, BaseForcast );
 #endif
 
-	ifstream InExp( ExpectedFile, ios::in );
+	string fileName = auxFileFolder + ExpectedFile;
+	ifstream InExp( fileName, ios::in );
 
 	if ( !InExp )
-		cout << "Could not open the Expected Level files for the interior nodes.";
+		cout << "Could not open the Expected Level files for the interior nodes. \n";
 
 	else	{
 
@@ -7178,7 +7135,7 @@ void CRunScenario::LoadExpectedLevels( int Scenario, int BaseForcast )
 
 	// Load the expected levels for the the AirtankerBases
 #ifdef WIN32
-	sprintf( ExpectedFile, "/Cprogramming/Expected/Expected/Expected/DataFiles/Year%dATExpected2.dat", Scenario );
+	sprintf( ExpectedFile, "C:/wfips/data/Year%dATExpected2.dat", Scenario );
 #else
 	sprintf( ExpectedFile, "Year%dATExpected2.txt", Scenario );
 #endif 
@@ -7186,7 +7143,7 @@ void CRunScenario::LoadExpectedLevels( int Scenario, int BaseForcast )
 	ifstream InAT( ExpectedFile, ios::in );
 
 	if ( !InAT )
-		cout << "Could not open the Expected Level files for the airtanker bases.";
+		cout << "Could not open the Expected Level files for the airtanker bases. \n";
 
 	else	{
 
@@ -9264,11 +9221,12 @@ bool CRunScenario::AssignHelitack( std::multimap< string, CResource* > ResourceM
 }
 
 // Assign alternate dispatch locations for helicopters to the nodes for dispatch location dispatchers
-bool CRunScenario::AltHelicDLs( std::map<std::string, OmffrNode<CDispatchBase*>*> DLDispMap )
+bool CRunScenario::AltHelicDLs( std::map<std::string, OmffrNode<CDispatchBase*>*> DLDispMap, string auxFileFolder )
 {
 	// Use the dispatch map to assign alternate dispatch locations for helicopters to a dispatch location
 	// Open the file containing the assignments
-	ifstream inFile( "HeliBases.dat", ios::in );
+	string fileName = auxFileFolder + "HeliBases.dat";
+	ifstream inFile( fileName, ios::in );
 
 	if ( !inFile )	{
 		cout << "Could not open the file containing alternate helibases for helicopters to deploy helitack \n";

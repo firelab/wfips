@@ -501,6 +501,9 @@ WfipsData::LoadDispatchLocations()
     sqlite3_finalize( stmt );
     sqlite3_finalize( astmt );
     sqlite3_finalize( estmt );
+
+	poScenario->CreateRescTypeVectors("C:/wfips/data/");
+
     return 0;
 }
 int
