@@ -31,7 +31,7 @@
 # Enable the Qt/QGIS based user interface, load all dependencies
 # *****************************************************************************
 
-OPTION(BUILD_OMFFR_GUI "Build the QGIS based graphical interface" OFF)
+OPTION(BUILD_GUI "Build the QGIS based graphical interface" ON)
 INCLUDE_DIRECTORIES(${PROJECT_SOURCE_DIR}/sqlite
                     ${GDAL_INCLUDE_DIR}
                     ${PROJECT_SOURCE_DIR}/common/src)
@@ -77,14 +77,16 @@ SET(IRS_SOURCES Aerial.cpp
                 wfips_data_load.cpp
                 wfips_data_test.cpp
                 $<TARGET_OBJECTS:sqlite3>
+                wfips_result.cpp
+                wfips_sqlite.cpp
                 $<TARGET_OBJECTS:omffr_conv>
                 $<TARGET_OBJECTS:omffr_rand>)
 
 ADD_LIBRARY(irs STATIC ${IRS_SOURCES})
 
-IF(BUILD_OMFFR_GUI)
+IF(BUILD_GUI)
     ADD_SUBDIRECTORY(gui)
-ENDIF(BUILD_OMFFR_GUI)
+ENDIF(BUILD_GUI)
 
 TARGET_LINK_LIBRARIES(irs ${GDAL_LIBRARY})
 IF(NOT WIN32)

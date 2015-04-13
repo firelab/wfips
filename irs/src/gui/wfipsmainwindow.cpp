@@ -47,6 +47,7 @@ WfipsMainWindow::WfipsMainWindow( QWidget *parent ) :
     ConstructToolButtons();
     ConstructAnalysisAreaWidgets();
     ConstructDispatchWidgets();
+    ConstructResultsWidgets();
 
     ConstructTreeWidget();
     AssignTreeWidgetIndices( ui->treeWidget->invisibleRootItem() );
@@ -63,6 +64,7 @@ WfipsMainWindow::WfipsMainWindow( QWidget *parent ) :
     /* Call *after* construction */
     CreateConnections();
     PostConstructionActions();
+    EnableAnalysisLeaves( false );
     ui->threadSpinBox->setRange( 1, QThread::idealThreadCount() );
     ReadSettings();
     this->setWindowIcon( QIcon( ":/osu" ) );
@@ -100,6 +102,15 @@ WfipsMainWindow::~WfipsMainWindow()
     delete dispatchLocationMemLayer;
 
     delete dispatchEditDialog;
+
+    /* Results */
+    delete resultsMapCanvas;
+    delete resultsPanTool;
+    delete resultsZoomInTool;
+    delete resultsZoomOutTool;
+    delete resultsIdentifyTool;
+    delete resultsSelectTool;
+
     delete poData;
 }
 
@@ -210,7 +221,15 @@ void WfipsMainWindow::CreateConnections()
     ui->treePreviousButton->setIcon( QIcon( ":/go-previous" ) );
     connect( ui->treePreviousButton, SIGNAL( clicked() ),
              this, SLOT( PrevTreeWidgetItem() ) );
-
+    connect( ui->runButton, SIGNAL( clicked() ),
+             this, SLOT( RunIrs() ) );
+    /* Results button */
+    connect( ui->openResultsButton, SIGNAL( clicked() ),
+             this, SLOT( OpenResults() ) );
+    connect( ui->exportResultButton, SIGNAL( clicked() ),
+             this, SLOT( ExportResults() ) );
+    connect( ui->resultAttComboBox, SIGNAL(currentIndexChanged( QString ) ),
+             this, SLOT( SetResultColorRamp( QString ) ) );
 }
 
 void WfipsMainWindow::PostConstructionActions()
@@ -223,6 +242,8 @@ void WfipsMainWindow::PostConstructionActions()
              SIGNAL( SelectionChanged( const QgsFeatureIds & ) ),
              this,
              SLOT( UpdateSelectedDispatchLocations( const QgsFeatureIds & ) ) );
+    connect( dispatchEditDialog, SIGNAL( SaveResourcesAs( QString ) ),
+             this, SLOT( SetExternRescDb( QString ) ) );
 
     /*
     ** Toggle tool button for dispatch location editor when we close the dialog
@@ -388,6 +409,7 @@ void WfipsMainWindow::LoadAnalysisAreaLayers()
     ** This should probably be moved, or this fx renamed, as we do some stuff
     ** here just because we have a path.
     */
+    //delete poData;
     poData = new WfipsData( wfipsPath.toLocal8Bit().data() );
     poData->Open();
     if( poData->Valid() == 0 )
@@ -517,6 +539,30 @@ void WfipsMainWindow::ConstructDispatchWidgets()
     dispatchSelectTool = new WfipsSelectMapTool( dispatchMapCanvas );
     connect( dispatchSelectTool, SIGNAL( WfipsSelect( QgsFeatureIds ) ),
              this, SLOT( SelectDispatchLocations( QgsFeatureIds ) ) );
+    externRescDb = "";
+}
+
+void WfipsMainWindow::ConstructResultsWidgets()
+{
+    resultsMapCanvas = new QgsMapCanvas( 0, 0 );
+    resultsMapCanvas->enableAntiAliasing( true );
+    resultsMapCanvas->setCanvasColor( Qt::white );
+    resultsMapCanvas->setDestinationCrs( crs );
+    resultsMapCanvas->freeze( false );
+    resultsMapCanvas->setVisible( true );
+    resultsMapCanvas->setWheelAction( QgsMapCanvas::WheelZoomToMouseCursor );
+    resultsMapCanvas->refresh();
+    resultsMapLayout = new QVBoxLayout( ui->resultsMapFrame );
+    resultsMapLayout->addWidget( resultsMapCanvas );
+
+    /* Map tools */
+    resultsPanTool = new QgsMapToolPan( resultsMapCanvas );
+    resultsZoomInTool = new QgsMapToolZoom( resultsMapCanvas, FALSE );
+    resultsZoomOutTool = new QgsMapToolZoom( resultsMapCanvas, TRUE);
+    resultsIdentifyTool = new WfipsIdentifyMapTool( resultsMapCanvas );
+    connect( resultsIdentifyTool, SIGNAL( WfipsIdentify( QList<QgsMapToolIdentify::IdentifyResult> ) ),
+             this, SLOT( Identify( QList<QgsMapToolIdentify::IdentifyResult> ) ) );
+    resultsSelectTool = new WfipsSelectMapTool( resultsMapCanvas );
 }
 
 void WfipsMainWindow::ConstructTreeWidget()
@@ -569,51 +615,36 @@ void WfipsMainWindow::SetStackIndex( QTreeWidgetItem *current,
         /* Resource map */
         case 3:
         case 4:
-            ui->stackedWidget->setCurrentIndex( 3 );
+            ui->stackedWidget->setCurrentIndex( 2 );
             ui->mapToolFrame->setEnabled( true );
             currentMapCanvas = dispatchMapCanvas;
             break;
         case 5:
-            ui->stackedWidget->setCurrentIndex( 4 );
+            ui->stackedWidget->setCurrentIndex( 3 );
             break;
         case 6:
-            ui->stackedWidget->setCurrentIndex( 5 );
+            ui->stackedWidget->setCurrentIndex( 4 );
             break;
         case 7:
-            ui->stackedWidget->setCurrentIndex( 6 );
+            ui->stackedWidget->setCurrentIndex( 5 );
             break;
         case 8:
-            ui->stackedWidget->setCurrentIndex( 7 );
+            ui->stackedWidget->setCurrentIndex( 6 );
             break;
         case 9:
-            ui->stackedWidget->setCurrentIndex( 8 );
+            ui->stackedWidget->setCurrentIndex( 7 );
             break;
         case 10:
-            ui->stackedWidget->setCurrentIndex( 9 );
+            ui->stackedWidget->setCurrentIndex( 8 );
             break;
         case 11:
-            ui->stackedWidget->setCurrentIndex( 10 );
+            ui->stackedWidget->setCurrentIndex( 9 );
             break;
         case 12:
-            ui->stackedWidget->setCurrentIndex( 11 );
-            break;
-        case 13:
-            ui->stackedWidget->setCurrentIndex( 12 );
-            break;
-        case 14:
-            ui->stackedWidget->setCurrentIndex( 13 );
-            break;
-        case 15:
-        case 16:
-        case 17:
-        case 18:
-        case 19:
-            break;
-        case 20:
-        case 21:
-        case 22:
-        case 23:
-        case 24:
+            ui->stackedWidget->setCurrentIndex( 10 );
+            ui->mapToolFrame->setEnabled( true );
+            currentMapCanvas = resultsMapCanvas;
+             break;
         /* 0 is the 'invisible root' */
         case 0:
         default:
@@ -658,30 +689,35 @@ void WfipsMainWindow::UpdateMapToolType()
         qDebug() << "Setting map tool to pan";
         analysisAreaMapCanvas->setMapTool( analysisPanTool );
         dispatchMapCanvas->setMapTool( dispatchPanTool );
+        resultsMapCanvas->setMapTool( resultsPanTool );
     }
     else if( ui->mapZoomInToolButton->isChecked() )
     {
         qDebug() << "Setting map tool to zoom in";
         analysisAreaMapCanvas->setMapTool( analysisZoomInTool );
         dispatchMapCanvas->setMapTool( dispatchZoomInTool );
+        resultsMapCanvas->setMapTool( resultsZoomInTool );
     }
     else if( ui->mapZoomOutToolButton->isChecked() )
     {
         qDebug() << "Setting map tool to zoom out";
         analysisAreaMapCanvas->setMapTool( analysisZoomOutTool );
         dispatchMapCanvas->setMapTool( dispatchZoomOutTool );
+        resultsMapCanvas->setMapTool( resultsZoomOutTool );
     }
     else if( ui->mapIdentifyToolButton->isChecked() )
     {
         qDebug() << "Setting map tool to identify";
         analysisAreaMapCanvas->setMapTool( analysisIdentifyTool );
         dispatchMapCanvas->setMapTool( dispatchIdentifyTool );
+        resultsMapCanvas->setMapTool( resultsIdentifyTool );
     }
     else if( ui->mapSelectToolButton->isChecked() )
     {
         qDebug() << "Setting map tool to select";
         analysisAreaMapCanvas->setMapTool( analysisSelectTool );
         dispatchMapCanvas->setMapTool( dispatchSelectTool );
+        resultsMapCanvas->setMapTool( resultsSelectTool );
     }
 }
 
@@ -748,6 +784,13 @@ int WfipsMainWindow::WfipsIsVisible( QgsMapLayer *layer )
                 return 1;
             }
         }
+    }
+    else if( currentMapCanvas == resultsMapCanvas )
+    {
+        /* We only have one layer right now. */
+        if( resultsMapCanvasLayers.size() > 0 )
+            return 1;
+        return 0;
     }
     return 0;
 }
@@ -851,6 +894,8 @@ void WfipsMainWindow::ClearAnalysisAreaSelection()
 
     ((WfipsSelectMapTool*)analysisSelectTool)->clear();
     dispatchEditDialog->Clear();
+    poData->SetRescDb( NULL );
+    externRescDb = "";
 
     /* Dispatch Layer */
     if( dispatchMapCanvasLayers.size() > 0 )
@@ -865,6 +910,7 @@ void WfipsMainWindow::ClearAnalysisAreaSelection()
     ui->bufferAnalysisCheckBox->setEnabled( true );
     ui->bufferAnalysisSpinBox->setEnabled( true );
     selectedFids.clear();
+    EnableAnalysisLeaves( false );
     analysisAreaMapCanvas->refresh();
 }
 
@@ -1077,6 +1123,7 @@ void WfipsMainWindow::SetAnalysisArea()
     this->statusBar()->showMessage( "Searching for dispatch locations...", 1500 );
     ui->progressBar->setRange( 0, 0 );
     nFuture = QtConcurrent::run( poData, &WfipsData::GetAssociatedDispLoc, pszWkt, &panLocIds, &nLocCount );
+    poData->SetAnalysisAreaMask( pszWkt );
     i = 0;
     while( !nFuture.isFinished() && i < 1000 )
     {
@@ -1144,6 +1191,7 @@ void WfipsMainWindow::SetAnalysisArea()
     ui->bufferAnalysisSpinBox->setDisabled( true );
     ui->analysisAreaComboBox->setCurrentIndex( ui->analysisAreaComboBox->count() - 1 );
     this->statusBar()->showMessage( "Done.", 3000 );
+    EnableAnalysisLeaves( true );
     this->setEnabled( true );
 }
 
@@ -1248,7 +1296,6 @@ void WfipsMainWindow::UpdateSelectedDispatchLocations( const QgsFeatureIds &fids
     dispatchMapCanvas->refresh();
 }
 
-
 void WfipsMainWindow::HideDispatchLocations( QgsFeatureIds fids )
 {
     QgsVectorLayer *layer = dynamic_cast<QgsVectorLayer*>( dispatchLocationMemLayer );
@@ -1266,6 +1313,11 @@ void WfipsMainWindow::HideDispatchLocations( QgsFeatureIds fids )
     qDebug() << "Limiting location set:" << where;
     layer->setSubsetString( where );
     analysisAreaMapCanvas->refresh();
+}
+
+void WfipsMainWindow::SetExternRescDb( QString path )
+{
+    externRescDb = path;
 }
 
 void WfipsMainWindow::EnableCustomFuelMask( int index )
@@ -1304,6 +1356,8 @@ void WfipsMainWindow::SelectFuelMask()
     QgsVectorLayer layer(fuelMaskSource + "|layername=" + fuelMaskLayer, "", "ogr" );
     if( !layer.isValid() )
     {
+        fuelMaskSource = "";
+        fuelMaskLayer = "";
         return;
     }
     QgsFields fields;
@@ -1320,6 +1374,375 @@ void WfipsMainWindow::SelectFuelMask()
         ui->fuelAttComboBox->addItem( fields[i].name() );
     }
     return;
+}
+
+double WfipsMainWindow::GetPrepositionValue( QComboBox *c )
+{
+    int i = c->currentIndex();
+    double d;
+    switch( i )
+    {
+        case 0:
+            d = 0.0;
+            break;
+        case 1:
+            d = 0.5;
+            break;
+        case 2:
+            d = 0.6;
+            break;
+        case 3:
+            d = 0.7;
+            break;
+        case 4:
+            d = 0.8;
+            break;
+        case 5:
+            d = 0.9;
+            break;
+        default:
+            d = 0.0;
+            break;
+    }
+    return d;
+}
+
+char * WfipsMainWindow::GetTreatWkt()
+{
+    QgsVectorLayer layer(fuelMaskSource + "|layername=" + fuelMaskLayer, "", "ogr" );
+
+    QgsFeatureIterator fit = layer.getFeatures();
+    QList<QgsGeometry*>geometries;
+    QgsFeature feature;
+    while( fit.nextFeature( feature ) )
+    {
+        geometries.append( new QgsGeometry( *(feature.geometry()) ) );
+    }
+    QgsGeometry *multi = QgsGeometry::unaryUnion( geometries );
+    QString wkt = multi->exportToWkt();
+    delete multi;
+    if( wkt != "" )
+    {
+        return QStringToCString( wkt );
+    }
+    return NULL;
+}
+
+void WfipsMainWindow::UpdateAsyncProgress( QFuture<int>&future )
+{
+    int i = 0;
+    ui->progressBar->setRange( 0, 0 );
+    while( !future.isFinished() && i < 1000 )
+    {
+        CPLSleep( 0.1 );
+        ui->progressBar->setValue( 0 );
+        QCoreApplication::processEvents();
+        i++;
+    }
+    future.waitForFinished();
+    ui->progressBar->setRange( 0, 100 );
+    ui->progressBar->reset();
+}
+
+int WfipsMainWindow::RunIrs()
+{
+    int rc, i;
+    QString outputFile =
+        QFileDialog::getSaveFileName( this, tr( "Save simulation as..." ),
+                                      "", tr( "WFIPS Database files (*.db)" ) );
+    if( outputFile == "" )
+        return 0;
+    char *pszPath = NULL;
+    char *pszDataPath = NULL;
+    pszPath = QStringToCString( outputFile );
+    this->setDisabled( true );
+
+    if( externRescDb != "" )
+    {
+        char *pszExternRescDb = QStringToCString( externRescDb );
+        poData->SetRescDb( pszExternRescDb );
+        free( pszExternRescDb );
+    }
+
+    /* Get all parameters from GUI */
+    /* Prepositioning */
+    double dfPpEng, dfPpCrw, dfPpHeli;
+    /* correct default? */
+    dfPpEng = dfPpCrw = dfPpHeli = 0.5;
+    if( ui->prePositionGroupBox->isChecked() )
+    {
+        dfPpEng = GetPrepositionValue( ui->enginePPComboBox );
+        dfPpCrw = GetPrepositionValue( ui->crewPPComboBox );
+        dfPpHeli = GetPrepositionValue( ui->helitackPPComboBox );
+    }
+
+    /* Fuel Treatment */
+    double dfTreatProb = 0.0;
+    const char *pszTreatWkt = NULL;
+    int nWfpMask = 0;
+    double adfWfpProb[4] = { 0.0, 0.0, 0.0, 0.0 };
+    if( ui->treatGroupBox->isChecked() )
+    {
+        if( ui->fuelComboBox->currentIndex() == 0 )
+        {
+            dfTreatProb = ui->fuelTreatSpinBox->value() / 100.;
+        }
+        else if( ui->fuelComboBox->currentIndex() == 1 )
+        {
+            pszTreatWkt = GetTreatWkt();
+            dfTreatProb = ui->fuelProbSpinBox->value() / 100.;
+        }
+        else if( ui->fuelComboBox->currentIndex() == 2 )
+        {
+            if( ui->wfpCat1CheckBox->isChecked() )
+            {
+                nWfpMask |= WFP_PRIORITY_1;
+                adfWfpProb[0] = ui->wfpCat1SpinBox->value() / 100.;
+            }
+            if( ui->wfpCat2CheckBox->isChecked() )
+            {
+                nWfpMask |= WFP_PRIORITY_2;
+                adfWfpProb[1] = ui->wfpCat2SpinBox->value() / 100.;
+            }
+            if( ui->wfpCat3CheckBox->isChecked() )
+            {
+                nWfpMask |= WFP_PRIORITY_3;
+                adfWfpProb[2] = ui->wfpCat3SpinBox->value() / 100.;
+            }
+            if( ui->wfpCat4CheckBox->isChecked() )
+            {
+                nWfpMask |= WFP_PRIORITY_4;
+                adfWfpProb[3] = ui->wfpCat4SpinBox->value() / 100.;
+            }
+            dfTreatProb = 0;
+        }
+    }
+    int nIgnOwnership = 0;
+    if( ui->agencyIgnUsfsCheckBox->isChecked() )
+        nIgnOwnership |= USFS;
+    if( ui->agencyIgnDoiCheckBox->isChecked() )
+        nIgnOwnership |= DOI_ALL;
+    if( ui->agencyIgnStateCheckBox->isChecked() )
+        nIgnOwnership |= AGENCY_OTHER;
+    /* Need some ignitions */
+    assert( nIgnOwnership );
+
+    /* Limit by days */
+    int nIgnStart, nIgnEnd;
+    nIgnStart = ui->ignStartDayDateEdit->date().dayOfYear();
+    nIgnEnd = ui->ignEndDayDateEdit->date().dayOfYear();
+
+    double dfModRespProb = 0;
+    if( ui->manageGroupBox->isChecked() )
+    {
+        dfModRespProb = ui->manageSpinBox->value() / 100.;
+    }
+    /* Large Fire */
+    int nLfJulStart, nLfJulEnd;
+    double dfNoRescProb, dfTimeProb, dfSizeProb, dfExhProb;
+    dfNoRescProb = dfTimeProb = dfSizeProb = dfExhProb = 0.;
+    if( ui->largeFireGroupBox->isChecked() )
+    {
+        nLfJulStart = ui->largeFireStartDateEdit->date().dayOfYear();
+        nLfJulEnd = ui->largeFireEndDateEdit->date().dayOfYear();
+        dfNoRescProb = ui->noRescSentSpinBox->value() / 100.;
+        dfTimeProb = ui->timeLimitSpinBox->value() / 100.;
+        dfSizeProb = ui->sizeLimitSpinBox->value() / 100.;
+        dfExhProb = ui->exhaustedSpinBox->value() / 100.;
+    }
+    QFuture<int>future;
+    if( 0 )
+    {
+        this->statusBar()->showMessage( "Loading data..." );
+        future = QtConcurrent::run( poData, &WfipsData::LoadIrsData );
+        UpdateAsyncProgress( future );
+        this->statusBar()->showMessage( "Data loaded." );
+        rc = future.results()[0];
+        this->statusBar()->showMessage( "Loading Fires..." );
+        /* FIXME */
+        /*
+        future = QtConcurrent::run( poData, &WfipsData::LoadScenario, 5, NULL,
+                                                                      0.0, 0,
+                                                                      WFP_NO_TREAT,
+                                                                      0, 0 );
+        UpdateAsyncProgress( future );
+        */
+        /*
+WfipsData::LoadScenario( int nYearIdx, const char *pszTreatWkt,
+                         double dfTreatProb, int nWfpTreatMask,
+                         double *padfWfpTreatProb, double dfStratProb,
+                         int nAgencyFilter )
+                         */
+        rc = poData->LoadScenario( 5, (const char*)pszTreatWkt, dfTreatProb,
+                                   nWfpMask, adfWfpProb, dfModRespProb,
+                                   1, 365, nIgnOwnership );
+        this->statusBar()->showMessage( "Fires loaded." );
+        //rc = future.results()[0];
+        this->statusBar()->showMessage( "Running Scenario..." );
+        future = QtConcurrent::run( poData, &WfipsData::RunScenario, 0 );
+        this->statusBar()->showMessage( "Simulation finished.", 1500 );
+        rc = future.results()[0];
+    }
+    else
+    {
+        this->statusBar()->showMessage( "Loading data..." );
+        rc = poData->LoadIrsData();
+        this->statusBar()->showMessage( "Data loaded." );
+        poData->SetPrepositioning( dfPpEng, dfPpCrw, dfPpHeli );
+        this->statusBar()->showMessage( "Loading fires..." );
+        rc = poData->LoadScenario( 5, (const char*)pszTreatWkt, dfTreatProb,
+                                   nWfpMask, adfWfpProb, dfModRespProb,
+                                   nIgnStart, nIgnEnd, nIgnOwnership );
+        this->statusBar()->showMessage( "Fires loaded." );
+        rc = poData->SetResultPath( pszPath );
+        this->statusBar()->showMessage( "Running Scenario..." );
+        rc = poData->RunScenario( 0 );
+        this->statusBar()->showMessage( "Simulation finished." );
+        this->statusBar()->showMessage( "Writing output..." );
+        rc = poData->WriteResults();
+        this->statusBar()->showMessage( "Output written." );
+        this->statusBar()->showMessage( "Simulating Large Fires..." );
+        rc = poData->SimulateLargeFire( nLfJulStart, nLfJulEnd, dfNoRescProb,
+                                        dfTimeProb, dfSizeProb, dfExhProb,
+                                        pszTreatWkt, dfTreatProb );
+        this->statusBar()->showMessage( "Large Fire Simulation finished." );
+        this->statusBar()->showMessage( "Writing Spatial Summary Results..." );
+        if( ui->spatSumGroupBox->isChecked() )
+        {
+            int nIdx = ui->spatSumComboBox->currentIndex();
+            if( nIdx == 0 )
+                rc = poData->SpatialSummary( "fpu" );
+            else
+                rc = poData->SpatialSummary( "fwa" );
+        }
+        this->statusBar()->showMessage( "Done." );
+    }
+    free( (void*)pszTreatWkt );
+    free( (void*)pszPath );
+    /* We should probably make our own, and leave this one alone */
+    ShowResults( outputFile );
+    this->setEnabled( true );
+    return rc;
+}
+
+void WfipsMainWindow::ClearResults()
+{
+    if( resultsMapCanvasLayers.size() > 0 )
+    {
+        QgsMapLayer *layer;
+        layer = resultsMapCanvasLayers[0].layer();
+        resultsMapCanvasLayers.removeAt( 0 );
+        QgsMapLayerRegistry::instance()->removeMapLayer( layer->id() );
+        resultsMapCanvasLayers.clear();
+        resultsLayers.clear();
+        resultsMapCanvas->refresh();
+        ui->exportResultButton->setDisabled( true );
+        currentResultPath = "";
+        ui->resultAttComboBox->clear();
+    }
+}
+
+void WfipsMainWindow::SetResultColorRamp( QString attribute )
+{
+    if( attribute == "" || resultsMapCanvas->layers().size() < 1 )
+    {
+        return;
+    }
+    QgsVectorLayer *layer;
+    QList<QgsMapLayer*>mapLayers = resultsMapCanvas->layers();
+    layer = dynamic_cast<QgsVectorLayer*>( mapLayers[0] );
+
+    //layer = dynamic_cast<QgsVectorLayer>( resultsMapCanvas->layers()[0] );
+    if( !layer->isValid() )
+    {
+        return;
+    }
+    /* Good/bad?  high contain ratio is good, others are usually bad. */
+    bool invert = false;
+    if( attribute != "contratio" && attribute != "contain" )
+        invert = true;
+    /*
+    ** Do we own these?  It appears the layer owns the actual renderer and
+    ** calls delete.  I am guessing the renderer owns the ramp and symbol.  We
+    ** don't need to keep these as members.
+    */
+
+    QgsGraduatedSymbolRendererV2 *renderer;
+    QgsVectorGradientColorRampV2 *ramp;
+    QgsSymbolV2 *symbol;
+ 
+    ramp = new QgsVectorGradientColorRampV2( Qt::red, Qt::blue );
+    symbol = QgsSymbolV2::defaultSymbol( layer->geometryType() );
+    renderer = QgsGraduatedSymbolRendererV2::createRenderer( layer, attribute, 5,
+                                                             QgsGraduatedSymbolRendererV2::EqualInterval,
+                                                             symbol, ramp, invert );
+    layer->setRendererV2( renderer );
+    resultsMapCanvas->refresh();
+    return;
+}
+
+void WfipsMainWindow::ShowResults( QString qgisResultPath )
+{
+    if( qgisResultPath == "" )
+        return;
+    QString layerPath = qgisResultPath + "|layername=spatial_result";
+    QgsVectorLayer *layer = new QgsVectorLayer( layerPath, "result", "ogr", true );
+    if( !layer->isValid() )
+    {
+        delete layer;
+        qDebug() << "Invalid result layer";
+        return;
+    }
+    ClearResults();
+    layer->setReadOnly( true );
+    QgsMapLayerRegistry::instance()->addMapLayer( layer, true );
+    resultsLayers.append( layer );
+    resultsMapCanvasLayers.append( QgsMapCanvasLayer( layer, true ) );
+    resultsMapCanvas->setLayerSet( resultsMapCanvasLayers );
+    resultsMapCanvas->setCurrentLayer( resultsMapCanvasLayers[0].layer() );
+    resultsMapCanvas->setExtent( layer->extent() );
+    resultsMapCanvas->refresh();
+    ui->exportResultButton->setEnabled( true );
+    currentResultPath = qgisResultPath;
+    QgsFields fields = layer->dataProvider()->fields();
+    disconnect( ui->resultAttComboBox, SIGNAL( currentIndexChanged( QString ) ),
+                this, SLOT( SetResultColorRamp( QString ) ) );
+    /* Skip name */
+    for( int i = 1; i < fields.size(); i++ )
+    {
+        ui->resultAttComboBox->addItem( fields[i].name() );
+    }
+    connect( ui->resultAttComboBox, SIGNAL( currentIndexChanged( QString ) ),
+             this, SLOT( SetResultColorRamp( QString ) ) );
+    ui->resultAttComboBox->setCurrentIndex( 1 );
+    ui->resultAttComboBox->setCurrentIndex( 0 );
+    return;
+}
+
+void WfipsMainWindow::OpenResults()
+{
+    int rc, i;
+    QString resultsFile =
+        QFileDialog::getOpenFileName( this, tr( "Open WFIPS results..." ),
+                                      "", tr( "WFIPS Database files (*.db)" ) );
+    if( resultsFile == "" )
+        return;
+    ShowResults( resultsFile );
+}
+
+void WfipsMainWindow::ExportResults()
+{
+    WfipsExportDialog dialog;
+    dialog.exec();
+
+    QString format = dialog.GetFormat();
+    QString exportFile = dialog.GetFilename();
+    if( !poData || format == "" || exportFile == ""  || currentResultPath == "" )
+        return;
+    char *pszDrv, *pszOut;
+    pszDrv = QStringToCString( format );
+    pszOut = QStringToCString( exportFile );
+    poData->ExportFires( pszOut, pszDrv );
 }
 
 /*
@@ -1369,6 +1792,25 @@ void WfipsMainWindow::NextTreeWidgetItem()
 void WfipsMainWindow::PrevTreeWidgetItem()
 {
     return FindTreeWidget( 0 );
+}
+
+void WfipsMainWindow::EnableAnalysisLeaves( bool enable )
+{
+    QTreeWidgetItemIterator it( ui->treeWidget );
+    /* Skip data and analysis area */
+    it += 2;
+    while( *it )
+    {
+        /* Also skip results, and any permanently disabled leaves */
+        if( (*it)->text( 0 ) != "Results" &&
+            (*it)->text( 0 ) != "National Aviation Resources" &&
+            (*it)->text( 0 ) != "Large Fire Drawdown" )
+        {
+            (*it)->setDisabled( !enable );
+        }
+
+        it++;
+    }
 }
 
 void WfipsMainWindow::ShowMessage( const int messageType,

@@ -821,7 +821,7 @@ int CResource::DetermineWorkRest( int scenario, int firenum, int julian, int day
 
 		// Determine the next time the resource is available
 		// Did this first fire of the year take up the whole workshift?
-		if ( timeworked < m_WorkshiftLength )
+		if ( timeworked < m_WorkshiftLength || effort == "Monitor" )
 			return endtime;											
 		else	{
 			SetAvailableFlag( true );								// Set the available flag to indicate that the resource has timed out for the day 1 indicates the resource has timed out
@@ -829,7 +829,7 @@ int CResource::DetermineWorkRest( int scenario, int firenum, int julian, int day
 		}
 	}
 
-	else	{
+	else	 {
 		// Is not the first fire of the year
 		// Was the work/rest guideline of 2 to 1 met between this fire and the previous ones?
 		bool CurFlag = false;										// Initial setting for the flag for this entry
@@ -845,6 +845,7 @@ int CResource::DetermineWorkRest( int scenario, int firenum, int julian, int day
 		// To accumulate work and rest times
 		int prevfiretime = 0;										// fire time for previous fires since last break
 		int prevresttime = 0;										// rest time for previous fires since last break
+		string prevFireEffort = "";
 		
 		// Go back through fires until fire where work/rest guidelines were met before the start of the fire
 		while (	!CurFlag )	{										// While the work/rest guideline has not been met (assume it hasn't for the first previous fire)
@@ -852,6 +853,8 @@ int CResource::DetermineWorkRest( int scenario, int firenum, int julian, int day
 			PrevStartTime = m_VRescWorkYear[ j ].GetStartTime();
 			PrevEndTime = m_VRescWorkYear[ j ].GetEndTime();
 			PrevFlag = m_VRescWorkYear[ j ].GetFlag();
+			if (prevFireEffort == "")
+				prevFireEffort = m_VRescWorkYear[j].GetEffort();
 	
 			// Accumulate work and rest times
 			prevfiretime = prevfiretime + ( PrevEndTime - PrevStartTime );
@@ -872,6 +875,10 @@ int CResource::DetermineWorkRest( int scenario, int firenum, int julian, int day
 			flag = true;
 			earlieststarttime = starttime;					// reset the earliest start time for the resource following last work/rest break
 		}
+
+		// If the fire before this was a monitor fire then set the flag to true
+		if (prevFireEffort == "Monitor")
+			flag = true;
 		
 		// Store the fire suppression effort 
 		m_VRescWorkYear.push_back( CRescWorkYear( scenario, firenum, julian, starttime, endtime, effort, flag ) );
@@ -880,7 +887,7 @@ int CResource::DetermineWorkRest( int scenario, int firenum, int julian, int day
 		// Determine next available time for the resource
 		// Is the time since the last work/rest break for the day greater than the workshift length?
 		timeworked = endtime - earlieststarttime;
-		if ( timeworked < m_WorkshiftLength )
+		if ( timeworked < m_WorkshiftLength || effort == "Monitor" )
 			return endtime;											
 		else	{
 			SetAvailableFlag( true );								// Set the available flag to indicate that the resource has timed out for the day 1 indicates that the resource has timed out

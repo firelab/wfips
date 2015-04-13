@@ -78,7 +78,7 @@ double CConstProd::DetermineProdRate( CFire fire, std::vector< CProdRates > &VPr
 	// Get the fireline production rate for the constant producer
 	//cout << "Number of entries in VPRodRates vector: " << VProdRates.size() << "\n";
 	int i = 0;
-	while ( ProdRate < 0 )	{
+	while ( ProdRate < 0 && i < (int)VProdRates.size() )	{
 		ProdRate = VProdRates[i].Compare( RescType, SlopeClass, Staffing, FuelModel, SpecificCondition );
 		i++;
 		if ( i >= static_cast< int >( VProdRates.size() ) )

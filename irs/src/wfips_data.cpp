@@ -59,14 +59,21 @@ WfipsData::Init()
     bSpatialiteEnabled = 0;
     iScrap = 0;
     pszAnalysisAreaWkt = NULL;
+    poScenario = NULL;
+    pszRescPath = NULL;
+    poResult = NULL;
+    pszResultPath = NULL;
 }
 
 WfipsData::~WfipsData()
 {
     sqlite3_free( pszPath );
     sqlite3_free( pszRescPath );
+    sqlite3_free( pszResultPath );
+    delete poResult;
     sqlite3_close( db );
     sqlite3_free( (void*)pszAnalysisAreaWkt );
+    delete poScenario;
 }
 
 int
@@ -136,6 +143,7 @@ WfipsData::BaseName( const char *pszPath )
 int
 WfipsData::Attach( const char *pszPath )
 {
+    return WfipsAttachDb( db, pszPath, BaseName( pszPath ) );
     char *pszSql;
     int rc;
     if( db == NULL )
@@ -171,6 +179,7 @@ WfipsData::Open( const char *pszPath )
         rc = Attach( FormFileName( pszPath, apszDbFiles[i++] ) );
         WFIPS_CHECK_STATUS;
     }
+    //rc = sqlite3_exec( db, "PRAGMA threads=4", NULL, NULL, NULL );
     rc = sqlite3_enable_load_extension( db, 1 );
     if( rc != SQLITE_OK )
     {
@@ -230,25 +239,7 @@ WfipsData::Random()
 int
 WfipsData::CompileGeometry( const char *pszWkt, void **pCompiled )
 {
-    const void *p;
-    int n, rc;
-    sqlite3_stmt *stmt;
-    rc = sqlite3_prepare_v2( db, "SELECT GeomFromText(?)", -1, &stmt, NULL );
-    WFIPS_CHECK_STATUS;
-    rc = sqlite3_bind_text( stmt, 1, pszWkt, -1, NULL );
-    WFIPS_CHECK_STATUS;
-    rc = sqlite3_step( stmt );
-    if( rc != SQLITE_ROW )
-        goto error;
-    n = sqlite3_column_bytes( stmt, 0 );
-    p = sqlite3_column_blob( stmt, 0 );
-    *pCompiled = sqlite3_malloc( n );
-    memcpy( *pCompiled, p, n );
-    sqlite3_finalize( stmt );
-    return n;
-error:
-    sqlite3_finalize( stmt );
-    return 0;
+    return WfipsCompileGeometry( db, pszWkt, pCompiled );
 }
 
 /*
@@ -302,11 +293,11 @@ WfipsData::GetAssociatedDispLoc( const char *pszWkt,
     }
 
     /* Find the associated locations */
-    rc = sqlite3_prepare_v2( db, "SELECT DISTINCT(disploc.ROWID) FROM " \
-                                 "disploc JOIN assoc ON name=disploc_name " \
-                                 "WHERE fwa_name IN " \
-                                 "(SELECT name FROM fwa WHERE " \
-                                 "ST_Intersects(?1, fwa.geometry) AND " \
+    rc = sqlite3_prepare_v2( db, "SELECT DISTINCT(disploc.ROWID) FROM "
+                                 "disploc JOIN assoc ON name=disploc_name "
+                                 "WHERE fwa_name IN "
+                                 "(SELECT name FROM fwa WHERE "
+                                 "ST_Intersects(?1, fwa.geometry) AND "
                                  "fwa.ROWID IN(SELECT pkid FROM "
                                  "idx_fwa_geometry WHERE "
                                  "xmin <= MbrMaxX(?1) AND "
@@ -422,11 +413,11 @@ WfipsData::GetAssociatedResources( int *panDispLocIds, int nDispLocCount,
 
     rc = sqlite3_finalize( stmt );
 
-    pszSql = sqlite3_mprintf( "SELECT disploc.name, resource.ROWID, " \
-                              "resource.name, resource.resc_type " \
-                              "FROM resource LEFT JOIN disploc ON " \
-                              "resource.disploc=disploc.name " \
-                              "WHERE disploc.ROWID=? AND " \
+    pszSql = sqlite3_mprintf( "SELECT disploc.name, resource.ROWID, "
+                              "resource.name, resource.resc_type "
+                              "FROM resource LEFT JOIN disploc ON "
+                              "resource.disploc=disploc.name "
+                              "WHERE disploc.ROWID=? AND "
                               "resource.agency IN(%s)", pszAgencySet );
 
     rc = sqlite3_prepare_v2( db, pszSql, -1, &stmt, NULL );
@@ -485,34 +476,35 @@ WfipsData::Close()
 }
 
 int
-WfipsData::SetRescDb( const char *pszPath )
+WfipsData::SetRescDb( const char *pszNewRescPath )
 {
     int rc;
     char *pszSql = NULL;
     sqlite3_free( pszRescPath );
-    if( pszPath )
-        pszRescPath = sqlite3_mprintf( "%s", pszPath );
+    if( pszNewRescPath )
+    {
+        pszRescPath = sqlite3_mprintf( "%s", pszNewRescPath );
+    }
     else
     {
-        pszRescPath = NULL;
-        return SQLITE_ERROR;
+        pszRescPath = sqlite3_mprintf( "%s/%s", this->pszPath, RESC_DB );
     }
     rc = sqlite3_exec( db, "DETACH resc", NULL, NULL, NULL );
-    pszSql = sqlite3_mprintf( "ATTACH %Q AS resc", pszPath );
+    pszSql = sqlite3_mprintf( "ATTACH %Q AS resc", pszRescPath );
     rc = sqlite3_exec( db, pszSql, NULL, NULL, NULL );
     sqlite3_free( pszSql );
     return rc;
 }
 
 int
-WfipsData::WriteRescDb( const char *pszPath, int *panIds, int *panDispLocIds,
+WfipsData::WriteRescDb( const char *pszNewPath, int *panIds, int *panDispLocIds,
                         int nCount )
 {
     int i, n, rc;
     sqlite3 *brdb;
     sqlite3 *rdb;
     sqlite3_stmt *stmt;
-    char *pszSchema;
+    const unsigned char *pszSchema;
     char szRescId[128];
     char *pszRescSet;
 
@@ -523,7 +515,7 @@ WfipsData::WriteRescDb( const char *pszPath, int *panIds, int *panDispLocIds,
 
     int bUseExtResc = pszRescPath ? 1 : 0;
 
-    rc = sqlite3_open_v2( pszPath, &rdb,
+    rc = sqlite3_open_v2( pszNewPath, &rdb,
                           SQLITE_OPEN_CREATE | SQLITE_OPEN_READWRITE,
                           NULL );
     if( rc != SQLITE_OK )
@@ -538,30 +530,26 @@ WfipsData::WriteRescDb( const char *pszPath, int *panIds, int *panDispLocIds,
             sqlite3_close( rdb );
             return rc;
         }
-        rc = sqlite3_prepare_v2( brdb, "SELECT sql FROM sqlite_master " \
-                                       "WHERE type='table' AND name='resource'",
+        rc = sqlite3_prepare_v2( brdb, "SELECT sql FROM sqlite_master "
+                                       "WHERE type='table' AND name "
+                                       "IN ('resource', 'heli_assign')",
                                  -1, &stmt, NULL );
     }
     else
     {
         brdb = db;
-        rc = sqlite3_prepare_v2( brdb, "SELECT sql FROM resc.sqlite_master " \
-                                       "WHERE type='table' AND name='resource'",
+        rc = sqlite3_prepare_v2( brdb, "SELECT sql FROM resc.sqlite_master "
+                                       "WHERE type='table' AND name "
+                                       "IN ('resource', 'heli_assign')",
                                  -1, &stmt, NULL );
     }
-    rc = sqlite3_step( stmt );
-    if( rc != SQLITE_ROW )
+    while( sqlite3_step( stmt ) == SQLITE_ROW )
     {
-        sqlite3_finalize( stmt );
-        sqlite3_close( db );
-        sqlite3_close( rdb );
-        return rc;
+        pszSchema = sqlite3_column_text( stmt, 0 );
+        rc = sqlite3_exec( rdb, (char*)pszSchema, NULL, NULL, NULL );
+        assert( rc == SQLITE_OK );
     }
-    pszSchema = sqlite3_mprintf( "%s", (char*)sqlite3_column_text( stmt, 0 ) );
     sqlite3_finalize( stmt );
-    rc = sqlite3_exec( rdb, pszSchema, NULL, NULL, NULL );
-    assert( rc == SQLITE_OK );
-    sqlite3_free( pszSchema );
 
     pszRescSet = BuildFidSet( panIds, nCount );
 
@@ -579,8 +567,8 @@ WfipsData::WriteRescDb( const char *pszPath, int *panIds, int *panDispLocIds,
     sqlite3_free( pszSql );
 
     rc = sqlite3_exec( rdb, "BEGIN", NULL, NULL, NULL );
-    pszSql = sqlite3_mprintf( "INSERT INTO resource SELECT * FROM " \
-                              "baseresc.resource WHERE ROWID " \
+    pszSql = sqlite3_mprintf( "INSERT INTO resource SELECT * FROM "
+                              "baseresc.resource WHERE ROWID "
                               "IN (%s)", pszRescSet );
     sqlite3_free( pszRescSet );
     rc = sqlite3_exec( rdb, pszSql, NULL, NULL, NULL );
@@ -601,7 +589,7 @@ WfipsData::WriteRescDb( const char *pszPath, int *panIds, int *panDispLocIds,
         sqlite3_stmt *ustmt, *sstmt;
         rc = sqlite3_prepare_v2( rdb, "SELECT name FROM disploc WHERE ROWID=?",
                                  -1, &sstmt, NULL );
-        rc = sqlite3_prepare_v2( rdb, "UPDATE resource SET disploc=?" \
+        rc = sqlite3_prepare_v2( rdb, "UPDATE resource SET disploc=?"
                                       "WHERE ROWID=?",
                                  -1, &ustmt, NULL );
         rc = sqlite3_exec( rdb, "BEGIN", NULL, NULL, NULL );
@@ -632,9 +620,112 @@ WfipsData::WriteRescDb( const char *pszPath, int *panIds, int *panDispLocIds,
 }
 
 int
+WfipsData::SetPrepositioning( double dfEnginePP, double dfCrewPP,
+                              double dfHelitackPP )
+{
+    int i, rc, n;
+    double dfLevel;
+    bool bOutOfSeason;
+    PrepositionStruct asPP[9];
+    DrawdownStruct sDummy;
+    std::string osKey;
+    if( poScenario == NULL )
+    {
+        return SQLITE_ERROR;
+    }
+    for( i = 0; i < 9; i++ )
+    {
+        osKey = std::string( apszPrePosKeys[i] );
+        if( strstr( apszPrePosKeys[i], "Engine" ) )
+        {
+            dfLevel = dfEnginePP;
+        }
+        else if( strstr( apszPrePosKeys[i], "Crew" ) )
+        {
+            dfLevel = dfCrewPP;
+        }
+        else if( strstr( apszPrePosKeys[i], "HELI" ) )
+        {
+            dfLevel = dfHelitackPP;
+        }
+        else
+        {
+            dfLevel = 0.0;
+        }
+        asPP[i] = PrepositionStruct( osKey, dfLevel, false );
+    }
+    poScenario->SetPreposition( asPP[0], asPP[1], asPP[2], asPP[3],
+                                asPP[4], asPP[5], asPP[6],
+                                sDummy, sDummy, sDummy, sDummy,
+                                sDummy, sDummy, sDummy, sDummy,
+                                asPP[7], asPP[8] );
+    return 0;
+}
+
+static int AddGmtOffset( char *pszTime, double dfOffset )
+{
+    int nMinute, nHour;
+    nMinute =  atoi( &pszTime[2] );
+    pszTime[2] = '\0';
+    nHour = atoi( pszTime );
+    nHour = nHour + dfOffset;
+    if( nHour < 0 )
+        nHour = 24 + nHour;
+    sprintf( pszTime, "%02d%02d", (int)nHour, (int)nMinute );
+    return 0;
+}
+
+/**
+** \brief Load fires for the simulation.
+**
+** Fires are loaded based on a simulation area.  Masks may be provided to
+** affect if the properties of the fire, or how the fire is fought.  Fires may
+** also be subsetting in time by specifying a start and end julian day.
+** Ownership of the land the ignition occurs on can be specified by using
+** agency mask flags.  0 == AGENCY_ALL.  All non-federal land is considered
+** state or local.
+**
+** \param nYearIdx the year in the database to load.  SELECT DISTINCT(year)
+**                 from fig; will provide you with valid indices.
+**
+** \param pszTreatWkt WKT representation of a polygon for fires to be
+**                    considered treated (along with a probability).
+**
+** \param dfTreatProb the probability that a fire is treated within the
+**                    treatment mask.  If the mask is NULL, then the
+**                    probability affects all fires.
+**
+** \param nWfpTreatMask the WFP class(es) that get a treatment assignment.  For
+**                      example, WFP_PRIORITY_1 and a value of 1.0 in
+**                      padfWfpTreatProb[0] means all WFP Priotry of 1 values
+**                      are assigned a treatment.
+**
+** \note this flag value can be removed and use the probability array[i] > 0.
+**       in it's place.
+**
+** \param padfWfpTreatProb probabilites associated with WFP Priorities from
+**                         1-4.  This is assumed to be an array with 4
+**                         elements.
+**
+** \param dfStatProb the probability that a fire with a 3A or 3B Strategic
+**                   value (from Calkin's group) gets assigned a monitor only
+**                   tactic.  There is no mask for this, each fire has been
+**                   assigned a strategic value in the db.
+**
+** \param nJulStart the earliest day a fire can have to be loaded.
+**
+** \param nJulEnd the latest day a fire can have to be loaded.
+**
+** \param nAgencyFilter a bit mask representing ownership.  Ownership is
+**                      classified as one of the 5 federal fire agencies, or
+**                      other/state/local.
+*/
+
+int
 WfipsData::LoadScenario( int nYearIdx, const char *pszTreatWkt,
                          double dfTreatProb, int nWfpTreatMask,
                          double *padfWfpTreatProb, double dfStratProb,
+                         int nJulStart, int nJulEnd,
                          int nAgencyFilter )
 {
     sqlite3_stmt *stmt;
@@ -645,13 +736,17 @@ WfipsData::LoadScenario( int nYearIdx, const char *pszTreatWkt,
     void *pAnalysisGeom = NULL;
     int nTreatSize;
     void *pTreatGeom = NULL;
+    assert( nYearIdx >= 0 );
+    assert( nJulStart <= nJulEnd && nJulStart > 0 && nJulStart <= 366 &&
+            nJulEnd > 0 && nJulEnd <= 366 );
+
     poScenario->m_VFire.clear();
     if( pszAnalysisAreaWkt != NULL )
     {
         pszAnalysisAreaSql =
-            sqlite3_mprintf( "AND ST_Contains(@geom, geometry) AND " \
-                             "fig.ROWID IN(SELECT pkid FROM " \
-                             "idx_fig_geometry WHERE " \
+            sqlite3_mprintf( "AND ST_Contains(@geom, geometry) AND "
+                             "fig.ROWID IN(SELECT pkid FROM "
+                             "idx_fig_geometry WHERE "
                              "xmin <= MbrMaxX(@geom) AND "
                              "xmax >= MbrMinX(@geom) AND "
                              "ymin <= MbrMaxY(@geom) AND "
@@ -671,14 +766,22 @@ WfipsData::LoadScenario( int nYearIdx, const char *pszTreatWkt,
         pszOwnerSql = sqlite3_mprintf( "%s", "" );
     }
 
-    pszSql = sqlite3_mprintf( "SELECT *, X(geometry), Y(geometry) FROM " \
-                              "fig WHERE year=@yidx %s %s " \
-                              "ORDER BY jul_day, disc_time",
+    pszSql = sqlite3_mprintf( "SELECT *, X(geometry), Y(geometry) FROM "
+                              "fig WHERE year=@yidx AND jul_day "
+                              "BETWEEN @jstart AND @jend AND fwa_name NOT "
+                              "LIKE '%%unassign%%' "
+                              "AND substr(fwa_name, 0, 3) NOT IN "
+                              "('AK','SA','EA') "
+                              "%s %s ORDER BY jul_day, disc_time",
                               pszAnalysisAreaSql, pszOwnerSql );
 
     rc = sqlite3_prepare_v2( db, pszSql, -1, &stmt, NULL );
     rc = sqlite3_bind_int( stmt, sqlite3_bind_parameter_index( stmt, "@yidx" ),
                            nYearIdx );
+    rc = sqlite3_bind_int( stmt, sqlite3_bind_parameter_index( stmt, "@jstart" ),
+                           nJulStart );
+    rc = sqlite3_bind_int( stmt, sqlite3_bind_parameter_index( stmt, "@jend" ),
+                           nJulEnd );
     if( pszAnalysisAreaWkt != NULL )
     {
         nAnalysisGeomSize = CompileGeometry( pszAnalysisAreaWkt, &pAnalysisGeom );
@@ -696,11 +799,11 @@ WfipsData::LoadScenario( int nYearIdx, const char *pszTreatWkt,
 
     if( pszTreatWkt != NULL && dfTreatProb > 0. )
     {
-        rc = sqlite3_prepare_v2( db, "SELECT 1 WHERE " \
-                                     "ST_Contains(@treat, @fig) AND " \
-                                     "X(@fig) <= MbrMaxX(@treat) AND " \
-                                     "X(@fig) >= MbrMinX(@treat) AND " \
-                                     "Y(@fig) <= MbrMaxY(@treat) AND " \
+        rc = sqlite3_prepare_v2( db, "SELECT 1 WHERE "
+                                     "ST_Contains(@treat, @fig) AND "
+                                     "X(@fig) <= MbrMaxX(@treat) AND "
+                                     "X(@fig) >= MbrMinX(@treat) AND "
+                                     "Y(@fig) <= MbrMaxY(@treat) AND "
                                      "Y(@fig) >= MbrMinY(@treat)",
                                  -1, &gstmt, NULL );
         nTreatSize = CompileGeometry( pszTreatWkt, &pTreatGeom );
@@ -725,7 +828,6 @@ WfipsData::LoadScenario( int nYearIdx, const char *pszTreatWkt,
     int nSlope, bWalkIn;
     const char *pszTactic;
     double dfAttDist, dfRatio;
-    const char *pszSunrise, *pszSunset;
     int bWaterDrops, bPumpRoll;
     const char *pszFwa;
     double dfGmtOffset;
@@ -751,6 +853,11 @@ WfipsData::LoadScenario( int nYearIdx, const char *pszTreatWkt,
     int nProb;
     double dfProb, dfUserProb;
 
+    int nTime;
+
+    char szSunrise[128];
+    char szSunset[128];
+
     while( sqlite3_step( stmt ) == SQLITE_ROW )
     {
         nYear = sqlite3_column_int( stmt, 0 );
@@ -768,8 +875,10 @@ WfipsData::LoadScenario( int nYearIdx, const char *pszTreatWkt,
         pszTactic = (const char*)sqlite3_column_text( stmt, 12 );
         dfAttDist = sqlite3_column_double( stmt, 13 );
         dfRatio = sqlite3_column_double( stmt, 14 );
-        pszSunrise = (const char*)sqlite3_column_text( stmt, 15 );
-        pszSunset = (const char*)sqlite3_column_text( stmt, 16 );
+        nTime = sqlite3_column_int( stmt, 15 );
+        sprintf( szSunrise, "%04d", nTime );
+        nTime = sqlite3_column_int( stmt, 16 );
+        sprintf( szSunset, "%04d", nTime );
         bWaterDrops = sqlite3_column_int( stmt, 17 );
         bPumpRoll = sqlite3_column_int( stmt, 18 );
         pszFwa = (const char*)sqlite3_column_text( stmt, 19 );
@@ -788,6 +897,9 @@ WfipsData::LoadScenario( int nYearIdx, const char *pszTreatWkt,
         /* X and Y from spatialite */
         dfX = sqlite3_column_double( stmt, 30 );
         dfY = sqlite3_column_double( stmt, 31 );
+
+        AddGmtOffset( szSunrise, dfGmtOffset );
+        AddGmtOffset( szSunset, dfGmtOffset );
 
         bTreated = 0;
 
@@ -858,22 +970,22 @@ WfipsData::LoadScenario( int nYearIdx, const char *pszTreatWkt,
                                               std::string( pszTactic ),
                                               dfAttDist, nElev, dfRatio,
                                               nMinSteps, nMaxSteps,
-                                              std::string( pszSunrise ),
-                                              std::string( pszSunset ),
+                                              std::string( szSunrise ),
+                                              std::string( szSunset ),
                                               (bool)bWaterDrops, (bool)bPumpRoll,
                                               (CFWA&)(poScenario->m_VFWA[i]),
                                               dfY, dfX ) );
         poScenario->m_VFire[iFire].SetTreated( bTreated );
         poScenario->m_VFire[iFire].SetManageObjective( dfManObj );
         /* XXX: Set up properly (3A or 3B) */
-        if( Random() < dfStratProb  && dfManObj >= 2.9 && dfManObj < 4.0 )
+        if( Random() < dfStratProb  && dfManObj > 2.9 && dfManObj < 4.0 )
             poScenario->m_VFire[iFire].SetUseStrategy( 1 );
         else
             poScenario->m_VFire[iFire].SetUseStrategy( 0 );
 
         iFire++;
     }
-
+    poScenario->m_NumFire = poScenario->m_VFire.size();
     //printf( "Warning. %d fires failed to load due to invalid fwa names\n", nInvalid );
 
     sqlite3_finalize( stmt );
@@ -884,6 +996,8 @@ WfipsData::LoadScenario( int nYearIdx, const char *pszTreatWkt,
 
     return 0;
 }
+
+/* Probably just change to return a std::vector<int>, handle c api later. */
 
 int
 WfipsData::GetScenarioIndices( int **ppanIndices )
@@ -924,5 +1038,101 @@ WfipsData::SetAnalysisAreaMask( const char *pszMaskWkt )
         pszAnalysisAreaWkt = NULL;
     }
     return SQLITE_OK;
+}
+
+int
+WfipsData::SetResultPath( const char *pszNewPath )
+{
+    if( pszNewPath == NULL )
+    {
+        return SQLITE_ERROR;
+    }
+    pszResultPath = sqlite3_mprintf( "%s", pszNewPath );
+    poResult = new WfipsResult( pszResultPath, this->pszPath );
+    if( !poResult->Valid() )
+    {
+        delete poResult;
+        poResult = NULL;
+        sqlite3_free( pszResultPath );
+        pszResultPath = NULL;
+        return SQLITE_ERROR;
+    }
+    return SQLITE_OK;
+}
+
+int
+WfipsData::WriteResults()
+{
+    int i, rc;
+    if( poResult == NULL )
+        return SQLITE_ERROR;
+    poResult->EnableVolatile( 1 );
+    poResult->StartTransaction();
+    for( i = 0; i < poScenario->m_VResults.size(); i++ )
+    {
+        poResult->WriteRecord( poScenario->m_VResults[i] );
+    }
+    poResult->Commit();
+    poResult->CreateIndices();
+    poResult->EnableVolatile( 0 );
+    return 0;
+}
+
+int
+WfipsData::SpatialSummary( const char *pszKey )
+{
+    int i, rc;
+    if( poResult == NULL )
+        return SQLITE_ERROR;
+    rc = poResult->SpatialSummary( pszKey );
+    return rc;
+}
+
+int
+WfipsData::ExportFires( const char *pszOutFile, const char *pszDrv )
+{
+    int i, rc;
+    if( poResult == NULL )
+        return SQLITE_ERROR;
+    rc = poResult->ExportFires( pszOutFile, pszDrv );
+    return rc;
+}
+
+int
+WfipsData::CloseResults()
+{
+    return poResult->Close();
+}
+
+int
+WfipsData::SimulateLargeFire( int nJulStart, int nJulEnd, double dfNoRescProb,
+                              double dfTimeLimitProb, double dfSizeLimitProb,
+                              double dfExhaustProb, const char *pszTreatWkt,
+                              double dfTreatProb )
+{
+    /* Check if we have a valid result object, and go. */
+    assert( poResult );
+    return poResult->SimulateLargeFire( nJulStart, nJulEnd, dfNoRescProb,
+                                        dfTimeLimitProb, dfSizeLimitProb,
+                                        dfExhaustProb, pszTreatWkt,
+                                        dfTreatProb );
+}
+
+int
+WfipsData::Reset()
+{
+    /* XXX: DO THESE GO HERE?! XXX */
+    poScenario->Reset();
+    poScenario->m_VResults.clear();
+    return 0;
+}
+
+int
+WfipsData::RunScenario( int iYearIdx )
+{
+    int rc;
+    rc = poScenario->RunScenario( 0, iYearIdx, NULL );
+    poScenario->Output();
+    return rc;
 }
 

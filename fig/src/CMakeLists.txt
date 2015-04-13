@@ -43,6 +43,7 @@ IF(MSVC)
                         frisk.cpp
                         fig.cpp
                         fig_api.cpp
+                        $<TARGET_OBJECTS:sqlite3>
                         $<TARGET_OBJECTS:flammap32>)
     ADD_LIBRARY(fig SHARED ${FIG_API_SOURCES})
     SET(LINK_LIBS ${LINK_LIBS} ${GDAL_LIBRARY})
@@ -53,7 +54,7 @@ IF(MSVC)
     ADD_DEPENDENCIES(fig_load fig)
 ENDIF(MSVC)
 
-SET(LINK_LIBS ${GDAL_LIBRARY} ${SQLITE3_LIBRARIES})
+SET(LINK_LIBS ${GDAL_LIBRARY})
 IF(NOT WIN32)
     FIND_PACKAGE (Threads)
     SET(LINK_LIBS ${LINK_LIBS} ${CMAKE_DL_LIBS} ${CMAKE_THREAD_LIBS_INIT})

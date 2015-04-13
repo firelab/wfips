@@ -292,7 +292,7 @@ int main( int argc, char *argv[] )
     char pszDb[8192];
     sprintf( pszDb, "%s/omffr.sqlite", pszDataPath );
 
-    IRSDataAccess *poDA = IRSDataAccess::Create( 0, pszDb );
+    //IRSDataAccess *poDA = IRSDataAccess::Create( 0, pszDb );
     int rc;
     sqlite3 *db;
     rc = sqlite3_open_v2( pszDb, &db, SQLITE_OPEN_READONLY, NULL );
@@ -344,8 +344,9 @@ int main( int argc, char *argv[] )
                                                             "X") );
         }
 
-        std::string oFwaName = poDA->PointQuery( "fwa_bndry", "fwa_lndr_name",
-                                                 lon, lat );
+        //std::string oFwaName = poDA->PointQuery( "fwa_bndry", "fwa_lndr_name",
+        //                                         lon, lat );
+        std::string oFwaName = "";
         rc = sqlite3_bind_double( stmt, 1, lon );
         rc = sqlite3_bind_double( stmt, 2, lat );
         //sqlite3_bind_text( stmt, 1, oFwaName.c_str(), -1, SQLITE_TRANSIENT);

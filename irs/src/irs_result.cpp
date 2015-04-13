@@ -983,8 +983,8 @@ int IRSResult::ExportGaccSummary()
         assert( EQUAL( pszFpu, pszGacc ) );
         assert( abs( nFpu - nGacc ) <= 1 );
     }
-    sqlite3_finalize( fstmt ); fstmt == NULL;
-    sqlite3_finalize( gstmt ); gstmt == NULL;
+    sqlite3_finalize( fstmt ); fstmt = NULL;
+    sqlite3_finalize( gstmt ); gstmt = NULL;
 #endif /* NDEBUG */
 
     return IRS_OK;

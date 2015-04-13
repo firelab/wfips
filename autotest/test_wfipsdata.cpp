@@ -29,12 +29,40 @@
 
 #include "wfips_data.h"
 
+static char * GetFpuWkt( const char *pszFpu )
+{
+    int rc;
+    sqlite3 *db;
+    sqlite3_stmt *stmt;
+    const char *pszFpuDb = WFIPS_DATA_TEST_PATH FPU_DB;
+    char *pszWkt;
+    rc = sqlite3_open_v2( pszFpuDb, &db, SQLITE_OPEN_READONLY, NULL );
+    BOOST_REQUIRE( rc == 0 );
+    rc = sqlite3_enable_load_extension( db, 1 );
+    rc = sqlite3_load_extension( db, SPATIALITE_EXT, NULL, NULL );
+    rc = sqlite3_prepare_v2( db, "SELECT AsText(geometry) FROM fpu WHERE " \
+                                 "fpu_code=?",
+                             -1, &stmt, NULL );
+    BOOST_REQUIRE( rc == 0 );
+    rc = sqlite3_bind_text( stmt, 1, pszFpu, -1, NULL );
+    BOOST_REQUIRE( rc == 0 );
+    rc = sqlite3_bind_text( stmt, 1, pszFpu, -1, NULL );
+    rc = sqlite3_step( stmt );
+    BOOST_REQUIRE( rc == 100 );
+    pszWkt = sqlite3_mprintf( "%s", (const char*)sqlite3_column_text( stmt, 0 ) );
+    sqlite3_finalize( stmt );
+    sqlite3_close( db );
+    return pszWkt;
+}
+
 struct WfipsDataMock
 {
     WfipsDataMock()
     {
-        poData = new WfipsData(WFIPS_DATA_TEST_PATH);
+        GDALAllRegister();
+        poData = new WfipsData( WFIPS_DATA_TEST_PATH );
         poData->Open();
+        BOOST_REQUIRE( poData->Valid() );
     }
     ~WfipsDataMock()
     {
@@ -55,7 +83,7 @@ BOOST_AUTO_TEST_CASE( create_1 )
 
 BOOST_AUTO_TEST_CASE( create_2 )
 {
-    WfipsData *poData2 = new WfipsData(WFIPS_DATA_TEST_PATH);
+    WfipsData *poData2 = new WfipsData( WFIPS_DATA_TEST_PATH );
     int rc = poData2->Open();
     BOOST_CHECK( poData2->Valid() == 1 );
     BOOST_CHECK( rc == 0 );
@@ -257,6 +285,26 @@ BOOST_AUTO_TEST_CASE( load_scen_9 )
     BOOST_CHECK( poData->TestScenLoad9() == 0 );
 }
 
+BOOST_AUTO_TEST_CASE( load_scen_10 )
+{
+    BOOST_CHECK( poData->TestScenLoad10() == 0 );
+}
+
+BOOST_AUTO_TEST_CASE( load_scen_11 )
+{
+    BOOST_CHECK( poData->TestScenLoad11() == 0 );
+}
+
+BOOST_AUTO_TEST_CASE( load_scen_12 )
+{
+    BOOST_CHECK( poData->TestScenLoad12() == 0 );
+}
+
+BOOST_AUTO_TEST_CASE( load_scen_13 )
+{
+    BOOST_CHECK( poData->TestScenLoad13() == 0 );
+}
+
 BOOST_AUTO_TEST_CASE( set_resource_db_1 )
 {
     int anIds[] = {1,2,3,4,5,6,7,8,9,10};
@@ -312,8 +360,7 @@ BOOST_AUTO_TEST_CASE( load_fwa_2 )
 
 BOOST_AUTO_TEST_CASE( load_disp_loc_1 )
 {
-    // Disable, too slow.
-    //BOOST_CHECK( poData->TestDispLocLoad1() == 0 );
+    BOOST_CHECK( poData->TestDispLocLoad1() == 0 );
 }
 
 BOOST_AUTO_TEST_CASE( load_disp_loc_2 )
@@ -323,8 +370,7 @@ BOOST_AUTO_TEST_CASE( load_disp_loc_2 )
 
 BOOST_AUTO_TEST_CASE( load_resource_1 )
 {
-    // Disable, too slow.
-    //BOOST_CHECK( poData->TestResourceLoad1() == 0 );
+    BOOST_CHECK( poData->TestResourceLoad1() == 0 );
 }
 
 BOOST_AUTO_TEST_CASE( load_resource_2 )
@@ -332,6 +378,360 @@ BOOST_AUTO_TEST_CASE( load_resource_2 )
     BOOST_CHECK( poData->TestResourceLoad2() == 0 );
 }
 
+BOOST_AUTO_TEST_CASE( load_all_1 )
+{
+    int rc;
+    rc = poData->LoadIrsData( "POLYGON((-114 47, -113 47, -113 46, -114 46, -114 47))" );
+    BOOST_CHECK( rc == 0 );
+}
+
+BOOST_AUTO_TEST_CASE( run_small_1 )
+{
+    int rc;
+    rc = poData->LoadIrsData( "POLYGON((-114 47, -113 47, -113 46, -114 46, -114 47))" );
+    BOOST_REQUIRE( rc == 0 );
+    rc = poData->LoadScenario( 5, NULL, 0.0, 0, WFP_NO_TREAT, 0, 1, 365, 0 );
+    BOOST_REQUIRE( rc == 0 );
+    rc = poData->RunScenario( 0 );
+    BOOST_CHECK( rc == 1 );
+    poData->Reset();
+}
+
+BOOST_AUTO_TEST_CASE( run_gb_id_002_no_spatial )
+{
+    int rc;
+    char *pszWkt;
+    pszWkt = GetFpuWkt( "GB_ID_002" );
+    rc = poData->LoadIrsData( pszWkt );
+    BOOST_REQUIRE( rc == 0 );
+    rc = poData->LoadScenario( 5, pszWkt, 0.0, 0, WFP_NO_TREAT, 0, 1, 365, 0 );
+    BOOST_REQUIRE( rc == 0 );
+    rc = poData->RunScenario( 0 );
+    BOOST_CHECK( rc == 1 );
+    rc = poData->SetResultPath( WFIPS_TEST_OUTPUT_DB );
+    BOOST_CHECK( rc == 0 );
+    rc = poData->WriteResults();
+    BOOST_CHECK( rc == 0 );
+    rc = poData->CloseResults();
+    BOOST_CHECK( rc == 0 );
+    unlink( WFIPS_TEST_OUTPUT_DB );
+}
+
+BOOST_AUTO_TEST_CASE( run_small_output_1 )
+{
+    int rc;
+    rc = poData->LoadIrsData( "POLYGON((-114 47, -113 47, -113 46, -114 46, -114 47))" );
+    BOOST_REQUIRE( rc == 0 );
+    rc = poData->LoadScenario( 5, NULL, 0.0, 0, WFP_NO_TREAT, 0, 1, 365, 0 );
+    BOOST_REQUIRE( rc == 0 );
+    rc = poData->RunScenario( 0 );
+    BOOST_CHECK( rc == 1 );
+    rc = poData->SetResultPath( WFIPS_TEST_OUTPUT_DB );
+    rc = poData->WriteResults();
+    rc = poData->CloseResults();
+    rc = poData->Reset();
+    unlink( WFIPS_TEST_OUTPUT_DB );
+}
+
+BOOST_AUTO_TEST_CASE( run_small_output_2 )
+{
+    int rc;
+    rc = poData->LoadIrsData( "POLYGON((-114 47, -113 47, -113 46, -114 46, -114 47))" );
+    BOOST_REQUIRE( rc == 0 );
+    rc = poData->LoadScenario( 5, NULL, 0.0, 0, WFP_NO_TREAT, 0, 1, 365, 0 );
+    BOOST_REQUIRE( rc == 0 );
+    rc = poData->RunScenario( 0 );
+    BOOST_CHECK( rc == 1 );
+    poData->SetResultPath( WFIPS_TEST_OUTPUT_DB );
+    poData->WriteResults();
+    poData->CloseResults();
+    poData->Reset();
+    unlink( WFIPS_TEST_OUTPUT_DB );
+}
+
+BOOST_AUTO_TEST_CASE( run_small_output_3 )
+{
+    int rc;
+    rc = poData->LoadIrsData( "POLYGON((-114 47, -113 47, -113 46, -114 46, -114 47))" );
+    BOOST_REQUIRE( rc == 0 );
+    rc = poData->LoadScenario( 5, NULL, 0.0, 0, WFP_NO_TREAT, 0, 1, 365, 0 );
+    BOOST_REQUIRE( rc == 0 );
+    rc = poData->RunScenario( 0 );
+    BOOST_CHECK( rc == 1 );
+    poData->SetResultPath( WFIPS_TEST_OUTPUT_DB );
+    poData->WriteResults();
+    poData->SpatialSummary( "fpu" );
+    poData->CloseResults();
+    poData->Reset();
+    unlink( WFIPS_TEST_OUTPUT_DB );
+}
+
+BOOST_AUTO_TEST_CASE( run_small_output_lf_1 )
+{
+    int rc;
+    rc = poData->LoadIrsData( "POLYGON((-114 47, -113 47, -113 46, -114 46, -114 47))" );
+    BOOST_REQUIRE( rc == 0 );
+    rc = poData->LoadScenario( 5, NULL, 0.0, 0, WFP_NO_TREAT, 0, 1, 365, 0 );
+    BOOST_REQUIRE( rc == 0 );
+    rc = poData->RunScenario( 0 );
+    BOOST_CHECK( rc == 1 );
+    poData->SetResultPath( WFIPS_TEST_OUTPUT_DB );
+    poData->WriteResults();
+    poData->SimulateLargeFire( 1, 365, 1., 1., 1., 1., NULL, 0. );
+    poData->SpatialSummary( "fpu" );
+    poData->CloseResults();
+    poData->Reset();
+    unlink( WFIPS_TEST_OUTPUT_DB );
+}
+
+BOOST_AUTO_TEST_CASE( run_small_output_fwa_1 )
+{
+    int rc;
+    rc = poData->LoadIrsData( "POLYGON((-114 47, -113 47, -113 46, -114 46, -114 47))" );
+    BOOST_REQUIRE( rc == 0 );
+    rc = poData->LoadScenario( 5, NULL, 0.0, 0, WFP_NO_TREAT, 0, 1, 365, 0 );
+    BOOST_REQUIRE( rc == 0 );
+    rc = poData->RunScenario( 0 );
+    BOOST_CHECK( rc == 1 );
+    poData->SetResultPath( WFIPS_TEST_OUTPUT_DB );
+    poData->WriteResults();
+    poData->SimulateLargeFire( 1, 365, 1., 1., 1., 1., NULL, 0. );
+    poData->SpatialSummary( "fwa" );
+    poData->CloseResults();
+    poData->Reset();
+    unlink( WFIPS_TEST_OUTPUT_DB );
+}
+
+BOOST_AUTO_TEST_CASE( run_small_output_lf_treat_1 )
+{
+    int rc;
+    const char *pszTreatWkt = "POLYGON((-113.75 46.75,-113.25 46.75,-113.25 46.25,-113.75 46.25,-113.75 46.75))";
+    rc = poData->LoadIrsData( "POLYGON((-114    47,   -113    47,   -113    46,   -114    46,   -114    47))" );
+    BOOST_REQUIRE( rc == 0 );
+    rc = poData->LoadScenario( 5, pszTreatWkt, 1.0, 0, WFP_NO_TREAT, 0, 1, 365, 0 );
+    BOOST_REQUIRE( rc == 0 );
+    rc = poData->RunScenario( 0 );
+    BOOST_CHECK( rc == 1 );
+    poData->SetResultPath( WFIPS_TEST_OUTPUT_DB );
+    poData->WriteResults();
+    poData->SimulateLargeFire( 1, 365, 1., 1., 1., 1., pszTreatWkt, 1. );
+    poData->SpatialSummary( "fwa" );
+    poData->CloseResults();
+    poData->Reset();
+    unlink( WFIPS_TEST_OUTPUT_DB );
+}
+
+BOOST_AUTO_TEST_CASE( run_small_output_fires_1 )
+{
+    int rc;
+    rc = poData->LoadIrsData( "POLYGON((-114 47, -113 47, -113 46, -114 46, -114 47))" );
+    BOOST_REQUIRE( rc == 0 );
+    rc = poData->LoadScenario( 5, NULL, 0.0, 0, WFP_NO_TREAT, 0, 1, 365, 0 );
+    BOOST_REQUIRE( rc == 0 );
+    rc = poData->RunScenario( 0 );
+    BOOST_CHECK( rc == 1 );
+    poData->SetResultPath( WFIPS_TEST_OUTPUT_DB );
+    poData->WriteResults();
+    poData->ExportFires( "test.shp", "ESRI Shapefile" );
+    poData->CloseResults();
+    poData->Reset();
+    unlink( WFIPS_TEST_OUTPUT_DB );
+}
+
+BOOST_AUTO_TEST_CASE( preposition_1 )
+{
+    int rc;
+    rc = poData->LoadIrsData( "POLYGON((-114 47, -113 47, -113 46, -114 46, -114 47))" );
+    BOOST_REQUIRE( rc == 0 );
+    rc = poData->LoadScenario( 5, NULL, 0.0, 0, WFP_NO_TREAT, 0, 1, 365, 0 );
+    BOOST_REQUIRE( rc == 0 );
+    rc = poData->SetPrepositioning( 0.5, 0.6, 0.7 );
+    BOOST_CHECK( rc == 0 );
+    rc = poData->RunScenario( 0 );
+    BOOST_CHECK( rc == 1 );
+    poData->Reset();
+    unlink( WFIPS_TEST_OUTPUT_DB );
+}
+
+BOOST_AUTO_TEST_CASE( compile_geom_1 )
+{
+    const char *pszWkt = "POLYGON((-114 47, -113 47, -113 46, -114 46, -114 47))";
+    int rc;
+    void *pGeom;
+    rc = WfipsCompileGeometry( NULL, pszWkt, &pGeom );
+    BOOST_CHECK( rc > 0 );
+    pGeom = rc > 0 ? pGeom : NULL;
+    sqlite3_free( pGeom );
+}
+
+/* Should fail due to invalid wkt */
+BOOST_AUTO_TEST_CASE( compile_geom_2 )
+{
+    const char *pszWkt = "KYLE((-114 47, -113 47, -113 46, -114 46, -114 47))";
+    int rc;
+    void *pGeom;
+    rc = WfipsCompileGeometry( NULL, pszWkt, &pGeom );
+    BOOST_CHECK( rc == 0 );
+}
+
+/* Should fail due to invalid db */
+BOOST_AUTO_TEST_CASE( compile_geom_3 )
+{
+    const char *pszWkt = "POLYGON((-114 47, -113 47, -113 46, -114 46, -114 47))";
+    int rc;
+    void *pGeom;
+    sqlite3 *db;
+    rc = WfipsCompileGeometry( db, pszWkt, &pGeom );
+    BOOST_CHECK( rc == 0 );
+}
+
+/* Should fail due to no spatialite */
+BOOST_AUTO_TEST_CASE( compile_geom_4 )
+{
+    const char *pszWkt = "POLYGON((-114 47, -113 47, -113 46, -114 46, -114 47))";
+    int rc;
+    void *pGeom;
+    sqlite3 *db;
+    rc = sqlite3_open_v2( ":memory:", &db,
+                          SQLITE_OPEN_CREATE | SQLITE_OPEN_READWRITE, NULL );
+    BOOST_REQUIRE( rc == SQLITE_OK );
+    rc = WfipsCompileGeometry( db, pszWkt, &pGeom );
+    BOOST_CHECK( rc == 0 );
+    sqlite3_close( db );
+}
+
+/* Should pass with external db */
+BOOST_AUTO_TEST_CASE( compile_geom_5 )
+{
+    const char *pszWkt = "POLYGON((-114 47, -113 47, -113 46, -114 46, -114 47))";
+    int rc;
+    void *pGeom;
+    sqlite3 *db;
+    rc = sqlite3_open_v2( ":memory:", &db,
+                          SQLITE_OPEN_CREATE | SQLITE_OPEN_READWRITE, NULL );
+    BOOST_REQUIRE( rc == SQLITE_OK );
+    rc = sqlite3_enable_load_extension( db, 1 );
+    BOOST_REQUIRE( rc == SQLITE_OK );
+    rc = sqlite3_load_extension( db, SPATIALITE_EXT, NULL, NULL );
+    BOOST_REQUIRE( rc == SQLITE_OK );
+    rc = WfipsCompileGeometry( db, pszWkt, &pGeom );
+    BOOST_CHECK( rc > 0 );
+    sqlite3_free( pGeom );
+    sqlite3_close( db );
+}
+
+BOOST_AUTO_TEST_CASE( has_table_1 )
+{
+    int rc;
+    sqlite3 *db;
+    rc = sqlite3_open_v2( ":memory:", &db,
+                          SQLITE_OPEN_CREATE | SQLITE_OPEN_READWRITE, NULL );
+    BOOST_REQUIRE( rc == SQLITE_OK );
+    rc = sqlite3_exec( db, "CREATE TABLE foo(a)", NULL, NULL, NULL );
+    BOOST_REQUIRE( rc == SQLITE_OK );
+    rc = WfipsHasTable( db, "foo" );
+    BOOST_CHECK( rc == 1 );
+    sqlite3_close( db );
+}
+
+BOOST_AUTO_TEST_CASE( has_table_2 )
+{
+    int rc;
+    sqlite3 *db;
+    rc = sqlite3_open_v2( ":memory:", &db,
+                          SQLITE_OPEN_CREATE | SQLITE_OPEN_READWRITE, NULL );
+    BOOST_REQUIRE( rc == SQLITE_OK );
+    rc = sqlite3_exec( db, "CREATE TABLE foo(a)", NULL, NULL, NULL );
+    BOOST_REQUIRE( rc == SQLITE_OK );
+    rc = WfipsHasTable( db, "bar" );
+    BOOST_CHECK( rc == 0 );
+    sqlite3_close( db );
+}
+
+#ifdef RUN_REALLY_SLOW_TESTS
+BOOST_AUTO_TEST_CASE( run_ca_ca_015 )
+{
+    int rc;
+    char *pszWkt;
+    pszWkt = GetFpuWkt( "CA_CA_015" );
+    rc = poData->LoadIrsData( pszWkt );
+    BOOST_REQUIRE( rc == 0 );
+    rc = poData->LoadScenario( 5, pszWkt, 0.0, 0, WFP_NO_TREAT, 0, 1, 365, 0 );
+    BOOST_REQUIRE( rc == 0 );
+    rc = poData->RunScenario( 0 );
+    BOOST_CHECK( rc == 1 );
+    rc = poData->SetResultPath( WFIPS_TEST_OUTPUT_DB );
+    BOOST_CHECK( rc == 0 );
+    rc = poData->WriteResults();
+    BOOST_CHECK( rc == 0 );
+    rc = poData->SpatialSummary( "fpu" );
+    BOOST_CHECK( rc == 0 );
+    rc = poData->CloseResults();
+    BOOST_CHECK( rc == 0 );
+    unlink( WFIPS_TEST_OUTPUT_DB );
+}
+
+BOOST_AUTO_TEST_CASE( run_gb_id_002 )
+{
+    int rc;
+    char *pszWkt;
+    pszWkt = GetFpuWkt( "GB_ID_002" );
+    rc = poData->LoadIrsData( pszWkt );
+    BOOST_REQUIRE( rc == 0 );
+    rc = poData->LoadScenario( 5, pszWkt, 0.0, 0, WFP_NO_TREAT, 0, 1, 365, 0 );
+    BOOST_REQUIRE( rc == 0 );
+    rc = poData->RunScenario( 0 );
+    BOOST_CHECK( rc == 1 );
+    rc = poData->SetResultPath( WFIPS_TEST_OUTPUT_DB );
+    BOOST_CHECK( rc == 0 );
+    rc = poData->WriteResults();
+    BOOST_CHECK( rc == 0 );
+    rc = poData->SpatialSummary( "fpu" );
+    BOOST_CHECK( rc == 0 );
+    rc = poData->CloseResults();
+    BOOST_CHECK( rc == 0 );
+    unlink( WFIPS_TEST_OUTPUT_DB );
+}
+
+BOOST_AUTO_TEST_CASE( run_full_no_space_1 )
+{
+    int rc;
+    rc = poData->LoadIrsData( NULL );
+    BOOST_REQUIRE( rc == 0 );
+    rc = poData->LoadScenario( 5, NULL, 0.0, 0, WFP_NO_TREAT, 0, 1, 365, 0 );
+    BOOST_REQUIRE( rc == 0 );
+    rc = poData->RunScenario( 0 );
+    BOOST_CHECK( rc == 1 );
+    rc = poData->SetResultPath( WFIPS_TEST_OUTPUT_DB );
+    BOOST_CHECK( rc == 0 );
+    rc = poData->WriteResults();
+    BOOST_CHECK( rc == 0 );
+    rc = poData->CloseResults();
+    BOOST_CHECK( rc == 0 );
+    unlink( WFIPS_TEST_OUTPUT_DB );
+}
+
+BOOST_AUTO_TEST_CASE( run_full_1 )
+{
+    int rc;
+    rc = poData->LoadIrsData( NULL );
+    BOOST_REQUIRE( rc == 0 );
+    rc = poData->LoadScenario( 5, NULL, 0.0, 0, WFP_NO_TREAT, 0, 1, 365, 0 );
+    BOOST_REQUIRE( rc == 0 );
+    rc = poData->RunScenario( 0 );
+    BOOST_CHECK( rc == 1 );
+    rc = poData->SetResultPath( WFIPS_TEST_OUTPUT_DB );
+    BOOST_CHECK( rc == 0 );
+    rc = poData->WriteResults();
+    BOOST_CHECK( rc == 0 );
+    rc = poData->SpatialSummary( "fpu" );
+    BOOST_CHECK( rc == 0 );
+    rc = poData->CloseResults();
+    BOOST_CHECK( rc == 0 );
+    unlink( WFIPS_TEST_OUTPUT_DB );
+}
+
+#endif /* RUN_REALLY_SLOW_TESTS */
 
 BOOST_AUTO_TEST_SUITE_END() /* irs */
 

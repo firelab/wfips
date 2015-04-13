@@ -18,6 +18,7 @@ public:
 #ifdef ENABLE_IRS_TESTING
         CDispLogic(){}
 #endif
+	CDispLogic();
 	CDispLogic( string logicid, string index, int nlevels, int breakpoints[5], int rescnums[13][5] );		//constructor
 	CDispLogic( const CDispLogic &displogic );
 	~CDispLogic();													//destructor

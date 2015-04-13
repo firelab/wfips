@@ -98,6 +98,7 @@ class PrepositionStruct
 {
 public:
     PrepositionStruct();
+    PrepositionStruct( std::string, double, bool );
     PrepositionStruct( const PrepositionStruct &rhs );
     PrepositionStruct & operator = ( const PrepositionStruct &rhs );
 

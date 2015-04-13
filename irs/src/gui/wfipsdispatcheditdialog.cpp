@@ -52,6 +52,8 @@ WfipsDispatchEditDialog::WfipsDispatchEditDialog( QWidget *parent ) :
              this, SLOT( ShowResources( QString ) ) );
     connect( ui->removeEmptyButton, SIGNAL( clicked() ),
              this, SLOT( ClearEmptyLocations() ) );
+    connect( ui->saveButton, SIGNAL( clicked() ),
+             this, SLOT( SaveAs() ) );
 }
 
 WfipsDispatchEditDialog::~WfipsDispatchEditDialog()
@@ -381,5 +383,37 @@ void WfipsDispatchEditDialog::UpdateCost()
     sqlite3_free( pszCostDbPath );
     rc = sqlite3_finalize( stmt );
     rc = sqlite3_close( db );
+}
+
+void WfipsDispatchEditDialog::SaveAs()
+{
+    QString rescOutPath =
+        QFileDialog::getSaveFileName( this, tr("Save resource data"),
+                                      ".", tr("WFIPS database file (*.db)") );
+    qDebug() << rescOutPath;
+    if( rescOutPath == "" )
+        return;
+    QgsFeatureIds fids;
+    fids = GetResourceFids( WFIPS_RESC_SUBSET_INCLUDE );
+    int n = fids.size();
+    int *panIds = (int*)malloc( sizeof( int ) * n );
+
+    QSetIterator<qint64>it( fids );
+    int i = 0;
+    while( it.hasNext() )
+    {
+        panIds[i++] = it.next();
+    }
+    char *pszOutputFile = QStringToCString( rescOutPath );
+    char *pszPath;
+    pszPath = QStringToCString( wfipsDataPath + "/" );
+    WfipsData oData( pszPath );
+    oData.Open();
+    oData.WriteRescDb( pszOutputFile, panIds, NULL, n );
+    oData.Close();
+    emit SaveResourcesAs( rescOutPath );
+    free( (void*)panIds );
+    free( (void*)pszOutputFile );
+    free( (void*)pszPath );
 }
 

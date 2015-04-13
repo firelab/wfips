@@ -208,7 +208,7 @@ double CAirDelivered::DetermineProdRate( CFire fire, std::vector< CProdRates > &
 	// Get the fireline production rate for the single crew producer
 	//cout << "Number of entries in VPRodRates vector: " << VProdRates.size() << "\n";
 	int i = 0;
-	while ( ProdRate < 0 )	{
+	while ( ProdRate < 0 && i < (int)VProdRates.size() )	{
 		ProdRate = VProdRates[i].Compare( "CREW", 0, 1, FuelModel, SpecificCondition );
 		i++;
 		if ( i >= static_cast< int >( VProdRates.size() ) )

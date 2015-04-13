@@ -29,6 +29,7 @@
 #define WFIPSMAINWINDOW_H
 
 #include <QtConcurrentRun>
+#include <QComboBox>
 #include <QFileDialog>
 #include <QMainWindow>
 #include <QMessageBox>
@@ -42,6 +43,7 @@
 /* Our custom widgets and such */
 #include "wfipsaddlayerdialog.h"
 #include "wfipsdispatcheditdialog.h"
+#include "wfipsexportdialog.h"
 
 #include "wfipsidentifymaptool.h"
 #include "wfipsidentifydialog.h"
@@ -67,6 +69,7 @@
 #include <qgssinglesymbolrendererv2.h>
 #include <qgscategorizedsymbolrendererv2.h>
 #include <qgssymbolv2.h>
+#include <qgsvectorcolorrampv2.h>
 
 /* QGIS Map Canvas */
 #include <qgsmapcanvas.h>
@@ -95,6 +98,7 @@
 
 /* Data access */
 #include "wfips_data.h"
+#include "wfips_result.h"
 
 namespace Ui {
 class WfipsMainWindow;
@@ -114,6 +118,7 @@ private:
 
     /* Wfips data access */
     WfipsData *poData;
+    WfipsResult *poResults;
 
     /* CRS for map canvases */
     QgsCoordinateReferenceSystem crs;
@@ -122,6 +127,7 @@ private:
     /* WFIPS root/default path */
     QString wfipsPath;
     QString customLayerPath;
+    QString currentResultPath;
 
     /* Database paths */
     QStringList analysisAreaLayers;
@@ -197,7 +203,24 @@ private:
     WfipsDispatchEditDialog *dispatchEditDialog;
     QMap<qint64, QString>dispatchLocationMap;
 
+    QString externRescDb;
+
     void ConstructDispatchWidgets();
+
+    /* Results canvas */
+    QVBoxLayout *resultsMapLayout;
+    QgsMapCanvas *resultsMapCanvas;
+    QList<QgsMapCanvasLayer> resultsMapCanvasLayers;
+    QList<QgsMapLayer*> resultsLayers;
+
+    QgsMapTool *resultsPanTool;
+    QgsMapTool *resultsZoomInTool;
+    QgsMapTool *resultsZoomOutTool;
+    QgsMapTool *resultsIdentifyTool;
+    QgsMapTool *resultsSelectTool;
+
+
+    void ConstructResultsWidgets();
 
     /* Fuel mask related */
     QString fuelMaskSource;
@@ -210,6 +233,12 @@ private:
     /* Handle to current mapcanvas */
     QgsMapCanvas *currentMapCanvas;
 
+    /* Collect run parameters */
+    double GetPrepositionValue( QComboBox *c );
+
+    /* Async unknown progress for future */
+    void UpdateAsyncProgress( QFuture<int>&future );
+
 private slots:
     /* Main path designation */
     void OpenWfipsPath();
@@ -221,6 +250,9 @@ private slots:
     QTreeWidgetItem * FindLastVisibleChild( QTreeWidgetItem *item );
     void NextTreeWidgetItem();
     void PrevTreeWidgetItem();
+
+    /* Disable/Enable the widgets that have to have an analysis area */
+    void EnableAnalysisLeaves( bool );
 
     /* Slot for tool button to map tool mapping */
     void UpdateMapToolType();
@@ -244,10 +276,22 @@ private slots:
     void ClearAnalysisAreaSelection();
     void HideDispatchLocations( QgsFeatureIds fids );
 
+    void SetExternRescDb( QString path );
+
     /* Fuel mask related */
     void EnableCustomFuelMask( int );
     void SelectFuelMask();
     void EnableFuelMaskAttr( int index );
+    char * GetTreatWkt();
+
+    /* Run the sucker */
+    int RunIrs();
+
+    void ClearResults();
+    void ShowResults( QString qgisLayerPath );
+    void OpenResults();
+    void ExportResults();
+    void SetResultColorRamp( QString attribute );
 
     /* Settings */
     void ReadSettings();
