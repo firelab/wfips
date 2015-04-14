@@ -269,7 +269,6 @@ void WfipsMainWindow::PostConstructionActions()
     connect( ui->fuelAttComboBox, SIGNAL( currentIndexChanged( int ) ),
              this, SLOT( EnableFuelMaskAttr( int ) ) );
     /* Toggle a radio button the ignitions to enable the proper widgets */
-    ui->randomYearsRadioButton->click();
     ui->singleYearRadioButton->click();
     ui->figAllRadioButton->click();
 }
@@ -424,7 +423,6 @@ void WfipsMainWindow::LoadAnalysisAreaLayers()
         nCount = poData->GetScenarioIndices( &panIndices );
         if( nCount > 0 )
         {
-            ui->randomYearsSpinBox->setRange( 1, nCount );
             ui->singleYearComboBox->clear();
             for( int i = 0; i < nCount; i++ )
             {

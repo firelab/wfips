@@ -584,17 +584,6 @@ BOOST_AUTO_TEST_CASE( compile_geom_2 )
     BOOST_CHECK( rc == 0 );
 }
 
-/* Should fail due to invalid db */
-BOOST_AUTO_TEST_CASE( compile_geom_3 )
-{
-    const char *pszWkt = "POLYGON((-114 47, -113 47, -113 46, -114 46, -114 47))";
-    int rc;
-    void *pGeom;
-    sqlite3 *db;
-    rc = WfipsCompileGeometry( db, pszWkt, &pGeom );
-    BOOST_CHECK( rc == 0 );
-}
-
 /* Should fail due to no spatialite */
 BOOST_AUTO_TEST_CASE( compile_geom_4 )
 {
