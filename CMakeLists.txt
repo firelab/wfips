@@ -65,6 +65,20 @@ IF(WIN32)
 ENDIF(WIN32)
 
 # *****************************************************************************
+# Set up some stuff to build a windows installer
+# *****************************************************************************
+OPTION(WFIPS_TEST_INSTALLER "Build an installer based on known OSGeo4W locations" OFF )
+IF(WFIPS_TEST_INSTALLER)
+    IF(NOT OSGEO4W_HOME)
+        MESSAGE("Must have OSGeo4W installed")
+        SET(WFIPS_TEST_INSTALLER FALSE)
+    ELSE(NOT OSGEO4W_HOME)
+        SET(QGIS_PLUGIN_DIR "C:\\wfips\\bin\\plugins")
+    ENDIF(NOT OSGEO4W_HOME)
+ENDIF(WFIPS_TEST_INSTALLER)
+
+
+# *****************************************************************************
 # Enable or disable autotesting
 # *****************************************************************************
 OPTION(BUILD_TESTING "Enable test suite" ON)
@@ -272,15 +286,7 @@ ENDIF(BUILD_TESTING)
 # *****************************************************************************
 # CPack
 # *****************************************************************************
-#INCLUDE(InstallRequiredSystemLibraries)
-# *****************************************************************************
-# CPack Debian
-# *****************************************************************************
-#TODO
-
-# *****************************************************************************
-# CPack variables
-# *****************************************************************************
+INCLUDE(InstallRequiredSystemLibraries)
 
 SET(CPACK_NSIS_PACKAGE_NAME OMFFR-${OMFFR_VERSION_STRING})
 SET(CPACK_RESOURCE_FILE_LICENSE ${CMAKE_SOURCE_DIR}/LICENSE)
@@ -291,114 +297,42 @@ SET(CPACK_VERSION_PATCH ${OMFFR_VERSION_PATCH})
 SET(CPACK_PACKAGE_VERSION ${OMFFR_VERSION_STRING})
 
 SET(CPACK_NSIS_INSTALL_ROOT "C:")
-CMAKE_POLICY(PUSH)
-CMAKE_POLICY(SET CMP0010 OLD)
-SET(CPACK_PACKAGE_INSTALL_DIRECTORY "OMFFR\\\\${OMFFR_VERSION_STRING}")
-SET(CPACK_PACKAGE_INSTALL_REGISTRY_KEY "OMFFR\\\\${OMFFR_VERSION_STRING}")
-CMAKE_POLICY(POP)
-# *****************************************************************************
-# Add/Remove Programs support
-# *****************************************************************************
-#SET(CPACK_NSIS_INSTALLED_ICON_NAME "bin\\WindNinja.exe")
-#SET(CPACK_NSIS_URL_INFO_ABOUT "http:\\\\\\\\windninja.firemodels.org")
-# *****************************************************************************
-# NSIS Specific stuff
-# *****************************************************************************
-SET(CPACK_NSIS_DISPLAY_NAME "OMFFR\\\\${OMFFR_VERSION_STRING}")
-#TODO
-#SET(CPACK_NSIS_INSTALLED_ICON_NAME "${CMAKE_SOURCE_DIR}/images/icons/wn-desktop.ico")
+SET(CPACK_NSIS_DISPLAY_NAME "wfips")
 
 SET(CPACK_CREATE_DESKTOP_LINKS OMFFR)
-SET(CPACK_NSIS_MODIFY_PATH OMFFR)
 
-SET(CPACK_PACKAGE_EXECUTABLES "omffr_gui" ${OMFFR_VERSION_STRING})
-#SET(CPACK_NSIS_CREATE_ICONS_EXTRA "
-#CreateDirectory \\\"$SMPROGRAMS\\\\$STARTMENU_FOLDER\\\\Tutorials\\\"
-#CreateDirectory \\\"$SMPROGRAMS\\\\$STARTMENU_FOLDER\\\\Documents\\\"
-#CreateShortCut \\\"$SMPROGRAMS\\\\$STARTMENU_FOLDER\\\\Tutorials\\\\Tutorial 1.lnk\\\"  \\\"$INSTDIR\\\\share\\\\windninja\\\\doc\\\\tutorials\\\\WindNinja_Tutorial1.pdf\\\"
-#CreateShortCut \\\"$SMPROGRAMS\\\\$STARTMENU_FOLDER\\\\Tutorials\\\\Tutorial 2.lnk\\\"  \\\"$INSTDIR\\\\share\\\\windninja\\\\doc\\\\tutorials\\\\WindNinja_Tutorial2.pdf\\\"
-#CreateShortCut \\\"$SMPROGRAMS\\\\$STARTMENU_FOLDER\\\\Tutorials\\\\Tutorial 3.lnk\\\"  \\\"$INSTDIR\\\\share\\\\windninja\\\\doc\\\\tutorials\\\\WindNinja_Tutorial3.pdf\\\"
-#CreateShortCut \\\"$SMPROGRAMS\\\\$STARTMENU_FOLDER\\\\Tutorials\\\\Tutorial 4.lnk\\\"  \\\"$INSTDIR\\\\share\\\\windninja\\\\doc\\\\tutorials\\\\WindNinja_Tutorial4.pdf\\\" 
-#CreateShortCut \\\"$SMPROGRAMS\\\\$STARTMENU_FOLDER\\\\Documents\\\\CLI Instructions.lnk\\\"  \\\"$INSTDIR\\\\share\\\\windninja\\\\doc\\\\CLI_instructions.pdf\\\"
-#CreateShortCut \\\"$SMPROGRAMS\\\\$STARTMENU_FOLDER\\\\Documents\\\\ArcMap Instructions.lnk\\\"  \\\"$INSTDIR\\\\share\\\\windninja\\\\doc\\\\Displaying_wind_vectors_in_ArcMap.pdf\\\"
-#CreateShortCut \\\"$SMPROGRAMS\\\\$STARTMENU_FOLDER\\\\Documents\\\\ArcView Instructions.lnk\\\"  \\\"$INSTDIR\\\\share\\\\windninja\\\\doc\\\\Displaying_wind_vectors_in_ArcView.pdf\\\"
-#CreateShortCut \\\"$SMPROGRAMS\\\\$STARTMENU_FOLDER\\\\Documents\\\\DEM Download Instructions.lnk\\\" \\\"$INSTDIR\\\\share\\\\windninja\\\\doc\\\\download_elevation_file.pdf\\\"
-#CreateShortCut \\\"$SMPROGRAMS\\\\$STARTMENU_FOLDER\\\\Example Files.lnk\\\" \\\"$INSTDIR\\\\etc\\\\windninja\\\\example-files\\\" ")
-
-#SET(CPACK_NSIS_DELETE_ICONS_EXTRA "
-#Delete \\\"$SMPROGRAMS\\\\$MUI_TEMP\\\\Tutorials\\\\Tutorial 1.lnk\\\"
-#Delete \\\"$SMPROGRAMS\\\\$MUI_TEMP\\\\Tutorials\\\\Tutorial 2.lnk\\\"
-#Delete \\\"$SMPROGRAMS\\\\$MUI_TEMP\\\\Tutorials\\\\Tutorial 3.lnk\\\"
-#Delete \\\"$SMPROGRAMS\\\\$MUI_TEMP\\\\Tutorials\\\\Tutorial 4.lnk\\\"
-#Delete \\\"$SMPROGRAMS\\\\$MUI_TEMP\\\\Documents\\\\CLI Instructions.lnk\\\"
-#Delete \\\"$SMPROGRAMS\\\\$MUI_TEMP\\\\Documents\\\\ArcMap Instructions.lnk\\\"
-#Delete \\\"$SMPROGRAMS\\\\$MUI_TEMP\\\\Documents\\\\ArcView Instructions.lnk\\\"
-#Delete \\\"$SMPROGRAMS\\\\$MUI_TEMP\\\\Documents\\\\DEM Download Instructions.lnk\\\"
-#Delete \\\"$SMPROGRAMS\\\\$MUI_TEMP\\\\Example Files.lnk\\\"
-#RMDir \\\"$SMPROGRAMS\\\\$MUI_TEMP\\\\Tutorials\\\"
-#RMDir \\\"$SMPROGRAMS\\\\$MUI_TEMP\\\\Documents\\\" ")
+SET(CPACK_PACKAGE_EXECUTABLES "wfips" "wfips")
 
 # *****************************************************************************
 # Check the windows architecture for 64 or 32
 # *****************************************************************************
-IF(CMAKE_SIZEOF_VOID_P MATCHES "8")
-    SET(BUILD_64 TRUE)
-    IF(PACKAGE_DEBUG)
-        MESSAGE("Building 64-bit installer")
-    ENDIF(PACKAGE_DEBUG)
-ELSEIF(CMAKE_SIZEOF_VOID_P MATCHES "4")
-    SET(BUILD_64 FALSE)
-    IF(PACKAGE_DEBUG)
-        MESSAGE("Building 32-bit installer")
-    ENDIF(PACKAGE_DEBUG)
-ELSE(CMAKE_SIZEOF_VOID_P MATCHES "8")
-    SET(BUILD_64 FALSE)
-    IF(PACKAGE_DEBUG)
-        MESSAGE("Cannot determine architecture, using 32-bit by default")
-    ENDIF(PACKAGE_DEBUG)
-ENDIF(CMAKE_SIZEOF_VOID_P MATCHES "8")
+IF(NOT CMAKE_SIZEOF_VOID_P MATCHES "8")
+    MESSAGE("Must build in 64 bit for installer...")
+ENDIF(NOT CMAKE_SIZEOF_VOID_P MATCHES "8")
 
 # *****************************************************************************
 # Build the nsis installer on the firelab machine(s).  Not for external use.
 # *****************************************************************************
-#IF(FIRELAB_PACKAGE AND WIN32 AND MSVC)
-#    IF(BUILD_64)
-#        SET(CPACK_PACKAGE_FILE_NAME "${OMFFR_VERSION_STRING}-win64-install")
-#    ELSE(BUILD_64)
-#        SET(CPACK_PACKAGE_FILE_NAME "${OMFFR_VERSION_STRING}-win32-install")
-#    ENDIF(BUILD_64)
-#
-#    INSTALL(PROGRAMS "c:/src/gdal/gdal-1.10.1/bin/gdal110.dll" DESTINATION bin COMPONENT apps)
-#    INSTALL(PROGRAMS "c:/src/netcdf/netcdf-4.1.1/win32/NET/Release/netcdf.dll" DESTINATION bin COMPONENT apps)
-#    INSTALL(PROGRAMS "c:/src/hdf5/hdf5-1.8.6/hdf5lib/release/dll/hdf5dll.dll" DESTINATION bin COMPONENT apps)
-#    INSTALL(PROGRAMS "c:/src/hdf5/hdf5-1.8.6/hdf5lib/release/dll/hdf5_hldll.dll" DESTINATION bin COMPONENT apps)
-#    INSTALL(PROGRAMS "c:/src/geos/geos-3.3.5/bin/geos_c.dll" DESTINATION bin COMPONENT apps)
-#    IF(BUILD_TYPE MATCHES "release")
-#        MESSAGE("IN RELEASE PACKAGE MODE")
-#        INSTALL(PROGRAMS "c:/src/libcurl/curl-7.21.4/lib/dll-release/libcurl.dll" DESTINATION bin COMPONENT apps)
-#        INSTALL(PROGRAMS "c:/src/qt/qt-everywhere-opensource-src-4.8.4/bin/qtgui4.dll" DESTINATION bin COMPONENT apps)
-#        INSTALL(PROGRAMS "c:/src/qt/qt-everywhere-opensource-src-4.8.4/bin/qtcore4.dll" DESTINATION bin COMPONENT apps)
-#        INSTALL(PROGRAMS "c:/src/qt/qt-everywhere-opensource-src-4.8.4/bin/qtnetwork4.dll" DESTINATION bin COMPONENT apps)
-#        INSTALL(PROGRAMS "c:/src/qt/qt-everywhere-opensource-src-4.8.4/bin/qtwebkit4.dll" DESTINATION bin COMPONENT apps)
-#        INSTALL(PROGRAMS "c:/src/qt/qt-everywhere-opensource-src-4.8.4/bin/phonon4.dll" DESTINATION bin COMPONENT apps)
-#        INSTALL(PROGRAMS "c:/src/qt/qt-everywhere-opensource-src-4.8.4/bin/qtnetwork4.dll" DESTINATION bin COMPONENT apps)
-#        INSTALL(PROGRAMS "c:/src/qt/qt-everywhere-opensource-src-4.8.4/plugins/imageformats/qjpeg4.dll" DESTINATION bin/imageformats)
-#    ELSE(BUILD_TYPE MATCHES "release")
-#        INSTALL(PROGRAMS "c:/src/libcurl/curl-7.21.4/lib/dll-debug/libcurld.dll" DESTINATION bin COMPONENT apps)
-#        INSTALL(PROGRAMS "c:/src/qt/qt-everywhere-opensource-src-4.8.4/bin/qtguid4.dll" DESTINATION bin COMPONENT apps)
-#        INSTALL(PROGRAMS "c:/src/qt/qt-everywhere-opensource-src-4.8.4/bin/qtcored4.dll" DESTINATION bin COMPONENT apps)
-#        INSTALL(PROGRAMS "c:/src/qt/qt-everywhere-opensource-src-4.8.4/bin/qtwebkitd4.dll" DESTINATION bin COMPONENT apps)
-#        INSTALL(PROGRAMS "c:/src/qt/qt-everywhere-opensource-src-4.8.4/bin/phonond4.dll" DESTINATION bin COMPONENT apps)
-#        INSTALL(PROGRAMS "c:/src/qt/qt-everywhere-opensource-src-4.8.4/bin/qtnetworkd4.dll" DESTINATION bin COMPONENT apps)
-#        INSTALL(PROGRAMS "c:/src/qt/qt-everywhere-opensource-src-4.8.4/plugins/imageformats/qjpegd4.dll" DESTINATION bin/imageformats)
-#    ENDIF(BUILD_TYPE MATCHES "release")
-# HACK FOR OPENMP
-#    IF(CMAKE_SIZEOF_VOID_P MATCHES "4")
-#        INSTALL(PROGRAMS ${MSVC10_REDIST_DIR}/x86/Microsoft.VC100.OPENMP/vcomp100.dll DESTINATION bin COMPONENT apps)
-#    ELSEIF(CMAKE_SIZEOF_VOID_P MATCHES "8")
-#        INSTALL(PROGRAMS ${MSVC10_REDIST_DIR}/x64/Microsoft.VC100.OPENMP/vcomp100.dll DESTINATION bin COMPONENT apps)
-#    ENDIF(CMAKE_SIZEOF_VOID_P MATCHES "4")
-#ENDIF(FIRELAB_PACKAGE AND WIN32 AND MSVC)
+FILE(GLOB "${OSGEO4W_HOME}/bin/*.dll}" DLLS)
+FOREACH(DLL ${DLLS})
+    INSTALL(PROGRAMS ${DLL} DESTINATION bin)
+ENDFOREACH(DLL ${DLLS})
+FILE(GLOB "${OSGEO4W_HOME}/apps/qgis/bin/*.dll}" DLLS)
+FOREACH(DLL ${DLLS})
+    INSTALL(PROGRAMS ${DLL} DESTINATION bin)
+ENDFOREACH(DLL ${DLLS})
+INSTALL(DIRECTORY "${OSGEO4W_HOME}/share/gdal/" DESTINATION gdal/)
+
+FILE(GLOB "c:/wfips/data/*.db" DBS)
+FOREACH(DB ${DBS})
+    INSTALL(PROGRAMS ${DB} DESTINATION data)
+ENDFOREACH(DB ${DBS})
+
+FILE(GLOB "c:/wfips/data/*.tif" TIFS)
+FOREACH(TIF ${TIFS})
+    INSTALL(PROGRAMS ${TIF} DESTINATION data)
+ENDFOREACH(TIF ${TIFS})
+
 #SET(CPACK_COMPONENT_APPS_REQUIRED TRUE)
 #SET(CPACK_COMPONENT_LIBS_HIDDEN TRUE)
 #SET(CPACK_COMPONENT_LIBS_DISABLED TRUE)
@@ -408,24 +342,5 @@ ENDIF(CMAKE_SIZEOF_VOID_P MATCHES "8")
 # *****************************************************************************
 # CPack call
 # *****************************************************************************
-#INCLUDE(CPack)
-
-# *****************************************************************************
-# CPack groupings
-# *****************************************************************************
-#CPACK_ADD_COMPONENT(apps 
-#                    DISPLAY_NAME "WindNinja"
-#                    DESCRIPTION "WindNinja binaries and documentation"
-#                    GROUP Application
-#                    )
-#CPACK_ADD_COMPONENT(libs
-#                    DISPLAY_NAME "WindNinja Libraries"
-#                    DESCRIPTION "Development libraries"
-#                    #GROUP Development
-#                    )
-#CPACK_ADD_COMPONENT(includes
-#                    DISPLAY_NAME "WindNinja Headers"
-#                    DESCRIPTION "Development include files"
-#                    #GROUP Development
-#                    )
+INCLUDE(CPack)
 
