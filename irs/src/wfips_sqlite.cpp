@@ -56,7 +56,6 @@ double WfipsRandom()
  **
  ** \note if db is null, an in memory one is used
  */
-#include <stdio.h>
 int WfipsCompileGeometry( sqlite3 *db, const char *pszWkt, void **pCompiled )
 {
     const void *p;
@@ -70,7 +69,6 @@ int WfipsCompileGeometry( sqlite3 *db, const char *pszWkt, void **pCompiled )
                               NULL );
         rc = sqlite3_enable_load_extension( db2, 1 );
         rc = sqlite3_load_extension( db2, SPATIALITE_EXT, NULL, NULL );
-        printf("Using in-memory db\n");
         db = db2;
     }
     rc = sqlite3_prepare_v2( db, "SELECT GeomFromText(?)", -1, &stmt, NULL );
