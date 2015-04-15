@@ -6823,6 +6823,12 @@ void CRunScenario::CreateRescTypeVectors(std::string auxFileFolder )
 	string BaseID;
 	string fileName;
 
+#ifdef WIN32
+    auxFileFolder = "c:/wfips/data/";
+#else
+    auxFileFolder = "";
+#endif
+
 	// Open the Airtanker File
 	fileName = auxFileFolder + "Airtankers.dat";
 	ifstream ATTFile(fileName.c_str(), ios::in);
@@ -7072,7 +7078,7 @@ void CRunScenario::LoadExpectedLevels( int Scenario, int BaseForcast, string aux
 	char ExpectedFile[512];
 	
 #ifdef WIN32
-	sprintf( ExpectedFile, "Year%dExpected%d.dat", Scenario, BaseForcast );
+	sprintf( ExpectedFile, "c:/wfips/data/Year%dExpected%d.dat", Scenario, BaseForcast );
 #else
         BaseForcast = 2;
 	sprintf( ExpectedFile, "Year%dExpected%d.txt", Scenario, BaseForcast );
