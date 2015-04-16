@@ -138,12 +138,14 @@ int WfipsSetPrepositioning( WfipsH w, double dfEngine,
  ** \return 0 on success, non-zero otherwise.
  */
 
+/*
 int WfipsGetAssociatedDispLoc( WfipsH w, const char *pszWkt,
                                int **panDispLocIds, int *pnCount )
 {
     assert( w );
     return ((WfipsData*)w)->GetAssociatedDispLoc( pszWkt, panDispLocIds, pnCount );
 }
+*/
 
 /**
  ** \brief Get all resources for a set of dispatch locations.
@@ -158,6 +160,7 @@ int WfipsGetAssociatedDispLoc( WfipsH w, const char *pszWkt,
  ** \param [in] nAgencyFlags filter for including specific agencies.
  ** \return 0 on success, non-zero otherwise.
  */
+/*
 int WfipsGetAssociatedResources( WfipsH w, int *panDispLocIds, int nDispLocCount,
                                  WfipsResc **ppsResc, int *pnRescLocCount,
                                  int nAgencyFlags )
@@ -167,6 +170,7 @@ int WfipsGetAssociatedResources( WfipsH w, int *panDispLocIds, int nDispLocCount
                                                     ppsResc, pnRescLocCount,
                                                     nAgencyFlags );
 }
+*/
 
 /**
  ** \brief Get the unique year identifiers for the fig.

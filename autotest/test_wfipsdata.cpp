@@ -169,12 +169,10 @@ BOOST_AUTO_TEST_CASE( resc_copy_3 )
 BOOST_AUTO_TEST_CASE( assoc_disploc_1 )
 {
     const char *pszWkt = "POLYGON((-114 47, -113 47, -113 46, -114 46, -114 47))";
-    int *panIds, nCount;
-    poData->GetAssociatedDispLoc( pszWkt, &panIds, &nCount );
-    int rc = panIds[0];
-    WfipsData::Free( (void*)panIds );
-    BOOST_REQUIRE( nCount > 0 );
-    BOOST_CHECK( rc > 0 );
+    std::vector<int> anIds;
+    anIds = poData->GetAssociatedDispLoc( pszWkt );
+    BOOST_REQUIRE( anIds.size() > 0 );
+    BOOST_CHECK( anIds[0] > 0 );
 }
 
 BOOST_AUTO_TEST_CASE( build_set_1 )
@@ -209,35 +207,29 @@ BOOST_AUTO_TEST_CASE( build_fid_set_1 )
 
 BOOST_AUTO_TEST_CASE( assoc_resource_1 )
 {
-    int anIds[] = {1,2,3,4,5,6,7,8,9,10};
-    WfipsResc *psResc;
-    int nCount;
-    int rc = poData->GetAssociatedResources( anIds, 10, &psResc, &nCount, AGENCY_ALL );
-    WfipsData::FreeAssociatedResources( psResc, nCount );
-    BOOST_REQUIRE( nCount > 0 );
-    BOOST_CHECK( rc == 0 );
+    static const int a[] = {1,2,3,4,5,6,7,8,9,10};
+    std::vector<int> anIds( a, a + sizeof( a ) / sizeof( a[0] ) );
+    std::vector<WfipsResc>aoR;
+    aoR = poData->GetAssociatedResources( anIds, AGENCY_ALL );
+    BOOST_REQUIRE( aoR.size() > 0 );
 }
 
 BOOST_AUTO_TEST_CASE( assoc_resource_2 )
 {
-    int anIds[] = {1,2,3,4,5,6,7,8,9,10};
-    WfipsResc *psResc;
-    int nCount;
-    int rc = poData->GetAssociatedResources( anIds, 10, &psResc, &nCount, USFS );
-    WfipsData::FreeAssociatedResources( psResc, nCount );
-    BOOST_REQUIRE( nCount == 0 );
-    BOOST_CHECK( rc == 0 );
+    static const int a[] = {1,2,3,4,5,6,7,8,9,10};
+    std::vector<int> anIds( a, a + sizeof( a ) / sizeof( a[0] ) );
+    std::vector<WfipsResc>aoR;
+    aoR = poData->GetAssociatedResources( anIds, USFS );
+    BOOST_REQUIRE( aoR.size() == 0 );
 }
 
 BOOST_AUTO_TEST_CASE( assoc_resource_3 )
 {
-    int anIds[] = {1,2,3,4,5,6,7,8,9,10};
-    WfipsResc *psResc;
-    int nCount;
-    int rc = poData->GetAssociatedResources( anIds, 10, &psResc, &nCount, DOI_BLM );
-    WfipsData::FreeAssociatedResources( psResc, nCount );
-    BOOST_REQUIRE( nCount > 0 );
-    BOOST_CHECK( rc == 0 );
+    static const int a[] = {1,2,3,4,5,6,7,8,9,10};
+    std::vector<int> anIds( a, a + sizeof( a ) / sizeof( a[0] ) );
+    std::vector<WfipsResc>aoR;
+    aoR = poData->GetAssociatedResources( anIds, DOI_BLM );
+    BOOST_REQUIRE( aoR.size() > 0 );
 }
 
 BOOST_AUTO_TEST_CASE( load_scen_1 )
@@ -307,14 +299,12 @@ BOOST_AUTO_TEST_CASE( load_scen_13 )
 
 BOOST_AUTO_TEST_CASE( set_resource_db_1 )
 {
-    int anIds[] = {1,2,3,4,5,6,7,8,9,10};
-    WfipsResc *psResc;
-    int nCount;
+    static const int a[] = {1,2,3,4,5,6,7,8,9,10};
+    std::vector<int> anIds( a, a + sizeof( a ) / sizeof( a[0] ) );
     poData->SetRescDb( WFIPS_DATA_TEST_PATH "resc.db" );
-    int rc = poData->GetAssociatedResources( anIds, 10, &psResc, &nCount, AGENCY_ALL );
-    WfipsData::FreeAssociatedResources( psResc, nCount );
-    BOOST_REQUIRE( nCount > 0 );
-    BOOST_CHECK( rc == 0 );
+    std::vector<WfipsResc>aoR;
+    aoR = poData->GetAssociatedResources( anIds, DOI_BLM );
+    BOOST_REQUIRE( aoR.size() > 0 );
 }
 
 BOOST_AUTO_TEST_CASE( scen_count_1 )

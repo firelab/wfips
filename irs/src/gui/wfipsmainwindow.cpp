@@ -1117,10 +1117,10 @@ void WfipsMainWindow::SetAnalysisArea()
     {
         /* panic */
     }
-    QFuture<int>nFuture;
+    QFuture< std::vector<int> >nFuture;
     this->statusBar()->showMessage( "Searching for dispatch locations...", 1500 );
     ui->progressBar->setRange( 0, 0 );
-    nFuture = QtConcurrent::run( poData, &WfipsData::GetAssociatedDispLoc, pszWkt, &panLocIds, &nLocCount );
+    nFuture = QtConcurrent::run( poData, &WfipsData::GetAssociatedDispLoc, pszWkt );
     poData->SetAnalysisAreaMask( pszWkt );
     i = 0;
     while( !nFuture.isFinished() && i < 1000 )
@@ -1134,11 +1134,12 @@ void WfipsMainWindow::SetAnalysisArea()
     ui->progressBar->setRange( 0, 100 );
     this->statusBar()->showMessage( "Found locations.", 1500 );
     ui->progressBar->reset();
-    for( int i = 0; i < nLocCount; i++ )
+    std::vector<int> anLocIds;
+    anLocIds = nFuture.results()[0];
+    for( int i = 0; i < anLocIds.size(); i++ )
     {
-        fids.insert( panLocIds[i] );
+        fids.insert( anLocIds[i] );
     }
-    WfipsData::Free( panLocIds );
     free( pszWkt );
     request.setFilterFids( fids );
     fit = layer->getFeatures( request );
