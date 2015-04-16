@@ -113,7 +113,7 @@ private slots:
 
 signals:
     void SelectionChanged( const QgsFeatureIds &fids );
-    void Hiding();
+    void Hiding(bool);
     void HiddenChanged( const QgsFeatureIds &fids );
     void SaveResourcesAs( QString );
 };

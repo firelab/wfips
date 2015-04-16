@@ -248,8 +248,8 @@ void WfipsMainWindow::PostConstructionActions()
     /*
     ** Toggle tool button for dispatch location editor when we close the dialog
     */
-    connect( dispatchEditDialog, SIGNAL( Hiding() ),
-             ui->dispatchEditToolButton, SLOT( toggle() ) );
+    connect( dispatchEditDialog, SIGNAL( Hiding( bool ) ),
+             ui->dispatchEditToolButton, SLOT( setChecked( bool ) ) );
     /*
     ** Hide dispatch locations on the analysis layer if they are omitted from
     ** the list.
@@ -1212,6 +1212,7 @@ void WfipsMainWindow::ShowDispatchEditDialog()
 {
     if( !ui->dispatchEditToolButton->isChecked() )
     {
+        /* This calls hideEvent() and toggles our button */
         dispatchEditDialog->hide();
         return;
     }

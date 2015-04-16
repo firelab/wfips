@@ -195,7 +195,8 @@ void WfipsDispatchEditDialog::SelectionClicked( const QModelIndex &unused )
 
 void WfipsDispatchEditDialog::hideEvent( QHideEvent *event )
 {
-    emit Hiding();
+    /* This is false so it can uncheck a button */
+    emit Hiding( false );
 }
 
 int WfipsDispatchEditDialog::PopulateRescMap( int nAgencyFlag )
