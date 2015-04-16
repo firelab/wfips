@@ -72,7 +72,7 @@ int WfipsData::TestFidSet1()
         rc = 1;
     else
         rc = strcmp( pszRescSet, "1,2,3,4,5" );
-    WfipsData::Free( pszRescSet );
+    sqlite3_free( pszRescSet );
     return rc;
 }
 

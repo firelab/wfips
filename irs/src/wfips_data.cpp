@@ -421,12 +421,6 @@ WfipsData::GetAssociatedResources( std::vector<int> anDispLocIds, int nAgencyFla
     return aoResc;
 }
 
-void
-WfipsData::Free( void *p )
-{
-    sqlite3_free( p );
-}
-
 int
 WfipsData::Close()
 {
@@ -959,32 +953,20 @@ WfipsData::LoadScenario( int nYearIdx, const char *pszTreatWkt,
     return 0;
 }
 
-/* Probably just change to return a std::vector<int>, handle c api later. */
-
-int
-WfipsData::GetScenarioIndices( int **ppanIndices )
+std::vector<int>
+WfipsData::GetScenarioIndices()
 {
     int rc, i, n;
-    assert( ppanIndices != NULL );
     sqlite3_stmt *stmt;
-    rc = sqlite3_prepare_v2( db, "SELECT COUNT(DISTINCT(year)) FROM fig", -1,
-                             &stmt, NULL );
-    rc = sqlite3_step( stmt );
-    if( rc != SQLITE_ROW )
-        return 0;
-    n = sqlite3_column_int( stmt, 0 );
-    sqlite3_finalize( stmt );
-    *ppanIndices = (int*)sqlite3_malloc( sizeof( int ) * n );
+    std::vector<int> anIndices;
     rc = sqlite3_prepare_v2( db, "SELECT DISTINCT(year) FROM fig", -1, &stmt,
                              NULL );
-    i = 0;
     while( sqlite3_step( stmt ) == SQLITE_ROW )
     {
-        assert( i < n );
-        (*ppanIndices)[i++] = sqlite3_column_int( stmt, 0 );
+        anIndices.push_back( sqlite3_column_int( stmt, 0 ) );
     }
     sqlite3_finalize( stmt );
-    return n;
+    return anIndices;
 }
 
 int
@@ -1134,16 +1116,16 @@ WfipsData::RunScenarios( int nCount, const char *pszTreatWkt,
         return 1;
     }
     int *panIndices;
-    int nTotalYears = GetScenarioIndices( &panIndices );
+    std::vector<int>anIndices = GetScenarioIndices();
+    int nTotalYears = anIndices.size();
     if( nCount > nTotalYears )
     {
-        sqlite3_free( panIndices );
         return 1;
     }
     int rc;
     for( int i = 0; i < nCount; i++ )
     {
-        rc = RunScenario( panIndices[i], pszTreatWkt, dfTreatProb, nWfpTreatMask,
+        rc = RunScenario( anIndices[i], pszTreatWkt, dfTreatProb, nWfpTreatMask,
                           padfWfpTreatProb, dfStratProb, nJulStart, nJulEnd,
                           nAgencyFilter );
         if( rc != 1 )
@@ -1151,7 +1133,6 @@ WfipsData::RunScenarios( int nCount, const char *pszTreatWkt,
             break;
         }
     }
-    sqlite3_free( panIndices );
     return rc;
 }
 

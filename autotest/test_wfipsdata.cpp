@@ -309,13 +309,12 @@ BOOST_AUTO_TEST_CASE( set_resource_db_1 )
 
 BOOST_AUTO_TEST_CASE( scen_count_1 )
 {
-    int *panIndices;
+    std::vector<int> anIndices;
     int rc;
-    rc = poData->GetScenarioIndices( &panIndices );
+    anIndices = poData->GetScenarioIndices();
     /* Will change */
-    BOOST_CHECK( rc == 5 );
-    BOOST_CHECK( panIndices[0] == 5 );
-    WfipsData::Free( panIndices );
+    BOOST_CHECK( anIndices.size() == 5 );
+    BOOST_CHECK( anIndices[0] == 5 );
 }
 
 BOOST_AUTO_TEST_CASE( load_resc_types_1 )
