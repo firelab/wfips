@@ -415,5 +415,6 @@ void WfipsDispatchEditDialog::SaveAs()
     free( (void*)panIds );
     free( (void*)pszOutputFile );
     free( (void*)pszPath );
+    accept();
 }
 
