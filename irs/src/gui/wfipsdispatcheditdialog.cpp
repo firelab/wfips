@@ -214,38 +214,34 @@ int WfipsDispatchEditDialog::PopulateRescMap( int nAgencyFlag )
     {
         return 0;
     }
-    int *panDispLoc, nDispLocCount;
+    int nDispLocCount;
     nDispLocCount = map.size();
-    panDispLoc = (int*)malloc( sizeof( int ) * nDispLocCount );
+    std::vector<int> anDispLocs;
     QMapIterator<qint64, QString>it( map );
     rescAtLocMap.clear();
     i = 0;
     while( it.hasNext() )
     {
         it.next();
-        panDispLoc[i++] = it.key();
+        anDispLocs.push_back(it.key());
         rescAtLocMap[it.value()] = QList<WfipsResource>();
     }
 
-    int nCount;
-    WfipsResc *pasResc;
-    poData->GetAssociatedResources( panDispLoc, nDispLocCount, &pasResc,
-                                    &nCount, nAgencyFlag );
+    std::vector<WfipsResc>aoResc = poData->GetAssociatedResources( anDispLocs, nAgencyFlag );
     WfipsResource resource;
     QTreeWidgetItem *item;
     QTreeWidgetItem *subitem;
-    for( i = 0; i < nCount; i++ )
+    for( i = 0; i < aoResc.size(); i++ )
     {
-        n = pasResc[i].nId;
-        dl = pasResc[i].pszDispLoc;
-        name = pasResc[i].pszName;
-        type = pasResc[i].pszType;
+        n = aoResc[i].nId;
+        dl = QString::fromStdString( aoResc[i].osDispLoc );
+        name = QString::fromStdString( aoResc[i].osName );
+        type = QString::fromStdString( aoResc[i].osType );
         resource.rowid = n;
         resource.name = name;
         resource.type = type;
         rescAtLocMap[dl].append( resource );
     }
-    WfipsData::FreeAssociatedResources( pasResc, nCount );
     QMapIterator< QString, QList<WfipsResource> > it2( rescAtLocMap );
     QList<WfipsResource> rescList;
     while( it2.hasNext() )

@@ -125,13 +125,12 @@ static const char *aszAgencyNames[] = { NULL,
                                         "'FWS'",
                                         "'NPS'",
                                         "'STATE/LOCAL'" };
-typedef struct WfipsResc WfipsResc;
 struct WfipsResc
 {
     int nId;
-    char *pszDispLoc;
-    char *pszName;
-    char *pszType;
+    std::string osDispLoc;
+    std::string osName;
+    std::string osType;
 };
 
 /* Database connections are limited to 10 on the normal (default) SQLite */
@@ -172,14 +171,11 @@ public:
     int Close();
 
     int ExecuteSql( const char *pszSql );
-    int GetAssociatedDispLoc( const char *pszWkt,
-                              int **panDispLocIds,
-                              int *pnCount );
+    std::vector<int> GetAssociatedDispLoc( const char *pszWkt );
 
 
-    int GetAssociatedResources( int *panDispLocIds, int nDispLocCount,
-                                WfipsResc **ppsResc, int *pnRescLocCount,
-                                int nAgencyFlags );
+    std::vector<WfipsResc> GetAssociatedResources( std::vector<int> anDispLocIds,
+                                                   int nAgencyFlags );
 
     int Valid() { return bValid; }
     int SpatialiteEnabled() { return bSpatialiteEnabled; }

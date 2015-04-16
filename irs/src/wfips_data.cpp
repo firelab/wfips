@@ -257,17 +257,14 @@ WfipsData::CompileGeometry( const char *pszWkt, void **pCompiled )
 * This is primarily used for display, not loading data for the simulation.  The
 * GUI will need to know what locations are available for editing.
 */
-int
-WfipsData::GetAssociatedDispLoc( const char *pszWkt,
-                                 int **panDispLocIds,
-                                 int *pnCount /*,
-                                 IRSProgress pfnProgress*/ )
+std::vector<int>
+WfipsData::GetAssociatedDispLoc( const char *pszWkt )
 {
-    assert( pnCount );
+    std::vector<int> anDispLocIds;
+    anDispLocIds.reserve( 0 );
     if( bSpatialiteEnabled == 0 )
     {
-        *pnCount = 0;
-        return SQLITE_ERROR;
+        return anDispLocIds;
     }
     int rc;
     int i, n, nGeomSize;
@@ -279,17 +276,10 @@ WfipsData::GetAssociatedDispLoc( const char *pszWkt,
     ** there are. We don't want to run spatial queries twice to get a real
     ** count.
     */
-    rc = sqlite3_prepare_v2( db, "SELECT COUNT(*) FROM disploc", -1, &stmt, NULL );
-    rc = sqlite3_step( stmt );
-    assert( rc == SQLITE_ROW );
-    n = sqlite3_column_int( stmt, 0 );
-    *panDispLocIds = (int*)sqlite3_malloc( sizeof( int ) * n );
-    sqlite3_finalize( stmt );
     nGeomSize = CompileGeometry( pszWkt, &pAnalysisGeometry );
     if( nGeomSize == 0 )
     {
-        *pnCount = 0;
-        return SQLITE_ERROR;
+        return anDispLocIds;
     }
 
     /* Find the associated locations */
@@ -310,13 +300,11 @@ WfipsData::GetAssociatedDispLoc( const char *pszWkt,
     n = i = 0;
     while( sqlite3_step( stmt ) == SQLITE_ROW )
     {
-        (*panDispLocIds)[i++] = sqlite3_column_int( stmt, 0 );
+        anDispLocIds.push_back( sqlite3_column_int( stmt, 0 ) );
     }
-    *panDispLocIds = (int*)sqlite3_realloc( (*panDispLocIds), sizeof( i ) * i );
-    *pnCount = i;
     sqlite3_finalize( stmt );
     sqlite3_free( pAnalysisGeometry );
-    return SQLITE_OK;
+    return anDispLocIds;
 }
 
 char *
@@ -395,23 +383,16 @@ WfipsData::BuildAgencySet( int nAgencyFlags )
     return pszSet;
 }
 
-int
-WfipsData::GetAssociatedResources( int *panDispLocIds, int nDispLocCount,
-                                   WfipsResc **ppsResc, int *pnRescCount,
-                                   int nAgencyFlags )
+std::vector<WfipsResc>
+WfipsData::GetAssociatedResources( std::vector<int> anDispLocIds, int nAgencyFlags )
 {
-    assert( pnRescCount );
     const char *pszAgencySet = BuildAgencySet( nAgencyFlags );
     sqlite3_stmt *stmt;
     char *pszSql;
-    int nCount, n, i, rc;
-    rc = sqlite3_prepare_v2( db, "SELECT COUNT(*) FROM resource",
-                             -1, &stmt, NULL );
-    rc = sqlite3_step( stmt );
-    nCount = sqlite3_column_int( stmt, 0 );
-    *ppsResc = (WfipsResc*)sqlite3_malloc( sizeof( WfipsResc ) * nCount );
+    int n, i, rc;
 
-    rc = sqlite3_finalize( stmt );
+    WfipsResc sResc;
+    std::vector<WfipsResc>aoResc;
 
     pszSql = sqlite3_mprintf( "SELECT disploc.name, resource.ROWID, "
                               "resource.name, resource.resc_type "
@@ -423,40 +404,21 @@ WfipsData::GetAssociatedResources( int *panDispLocIds, int nDispLocCount,
     rc = sqlite3_prepare_v2( db, pszSql, -1, &stmt, NULL );
     sqlite3_free( pszSql );
 
-    n = 0;
-    for( i = 0; i < nDispLocCount; i++ )
+    for( i = 0; i < anDispLocIds.size(); i++ )
     {
-        rc = sqlite3_bind_int( stmt, 1, panDispLocIds[i] );
-        while( sqlite3_step( stmt ) == SQLITE_ROW  && n < nCount )
+        rc = sqlite3_bind_int( stmt, 1, anDispLocIds[i] );
+        while( sqlite3_step( stmt ) == SQLITE_ROW )
         {
-            (*ppsResc)[n].pszDispLoc = sqlite3_mprintf( "%s", sqlite3_column_text( stmt, 0 ) );
-            (*ppsResc)[n].nId = sqlite3_column_int( stmt, 1 );
-            (*ppsResc)[n].pszName = sqlite3_mprintf( "%s", sqlite3_column_text( stmt, 2 ) );
-            (*ppsResc)[n].pszType = sqlite3_mprintf( "%s", sqlite3_column_text( stmt, 3 ) );
-            n++;
+            sResc.osDispLoc = (const char*)sqlite3_column_text( stmt, 0 );
+            sResc.nId = sqlite3_column_int( stmt, 1 );
+            sResc.osName = (const char*)sqlite3_column_text( stmt, 2 );
+            sResc.osType = (const char*)sqlite3_column_text( stmt, 3 );
+            aoResc.push_back( sResc );
         }
         sqlite3_reset( stmt );
     }
     rc = sqlite3_finalize( stmt );
-
-    *pnRescCount = n;
-    return 0;
-}
-
-void
-WfipsData::FreeAssociatedResources( WfipsResc *psResc, int nCount )
-{
-    int i;
-    if( !psResc )
-        return;
-    for( i = 0; i < nCount; i++ )
-    {
-        sqlite3_free( psResc[i].pszDispLoc );
-        sqlite3_free( psResc[i].pszName );
-        sqlite3_free( psResc[i].pszType );
-    }
-    sqlite3_free( psResc );
-    return ;
+    return aoResc;
 }
 
 void
