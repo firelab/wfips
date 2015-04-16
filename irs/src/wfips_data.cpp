@@ -618,7 +618,6 @@ WfipsData::WriteRescDb( const char *pszNewPath, int *panIds, int *panDispLocIds,
     sqlite3_close( rdb );
     return rc;
 }
-    int SetThreadCount( unsigned int nThreads );
 
 int
 WfipsData::SetPrepositioning( double dfEnginePP, double dfCrewPP,
