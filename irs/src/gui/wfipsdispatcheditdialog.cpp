@@ -54,6 +54,7 @@ WfipsDispatchEditDialog::WfipsDispatchEditDialog( QWidget *parent ) :
              this, SLOT( ClearEmptyLocations() ) );
     connect( ui->saveButton, SIGNAL( clicked() ),
              this, SLOT( SaveAs() ) );
+    poData = NULL;
 }
 
 WfipsDispatchEditDialog::~WfipsDispatchEditDialog()
@@ -209,10 +210,10 @@ int WfipsDispatchEditDialog::PopulateRescMap( int nAgencyFlag )
         qDebug() << "Dispatch location map empty";
         return 0;
     }
-    char *pszDataPath = QStringToCString( wfipsDataPath );
-    WfipsData *poData = new WfipsData( pszDataPath );
-    poData->Open();
-    free( pszDataPath );
+    if( poData == NULL )
+    {
+        return 0;
+    }
     int *panDispLoc, nDispLocCount;
     nDispLocCount = map.size();
     panDispLoc = (int*)malloc( sizeof( int ) * nDispLocCount );

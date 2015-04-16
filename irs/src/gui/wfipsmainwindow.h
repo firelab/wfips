@@ -241,6 +241,7 @@ private:
 private slots:
     /* Main path designation */
     void OpenWfipsPath();
+    void OpenRescDb();
     /* Tree and stack widget slots */
     void SetStackIndex( QTreeWidgetItem *current,
                         QTreeWidgetItem *previous );

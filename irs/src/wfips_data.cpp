@@ -427,7 +427,7 @@ WfipsData::GetAssociatedResources( int *panDispLocIds, int nDispLocCount,
     for( i = 0; i < nDispLocCount; i++ )
     {
         rc = sqlite3_bind_int( stmt, 1, panDispLocIds[i] );
-        while( sqlite3_step( stmt ) == SQLITE_ROW )
+        while( sqlite3_step( stmt ) == SQLITE_ROW  && n < nCount )
         {
             (*ppsResc)[n].pszDispLoc = sqlite3_mprintf( "%s", sqlite3_column_text( stmt, 0 ) );
             (*ppsResc)[n].nId = sqlite3_column_int( stmt, 1 );

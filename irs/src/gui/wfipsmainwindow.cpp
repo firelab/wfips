@@ -206,6 +206,9 @@ void WfipsMainWindow::CreateConnections()
     /* Open the root path to most of the data */
     connect( ui->openWfipsPathToolButton, SIGNAL( clicked() ),
              this, SLOT( OpenWfipsPath() ) );
+    /* Open a resource db */
+    connect( ui->openRescDbButton, SIGNAL( clicked() ),
+             this, SLOT( OpenRescDb() ) );
     /* Update the analysis layer based on the combo box choice */
     connect( ui->analysisAreaComboBox, SIGNAL( currentIndexChanged( int ) ),
              this, SLOT( UpdateAnalysisAreaMap( int ) ) );
@@ -431,7 +434,7 @@ void WfipsMainWindow::LoadAnalysisAreaLayers()
             WfipsData::Free( panIndices );
         }
     }
-
+    dispatchEditDialog->SetWfipsData( poData );
     ui->analysisAreaComboBox->clear();
     /* Clean up and remove existing layers */
     QString layerId;
@@ -673,6 +676,22 @@ void WfipsMainWindow::OpenWfipsPath()
     /* Find resource layers */
 
     return;
+}
+
+void WfipsMainWindow::OpenRescDb()
+{
+    if( poData == NULL )
+        return;
+    QString path = 
+        QFileDialog::getOpenFileName( this, tr("Open wfips data path"),
+                                      "", "Wfips db files *.db" );
+    ui->openRescDbLineEdit->setText( path );
+    if( path == "" )
+        return;
+    char *pszDb = QStringToCString( path );
+    poData->SetRescDb( pszDb );
+    free( (void*)pszDb );
+    qDebug() << "Using" << path << "for custom resource path.";
 }
 
 void WfipsMainWindow::UpdateMapToolType()

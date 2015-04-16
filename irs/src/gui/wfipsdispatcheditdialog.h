@@ -78,6 +78,8 @@ public:
 
     void SetDataPath( QString path );
 
+    void SetWfipsData( WfipsData *poD ) { poData = poD; }
+
     void Clear();
 
 private:
@@ -98,6 +100,8 @@ private:
     QStringList rescTypes;
 
     QgsFeatureIds GetResourceFids( int subset );
+
+    WfipsData *poData;
 
 protected:
     void hideEvent( QHideEvent *event );
