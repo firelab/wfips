@@ -285,11 +285,11 @@ void WfipsMainWindow::ConstructToolButtons()
     ui->mapZoomOutToolButton->setIcon( QIcon( ":/zoom_out" ) );
     connect( ui->mapZoomOutToolButton, SIGNAL( clicked() ),
              this, SLOT( UpdateMapToolType() ) );
-    ui->mapSelectToolButton->setIcon( QIcon( ":/select" ) );
-    connect( ui->mapSelectToolButton, SIGNAL( clicked() ),
-             this, SLOT( UpdateMapToolType() ) );
     ui->mapIdentifyToolButton->setIcon( QIcon( ":/identify" ) );
     connect( ui->mapIdentifyToolButton, SIGNAL( clicked() ),
+             this, SLOT( UpdateMapToolType() ) );
+    ui->mapSelectToolButton->setIcon( QIcon( ":/select" ) );
+    connect( ui->mapSelectToolButton, SIGNAL( clicked() ),
              this, SLOT( UpdateMapToolType() ) );
     ui->mapZoomToLayerToolButton->setIcon( QIcon( ":/zoom_layer" ) );
     connect( ui->mapZoomToLayerToolButton, SIGNAL( clicked() ),

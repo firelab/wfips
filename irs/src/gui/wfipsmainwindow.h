@@ -219,7 +219,6 @@ private:
     QgsMapTool *resultsIdentifyTool;
     QgsMapTool *resultsSelectTool;
 
-
     void ConstructResultsWidgets();
 
     /* Fuel mask related */
