@@ -186,10 +186,7 @@ public:
                      int *panDispLocIds,
                      int nCount );
 
-    static void FreeAssociatedResources( WfipsResc *psResc, int nCount );
-    static void Free( void *p );
-
-    int GetScenarioIndices( int **ppanIndices );
+    std::vector<int> GetScenarioIndices();
 
     /* Move to private ??? */
     int LoadScenario( int nYearIdx, const char *pszTreatWkt,

@@ -179,31 +179,11 @@ int WfipsGetAssociatedResources( WfipsH w, int *panDispLocIds, int nDispLocCount
  ** \param [out] ppanIndices array of years to fill.
  ** \return the size of the array of years.
  */
+/*
 int WfipsGetScenarioIndices( WfipsH w, int **ppanIndices )
 {
     assert( w );
     return ((WfipsData*)w)->GetScenarioIndices( ppanIndices );
 }
-
-/**
- ** \brief Deallocate an array of resources obtained with
- **        WfipsGetAssociatedDispLoc().
- **
- ** \param [in] psResc pointer to an array of WfipsResc.
- ** \param [in] nCount size of the array.
- */
-void WfipsFreeAssociatedResources( WfipsResc *psResc, int nCount )
-{
-    WfipsData::FreeAssociatedResources( psResc, nCount );
-}
-
-/**
- ** \brief Deallocate some dynamic memory obtained from Wfips.
- **
- ** \param p point to be free'd
- */
-void WfipsFree( void *p )
-{
-    WfipsData::Free( p );
-}
+*/
 

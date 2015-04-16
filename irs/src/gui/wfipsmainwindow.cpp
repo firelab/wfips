@@ -419,16 +419,17 @@ void WfipsMainWindow::LoadAnalysisAreaLayers()
     }
     if( poData )
     {
-        int nCount, *panIndices;
-        nCount = poData->GetScenarioIndices( &panIndices );
+        int nCount;
+        std::vector<int>anIndices;
+        anIndices = poData->GetScenarioIndices();
+        nCount = anIndices.size();
         if( nCount > 0 )
         {
             ui->singleYearComboBox->clear();
             for( int i = 0; i < nCount; i++ )
             {
-                ui->singleYearComboBox->addItem( QString::number( panIndices[i] ) );
+                ui->singleYearComboBox->addItem( QString::number( anIndices[i] ) );
             }
-            WfipsData::Free( panIndices );
         }
     }
 
