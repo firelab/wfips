@@ -95,6 +95,14 @@ PrepositionStruct::PrepositionStruct()
     outOfSeason = false;
 }
 
+PrepositionStruct::PrepositionStruct( std::string type, double lev,
+                                      bool season )
+{
+    rescType = type;
+    level = lev;
+    outOfSeason = season;
+}
+
 PrepositionStruct & PrepositionStruct::operator = ( const PrepositionStruct &rhs )
 {
     if( &rhs != this )
@@ -963,7 +971,7 @@ bool CRunScenario::CreateDispTree()
 	m_InMap = BuildInternalIndex( &m_DispTree );
 
 	// Call Function to add alternate dispatch locations for helicopters to deploy helitack
-	AltHelicDLs( m_DispMap );
+	AltHelicDLs( m_DispMap,"C:/wfips/data/" );
 
 	return true;
 }
@@ -1189,7 +1197,7 @@ void CRunScenario::ReadFiles( std::string oPath )
 
 	// Find the closest airtanker base for each dispatch location
 	FWAsFindClosestAirtankerBases();
-	CreateRescTypeVectors();
+	CreateRescTypeVectors("C:/wfips/data/");
 	ReadFireSeason();
 
 }
@@ -1201,6 +1209,8 @@ bool CRunScenario::DeployResources( int Debugging, int f, int scenario )
 	// Presets for options
 	// Indicate the method used to dispatch resources 0 = original method, 1 uses dispatcher tree
 	int DispMethod = 1;
+    bool bRunContain = true;
+    m_VFire[f].SetSimulateContain( bRunContain );
 	
 	// Set values for the new options
 	bool CrewDrawDown = false;										// Apply Type II IA Crew draw down to analysis?
@@ -1215,6 +1225,11 @@ bool CRunScenario::DeployResources( int Debugging, int f, int scenario )
 	bool HelicopterDrops = false;									// Simulate drops for helicopters delivering helitack
 	double HelitackProdRateMultiplier = 1.2;							// Used to increase helitack production rate to account for helicotper drops. 1 = no increase	
 	double WaterDropMultiplier = 0.5;								// Water drops produce half the line retardant drops do	
+
+	// If this is a Fire Use Fire *****Monitor
+	bool monitor = m_VFire[f].GetUseStrategy();
+	int numMonitorResc = 1;
+	int monitorDurationMin = 10080;		//monitor duration
 
 	// Print the fire information to file if debuggins is set on
 	if ( Debugging > 0 )
@@ -1402,6 +1417,21 @@ bool CRunScenario::DeployResources( int Debugging, int f, int scenario )
 
 		// Is the dispatch logic filled?
 		bool filled = false;
+
+		// If this is a monitored fires *****Monitor
+		if (monitor)	{
+			// determine which resource types to deploy (crew, engine)
+			for (int l = 0; l < 15; l++)	{
+				if (l != 1 && l != 3)
+					RemainingDispLogic[l] = 0;
+				else	{
+					if (RemainingDispLogic[l] > 1)
+						RemainingDispLogic[l] = numMonitorResc;
+				}
+			}
+		}
+		//*****Monitor
+
 		list< CResource* > DropHelicopters;						// List of helicopters that can be used for dropping water
 		
 		// Iterate through the different levels of the tree in reverse order to fill dispatch logic
@@ -1474,13 +1504,21 @@ bool CRunScenario::DeployResources( int Debugging, int f, int scenario )
 						LDeployedResources.splice( LDeployedResources.end(), ThisDeployed );
 					}
 										
-					// Is the Dispatch Logic filled
 					filled = true;
-
+					
 					for ( int i = 0; i < 15; i++ )	{
 						if ( RemainingDispLogic[i] > 0 )
 							filled = false;
 					}
+
+					// Is the Dispatch Logic filled	*****Monitor 
+					int countResc = LDeployedResources.size();	
+					if (countResc >= numMonitorResc && monitor)	{
+						filled = true;
+						if (countResc > numMonitorResc)
+							LDeployedResources.resize(numMonitorResc);
+					}
+					//*****Monitor
 
 					AssIt++;
 
@@ -1736,10 +1774,30 @@ bool CRunScenario::DeployResources( int Debugging, int f, int scenario )
 	// Print the contain input information to file if debuggings is set on
 	if ( Debugging > 0 )
 		PrintContainInput( m_VFire[f], LContainValues, firstarrival );
+	 
+	// If is a monitor fire set values and save results (if no resources assume fire is still monitor) *****Monitor
+	if (monitor)	{
+		
+		string SimulationStatus = "Monitor";
+		double ffc=0.0;
+  		double ffl=0.0;
+  		double ffp=0.0;
+  		double ffsz=0.0;
+  		double ffsw=0.0;
+  		double fft= monitorDurationMin;	
+  		double fru=LDeployedResources.size();
 
-		// If there are no resources to deploy or there are only aerial resources deployed ( i.e. firstarrival = 10000 )
+		// Save the results to CResults
+		m_VResults.push_back( CResults( m_VFire[ f ], ffc, ffl, ffp, ffsz, ffsw, fft, fru, SimulationStatus, DispLogicFilled, InSeason ));
+		m_NumResults++;
 
-	if ( LContainValues.empty() || firstarrival > FWA.GetESLTime() || size > FWA.GetESLSize() )	{
+		// Print the final fire information to file if debuggins is set on
+		if ( Debugging > 0 )
+			m_VResults[ m_VResults.size()-1 ].PrintResults();
+	}		// end monitor fire *****Monitor
+	
+	// If there are no resources to deploy or there are only aerial resources deployed ( i.e. firstarrival = 10000 )
+	else if ( LContainValues.empty() || firstarrival > FWA.GetESLTime() || size > FWA.GetESLSize() )	{
 		
 		string SimulationStatus = "No Resources Sent";
 		double ffc=0.0;
@@ -1774,7 +1832,6 @@ bool CRunScenario::DeployResources( int Debugging, int f, int scenario )
 	else	{
 
                 string Status;
-                bool bRunContain = true;
 #ifdef IRS_ALLOW_SKIP_CONTAIN
                 bRunContain = SimulateContain( firstarrival, size, m_VFire[f] );
 #endif
@@ -1804,6 +1861,7 @@ bool CRunScenario::DeployResources( int Debugging, int f, int scenario )
 					}
 
 				}
+			}
 
 		// Change the workshift variables for the resources that were deployed: CResource m_AvailableTime and m_WorkshiftStartTime
 		double FireTime = m_VFire[ f ].FireStartTime() + m_VResults[ m_VResults.size()-1 ].GetFireTime();
@@ -1811,6 +1869,7 @@ bool CRunScenario::DeployResources( int Debugging, int f, int scenario )
 		int FireEndTime = static_cast< int >(FireTime);
 		if ( FireTime - FireEndTime > 0.5)
 			FireEndTime = FireEndTime + 1;
+		string Status = m_VResults[m_VResults.size()-1].GetStatus();
 		
 		for ( Iterator = LDeployedResources.begin(); Iterator != LDeployedResources.end(); Iterator++ )	{
 			// If the fire end time is before sunrise do not adjust aerial or aerial delivered resources
@@ -1821,14 +1880,14 @@ bool CRunScenario::DeployResources( int Debugging, int f, int scenario )
 		
 				// Determine the time when the resource will be available to deploy to another fire
 				int PostFireDelay = 0;
-				if ( m_VResults[ m_VResults.size()-1 ].GetStatus() == "Contained" )	{
+				if ( Status == "Contained" )	{
 			
 					if (FireEndTime < ( *Iterator )->GetInitArrivalTime() )	// Resource is deployed but not used on fire
 						PostFireDelay = m_VFire[ f ].GetFWA().GetPostContUnusedDelay( ( *Iterator )->GetDelayType() );
 					else
 						PostFireDelay = m_VFire[ f ].GetFWA().GetPostContUsedDelay( ( *Iterator )->GetDelayType() );
 				}
-				else
+				else if (Status != "Monitor")  
 					PostFireDelay = m_VFire[ f ].GetFWA().GetEscapeDelay( ( *Iterator )->GetDelayType() );
 	
 				// Determine the time when the resource is next available
@@ -1856,13 +1915,13 @@ bool CRunScenario::DeployResources( int Debugging, int f, int scenario )
 				int workshiftlength = ( *Iterator )->GetWorkshiftLength();		// Workshift length in minutes since midnight
 				int workshiftend = workshiftstart + workshiftlength;	// Workshift end time in minutes since midnight
 				int workshiftendyear = workshiftend + (24 * 60 * (julian-1));	// Workshift end time in minutes since beginning of year
-				if ( workshiftend < endtime )
+				if ( workshiftend < endtime && Status != "Monitor")
 					endtime = workshiftend;								// If the workshift end is reached before the fire containment effort ends
 
 				// Determine endtime for aerial resources
 				int endaerial = -1;
 				// Determine workshift end time for smokejumper aircraft
-				if ( ( *Iterator )->GetDispatchType() == 9	)	{
+				if ( ( *Iterator )->GetDispatchType() == 9 && Status != "Monitor"	)	{
 					CAerial *Aerial = dynamic_cast< CAerial * >( ( *Iterator ));
 					if ( Aerial != 0 )	{
 						int NextCrewArrival = Aerial->GetNextLoadArrival();		// This is the time the last crew arrived at the fire
@@ -1880,7 +1939,7 @@ bool CRunScenario::DeployResources( int Debugging, int f, int scenario )
 				}
 
 				// Determine workshift end time for helicopter 
-				if ( ( *Iterator )->GetDispatchType() == 6	)	{
+				if ( ( *Iterator )->GetDispatchType() == 6 && Status != "Monitor"	)	{
 
 					CHelicopter* Helic = dynamic_cast< CHelicopter* >( *Iterator );
 
@@ -1946,7 +2005,7 @@ bool CRunScenario::DeployResources( int Debugging, int f, int scenario )
 				}
 			
 				// Determine workshift end time for other aerial resources 
-				if ( ( *Iterator )->GetDispatchType() == 0 || ( *Iterator )->GetDispatchType() == 8	)	{
+				if ( (( *Iterator )->GetDispatchType() == 0 || ( *Iterator )->GetDispatchType() == 8) && Status != "Monitor")	{
 					// Aircraft used for drops, determine end time based on sunset
 						int DropsBegin = ( *Iterator )->GetInitArrivalTime();
 					if ( DropsBegin < firstarrival )
@@ -2046,7 +2105,7 @@ bool CRunScenario::DeployResources( int Debugging, int f, int scenario )
 	if ( Debugging > 0 )
 		PrintRescWorkYear( LDeployedResources, m_VFire[f], FireEndTime );
 		//cout << "Printed resource work year information \n";
-	}
+	
 
 	// If using the dispatchers to deploy resources
 	if ( DispMethod == 1 )
@@ -2242,7 +2301,7 @@ try{
                   pfnProgress(-1, "Running Scenarios...", NULL);
 		// iterate through the fires and run each one
 
-                LoadExpectedLevels( Scenario, 2 );
+                LoadExpectedLevels( Scenario, 5, "C:/wfips/data/" );
 		for ( int j = 0; j < m_VFire.size(); j++ )
 		{
 			// Run each individual fire
@@ -6758,317 +6817,279 @@ void CRunScenario::DLDispatcherExpectedWeights()
 	}	// Could open output file
 
 }
-
 // Read in the files with the names of the Airtanker bases, and dispatch locations with 20 person crews, Type I, II and III helicopter and smokejumpers
 // Create vectors in CRunScenario with this information for moving these types of resources
-void CRunScenario::CreateRescTypeVectors()
+void CRunScenario::CreateRescTypeVectors(std::string auxFileFolder )
 {
 	string BaseID;
+	string fileName;
+
+#ifdef WIN32
+    auxFileFolder = "c:/wfips/data/";
+#else
+    auxFileFolder = "";
+#endif
 
 	// Open the Airtanker File
-	ifstream ATTFile( "Airtankers.dat", ios::in );
+	fileName = auxFileFolder + "Airtankers.dat";
+	ifstream ATTFile(fileName.c_str(), ios::in);
 
 	if ( !ATTFile )
 		cout << "Cannot open file with IDs for airtanker bases";
 
 	else	{
-
-		while ( ATTFile >> BaseID )	{
-
+		while (!ATTFile.eof())	{
+			getline(ATTFile, BaseID);
 			m_AirtankerDLs.push_back( BaseID );
-
 		}
-
 	}
-
 	ATTFile.close();
 
 	// Open the Regions Crew File
-	ifstream CrewFile( "Crew20.dat", ios::in );
+	fileName = auxFileFolder + "Crew20.dat";
+	ifstream CrewFile( fileName.c_str(), ios::in );
 
 	if ( !CrewFile )
 		cout << "Cannot open file with IDs for Regional Crew bases";
 
 	else	{
-
-		while ( CrewFile >> BaseID )	{
-
+		while (!CrewFile.eof())	{
+			getline(CrewFile, BaseID);
 			m_RegionalCrewDLs.push_back( BaseID );
-
 		}
-
 	}
-
 	CrewFile.close();
 
 	// Open the Regional Helicopter File
-	ifstream HELFile( "RegionalHeli.dat", ios::in );
+	fileName = auxFileFolder + "RegionalHeli.dat";
+	ifstream HELFile( fileName.c_str(), ios::in );
 
 	if ( !HELFile )
 		cout << "Cannot open file with IDs for Regional Helicopter bases";
 
 	else	{
-
-		while ( HELFile >> BaseID )	{
-
+		while (!HELFile.eof())	{
+			getline(HELFile, BaseID);
 			m_RegionalHelicopterDLs.push_back( BaseID );
-
 		}
-
 	}
+	HELFile.close();
 
 	// Open the Smokejumper File
-	ifstream SMJRFile( "SMJR.dat", ios::in );
+	fileName = auxFileFolder + "SMJR.dat";
+	ifstream SMJRFile( fileName.c_str(), ios::in );
 
 	if ( !SMJRFile )
 		cout << "Cannot open file with IDs for Smokejumper bases";
 
 	else	{
-
-		while ( SMJRFile >> BaseID )	{
-
+		while (!SMJRFile.eof())	{
+			getline(SMJRFile,BaseID);
 			m_SmokejumperDLs.push_back( BaseID );
-
 		}
-
 	}
-
 	SMJRFile.close();
 
 	// Open the DOI Crew File
-	ifstream DOICRWFile( "DOICRW.dat", ios::in );
+	fileName = auxFileFolder + "DOICRW.dat";
+	ifstream DOICRWFile( fileName.c_str(), ios::in );
 
 	if ( !DOICRWFile )
 		cout << "Cannot open file with IDs for DOI Crew bases";
 
 	else	{
-
-		while ( DOICRWFile >> BaseID )	{
-
+		while (!DOICRWFile.eof())	{
+			getline(DOICRWFile, BaseID);
 			m_DOICRWDLs.push_back( BaseID );
-
 		}
-
 	}
-
 	DOICRWFile.close();
 
 	// Open the DOI Dozer File
-	ifstream DOIDZRFile( "DOIDZR.dat", ios::in );
+	fileName = auxFileFolder + "DOIDZR.dat";
+	ifstream DOIDZRFile( fileName.c_str(), ios::in );
 
 	if ( !DOIDZRFile )
 		cout << "Cannot open file with IDs for DOI Dozer bases";
 
 	else	{
-
-		while ( DOIDZRFile >> BaseID )	{
-
+		while (!DOIDZRFile.eof())	{
+			getline(DOIDZRFile, BaseID);
 			m_DOIDZRDLs.push_back( BaseID );
-
 		}
-
 	}
-
 	DOIDZRFile.close();
 
 	// Open the DOI Engine File
-	ifstream DOIENGFile( "DOIENG.dat", ios::in );
+	fileName = auxFileFolder + "DOIENG.dat";
+	ifstream DOIENGFile( fileName.c_str(), ios::in );
 
 	if ( !DOIENGFile )
 		cout << "Cannot open file with IDs for DOI Engine bases";
 
 	else	{
-
-		while ( DOIENGFile >> BaseID )	{
-
+		while (!DOIENGFile.eof())	{
+			getline(DOIENGFile, BaseID);
 			m_DOIENGDLs.push_back( BaseID );
-
 		}
-
 	}
-
 	DOIENGFile.close();
 
 	// Open the DOI Helicopter File
-	ifstream DOIHelFile( "DOIHel.dat", ios::in );
+	fileName = auxFileFolder + "DOIHel.dat";
+	ifstream DOIHelFile( fileName.c_str(), ios::in );
 
 	if ( !DOIHelFile )
 		cout << "Cannot open file with IDs for DOI Helicopter bases";
 
 	else	{
-
-		while ( DOIHelFile >> BaseID )	{
-
+		while (!DOIHelFile.eof())	{
+			getline(DOIHelFile, BaseID);
 			m_DOIHelDLs.push_back( BaseID );
-
 		}
-
 	}
-
 	DOIHelFile.close();
 
 	// Open the DOI Helitack File
-	ifstream DOIHELIFile( "DOIHELI.dat", ios::in );
+	fileName = auxFileFolder + "DOIHELI.dat";
+	ifstream DOIHELIFile( fileName.c_str(), ios::in );
 
 	if ( !DOIHELIFile )
 		cout << "Cannot open file with IDs for DOI Helitack bases";
 
 	else	{
-
-		while ( DOIHELIFile >> BaseID )	{
-
+		while (!DOIHELIFile.eof())	{
+			getline(DOIHELIFile, BaseID);
 			m_DOIHELIDLs.push_back( BaseID );
-
 		}
-
 	}
-
 	DOIHELIFile.close();
 
 	// Open the DOI SEAT File
-	ifstream DOISEATFile( "DOISEAT.dat", ios::in );
+	fileName = auxFileFolder + "DOISEAT.dat";
+	ifstream DOISEATFile( fileName.c_str(), ios::in );
 
 	if ( !DOISEATFile )
 		cout << "Cannot open file with IDs for DOI SEAT bases";
 
 	else	{
-
-		while ( DOISEATFile >> BaseID )	{
-
+		while (!DOISEATFile.eof())	{
+			getline(DOISEATFile, BaseID);
 			m_DOISEATDLs.push_back( BaseID );
-
 		}
-
 	}
-
 	DOISEATFile.close();
 
 	// Open the FS Crew File
-	ifstream FSCRWFile( "FSCRW.dat", ios::in );
+	fileName = auxFileFolder + "FSCRW.dat";
+	ifstream FSCRWFile( fileName.c_str(), ios::in );
 
 	if ( !FSCRWFile )
 		cout << "Cannot open file with IDs for FS Crew bases";
 
 	else	{
-
-		while ( FSCRWFile >> BaseID )	{
-
+		while (!FSCRWFile.eof())	{
+			getline(FSCRWFile, BaseID);
 			m_FSCRWDLs.push_back( BaseID );
-
 		}
-
 	}
-
 	FSCRWFile.close();
 
 	// Open the FS Dozer File
-	ifstream FSDZRFile( "FSDZR.dat", ios::in );
+	fileName = auxFileFolder + "FSDZR.dat";
+	ifstream FSDZRFile( fileName.c_str(), ios::in );
 
 	if ( !FSDZRFile )
 		cout << "Cannot open file with IDs for FS Dozer bases";
 
 	else	{
-
-		while ( FSDZRFile >> BaseID )	{
-
+		while (!FSDZRFile.eof())	{
+			getline(FSDZRFile, BaseID);
 			m_FSDZRDLs.push_back( BaseID );
-
 		}
-
 	}
-
 	FSDZRFile.close();
 
 	// Open the FS EngineFile
-	ifstream FSENGFile( "FSENG.dat", ios::in );
+	fileName = auxFileFolder + "FSENG.dat";
+	ifstream FSENGFile( fileName.c_str(), ios::in );
 
 	if ( !FSENGFile )
 		cout << "Cannot open file with IDs for FS Engine bases";
 
 	else	{
-
-		while ( FSENGFile >> BaseID )	{
-
+		while (!FSENGFile.eof())	{
+			getline(FSENGFile, BaseID);
 			m_FSENGDLs.push_back( BaseID );
-
 		}
-
 	}
-
 	FSENGFile.close();
 
 	// Open the FS Helicopter File
-	ifstream FSHelFile( "FSHel.dat", ios::in );
+	fileName = auxFileFolder + "FSHel.dat";
+	ifstream FSHelFile( fileName.c_str(), ios::in );
 
 	if ( !FSHelFile )
 		cout << "Cannot open file with IDs for FS Helicopter bases";
 
 	else	{
-
-		while ( FSHelFile >> BaseID )	{
-
+		while (!FSHelFile.eof())	{
+			getline(FSHelFile, BaseID);
 			m_FSHelDLs.push_back( BaseID );
-
 		}
-
 	}
-
 	FSHelFile.close();
 
 	// Open the FS Helitack File
-	ifstream FSHELIFile( "FSHELI.dat", ios::in );
+	fileName = auxFileFolder + "FSHELI.dat";
+	ifstream FSHELIFile( fileName.c_str(), ios::in );
 
 	if ( !FSHELIFile )
 		cout << "Cannot open file with IDs for FS Helitack bases";
 
 	else	{
-
-		while ( FSHELIFile >> BaseID )	{
-
+		while (!FSHELIFile.eof())	{
+			getline(FSHELIFile, BaseID);
 			m_FSHELIDLs.push_back( BaseID );
-
 		}
-
 	}
-
 	FSHELIFile.close();
 
 	// Open the FS SEAT File
-	ifstream FSSEATFile( "FSSEAT.dat", ios::in );
+	fileName = auxFileFolder + "FSSEAT.dat";
+	ifstream FSSEATFile( fileName.c_str(), ios::in );
 
 	if ( !FSSEATFile )
 		cout << "Cannot open file with IDs for FS SEAT bases";
 
 	else	{
-
-		while ( FSSEATFile >> BaseID )	{
-
+		while (!FSSEATFile.eof())	{
+			getline(FSSEATFile, BaseID);
 			m_FSSEATDLs.push_back( BaseID );
-
 		}
-
 	}
-
 	FSSEATFile.close();
 
 }
 	
 // Load the expected levels for the year into all the nodes in the tree - the BaseForcast indicates the number of days for the forcast for the internal and level 3 dispatchers
-void CRunScenario::LoadExpectedLevels( int Scenario, int BaseForcast )
+void CRunScenario::LoadExpectedLevels( int Scenario, int BaseForcast, string auxFileFolder )
 {
 	// Load the expected levels for the the Internal Nodes
 	char ExpectedFile[512];
+	
 #ifdef WIN32
-	sprintf( ExpectedFile, "/Cprogramming/Expected/Expected/Expected/DataFiles/Year%dExpected%d.dat", Scenario, BaseForcast );
+	sprintf( ExpectedFile, "c:/wfips/data/Year%dExpected%d.dat", Scenario, BaseForcast );
 #else
         BaseForcast = 2;
 	sprintf( ExpectedFile, "Year%dExpected%d.txt", Scenario, BaseForcast );
 #endif
 
-	ifstream InExp( ExpectedFile, ios::in );
+	string fileName = auxFileFolder + ExpectedFile;
+	ifstream InExp( fileName.c_str(), ios::in );
 
 	if ( !InExp )
-		cout << "Could not open the Expected Level files for the interior nodes.";
+		cout << "Could not open the Expected Level files for the interior nodes. \n";
 
 	else	{
 
@@ -7120,7 +7141,7 @@ void CRunScenario::LoadExpectedLevels( int Scenario, int BaseForcast )
 
 	// Load the expected levels for the the AirtankerBases
 #ifdef WIN32
-	sprintf( ExpectedFile, "/Cprogramming/Expected/Expected/Expected/DataFiles/Year%dATExpected2.dat", Scenario );
+	sprintf( ExpectedFile, "C:/wfips/data/Year%dATExpected2.dat", Scenario );
 #else
 	sprintf( ExpectedFile, "Year%dATExpected2.txt", Scenario );
 #endif 
@@ -7128,7 +7149,7 @@ void CRunScenario::LoadExpectedLevels( int Scenario, int BaseForcast )
 	ifstream InAT( ExpectedFile, ios::in );
 
 	if ( !InAT )
-		cout << "Could not open the Expected Level files for the airtanker bases.";
+		cout << "Could not open the Expected Level files for the airtanker bases. \n";
 
 	else	{
 
@@ -9206,11 +9227,12 @@ bool CRunScenario::AssignHelitack( std::multimap< string, CResource* > ResourceM
 }
 
 // Assign alternate dispatch locations for helicopters to the nodes for dispatch location dispatchers
-bool CRunScenario::AltHelicDLs( std::map<std::string, OmffrNode<CDispatchBase*>*> DLDispMap )
+bool CRunScenario::AltHelicDLs( std::map<std::string, OmffrNode<CDispatchBase*>*> DLDispMap, string auxFileFolder )
 {
 	// Use the dispatch map to assign alternate dispatch locations for helicopters to a dispatch location
 	// Open the file containing the assignments
-	ifstream inFile( "HeliBases.dat", ios::in );
+	string fileName = auxFileFolder + "HeliBases.dat";
+	ifstream inFile( fileName.c_str(), ios::in );
 
 	if ( !inFile )	{
 		cout << "Could not open the file containing alternate helibases for helicopters to deploy helitack \n";

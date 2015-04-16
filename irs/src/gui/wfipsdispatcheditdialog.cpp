@@ -52,6 +52,8 @@ WfipsDispatchEditDialog::WfipsDispatchEditDialog( QWidget *parent ) :
              this, SLOT( ShowResources( QString ) ) );
     connect( ui->removeEmptyButton, SIGNAL( clicked() ),
              this, SLOT( ClearEmptyLocations() ) );
+    connect( ui->saveButton, SIGNAL( clicked() ),
+             this, SLOT( SaveAs() ) );
 }
 
 WfipsDispatchEditDialog::~WfipsDispatchEditDialog()
@@ -66,10 +68,18 @@ void WfipsDispatchEditDialog::SetDataPath( QString path )
     rescTypes = WfipsGetRescTypes( path );
 }
 
-void WfipsDispatchEditDialog::SetModel( const QMap<qint64, QString> &map )
+void WfipsDispatchEditDialog::SetModel( const QMap<qint64, QString> &map,
+                                        const int agencyFilter )
 {
     this->map = map;
-    PopulateRescMap();
+    PopulateRescMap( agencyFilter );
+}
+
+void WfipsDispatchEditDialog::Clear()
+{
+    map.clear();
+    rescAtLocMap.clear();
+    treeWidget->clear();
 }
 
 void WfipsDispatchEditDialog::SelectFids( QgsFeatureIds fids )
@@ -188,11 +198,9 @@ void WfipsDispatchEditDialog::hideEvent( QHideEvent *event )
     emit Hiding();
 }
 
-int WfipsDispatchEditDialog::PopulateRescMap()
+int WfipsDispatchEditDialog::PopulateRescMap( int nAgencyFlag )
 {
-    sqlite3 *db;
-    sqlite3_stmt *stmt;
-    int j, rc;
+    int i, j, rc;
     QString dl, name, type;
     int n;
     if( map.size() == 0 )
@@ -200,67 +208,58 @@ int WfipsDispatchEditDialog::PopulateRescMap()
         qDebug() << "Dispatch location map empty";
         return 0;
     }
-    char zSql[8192];
-    const char *zDataPath = QStringToCString( wfipsDataPath );
-    sqlite3_snprintf( 8192, zSql, (const char *)"%s/resc.db", zDataPath );
-    rc = sqlite3_open_v2( zSql, &db, SQLITE_OPEN_READONLY, NULL );
-    if( rc != SQLITE_OK || db == NULL )
-    {
-        qDebug() << "Failed to open resc.db";
-        return 0;
-    }
-    rc = sqlite3_prepare_v2( db, "SELECT ROWID, name, resc_type FROM resource " \
-                                 "WHERE disploc=?", -1, &stmt, NULL );
-    if( rc != SQLITE_OK )
-    {
-        sqlite3_close( db );
-        qDebug() << "Failed to prep resc statment.";
-        return 0;
-    }
-    rescAtLocMap.clear();
+    char *pszDataPath = QStringToCString( wfipsDataPath );
+    WfipsData *poData = new WfipsData( pszDataPath );
+    poData->Open();
+    free( pszDataPath );
+    int *panDispLoc, nDispLocCount;
+    nDispLocCount = map.size();
+    panDispLoc = (int*)malloc( sizeof( int ) * nDispLocCount );
     QMapIterator<qint64, QString>it( map );
-
-    WfipsResource resource;
-    QList<WfipsResource>resourceList;
-
-    QTreeWidgetItem *item;
-    QTreeWidgetItem *subitem;
-
+    rescAtLocMap.clear();
+    i = 0;
     while( it.hasNext() )
     {
         it.next();
-        dl = it.value();
-        rc = sqlite3_bind_text( stmt, 1, (char*)dl.toLocal8Bit().data(), -1,
-                                SQLITE_TRANSIENT );
-        j = 0;
-        resourceList.clear();
-        item = new QTreeWidgetItem( treeWidget );
-        item->setText( 0, dl );
-        while( sqlite3_step( stmt ) == SQLITE_ROW )
-        {
-            n = sqlite3_column_int( stmt, 0 );
-            name = (char*)sqlite3_column_text( stmt, 1 );
-            type = (char*)sqlite3_column_text( stmt, 2 );
-            resource.rowid = n;
-            resource.name = name;
-            resource.type = type;
-            resourceList.append( resource );
-            subitem = new QTreeWidgetItem( item );
-            subitem->setText( 1, name );
-            subitem->setText( 2, type );
-            item->addChild( subitem );
-            j++;
-        }
-        rescAtLocMap[dl] = resourceList;
-        if( j == 0 )
-        {
-            qDebug() << "Found no resources at :" << dl;
-        }
-        rc = sqlite3_reset( stmt );
+        panDispLoc[i++] = it.key();
+        rescAtLocMap[it.value()] = QList<WfipsResource>();
     }
-    rc = sqlite3_finalize( stmt );
-    rc = sqlite3_close( db );
-    qDebug() << "Found resources at " << rescAtLocMap.size() << " dispatch locations.";
+
+    int nCount;
+    WfipsResc *pasResc;
+    poData->GetAssociatedResources( panDispLoc, nDispLocCount, &pasResc,
+                                    &nCount, nAgencyFlag );
+    WfipsResource resource;
+    QTreeWidgetItem *item;
+    QTreeWidgetItem *subitem;
+    for( i = 0; i < nCount; i++ )
+    {
+        n = pasResc[i].nId;
+        dl = pasResc[i].pszDispLoc;
+        name = pasResc[i].pszName;
+        type = pasResc[i].pszType;
+        resource.rowid = n;
+        resource.name = name;
+        resource.type = type;
+        rescAtLocMap[dl].append( resource );
+    }
+    WfipsData::FreeAssociatedResources( pasResc, nCount );
+    QMapIterator< QString, QList<WfipsResource> > it2( rescAtLocMap );
+    QList<WfipsResource> rescList;
+    while( it2.hasNext() )
+    {
+        it2.next();
+        item = new QTreeWidgetItem( treeWidget );
+        item->setText( 0, it2.key() );
+        rescList = it2.value();
+        for( i = 0; i < rescList.size(); i++ )
+        {
+            subitem = new QTreeWidgetItem( item );
+            subitem->setText( 1, rescList[i].name );
+            subitem->setText( 2, rescList[i].type );
+            item->addChild( subitem );
+        }
+    }
     for( j = 0; j < 3; j++ )
     {
         treeWidget->resizeColumnToContents( j );
@@ -313,9 +312,10 @@ QgsFeatureIds WfipsDispatchEditDialog::GetResourceFids( int subset )
             {
                 resc = (*it)->child( i )->data( 1, 0 ).toString();
                 j = 0;
-                while( resources[j].name != resc )
+                while( resources[j].name != resc && j < resources.size() )
                     j++;
-                fids.insert( resources[j].rowid );
+                if( j < resources.size() )
+                    fids.insert( resources[j].rowid );
             }
             i++;
         }
@@ -383,5 +383,37 @@ void WfipsDispatchEditDialog::UpdateCost()
     sqlite3_free( pszCostDbPath );
     rc = sqlite3_finalize( stmt );
     rc = sqlite3_close( db );
+}
+
+void WfipsDispatchEditDialog::SaveAs()
+{
+    QString rescOutPath =
+        QFileDialog::getSaveFileName( this, tr("Save resource data"),
+                                      ".", tr("WFIPS database file (*.db)") );
+    qDebug() << rescOutPath;
+    if( rescOutPath == "" )
+        return;
+    QgsFeatureIds fids;
+    fids = GetResourceFids( WFIPS_RESC_SUBSET_INCLUDE );
+    int n = fids.size();
+    int *panIds = (int*)malloc( sizeof( int ) * n );
+
+    QSetIterator<qint64>it( fids );
+    int i = 0;
+    while( it.hasNext() )
+    {
+        panIds[i++] = it.next();
+    }
+    char *pszOutputFile = QStringToCString( rescOutPath );
+    char *pszPath;
+    pszPath = QStringToCString( wfipsDataPath + "/" );
+    WfipsData oData( pszPath );
+    oData.Open();
+    oData.WriteRescDb( pszOutputFile, panIds, NULL, n );
+    oData.Close();
+    emit SaveResourcesAs( rescOutPath );
+    free( (void*)panIds );
+    free( (void*)pszOutputFile );
+    free( (void*)pszPath );
 }
 

@@ -48,11 +48,6 @@
         </item>
         <item>
          <property name="text">
-          <string>Agencies</string>
-         </property>
-        </item>
-        <item>
-         <property name="text">
           <string>Resources</string>
          </property>
          <item>
@@ -106,41 +101,6 @@
          <property name="text">
           <string>Results</string>
          </property>
-         <item>
-          <property name="text">
-           <string>Initial Attack Success</string>
-          </property>
-         </item>
-         <item>
-          <property name="text">
-           <string>Asset Utilization</string>
-          </property>
-         </item>
-         <item>
-          <property name="text">
-           <string>Large Fire Outcome</string>
-          </property>
-          <item>
-           <property name="text">
-            <string>Acreage</string>
-           </property>
-          </item>
-          <item>
-           <property name="text">
-            <string>Cost</string>
-           </property>
-          </item>
-          <item>
-           <property name="text">
-            <string>Population Affected</string>
-           </property>
-          </item>
-         </item>
-         <item>
-          <property name="text">
-           <string>Export</string>
-          </property>
-         </item>
         </item>
        </widget>
       </item>
@@ -360,7 +320,7 @@
          <enum>QFrame::Plain</enum>
         </property>
         <property name="currentIndex">
-         <number>1</number>
+         <number>9</number>
         </property>
         <widget class="QWidget" name="dataPage">
          <layout class="QVBoxLayout" name="verticalLayout_13">
@@ -540,68 +500,12 @@
             </item>
            </layout>
           </item>
-         </layout>
-        </widget>
-        <widget class="QWidget" name="agencyPage">
-         <layout class="QVBoxLayout" name="verticalLayout_16">
           <item>
-           <widget class="QGroupBox" name="groupBox">
+           <widget class="QGroupBox" name="rescAgencyGroupBox">
             <property name="title">
-             <string>Ignition Ownership</string>
+             <string>Resource Agencies</string>
             </property>
-            <layout class="QHBoxLayout" name="horizontalLayout_15">
-             <item>
-              <widget class="QCheckBox" name="agencyIgnUsfsCheckBox">
-               <property name="text">
-                <string>USFS</string>
-               </property>
-               <property name="checked">
-                <bool>true</bool>
-               </property>
-              </widget>
-             </item>
-             <item>
-              <widget class="QCheckBox" name="agencyIgnDoiCheckBox">
-               <property name="text">
-                <string>DOI</string>
-               </property>
-               <property name="checked">
-                <bool>true</bool>
-               </property>
-              </widget>
-             </item>
-             <item>
-              <widget class="QCheckBox" name="agencyIgnStateCheckBox">
-               <property name="text">
-                <string>Other</string>
-               </property>
-               <property name="checked">
-                <bool>true</bool>
-               </property>
-              </widget>
-             </item>
-             <item>
-              <spacer name="horizontalSpacer_10">
-               <property name="orientation">
-                <enum>Qt::Horizontal</enum>
-               </property>
-               <property name="sizeHint" stdset="0">
-                <size>
-                 <width>40</width>
-                 <height>20</height>
-                </size>
-               </property>
-              </spacer>
-             </item>
-            </layout>
-           </widget>
-          </item>
-          <item>
-           <widget class="QGroupBox" name="groupBox_3">
-            <property name="title">
-             <string>Dispatch Location/Resource Ownership</string>
-            </property>
-            <layout class="QHBoxLayout" name="horizontalLayout_16">
+            <layout class="QHBoxLayout" name="horizontalLayout_26">
              <item>
               <widget class="QCheckBox" name="agencyRescUsfsCheckBox">
                <property name="text">
@@ -633,7 +537,7 @@
               </widget>
              </item>
              <item>
-              <spacer name="horizontalSpacer_11">
+              <spacer name="horizontalSpacer_16">
                <property name="orientation">
                 <enum>Qt::Horizontal</enum>
                </property>
@@ -647,19 +551,6 @@
              </item>
             </layout>
            </widget>
-          </item>
-          <item>
-           <spacer name="verticalSpacer_8">
-            <property name="orientation">
-             <enum>Qt::Vertical</enum>
-            </property>
-            <property name="sizeHint" stdset="0">
-             <size>
-              <width>20</width>
-              <height>40</height>
-             </size>
-            </property>
-           </spacer>
           </item>
          </layout>
         </widget>
@@ -761,143 +652,187 @@
         <widget class="QWidget" name="prepositionPage">
          <layout class="QVBoxLayout" name="verticalLayout_18">
           <item>
-           <widget class="QLabel" name="label_19">
-            <property name="text">
+           <widget class="QGroupBox" name="prePositionGroupBox">
+            <property name="title">
              <string>Prepositioning</string>
             </property>
+            <property name="checkable">
+             <bool>true</bool>
+            </property>
+            <layout class="QVBoxLayout" name="verticalLayout_23">
+             <item>
+              <layout class="QHBoxLayout" name="horizontalLayout_22">
+               <item>
+                <widget class="QLabel" name="label_24">
+                 <property name="text">
+                  <string>Engines</string>
+                 </property>
+                </widget>
+               </item>
+               <item>
+                <spacer name="horizontalSpacer_11">
+                 <property name="orientation">
+                  <enum>Qt::Horizontal</enum>
+                 </property>
+                 <property name="sizeHint" stdset="0">
+                  <size>
+                   <width>40</width>
+                   <height>20</height>
+                  </size>
+                 </property>
+                </spacer>
+               </item>
+               <item>
+                <widget class="QComboBox" name="enginePPComboBox">
+                 <property name="sizePolicy">
+                  <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+                   <horstretch>0</horstretch>
+                   <verstretch>0</verstretch>
+                  </sizepolicy>
+                 </property>
+                 <property name="layoutDirection">
+                  <enum>Qt::LeftToRight</enum>
+                 </property>
+                 <item>
+                  <property name="text">
+                   <string>None</string>
+                  </property>
+                 </item>
+                 <item>
+                  <property name="text">
+                   <string>Average</string>
+                  </property>
+                 </item>
+                 <item>
+                  <property name="text">
+                   <string>Above Average</string>
+                  </property>
+                 </item>
+                 <item>
+                  <property name="text">
+                   <string>Extreme</string>
+                  </property>
+                 </item>
+                </widget>
+               </item>
+              </layout>
+             </item>
+             <item>
+              <layout class="QHBoxLayout" name="horizontalLayout_20">
+               <item>
+                <widget class="QLabel" name="label_22">
+                 <property name="text">
+                  <string>Crews</string>
+                 </property>
+                </widget>
+               </item>
+               <item>
+                <spacer name="horizontalSpacer_17">
+                 <property name="orientation">
+                  <enum>Qt::Horizontal</enum>
+                 </property>
+                 <property name="sizeHint" stdset="0">
+                  <size>
+                   <width>40</width>
+                   <height>20</height>
+                  </size>
+                 </property>
+                </spacer>
+               </item>
+               <item>
+                <widget class="QComboBox" name="crewPPComboBox">
+                 <property name="sizePolicy">
+                  <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+                   <horstretch>0</horstretch>
+                   <verstretch>0</verstretch>
+                  </sizepolicy>
+                 </property>
+                 <property name="layoutDirection">
+                  <enum>Qt::LeftToRight</enum>
+                 </property>
+                 <item>
+                  <property name="text">
+                   <string>None</string>
+                  </property>
+                 </item>
+                 <item>
+                  <property name="text">
+                   <string>Average</string>
+                  </property>
+                 </item>
+                 <item>
+                  <property name="text">
+                   <string>Above Average</string>
+                  </property>
+                 </item>
+                 <item>
+                  <property name="text">
+                   <string>Extreme</string>
+                  </property>
+                 </item>
+                </widget>
+               </item>
+              </layout>
+             </item>
+             <item>
+              <layout class="QHBoxLayout" name="horizontalLayout_18">
+               <item>
+                <widget class="QLabel" name="label_20">
+                 <property name="text">
+                  <string>Helitack</string>
+                 </property>
+                </widget>
+               </item>
+               <item>
+                <spacer name="horizontalSpacer_18">
+                 <property name="orientation">
+                  <enum>Qt::Horizontal</enum>
+                 </property>
+                 <property name="sizeHint" stdset="0">
+                  <size>
+                   <width>40</width>
+                   <height>20</height>
+                  </size>
+                 </property>
+                </spacer>
+               </item>
+               <item>
+                <widget class="QComboBox" name="helitackPPComboBox">
+                 <property name="sizePolicy">
+                  <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+                   <horstretch>0</horstretch>
+                   <verstretch>0</verstretch>
+                  </sizepolicy>
+                 </property>
+                 <property name="layoutDirection">
+                  <enum>Qt::LeftToRight</enum>
+                 </property>
+                 <item>
+                  <property name="text">
+                   <string>None</string>
+                  </property>
+                 </item>
+                 <item>
+                  <property name="text">
+                   <string>Average</string>
+                  </property>
+                 </item>
+                 <item>
+                  <property name="text">
+                   <string>Above Average</string>
+                  </property>
+                 </item>
+                 <item>
+                  <property name="text">
+                   <string>Extreme</string>
+                  </property>
+                 </item>
+                </widget>
+               </item>
+              </layout>
+             </item>
+            </layout>
            </widget>
-          </item>
-          <item>
-           <layout class="QHBoxLayout" name="horizontalLayout_22">
-            <item>
-             <widget class="QLabel" name="label_24">
-              <property name="text">
-               <string>Engines</string>
-              </property>
-             </widget>
-            </item>
-            <item>
-             <widget class="QComboBox" name="enginePPComboBox">
-              <property name="sizePolicy">
-               <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
-                <horstretch>0</horstretch>
-                <verstretch>0</verstretch>
-               </sizepolicy>
-              </property>
-              <property name="layoutDirection">
-               <enum>Qt::LeftToRight</enum>
-              </property>
-              <item>
-               <property name="text">
-                <string>None</string>
-               </property>
-              </item>
-              <item>
-               <property name="text">
-                <string>Average</string>
-               </property>
-              </item>
-              <item>
-               <property name="text">
-                <string>Above Average</string>
-               </property>
-              </item>
-              <item>
-               <property name="text">
-                <string>Extreme</string>
-               </property>
-              </item>
-             </widget>
-            </item>
-           </layout>
-          </item>
-          <item>
-           <layout class="QHBoxLayout" name="horizontalLayout_20">
-            <item>
-             <widget class="QLabel" name="label_22">
-              <property name="text">
-               <string>Crews</string>
-              </property>
-             </widget>
-            </item>
-            <item>
-             <widget class="QComboBox" name="crewPPComboBox">
-              <property name="sizePolicy">
-               <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
-                <horstretch>0</horstretch>
-                <verstretch>0</verstretch>
-               </sizepolicy>
-              </property>
-              <property name="layoutDirection">
-               <enum>Qt::LeftToRight</enum>
-              </property>
-              <item>
-               <property name="text">
-                <string>None</string>
-               </property>
-              </item>
-              <item>
-               <property name="text">
-                <string>Average</string>
-               </property>
-              </item>
-              <item>
-               <property name="text">
-                <string>Above Average</string>
-               </property>
-              </item>
-              <item>
-               <property name="text">
-                <string>Extreme</string>
-               </property>
-              </item>
-             </widget>
-            </item>
-           </layout>
-          </item>
-          <item>
-           <layout class="QHBoxLayout" name="horizontalLayout_18">
-            <item>
-             <widget class="QLabel" name="label_20">
-              <property name="text">
-               <string>Helitack</string>
-              </property>
-             </widget>
-            </item>
-            <item>
-             <widget class="QComboBox" name="helitackPPComboBox">
-              <property name="sizePolicy">
-               <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
-                <horstretch>0</horstretch>
-                <verstretch>0</verstretch>
-               </sizepolicy>
-              </property>
-              <property name="layoutDirection">
-               <enum>Qt::LeftToRight</enum>
-              </property>
-              <item>
-               <property name="text">
-                <string>None</string>
-               </property>
-              </item>
-              <item>
-               <property name="text">
-                <string>Average</string>
-               </property>
-              </item>
-              <item>
-               <property name="text">
-                <string>Above Average</string>
-               </property>
-              </item>
-              <item>
-               <property name="text">
-                <string>Extreme</string>
-               </property>
-              </item>
-             </widget>
-            </item>
-           </layout>
           </item>
           <item>
            <spacer name="verticalSpacer_3">
@@ -1156,7 +1091,7 @@
         <widget class="QWidget" name="fuelTreatmentPage">
          <layout class="QVBoxLayout" name="verticalLayout_10">
           <item>
-           <widget class="QGroupBox" name="fuelTreatSpatialGroupBox">
+           <widget class="QGroupBox" name="treatGroupBox">
             <property name="title">
              <string>Fuel Treatment</string>
             </property>
@@ -1181,6 +1116,11 @@
                    <string>Spatial fuel treatment</string>
                   </property>
                  </item>
+                 <item>
+                  <property name="text">
+                   <string>Wildland Fire Potential Fuel Treatment Priority</string>
+                  </property>
+                 </item>
                 </widget>
                </item>
                <item>
@@ -1201,7 +1141,7 @@
              <item>
               <widget class="QStackedWidget" name="fuelStackWidget">
                <property name="currentIndex">
-                <number>1</number>
+                <number>0</number>
                </property>
                <widget class="QWidget" name="page">
                 <layout class="QVBoxLayout" name="verticalLayout_14">
@@ -1235,6 +1175,9 @@
                      <property name="suffix">
                       <string>%</string>
                      </property>
+                     <property name="maximum">
+                      <number>100</number>
+                     </property>
                     </widget>
                    </item>
                   </layout>
@@ -1266,7 +1209,11 @@
                     </widget>
                    </item>
                    <item>
-                    <widget class="QLineEdit" name="fuelMaskSourceLineEdit"/>
+                    <widget class="QLineEdit" name="fuelMaskSourceLineEdit">
+                     <property name="readOnly">
+                      <bool>true</bool>
+                     </property>
+                    </widget>
                    </item>
                    <item>
                     <widget class="QLabel" name="label_11">
@@ -1276,7 +1223,11 @@
                     </widget>
                    </item>
                    <item>
-                    <widget class="QLineEdit" name="fuelMaskLayerLineEdit"/>
+                    <widget class="QLineEdit" name="fuelMaskLayerLineEdit">
+                     <property name="readOnly">
+                      <bool>true</bool>
+                     </property>
+                    </widget>
                    </item>
                   </layout>
                  </item>
@@ -1347,6 +1298,183 @@
                  </item>
                 </layout>
                </widget>
+               <widget class="QWidget" name="page_5">
+                <layout class="QVBoxLayout" name="verticalLayout_24">
+                 <item>
+                  <layout class="QHBoxLayout" name="horizontalLayout_16">
+                   <item>
+                    <widget class="QCheckBox" name="wfpCat1CheckBox">
+                     <property name="text">
+                      <string>Treat Priority 1</string>
+                     </property>
+                    </widget>
+                   </item>
+                   <item>
+                    <spacer name="horizontalSpacer_20">
+                     <property name="orientation">
+                      <enum>Qt::Horizontal</enum>
+                     </property>
+                     <property name="sizeHint" stdset="0">
+                      <size>
+                       <width>40</width>
+                       <height>20</height>
+                      </size>
+                     </property>
+                    </spacer>
+                   </item>
+                   <item>
+                    <widget class="QSpinBox" name="wfpCat1SpinBox">
+                     <property name="accelerated">
+                      <bool>true</bool>
+                     </property>
+                     <property name="suffix">
+                      <string>%</string>
+                     </property>
+                     <property name="maximum">
+                      <number>100</number>
+                     </property>
+                     <property name="value">
+                      <number>100</number>
+                     </property>
+                    </widget>
+                   </item>
+                  </layout>
+                 </item>
+                 <item>
+                  <layout class="QHBoxLayout" name="horizontalLayout_29">
+                   <item>
+                    <widget class="QCheckBox" name="wfpCat2CheckBox">
+                     <property name="text">
+                      <string>Treat Priority 2</string>
+                     </property>
+                    </widget>
+                   </item>
+                   <item>
+                    <spacer name="horizontalSpacer_23">
+                     <property name="orientation">
+                      <enum>Qt::Horizontal</enum>
+                     </property>
+                     <property name="sizeHint" stdset="0">
+                      <size>
+                       <width>40</width>
+                       <height>20</height>
+                      </size>
+                     </property>
+                    </spacer>
+                   </item>
+                   <item>
+                    <widget class="QSpinBox" name="wfpCat2SpinBox">
+                     <property name="accelerated">
+                      <bool>true</bool>
+                     </property>
+                     <property name="suffix">
+                      <string>%</string>
+                     </property>
+                     <property name="maximum">
+                      <number>100</number>
+                     </property>
+                     <property name="value">
+                      <number>100</number>
+                     </property>
+                    </widget>
+                   </item>
+                  </layout>
+                 </item>
+                 <item>
+                  <layout class="QHBoxLayout" name="horizontalLayout_28">
+                   <item>
+                    <widget class="QCheckBox" name="wfpCat3CheckBox">
+                     <property name="text">
+                      <string>Treat Priority 3</string>
+                     </property>
+                    </widget>
+                   </item>
+                   <item>
+                    <spacer name="horizontalSpacer_21">
+                     <property name="orientation">
+                      <enum>Qt::Horizontal</enum>
+                     </property>
+                     <property name="sizeHint" stdset="0">
+                      <size>
+                       <width>40</width>
+                       <height>20</height>
+                      </size>
+                     </property>
+                    </spacer>
+                   </item>
+                   <item>
+                    <widget class="QSpinBox" name="wfpCat3SpinBox">
+                     <property name="accelerated">
+                      <bool>true</bool>
+                     </property>
+                     <property name="suffix">
+                      <string>%</string>
+                     </property>
+                     <property name="maximum">
+                      <number>100</number>
+                     </property>
+                     <property name="value">
+                      <number>100</number>
+                     </property>
+                    </widget>
+                   </item>
+                  </layout>
+                 </item>
+                 <item>
+                  <layout class="QHBoxLayout" name="horizontalLayout_27">
+                   <item>
+                    <widget class="QCheckBox" name="wfpCat4CheckBox">
+                     <property name="text">
+                      <string>Treat Priority 4</string>
+                     </property>
+                    </widget>
+                   </item>
+                   <item>
+                    <spacer name="horizontalSpacer_24">
+                     <property name="orientation">
+                      <enum>Qt::Horizontal</enum>
+                     </property>
+                     <property name="sizeHint" stdset="0">
+                      <size>
+                       <width>40</width>
+                       <height>20</height>
+                      </size>
+                     </property>
+                    </spacer>
+                   </item>
+                   <item>
+                    <widget class="QSpinBox" name="wfpCat4SpinBox">
+                     <property name="accelerated">
+                      <bool>true</bool>
+                     </property>
+                     <property name="suffix">
+                      <string>%</string>
+                     </property>
+                     <property name="maximum">
+                      <number>100</number>
+                     </property>
+                     <property name="value">
+                      <number>100</number>
+                     </property>
+                    </widget>
+                   </item>
+                  </layout>
+                 </item>
+                 <item>
+                  <spacer name="verticalSpacer_6">
+                   <property name="orientation">
+                    <enum>Qt::Vertical</enum>
+                   </property>
+                   <property name="sizeHint" stdset="0">
+                    <size>
+                     <width>20</width>
+                     <height>40</height>
+                    </size>
+                   </property>
+                  </spacer>
+                 </item>
+                </layout>
+               </widget>
               </widget>
              </item>
             </layout>
@@ -1355,274 +1483,477 @@
          </layout>
         </widget>
         <widget class="QWidget" name="page_2">
-         <widget class="QLabel" name="label_4">
-          <property name="geometry">
-           <rect>
-            <x>110</x>
-            <y>90</y>
-            <width>241</width>
-            <height>17</height>
-           </rect>
-          </property>
-          <property name="text">
-           <string>Management</string>
-          </property>
-         </widget>
+         <layout class="QVBoxLayout" name="verticalLayout_6">
+          <item>
+           <widget class="QGroupBox" name="manageGroupBox">
+            <property name="title">
+             <string>Management Objectives</string>
+            </property>
+            <property name="checkable">
+             <bool>true</bool>
+            </property>
+            <property name="checked">
+             <bool>true</bool>
+            </property>
+            <layout class="QVBoxLayout" name="verticalLayout_17">
+             <item>
+              <layout class="QHBoxLayout" name="horizontalLayout_11">
+               <item>
+                <widget class="QComboBox" name="fuelComboBox_2">
+                 <item>
+                  <property name="text">
+                   <string>Modified Response</string>
+                  </property>
+                 </item>
+                </widget>
+               </item>
+               <item>
+                <widget class="QToolButton" name="fuelMaskToolButton_2">
+                 <property name="enabled">
+                  <bool>false</bool>
+                 </property>
+                 <property name="toolTip">
+                  <string>Specify spatial fuel treatment layer.</string>
+                 </property>
+                 <property name="text">
+                  <string/>
+                 </property>
+                </widget>
+               </item>
+              </layout>
+             </item>
+             <item>
+              <widget class="QStackedWidget" name="fuelStackWidget_2">
+               <property name="currentIndex">
+                <number>0</number>
+               </property>
+               <widget class="QWidget" name="page_3">
+                <layout class="QVBoxLayout" name="verticalLayout_19">
+                 <item>
+                  <layout class="QHBoxLayout" name="horizontalLayout_17">
+                   <item>
+                    <widget class="QLabel" name="label_17">
+                     <property name="text">
+                      <string>Percent of Modified Response</string>
+                     </property>
+                    </widget>
+                   </item>
+                   <item>
+                    <spacer name="horizontalSpacer_14">
+                     <property name="orientation">
+                      <enum>Qt::Horizontal</enum>
+                     </property>
+                     <property name="sizeHint" stdset="0">
+                      <size>
+                       <width>40</width>
+                       <height>20</height>
+                      </size>
+                     </property>
+                    </spacer>
+                   </item>
+                   <item>
+                    <widget class="QSpinBox" name="manageSpinBox">
+                     <property name="accelerated">
+                      <bool>true</bool>
+                     </property>
+                     <property name="suffix">
+                      <string>%</string>
+                     </property>
+                     <property name="maximum">
+                      <number>100</number>
+                     </property>
+                     <property name="value">
+                      <number>0</number>
+                     </property>
+                    </widget>
+                   </item>
+                  </layout>
+                 </item>
+                 <item>
+                  <spacer name="verticalSpacer_9">
+                   <property name="orientation">
+                    <enum>Qt::Vertical</enum>
+                   </property>
+                   <property name="sizeHint" stdset="0">
+                    <size>
+                     <width>20</width>
+                     <height>40</height>
+                    </size>
+                   </property>
+                  </spacer>
+                 </item>
+                </layout>
+               </widget>
+               <widget class="QWidget" name="fuelTreatSpatialPage_2">
+                <layout class="QVBoxLayout" name="verticalLayout_20">
+                 <item>
+                  <layout class="QHBoxLayout" name="horizontalLayout_21">
+                   <item>
+                    <widget class="QLabel" name="label_18">
+                     <property name="text">
+                      <string>File:</string>
+                     </property>
+                    </widget>
+                   </item>
+                   <item>
+                    <widget class="QLineEdit" name="fuelMaskSourceLineEdit_2">
+                     <property name="readOnly">
+                      <bool>true</bool>
+                     </property>
+                    </widget>
+                   </item>
+                   <item>
+                    <widget class="QLabel" name="label_23">
+                     <property name="text">
+                      <string>Layer:</string>
+                     </property>
+                    </widget>
+                   </item>
+                   <item>
+                    <widget class="QLineEdit" name="fuelMaskLayerLineEdit_2">
+                     <property name="readOnly">
+                      <bool>true</bool>
+                     </property>
+                    </widget>
+                   </item>
+                  </layout>
+                 </item>
+                 <item>
+                  <layout class="QHBoxLayout" name="horizontalLayout_25">
+                   <item>
+                    <widget class="QLabel" name="label_25">
+                     <property name="text">
+                      <string>Treatment Probability Attribute</string>
+                     </property>
+                    </widget>
+                   </item>
+                   <item>
+                    <spacer name="horizontalSpacer_15">
+                     <property name="orientation">
+                      <enum>Qt::Horizontal</enum>
+                     </property>
+                     <property name="sizeHint" stdset="0">
+                      <size>
+                       <width>40</width>
+                       <height>20</height>
+                      </size>
+                     </property>
+                    </spacer>
+                   </item>
+                   <item>
+                    <widget class="QComboBox" name="fuelAttComboBox_2">
+                     <item>
+                      <property name="text">
+                       <string>Fixed</string>
+                      </property>
+                     </item>
+                    </widget>
+                   </item>
+                   <item>
+                    <widget class="QSpinBox" name="fuelProbSpinBox_2">
+                     <property name="enabled">
+                      <bool>true</bool>
+                     </property>
+                     <property name="accelerated">
+                      <bool>true</bool>
+                     </property>
+                     <property name="suffix">
+                      <string>%</string>
+                     </property>
+                     <property name="maximum">
+                      <number>100</number>
+                     </property>
+                     <property name="value">
+                      <number>100</number>
+                     </property>
+                    </widget>
+                   </item>
+                  </layout>
+                 </item>
+                 <item>
+                  <spacer name="verticalSpacer_10">
+                   <property name="orientation">
+                    <enum>Qt::Vertical</enum>
+                   </property>
+                   <property name="sizeHint" stdset="0">
+                    <size>
+                     <width>20</width>
+                     <height>40</height>
+                    </size>
+                   </property>
+                  </spacer>
+                 </item>
+                </layout>
+               </widget>
+              </widget>
+             </item>
+            </layout>
+           </widget>
+          </item>
+         </layout>
         </widget>
         <widget class="QWidget" name="largeFirePage">
          <layout class="QVBoxLayout" name="verticalLayout_5">
           <item>
-           <widget class="QLabel" name="label_6">
-            <property name="text">
-             <string>Large Fire SImulation</string>
+           <widget class="QGroupBox" name="largeFireGroupBox">
+            <property name="title">
+             <string>Simulate Large Fire Escapes</string>
             </property>
+            <property name="checkable">
+             <bool>true</bool>
+            </property>
+            <property name="checked">
+             <bool>false</bool>
+            </property>
+            <layout class="QVBoxLayout" name="verticalLayout_22">
+             <item>
+              <layout class="QHBoxLayout" name="horizontalLayout_24">
+               <item>
+                <widget class="QLabel" name="label_15">
+                 <property name="text">
+                  <string>Season Start</string>
+                 </property>
+                </widget>
+               </item>
+               <item>
+                <widget class="QDateEdit" name="largeFireStartDateEdit">
+                 <property name="date">
+                  <date>
+                   <year>2000</year>
+                   <month>6</month>
+                   <day>1</day>
+                  </date>
+                 </property>
+                 <property name="displayFormat">
+                  <string>d MMM</string>
+                 </property>
+                </widget>
+               </item>
+               <item>
+                <spacer name="horizontalSpacer_13">
+                 <property name="orientation">
+                  <enum>Qt::Horizontal</enum>
+                 </property>
+                 <property name="sizeHint" stdset="0">
+                  <size>
+                   <width>40</width>
+                   <height>20</height>
+                  </size>
+                 </property>
+                </spacer>
+               </item>
+               <item>
+                <widget class="QLabel" name="label_21">
+                 <property name="text">
+                  <string>Season End</string>
+                 </property>
+                </widget>
+               </item>
+               <item>
+                <widget class="QDateEdit" name="largeFireEndDateEdit">
+                 <property name="date">
+                  <date>
+                   <year>2000</year>
+                   <month>10</month>
+                   <day>1</day>
+                  </date>
+                 </property>
+                 <property name="displayFormat">
+                  <string>d MMM</string>
+                 </property>
+                </widget>
+               </item>
+              </layout>
+             </item>
+             <item>
+              <layout class="QHBoxLayout" name="horizontalLayout_50">
+               <item>
+                <widget class="QLabel" name="label_56">
+                 <property name="sizePolicy">
+                  <sizepolicy hsizetype="MinimumExpanding" vsizetype="Preferred">
+                   <horstretch>0</horstretch>
+                   <verstretch>0</verstretch>
+                  </sizepolicy>
+                 </property>
+                 <property name="text">
+                  <string>No Resources Sent</string>
+                 </property>
+                </widget>
+               </item>
+               <item>
+                <widget class="QSlider" name="noRescSentSlider">
+                 <property name="toolTip">
+                  <string>Percent of escapes sent to large fire simulation</string>
+                 </property>
+                 <property name="maximum">
+                  <number>100</number>
+                 </property>
+                 <property name="orientation">
+                  <enum>Qt::Horizontal</enum>
+                 </property>
+                </widget>
+               </item>
+               <item>
+                <widget class="QSpinBox" name="noRescSentSpinBox">
+                 <property name="toolTip">
+                  <string>Percent of escapes sent to large fire simulation</string>
+                 </property>
+                 <property name="accelerated">
+                  <bool>true</bool>
+                 </property>
+                 <property name="suffix">
+                  <string>%</string>
+                 </property>
+                 <property name="maximum">
+                  <number>100</number>
+                 </property>
+                </widget>
+               </item>
+              </layout>
+             </item>
+             <item>
+              <layout class="QHBoxLayout" name="horizontalLayout_49">
+               <item>
+                <widget class="QLabel" name="label_55">
+                 <property name="sizePolicy">
+                  <sizepolicy hsizetype="MinimumExpanding" vsizetype="Preferred">
+                   <horstretch>0</horstretch>
+                   <verstretch>0</verstretch>
+                  </sizepolicy>
+                 </property>
+                 <property name="text">
+                  <string>Time Limit Exceeded</string>
+                 </property>
+                </widget>
+               </item>
+               <item>
+                <widget class="QSlider" name="timeLimitSlider">
+                 <property name="toolTip">
+                  <string>Percent of escapes sent to large fire simulation</string>
+                 </property>
+                 <property name="maximum">
+                  <number>100</number>
+                 </property>
+                 <property name="orientation">
+                  <enum>Qt::Horizontal</enum>
+                 </property>
+                </widget>
+               </item>
+               <item>
+                <widget class="QSpinBox" name="timeLimitSpinBox">
+                 <property name="toolTip">
+                  <string>Percent of escapes sent to large fire simulation</string>
+                 </property>
+                 <property name="accelerated">
+                  <bool>true</bool>
+                 </property>
+                 <property name="suffix">
+                  <string>%</string>
+                 </property>
+                 <property name="maximum">
+                  <number>100</number>
+                 </property>
+                </widget>
+               </item>
+              </layout>
+             </item>
+             <item>
+              <layout class="QHBoxLayout" name="horizontalLayout_48">
+               <item>
+                <widget class="QLabel" name="label_54">
+                 <property name="sizePolicy">
+                  <sizepolicy hsizetype="MinimumExpanding" vsizetype="Preferred">
+                   <horstretch>0</horstretch>
+                   <verstretch>0</verstretch>
+                  </sizepolicy>
+                 </property>
+                 <property name="text">
+                  <string>Size Limit Exceeded</string>
+                 </property>
+                </widget>
+               </item>
+               <item>
+                <widget class="QSlider" name="sizeLimitSlider">
+                 <property name="toolTip">
+                  <string>Percent of escapes sent to large fire simulation</string>
+                 </property>
+                 <property name="maximum">
+                  <number>100</number>
+                 </property>
+                 <property name="orientation">
+                  <enum>Qt::Horizontal</enum>
+                 </property>
+                </widget>
+               </item>
+               <item>
+                <widget class="QSpinBox" name="sizeLimitSpinBox">
+                 <property name="toolTip">
+                  <string>Percent of escapes sent to large fire simulation</string>
+                 </property>
+                 <property name="accelerated">
+                  <bool>true</bool>
+                 </property>
+                 <property name="suffix">
+                  <string>%</string>
+                 </property>
+                 <property name="maximum">
+                  <number>100</number>
+                 </property>
+                </widget>
+               </item>
+              </layout>
+             </item>
+             <item>
+              <layout class="QHBoxLayout" name="horizontalLayout_47">
+               <item>
+                <widget class="QLabel" name="label_53">
+                 <property name="sizePolicy">
+                  <sizepolicy hsizetype="MinimumExpanding" vsizetype="Preferred">
+                   <horstretch>0</horstretch>
+                   <verstretch>0</verstretch>
+                  </sizepolicy>
+                 </property>
+                 <property name="text">
+                  <string>Resources Exhausted</string>
+                 </property>
+                </widget>
+               </item>
+               <item>
+                <widget class="QSlider" name="exhaustedSlider">
+                 <property name="toolTip">
+                  <string>Percent of escapes sent to large fire simulation</string>
+                 </property>
+                 <property name="maximum">
+                  <number>100</number>
+                 </property>
+                 <property name="orientation">
+                  <enum>Qt::Horizontal</enum>
+                 </property>
+                </widget>
+               </item>
+               <item>
+                <widget class="QSpinBox" name="exhaustedSpinBox">
+                 <property name="toolTip">
+                  <string>Percent of escapes sent to large fire simulation</string>
+                 </property>
+                 <property name="accelerated">
+                  <bool>true</bool>
+                 </property>
+                 <property name="suffix">
+                  <string>%</string>
+                 </property>
+                 <property name="maximum">
+                  <number>100</number>
+                 </property>
+                </widget>
+               </item>
+              </layout>
+             </item>
+            </layout>
            </widget>
           </item>
           <item>
-           <layout class="QHBoxLayout" name="horizontalLayout_24">
-            <item>
-             <widget class="QLabel" name="label_15">
-              <property name="text">
-               <string>Season Start</string>
-              </property>
-             </widget>
-            </item>
-            <item>
-             <widget class="QDateEdit" name="largeFireStartDateEdit">
-              <property name="date">
-               <date>
-                <year>2000</year>
-                <month>6</month>
-                <day>1</day>
-               </date>
-              </property>
-              <property name="displayFormat">
-               <string>d MMM</string>
-              </property>
-             </widget>
-            </item>
-            <item>
-             <spacer name="horizontalSpacer_13">
-              <property name="orientation">
-               <enum>Qt::Horizontal</enum>
-              </property>
-              <property name="sizeHint" stdset="0">
-               <size>
-                <width>40</width>
-                <height>20</height>
-               </size>
-              </property>
-             </spacer>
-            </item>
-            <item>
-             <widget class="QLabel" name="label_21">
-              <property name="text">
-               <string>Season End</string>
-              </property>
-             </widget>
-            </item>
-            <item>
-             <widget class="QDateEdit" name="largeFireEndDateEdit">
-              <property name="date">
-               <date>
-                <year>2000</year>
-                <month>10</month>
-                <day>1</day>
-               </date>
-              </property>
-              <property name="displayFormat">
-               <string>d MMM</string>
-              </property>
-             </widget>
-            </item>
-           </layout>
-          </item>
-          <item>
-           <layout class="QHBoxLayout" name="horizontalLayout_50">
-            <item>
-             <widget class="QLabel" name="label_56">
-              <property name="sizePolicy">
-               <sizepolicy hsizetype="MinimumExpanding" vsizetype="Preferred">
-                <horstretch>0</horstretch>
-                <verstretch>0</verstretch>
-               </sizepolicy>
-              </property>
-              <property name="text">
-               <string>No Resources Sent</string>
-              </property>
-             </widget>
-            </item>
-            <item>
-             <widget class="QSlider" name="noRescSentSlider">
-              <property name="toolTip">
-               <string>Percent of escapes sent to large fire simulation</string>
-              </property>
-              <property name="maximum">
-               <number>100</number>
-              </property>
-              <property name="orientation">
-               <enum>Qt::Horizontal</enum>
-              </property>
-             </widget>
-            </item>
-            <item>
-             <widget class="QSpinBox" name="noRescSentSpinBox">
-              <property name="toolTip">
-               <string>Percent of escapes sent to large fire simulation</string>
-              </property>
-              <property name="accelerated">
-               <bool>true</bool>
-              </property>
-              <property name="suffix">
-               <string>%</string>
-              </property>
-              <property name="maximum">
-               <number>100</number>
-              </property>
-             </widget>
-            </item>
-           </layout>
-          </item>
-          <item>
-           <layout class="QHBoxLayout" name="horizontalLayout_49">
-            <item>
-             <widget class="QLabel" name="label_55">
-              <property name="sizePolicy">
-               <sizepolicy hsizetype="MinimumExpanding" vsizetype="Preferred">
-                <horstretch>0</horstretch>
-                <verstretch>0</verstretch>
-               </sizepolicy>
-              </property>
-              <property name="text">
-               <string>Time Limit Exceeded</string>
-              </property>
-             </widget>
-            </item>
-            <item>
-             <widget class="QSlider" name="timeLimitSlider">
-              <property name="toolTip">
-               <string>Percent of escapes sent to large fire simulation</string>
-              </property>
-              <property name="maximum">
-               <number>100</number>
-              </property>
-              <property name="orientation">
-               <enum>Qt::Horizontal</enum>
-              </property>
-             </widget>
-            </item>
-            <item>
-             <widget class="QSpinBox" name="timeLimitSpinBox">
-              <property name="toolTip">
-               <string>Percent of escapes sent to large fire simulation</string>
-              </property>
-              <property name="accelerated">
-               <bool>true</bool>
-              </property>
-              <property name="suffix">
-               <string>%</string>
-              </property>
-              <property name="maximum">
-               <number>100</number>
-              </property>
-             </widget>
-            </item>
-           </layout>
-          </item>
-          <item>
-           <layout class="QHBoxLayout" name="horizontalLayout_48">
-            <item>
-             <widget class="QLabel" name="label_54">
-              <property name="sizePolicy">
-               <sizepolicy hsizetype="MinimumExpanding" vsizetype="Preferred">
-                <horstretch>0</horstretch>
-                <verstretch>0</verstretch>
-               </sizepolicy>
-              </property>
-              <property name="text">
-               <string>Size Limit Exceeded</string>
-              </property>
-             </widget>
-            </item>
-            <item>
-             <widget class="QSlider" name="sizeLimitSlider">
-              <property name="toolTip">
-               <string>Percent of escapes sent to large fire simulation</string>
-              </property>
-              <property name="maximum">
-               <number>100</number>
-              </property>
-              <property name="orientation">
-               <enum>Qt::Horizontal</enum>
-              </property>
-             </widget>
-            </item>
-            <item>
-             <widget class="QSpinBox" name="sizeLimitSpinBox">
-              <property name="toolTip">
-               <string>Percent of escapes sent to large fire simulation</string>
-              </property>
-              <property name="accelerated">
-               <bool>true</bool>
-              </property>
-              <property name="suffix">
-               <string>%</string>
-              </property>
-              <property name="maximum">
-               <number>100</number>
-              </property>
-             </widget>
-            </item>
-           </layout>
-          </item>
-          <item>
-           <layout class="QHBoxLayout" name="horizontalLayout_47">
-            <item>
-             <widget class="QLabel" name="label_53">
-              <property name="sizePolicy">
-               <sizepolicy hsizetype="MinimumExpanding" vsizetype="Preferred">
-                <horstretch>0</horstretch>
-                <verstretch>0</verstretch>
-               </sizepolicy>
-              </property>
-              <property name="text">
-               <string>Resources Exhausted</string>
-              </property>
-             </widget>
-            </item>
-            <item>
-             <widget class="QSlider" name="exhaustedSlider">
-              <property name="toolTip">
-               <string>Percent of escapes sent to large fire simulation</string>
-              </property>
-              <property name="maximum">
-               <number>100</number>
-              </property>
-              <property name="orientation">
-               <enum>Qt::Horizontal</enum>
-              </property>
-             </widget>
-            </item>
-            <item>
-             <widget class="QSpinBox" name="exhaustedSpinBox">
-              <property name="toolTip">
-               <string>Percent of escapes sent to large fire simulation</string>
-              </property>
-              <property name="accelerated">
-               <bool>true</bool>
-              </property>
-              <property name="suffix">
-               <string>%</string>
-              </property>
-              <property name="maximum">
-               <number>100</number>
-              </property>
-             </widget>
-            </item>
-           </layout>
-          </item>
-          <item>
-           <spacer name="verticalSpacer_5">
+           <spacer name="verticalSpacer">
             <property name="orientation">
              <enum>Qt::Vertical</enum>
             </property>
@@ -1643,7 +1974,7 @@
             <property name="title">
              <string>Fire Ignitions</string>
             </property>
-            <layout class="QVBoxLayout" name="verticalLayout_11">
+            <layout class="QVBoxLayout" name="verticalLayout_16">
              <item>
               <widget class="QRadioButton" name="figAllRadioButton">
                <property name="text">
@@ -1653,88 +1984,6 @@
                 <bool>true</bool>
                </property>
               </widget>
-             </item>
-             <item>
-              <layout class="QHBoxLayout" name="horizontalLayout_6">
-               <item>
-                <widget class="QRadioButton" name="randomYearsRadioButton">
-                 <property name="text">
-                  <string>Random years</string>
-                 </property>
-                </widget>
-               </item>
-               <item>
-                <spacer name="horizontalSpacer_4">
-                 <property name="orientation">
-                  <enum>Qt::Horizontal</enum>
-                 </property>
-                 <property name="sizeHint" stdset="0">
-                  <size>
-                   <width>40</width>
-                   <height>20</height>
-                  </size>
-                 </property>
-                </spacer>
-               </item>
-               <item>
-                <widget class="QLabel" name="label_9">
-                 <property name="text">
-                  <string>Ignitions per day</string>
-                 </property>
-                </widget>
-               </item>
-               <item>
-                <widget class="QComboBox" name="randomIgnPerDayComboBox">
-                 <item>
-                  <property name="text">
-                   <string>Low</string>
-                  </property>
-                 </item>
-                 <item>
-                  <property name="text">
-                   <string>Average</string>
-                  </property>
-                 </item>
-                 <item>
-                  <property name="text">
-                   <string>High</string>
-                  </property>
-                 </item>
-                 <item>
-                  <property name="text">
-                   <string>Any</string>
-                  </property>
-                 </item>
-                </widget>
-               </item>
-               <item>
-                <spacer name="horizontalSpacer_8">
-                 <property name="orientation">
-                  <enum>Qt::Horizontal</enum>
-                 </property>
-                 <property name="sizeHint" stdset="0">
-                  <size>
-                   <width>40</width>
-                   <height>20</height>
-                  </size>
-                 </property>
-                </spacer>
-               </item>
-               <item>
-                <widget class="QLabel" name="label_13">
-                 <property name="text">
-                  <string>Number of years</string>
-                 </property>
-                </widget>
-               </item>
-               <item>
-                <widget class="QSpinBox" name="randomYearsSpinBox">
-                 <property name="accelerated">
-                  <bool>true</bool>
-                 </property>
-                </widget>
-               </item>
-              </layout>
              </item>
              <item>
               <layout class="QHBoxLayout" name="horizontalLayout_7">
@@ -1766,15 +2015,236 @@
                 </widget>
                </item>
                <item>
-                <widget class="QSpinBox" name="singleYearSpinBox">
-                 <property name="accelerated">
-                  <bool>true</bool>
+                <widget class="QComboBox" name="singleYearComboBox"/>
+               </item>
+              </layout>
+             </item>
+             <item>
+              <layout class="QHBoxLayout" name="horizontalLayout_32">
+               <item>
+                <widget class="QLabel" name="label_19">
+                 <property name="text">
+                  <string>Season Start</string>
                  </property>
-                 <property name="suffix">
-                  <string/>
+                </widget>
+               </item>
+               <item>
+                <widget class="QDateEdit" name="ignStartDayDateEdit">
+                 <property name="date">
+                  <date>
+                   <year>2000</year>
+                   <month>1</month>
+                   <day>1</day>
+                  </date>
                  </property>
-                 <property name="value">
-                  <number>0</number>
+                 <property name="displayFormat">
+                  <string>d MMM</string>
+                 </property>
+                </widget>
+               </item>
+               <item>
+                <spacer name="horizontalSpacer_26">
+                 <property name="orientation">
+                  <enum>Qt::Horizontal</enum>
+                 </property>
+                 <property name="sizeHint" stdset="0">
+                  <size>
+                   <width>40</width>
+                   <height>20</height>
+                  </size>
+                 </property>
+                </spacer>
+               </item>
+               <item>
+                <widget class="QLabel" name="label_26">
+                 <property name="text">
+                  <string>Season End</string>
+                 </property>
+                </widget>
+               </item>
+               <item>
+                <widget class="QDateEdit" name="ignEndDayDateEdit">
+                 <property name="date">
+                  <date>
+                   <year>2000</year>
+                   <month>12</month>
+                   <day>31</day>
+                  </date>
+                 </property>
+                 <property name="displayFormat">
+                  <string>d MMM</string>
+                 </property>
+                </widget>
+               </item>
+              </layout>
+             </item>
+             <item>
+              <widget class="QGroupBox" name="groupBox">
+               <property name="title">
+                <string>Ignition Ownership</string>
+               </property>
+               <layout class="QHBoxLayout" name="horizontalLayout_15">
+                <item>
+                 <widget class="QCheckBox" name="agencyIgnUsfsCheckBox">
+                  <property name="text">
+                   <string>USFS</string>
+                  </property>
+                  <property name="checked">
+                   <bool>true</bool>
+                  </property>
+                 </widget>
+                </item>
+                <item>
+                 <widget class="QCheckBox" name="agencyIgnDoiCheckBox">
+                  <property name="text">
+                   <string>DOI</string>
+                  </property>
+                  <property name="checked">
+                   <bool>true</bool>
+                  </property>
+                 </widget>
+                </item>
+                <item>
+                 <widget class="QCheckBox" name="agencyIgnStateCheckBox">
+                  <property name="text">
+                   <string>State/Local/Other</string>
+                  </property>
+                  <property name="checked">
+                   <bool>true</bool>
+                  </property>
+                 </widget>
+                </item>
+                <item>
+                 <spacer name="horizontalSpacer_10">
+                  <property name="orientation">
+                   <enum>Qt::Horizontal</enum>
+                  </property>
+                  <property name="sizeHint" stdset="0">
+                   <size>
+                    <width>40</width>
+                    <height>20</height>
+                   </size>
+                  </property>
+                 </spacer>
+                </item>
+               </layout>
+              </widget>
+             </item>
+             <item>
+              <widget class="QGroupBox" name="spatSumGroupBox">
+               <property name="title">
+                <string>Spatial Summary</string>
+               </property>
+               <property name="checkable">
+                <bool>true</bool>
+               </property>
+               <layout class="QVBoxLayout" name="verticalLayout_11">
+                <item>
+                 <widget class="QComboBox" name="spatSumComboBox">
+                  <item>
+                   <property name="text">
+                    <string>FPU (Fire Planning Unit)</string>
+                   </property>
+                  </item>
+                  <item>
+                   <property name="text">
+                    <string>FWA (Fire Workload Area)</string>
+                   </property>
+                  </item>
+                 </widget>
+                </item>
+               </layout>
+              </widget>
+             </item>
+             <item>
+              <widget class="QGroupBox" name="advancedRunGroupBox">
+               <property name="title">
+                <string>Advanced</string>
+               </property>
+               <property name="checkable">
+                <bool>true</bool>
+               </property>
+               <property name="checked">
+                <bool>false</bool>
+               </property>
+               <layout class="QHBoxLayout" name="horizontalLayout_3">
+                <item>
+                 <widget class="QCheckBox" name="threadCheckBox">
+                  <property name="text">
+                   <string>Run Parallelized</string>
+                  </property>
+                  <property name="checked">
+                   <bool>true</bool>
+                  </property>
+                 </widget>
+                </item>
+                <item>
+                 <spacer name="horizontalSpacer_19">
+                  <property name="orientation">
+                   <enum>Qt::Horizontal</enum>
+                  </property>
+                  <property name="sizeHint" stdset="0">
+                   <size>
+                    <width>40</width>
+                    <height>20</height>
+                   </size>
+                  </property>
+                 </spacer>
+                </item>
+                <item>
+                 <widget class="QSpinBox" name="threadSpinBox">
+                  <property name="suffix">
+                   <string/>
+                  </property>
+                  <property name="minimum">
+                   <number>1</number>
+                  </property>
+                  <property name="maximum">
+                   <number>2</number>
+                  </property>
+                  <property name="value">
+                   <number>1</number>
+                  </property>
+                 </widget>
+                </item>
+               </layout>
+              </widget>
+             </item>
+             <item>
+              <spacer name="verticalSpacer_5">
+               <property name="orientation">
+                <enum>Qt::Vertical</enum>
+               </property>
+               <property name="sizeHint" stdset="0">
+                <size>
+                 <width>20</width>
+                 <height>40</height>
+                </size>
+               </property>
+              </spacer>
+             </item>
+             <item>
+              <layout class="QHBoxLayout" name="horizontalLayout_30">
+               <item>
+                <spacer name="horizontalSpacer_25">
+                 <property name="orientation">
+                  <enum>Qt::Horizontal</enum>
+                 </property>
+                 <property name="sizeHint" stdset="0">
+                  <size>
+                   <width>40</width>
+                   <height>20</height>
+                  </size>
+                 </property>
+                </spacer>
+               </item>
+               <item>
+                <widget class="QToolButton" name="runButton">
+                 <property name="text">
+                  <string>Run Simulation</string>
+                 </property>
+                 <property name="toolButtonStyle">
+                  <enum>Qt::ToolButtonTextBesideIcon</enum>
                  </property>
                 </widget>
                </item>
@@ -1783,60 +2253,24 @@
             </layout>
            </widget>
           </item>
-          <item>
-           <spacer name="verticalSpacer_6">
-            <property name="orientation">
-             <enum>Qt::Vertical</enum>
-            </property>
-            <property name="sizeHint" stdset="0">
-             <size>
-              <width>20</width>
-              <height>40</height>
-             </size>
-            </property>
-           </spacer>
-          </item>
          </layout>
         </widget>
-        <widget class="QWidget" name="resultsPage">
-         <layout class="QVBoxLayout" name="verticalLayout_4">
+        <widget class="QWidget" name="page_4">
+         <layout class="QVBoxLayout" name="verticalLayout_7">
           <item>
-           <widget class="QLabel" name="label_5">
-            <property name="text">
-             <string>Results</string>
-            </property>
-           </widget>
-          </item>
-          <item>
-           <layout class="QHBoxLayout" name="horizontalLayout_4">
+           <layout class="QHBoxLayout" name="horizontalLayout_33">
             <item>
-             <widget class="QLabel" name="label">
+             <widget class="QLabel" name="label_5">
               <property name="text">
-               <string>Display Type</string>
+               <string>Color attribute</string>
               </property>
              </widget>
             </item>
             <item>
-             <widget class="QComboBox" name="comboBox">
-              <item>
-               <property name="text">
-                <string>Map</string>
-               </property>
-              </item>
-              <item>
-               <property name="text">
-                <string>Plot Stats</string>
-               </property>
-              </item>
-              <item>
-               <property name="text">
-                <string>Plot Summary</string>
-               </property>
-              </item>
-             </widget>
+             <widget class="QComboBox" name="resultAttComboBox"/>
             </item>
             <item>
-             <spacer name="horizontalSpacer_2">
+             <spacer name="horizontalSpacer_27">
               <property name="orientation">
                <enum>Qt::Horizontal</enum>
               </property>
@@ -1848,41 +2282,133 @@
               </property>
              </spacer>
             </item>
+            <item>
+             <widget class="QToolButton" name="openResultsButton">
+              <property name="text">
+               <string>Open</string>
+              </property>
+              <property name="toolButtonStyle">
+               <enum>Qt::ToolButtonTextBesideIcon</enum>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QToolButton" name="exportResultButton">
+              <property name="enabled">
+               <bool>false</bool>
+              </property>
+              <property name="text">
+               <string>Export</string>
+              </property>
+              <property name="toolButtonStyle">
+               <enum>Qt::ToolButtonTextBesideIcon</enum>
+              </property>
+             </widget>
+            </item>
            </layout>
           </item>
           <item>
-           <widget class="QStackedWidget" name="stackedWidget_2">
-            <property name="currentIndex">
-             <number>0</number>
+           <widget class="QFrame" name="resultsMapFrame">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
             </property>
-            <widget class="QWidget" name="resultsPage_2">
-             <layout class="QVBoxLayout" name="verticalLayout_3">
-              <item>
-               <widget class="QFrame" name="resultMapFrame">
-                <property name="frameShape">
-                 <enum>QFrame::StyledPanel</enum>
-                </property>
-                <property name="frameShadow">
-                 <enum>QFrame::Raised</enum>
-                </property>
-               </widget>
-              </item>
-             </layout>
-            </widget>
-            <widget class="QWidget" name="resultStatsPage">
-             <layout class="QVBoxLayout" name="verticalLayout_7">
-              <item>
-               <widget class="QFrame" name="frame_2">
-                <property name="frameShape">
-                 <enum>QFrame::StyledPanel</enum>
-                </property>
-                <property name="frameShadow">
-                 <enum>QFrame::Raised</enum>
-                </property>
-               </widget>
-              </item>
-             </layout>
-            </widget>
+            <property name="frameShape">
+             <enum>QFrame::StyledPanel</enum>
+            </property>
+            <property name="frameShadow">
+             <enum>QFrame::Raised</enum>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </widget>
+        <widget class="QWidget" name="resultsPage">
+         <layout class="QVBoxLayout" name="verticalLayout_4">
+          <item>
+           <widget class="QGroupBox" name="groupBox_4">
+            <property name="title">
+             <string>Results</string>
+            </property>
+            <layout class="QVBoxLayout" name="verticalLayout_3">
+             <item>
+              <layout class="QHBoxLayout" name="horizontalLayout_4">
+               <item>
+                <widget class="QLabel" name="label">
+                 <property name="text">
+                  <string>Results File</string>
+                 </property>
+                </widget>
+               </item>
+               <item>
+                <widget class="QLineEdit" name="resultsFileEdit">
+                 <property name="readOnly">
+                  <bool>true</bool>
+                 </property>
+                </widget>
+               </item>
+               <item>
+                <widget class="QToolButton" name="resultsOpenButton">
+                 <property name="text">
+                  <string/>
+                 </property>
+                </widget>
+               </item>
+              </layout>
+             </item>
+             <item>
+              <layout class="QHBoxLayout" name="horizontalLayout_31">
+               <item>
+                <widget class="QLabel" name="label_4">
+                 <property name="text">
+                  <string>Intersect Results With Spatial Layer</string>
+                 </property>
+                </widget>
+               </item>
+               <item>
+                <spacer name="horizontalSpacer_2">
+                 <property name="orientation">
+                  <enum>Qt::Horizontal</enum>
+                 </property>
+                 <property name="sizeHint" stdset="0">
+                  <size>
+                   <width>40</width>
+                   <height>20</height>
+                  </size>
+                 </property>
+                </spacer>
+               </item>
+               <item>
+                <widget class="QComboBox" name="comboBox"/>
+               </item>
+               <item>
+                <widget class="QToolButton" name="toolButton">
+                 <property name="text">
+                  <string>Intersect</string>
+                 </property>
+                 <property name="toolButtonStyle">
+                  <enum>Qt::ToolButtonTextBesideIcon</enum>
+                 </property>
+                </widget>
+               </item>
+              </layout>
+             </item>
+             <item>
+              <spacer name="verticalSpacer_8">
+               <property name="orientation">
+                <enum>Qt::Vertical</enum>
+               </property>
+               <property name="sizeHint" stdset="0">
+                <size>
+                 <width>20</width>
+                 <height>40</height>
+                </size>
+               </property>
+              </spacer>
+             </item>
+            </layout>
            </widget>
           </item>
          </layout>
@@ -2086,6 +2612,22 @@
     <hint type="destinationlabel">
      <x>520</x>
      <y>750</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>singleYearRadioButton</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>singleYearComboBox</receiver>
+   <slot>setEnabled(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>380</x>
+     <y>195</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>1138</x>
+     <y>196</y>
     </hint>
    </hints>
   </connection>

@@ -48,7 +48,7 @@ struct IrsResultTestData
     ~IrsResultTestData()
     {
         delete poResults;
-        sqlite3_close( db );
+        //sqlite3_close( db );
         unlink( "tmp.db" );
     }
     const char *pszInputDb;
@@ -109,7 +109,7 @@ BOOST_AUTO_TEST_CASE( single_resc_usage )
 
 BOOST_AUTO_TEST_CASE( remove_resc_1 )
 {
-    BOOST_CHECK( 1 );
+    BOOST_CHECK( 1 == 1);
 }
 
 BOOST_AUTO_TEST_SUITE_END() /* irs */

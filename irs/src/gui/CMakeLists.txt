@@ -89,7 +89,9 @@ IF(WIN32)
         SET(QGIS_INCLUDE_DIR ${OSGEO4W_HOME}/apps/${QGIS_STABLE}/include CACHE TYPE PATH FORCE)
         SET(QGIS_CORE_LIBRARY ${OSGEO4W_HOME}/apps/${QGIS_STABLE}/lib/qgis_core.lib CACHE TYPE NAME FORCE)
         SET(QGIS_GUI_LIBRARY ${OSGEO4W_HOME}/apps/${QGIS_STABLE}/lib/qgis_gui.lib CACHE TYPE NAME FORCE)
-        SET(QGIS_PLUGIN_DIR ${OSGEO4W_HOME}/apps/${QGIS_STABLE}/plugins CACHE TYPE NAME FORCE)
+        IF(NOT QGIS_PLUGIN_DIR)
+            SET(QGIS_PLUGIN_DIR ${OSGEO4W_HOME}/apps/${QGIS_STABLE}/plugins CACHE TYPE NAME FORCE)
+        ENDIF(NOT QGIS_PLUGIN_DIR)
         SET(QGIS_INCLUDE_DIR-FOUND TRUE)
         SET(QGIS_LIBRARY-FOUND TRUE)
         # GEOS
@@ -153,13 +155,15 @@ OPTION(BUILD_GUI_V2 "Build the new interface dummy project" OFF)
 QT4_WRAP_UI(WFIPS_GUI_UI_H wfipsmainwindow.ui
                            wfipsaddlayerdialog.ui
                            wfipsdispatcheditdialog.ui
-                           wfipsidentifydialog.ui)
+                           wfipsidentifydialog.ui
+                           wfipsexportdialog.ui)
 QT4_WRAP_CPP(WFIPS_GUI_MOC wfipsmainwindow.h
                            wfipsaddlayerdialog.h
                            wfipsidentifydialog.h
                            wfipsselectmaptool.h
                            wfipsdispatcheditdialog.h
-                           wfipsidentifymaptool.h)
+                           wfipsidentifymaptool.h
+                           wfipsexportdialog.h)
 
 INCLUDE(${QT_USE_FILE})
 ########################################################
@@ -224,15 +228,18 @@ ADD_EXECUTABLE(wfips wfipsmainwindow.cpp
                      wfipsselectmaptool.cpp
                      wfipsdispatcheditdialog.cpp
                      wfipsidentifymaptool.cpp
-                     ${PROJECT_SOURCE_DIR}/irs/src/wfips_data.cpp
+                     wfipsexportdialog.cpp
                      ${WFIPS_GUI_UI_H}
                      ${WFIPS_GUI_MOC}
                      ${OMFFR_GUI_RCC_SRCS}
                      main2.cpp)
 TARGET_LINK_LIBRARIES(wfips ${LINK_LIBS})
+TARGET_LINK_LIBRARIES(wfips ${CMAKE_BINARY_DIR}/irs/src/${CMAKE_CFG_INTDIR}/${CMAKE_STATIC_LIBRARY_PREFIX}irs${CMAKE_STATIC_LIBRARY_SUFFIX})
 IF(NOT USE_INTERNAL_SQLITE)
     TARGET_LINK_LIBRARIES(wfips ${SQLITE3_LIBRARY})
 ENDIF(NOT USE_INTERNAL_SQLITE)
+
+ADD_DEPENDENCIES(wfips irs)
 
 ADD_EXECUTABLE (omffr_gui ${GUI_TYPE}
                 ${OMFFR_GUI_SRCS}
@@ -248,3 +255,4 @@ IF(NOT USE_INTERNAL_SQLITE)
 ENDIF(NOT USE_INTERNAL_SQLITE)
 TARGET_LINK_LIBRARIES(omffr_gui ${LINK_LIBS})
 ADD_DEPENDENCIES(omffr_gui irs)
+

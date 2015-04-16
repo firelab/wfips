@@ -29,15 +29,16 @@
 #define WFIPS_DATA_H_
 /* Standard library */
 #include <assert.h>
+#include <limits.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 
 /* SQLite/Spatialite */
 #include <sqlite3.h>
+#include "wfips_sqlite.h"
 
 /* IRS */
-/*
 #include "RunScenario.h"
 #include "DispLoc.h"
 #include "Rescbase.h"
@@ -49,58 +50,106 @@
 #include "WaterTender.h"
 #include "Helicopter.h"
 #include "Helitack.h"
-*/
+#include "Fire.h"
+
+#include "wfips_result.h"
+#include "wfips_sqlite.h"
 
 #ifndef MAX_PATH
 #define MAX_PATH 8192
 #endif
 
-#define WFIPS_SCRAP_BUFFER_SIZE 10
-
-#define ASSOC_DB            "assoc.db"
-#define COST_DB             "cost.db"
-#define DISPLOC_DB          "disploc.db"
-#define DISTRICT_DB         "district.db"
-#define FOREST_DB           "forest.db"
-#define FPU_DB              "fpu.db"
-#define FWA_DB              "fwa.db"
-#define GACC_DB             "gacc.db"
-#define RESC_DB             "resc.db"
-#define COUNTY_DB           "us_county.db"
-#define STATE_DB            "us_state.db"
-
-#ifdef WIN32
-#define SPATIALITE_EXT "spatialite.dll"
-#else
-#define SPATIALITE_EXT "libspatialite.so"
+#ifndef WFIPS_DATA_TEST_PATH
+ #ifdef WIN32
+  #define WFIPS_DATA_TEST_PATH "c:/wfips/data/"
+ #else
+  #define WFIPS_DATA_TEST_PATH "/home/kyle/src/wfips/build/"
+ #endif
+ #define WFIPS_TEST_OUTPUT_DB  ""
 #endif
 
-/*
-** Agencies
-*/
-#define USFS                  (1 << 1)
-#define DOI_BIA               (1 << 2)
-#define DOI_BLM               (1 << 3)
-#define DOI_FWS               (1 << 4)
-#define DOI_NPS               (1 << 5)
-#define STATE_LOCAL           (1 << 6)
-#define REGIONAL              (1 << 7)
-#define DOI_ALL               (DOI_BIA | DOI_BLM | DOI_FWS | DOI_NPS)
-#define FED_ALL               (USFS | DOI_ALL)
-#define AGENCY_ALL            (FED_ALL | STATE_LOCAL)
-#define AGENCY_OTHER          (AGENCY_ALL &~ FED_ALL)
+#define WFIPS_SCRAP_BUFFER_SIZE 10
 
+/* Map day indices to names.  NULL padded for 1-based */
+static const char *apszWfipsDayOfWeek[] = { NULL,
+                                           "Monday",
+                                           "Tuesday",
+                                           "Wednesday",
+                                           "Thursday",
+                                           "Friday",
+                                           "Saturday",
+                                           "Sunday" };
+
+/* Greg Dillon's WFP values */
+#define WFP_PRIORITY_1        (1 << 1)
+#define WFP_PRIORITY_2        (1 << 2)
+#define WFP_PRIORITY_3        (1 << 3)
+#define WFP_PRIORITY_4        (1 << 4)
+
+#define WFP_PRIORITY_COUNT    4
+
+static double WFP_NO_TREAT  [WFP_PRIORITY_COUNT] = {0.,0.,0.,0.};
+static double WFP_FULL_TREAT[WFP_PRIORITY_COUNT] = {1.,1.,1.,1.};
+
+/* Matt and Crystals Strategic Response */
+#define STR_RESP_1            (1 << 1)
+#define STR_RESP_2A           (1 << 2)
+#define STR_RESP_2B           (1 << 3)
+#define STR_RESP_3A           (1 << 4)
+#define STR_RESP_3B           (1 << 5)
+#define STR_RESP_4            (1 << 6)
+#define STR_RESP_5            (1 << 7)
+#define STR_RESP_6            (1 << 8)
+
+#define STR_RESP_COUNT        8
+
+/* Prepositioning */
+static const char * apszPrePosKeys [] = { "ATT",
+                                          "Regional Crew",
+                                          "Regional Helicotper",
+                                          "FS Crew",
+                                          "DOI Crew",
+                                          "FS Engine",
+                                          "DOI Engine",
+                                          "FS HELI",
+                                          "DOI HELI",
+                                          NULL };
+
+/*
+** Identifiers for resources in sql. NULL padded to align with shifts above.
+*/
+static const char *aszAgencyNames[] = { NULL,
+                                        "'FS','USFS'",
+                                        "'BIA'",
+                                        "'BLM'",
+                                        "'FWS'",
+                                        "'NPS'",
+                                        "'STATE/LOCAL'" };
+typedef struct WfipsResc WfipsResc;
+struct WfipsResc
+{
+    int nId;
+    char *pszDispLoc;
+    char *pszName;
+    char *pszType;
+};
+
+/* Database connections are limited to 10 on the normal (default) SQLite */
 static const char *apszDbFiles[] = {ASSOC_DB,
                                     COST_DB,
                                     DISPLOC_DB,
-                                    DISTRICT_DB,
-                                    FOREST_DB,
-                                    FPU_DB,
+                                    DISPLOG_DB,
+                                    //DISTRICT_DB,
+                                    FIG_DB,
+                                    //FOREST_DB,
+                                    //FPU_DB,
                                     FWA_DB,
-                                    GACC_DB,
+                                    //GACC_DB,
+                                    LF_DB,
+                                    STATIC_DB,
                                     RESC_DB,
-                                    COUNTY_DB,
-                                    STATE_DB,
+                                    //COUNTY_DB,
+                                    //STATE_DB,
                                     NULL};
 
 /*
@@ -117,7 +166,6 @@ public:
     WfipsData( const char *pszPath );
     ~WfipsData();
 
-    int SetRescDb( const char *pszPath );
 
     int Open();
     int Open( const char *pszPath );
@@ -126,21 +174,101 @@ public:
     int ExecuteSql( const char *pszSql );
     int GetAssociatedDispLoc( const char *pszWkt,
                               int **panDispLocIds,
-                              int *nCount );
+                              int *pnCount );
+
+
+    int GetAssociatedResources( int *panDispLocIds, int nDispLocCount,
+                                WfipsResc **ppsResc, int *pnRescLocCount,
+                                int nAgencyFlags );
 
     int Valid() { return bValid; }
     int SpatialiteEnabled() { return bSpatialiteEnabled; }
 
+    int SetRescDb( const char *pszPath );
     int WriteRescDb( const char *pszPath,
                      int *panIds,
                      int *panDispLocIds,
                      int nCount );
 
+    static void FreeAssociatedResources( WfipsResc *psResc, int nCount );
     static void Free( void *p );
+
+    int GetScenarioIndices( int **ppanIndices );
+
+    /* Move to private ??? */
+    int LoadScenario( int nYearIdx, const char *pszTreatWkt,
+                      double dfTreatProb, int nWfpTreatMask,
+                      double *padfWfpTreatProb, double dfStratProb,
+                      int nJulStart, int nJulEnd,
+                      int nAgencyFilter );
+
+    int SetAnalysisAreaMask( const char *pszWkt );
+    int SetResultPath( const char *pszPath );
+    int WriteResults();
+    int SpatialSummary( const char *pszKey );
+    int CloseResults();
+    WfipsResult * GetResults() { return poResult; }
+    int RunScenario( int iYearIndex );
+    int RunScenarios( int nCount, const char *pszTreatWkt,
+                      double dfTreatProb, int nWfpTreatMask,
+                      double *padfWfpTreatProb, double dfStratProb,
+                      int nJulStart, int nJulEnd, int nAgencyFilter );
+
+    int RunScenario( int nYearIdx, const char *pszTreatWkt,
+                     double dfTreatProb, int nWfpTreatMask,
+                     double *padfWfpTreatProb, double dfStratProb,
+                     int nJulStart, int nJulEnd,
+                     int nAgencyFilter );
+
+    int SetPrepositioning( double, double, double );
+    /* Not implemented */
+    /* int SetDrawdown(){return 0;} */
+    int LoadIrsData( const char *pszAnalysisAreaWkt );
+    int LoadIrsData();
+    int SimulateLargeFire( int nJulStart, int nJulEnd, double dfNoRescProb,
+                           double dfTimeLimitProb, double dfSizeLimitProb,
+                           double dfExhaustProb, const char *pszTreatWkt,
+                           double dfTreatProb );
+    int ExportFires( const char *pszOutFile, const char *pszDrv );
+    int Reset();
+
+    /* XXX TO BE IMPLEMENTED XXX */
+
+    /* Test private fx */
+    int TestBuildAgencySet1();
+    int TestBuildAgencySet2();
+    int TestBuildAgencySet3();
+    int TestBuildAgencySet4();
+    int TestBuildAgencySet5();
+    int TestFidSet1();
+    int TestRescTypeLoad1();
+    int TestProdLoad1();
+    int TestDispLogLoad1();
+    int TestDispLogLoad2();
+    int TestFwaLoad1();
+    int TestFwaLoad2();
+    int TestDispLocLoad1();
+    int TestDispLocLoad2();
+    int TestResourceLoad1();
+    int TestResourceLoad2();
+    int TestScenLoad1();
+    int TestScenLoad2();
+    int TestScenLoad3();
+    int TestScenLoad4();
+    int TestScenLoad5();
+    int TestScenLoad6();
+    int TestScenLoad7();
+    int TestScenLoad8();
+    int TestScenLoad9();
+    int TestScenLoad10();
+    int TestScenLoad11();
+    int TestScenLoad12();
+    int TestScenLoad13();
 
 private:
     void Init();
 
+    /* File path and db helpers */
     const char* FormFileName( const char *pszPath, const char *pszDb );
     const char* BaseName( const char *pszPath );
     int Attach( const char *pszPath );
@@ -151,13 +279,40 @@ private:
     int bSpatialiteEnabled;
     sqlite3 *db;
 
+    /* String helpers */
+    const char * BuildAgencySet( int nAgencyFlags );
+    char * BuildFidSet( int *panFids, int nCount );
+
+    const char *pszAnalysisAreaWkt;
+
     /* scratch strings */
     char* GetScrapBuffer();
     char szScrap[WFIPS_SCRAP_BUFFER_SIZE][MAX_PATH];
     int iScrap;
 
+    /* SQLite/Spatialite convenience */
+    int CompileGeometry( const char *pszWkt, void **pCompiled );
+    double Random();
+
+    /* Results stuff */
+    char* pszResultPath;
+    WfipsResult *poResult;
+
     /* Diane's structs */
-    //CRunScenario *poScen;
+    CRunScenario *poScenario;
+    int LoadRescTypes();
+    int LoadProdRates();
+    int LoadDispatchLogic();
+    int LoadFwas();
+    int LoadDispatchLocations();
+    int LoadTankerBases();
+    int LoadResources();
+    int AssociateHelitack( std::multimap<std::string, CResource*>&resc_map );
+    int CreateLargeAirTankers();
+
+    /* Helper for Diane's structs */
+    std::map<std::string, int> FwaIndexMap;
+    std::map<std::string, int> DispLogIndexMap;
 };
 
 #endif /* WFIPS_DATA_H_ */

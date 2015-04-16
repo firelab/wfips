@@ -136,7 +136,7 @@ public:
 		string DetermineNodeType(OmffrNode<CDispatchBase*>* node);						// Determine the node type, National, GACC, Local, Dispatch Location
 		bool AddTreeNode(OmffrTree<CDispatchBase*> &newTree, OmffrNode<CDispatchBase*>* oldNode, OmffrNode<CDispatchBase*>* parentNode,
 			std::map<string, OmffrNode<CDispatchBase*>*> &newDispMap, std::map<string, OmffrNode<CDispatchBase*>*> &newInMap, 
-			std::map<CResource*, CResource*> &rescMap, vector<CResource*> &ATTPtrs, std::vector<std::pair<CGACCDispatcher*, CResource*>> pairsGACCTypeTwoCrews);	// Add a node and the tree below it to the to a copy of the tree
+			std::map<CResource*, CResource*> &rescMap, vector<CResource*> &ATTPtrs, std::vector<std::pair<CGACCDispatcher*, CResource*> > pairsGACCTypeTwoCrews);	// Add a node and the tree below it to the to a copy of the tree
 	
 
 		

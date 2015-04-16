@@ -609,7 +609,7 @@ bool CDataMaster::CopyDispatchTree(OmffrTree<CDispatchBase*> &newTree, std::map<
 	newDispMap.clear();
 	newInMap.clear();
 
-	std::vector<std::pair<CGACCDispatcher*, CResource*>> pairsGACCTypeTwoCrews;
+	std::vector<std::pair<CGACCDispatcher*, CResource*> > pairsGACCTypeTwoCrews;
 
 	OmffrNode<CDispatchBase*>* RootNode = m_DispTree.Root();
 	if (RootNode != 0)	{
@@ -657,7 +657,7 @@ string CDataMaster::DetermineNodeType(OmffrNode<CDispatchBase*>* node)
 //	being added to the new tree.
 bool CDataMaster::AddTreeNode(OmffrTree<CDispatchBase*> &newTree, OmffrNode<CDispatchBase*>* oldNode, OmffrNode<CDispatchBase*>* parentNode, 
 	std::map<string, OmffrNode<CDispatchBase*>*> &newDispMap, std::map<string, OmffrNode<CDispatchBase*>*> &newInMap, 
-	std::map<CResource*, CResource*> &rescMap, vector<CResource*> &ATTPtrs, std::vector<std::pair<CGACCDispatcher*, CResource*>> pairsGACCTypeTwoCrews)
+	std::map<CResource*, CResource*> &rescMap, vector<CResource*> &ATTPtrs, std::vector<std::pair<CGACCDispatcher*, CResource*> > pairsGACCTypeTwoCrews)
 {
 	bool status = true;
 	OmffrNode<CDispatchBase*>* newNode;

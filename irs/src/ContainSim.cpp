@@ -33,12 +33,6 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-/* Silence warnings that aren't our fault */
-#if defined(OMFFR) && defined(__GNUC__)
-#pragma GCC diagnostic ignored "-Wwrite-strings"
-#pragma GCC push
-#endif /* defined(OMFFR) && defined(__GNUC__) */
-
 //------------------------------------------------------------------------------
 /*! \brief ContainSim custom constructor.
   
@@ -1059,10 +1053,6 @@ double Sem::ContainSim::UncontainedArea( double head, double lwRatio, double x, 
 	// Return area in chains sq will be converted to acres
 	return area;
 }
-
-#if defined(OMFFR) && defined(__GNUC__)
-#pragma GCC diagnostic pop
-#endif
 
 //------------------------------------------------------------------------------
 //  End of ContainSim.cpp

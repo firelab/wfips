@@ -457,7 +457,7 @@ bool CDLDispatcher::AddtoAltHelicopterDLsList( CDLDispatcher* DispLocPtr )
 	while ( !found && It != m_AltHelicopterDLs.end() )	{
 
 		if ( *It == DispLocPtr )
-			found == true;
+			found = true;
 		else
 			It++;
 
@@ -482,7 +482,7 @@ bool CDLDispatcher::RemovefromAltHelicopterDLSList( CDLDispatcher* DispLocPtr )
 	while ( !found && It != m_AltHelicopterDLs.end() )	{
 
 		if ( *It  == DispLocPtr )
-			found == true;
+			found = true;
 		else
 			It++;
 

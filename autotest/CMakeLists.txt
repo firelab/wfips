@@ -1,10 +1,8 @@
 #/*****************************************************************************
 # *
-# * $Id:
-# *
-# * Project:  WindNinja
+# * Project:  WFIPS
 # * Purpose:  CMake script
-# * Author:   Levi Malott <lmnn3@mst.edu
+# * Author:   Kyle Shannon <kyle at pobox dot com>
 # *
 # *****************************************************************************
 # *
@@ -32,6 +30,10 @@
 # *****************************************************************************
 
 OPTION(RUN_SLOW_TESTS "Run slow tests" OFF)
+OPTION(RUN_REALLY_SLOW_TESTS "Run tests on the full west, full spatial, etc." OFF)
+IF(RUN_REALLY_SLOW_TESTS)
+    ADD_DEFINITIONS(-DRUN_REALLY_SLOW_TESTS)
+ENDIF(RUN_REALLY_SLOW_TESTS)
 
 Include(FindBoost)
 SET(Boost_DEBUG ON)
@@ -222,13 +224,130 @@ ADD_TEST(omffr_conv_add_string_1 ${EXECUTABLE_OUTPUT_PATH}/test_main
          --run_test=conv/add_string_1)
 ADD_TEST(omffr_conv_add_string_2 ${EXECUTABLE_OUTPUT_PATH}/test_main
          --run_test=conv/add_string_2)
-
+ADD_TEST( wfips_create_1 ${EXECUTABLE_OUTPUT_PATH}/test_main
+          --run_test=wfipsdata/create_1 )
+ADD_TEST( wfips_create_2 ${EXECUTABLE_OUTPUT_PATH}/test_main
+          --run_test=wfipsdata/create_2 )
+ADD_TEST( wfips_sql_1 ${EXECUTABLE_OUTPUT_PATH}/test_main
+          --run_test=wfipsdata/sql_1 )
+ADD_TEST( wfips_resc_copy_1 ${EXECUTABLE_OUTPUT_PATH}/test_main
+          --run_test=wfipsdata/resc_copy_1 )
+ADD_TEST( wfips_resc_copy_2 ${EXECUTABLE_OUTPUT_PATH}/test_main
+          --run_test=wfipsdata/resc_copy_2 )
+ADD_TEST( wfips_resc_copy_3 ${EXECUTABLE_OUTPUT_PATH}/test_main
+          --run_test=wfipsdata/resc_copy_3 )
+ADD_TEST( wfips_assoc_disploc_1 ${EXECUTABLE_OUTPUT_PATH}/test_main
+          --run_test=wfipsdata/assoc_disploc_1 )
+ADD_TEST( wfips_build_set_1 ${EXECUTABLE_OUTPUT_PATH}/test_main
+          --run_test=wfipsdata/build_set_1 )
+ADD_TEST( wfips_build_set_2 ${EXECUTABLE_OUTPUT_PATH}/test_main
+          --run_test=wfipsdata/build_set_2 )
+ADD_TEST( wfips_build_set_3 ${EXECUTABLE_OUTPUT_PATH}/test_main
+          --run_test=wfipsdata/build_set_3 )
+ADD_TEST( wfips_build_set_4 ${EXECUTABLE_OUTPUT_PATH}/test_main
+          --run_test=wfipsdata/build_set_4 )
+ADD_TEST( wfips_build_set_5 ${EXECUTABLE_OUTPUT_PATH}/test_main
+          --run_test=wfipsdata/build_set_5 )
+ADD_TEST( wfips_build_fid_set_1 ${EXECUTABLE_OUTPUT_PATH}/test_main
+          --run_test=wfipsdata/build_fid_set_1 )
+ADD_TEST( wfips_assoc_resource_1 ${EXECUTABLE_OUTPUT_PATH}/test_main
+          --run_test=wfipsdata/assoc_resource_1 )
+ADD_TEST( wfips_assoc_resource_2 ${EXECUTABLE_OUTPUT_PATH}/test_main
+          --run_test=wfipsdata/assoc_resource_2 )
+ADD_TEST( wfips_assoc_resource_3 ${EXECUTABLE_OUTPUT_PATH}/test_main
+          --run_test=wfipsdata/assoc_resource_3 )
+ADD_TEST( wfips_load_scen_1 ${EXECUTABLE_OUTPUT_PATH}/test_main
+          --run_test=wfipsdata/load_scen_1 )
+ADD_TEST( wfips_load_scen_2 ${EXECUTABLE_OUTPUT_PATH}/test_main
+          --run_test=wfipsdata/load_scen_2 )
+ADD_TEST( wfips_load_scen_3 ${EXECUTABLE_OUTPUT_PATH}/test_main
+          --run_test=wfipsdata/load_scen_3 )
+ADD_TEST( wfips_load_scen_4 ${EXECUTABLE_OUTPUT_PATH}/test_main
+          --run_test=wfipsdata/load_scen_4 )
+ADD_TEST( wfips_load_scen_5 ${EXECUTABLE_OUTPUT_PATH}/test_main
+          --run_test=wfipsdata/load_scen_5 )
+ADD_TEST( wfips_load_scen_6 ${EXECUTABLE_OUTPUT_PATH}/test_main
+          --run_test=wfipsdata/load_scen_6 )
+ADD_TEST( wfips_load_scen_7 ${EXECUTABLE_OUTPUT_PATH}/test_main
+          --run_test=wfipsdata/load_scen_7 )
+ADD_TEST( wfips_load_scen_8 ${EXECUTABLE_OUTPUT_PATH}/test_main
+          --run_test=wfipsdata/load_scen_8 )
+ADD_TEST( wfips_load_scen_9 ${EXECUTABLE_OUTPUT_PATH}/test_main
+          --run_test=wfipsdata/load_scen_9 )
+ADD_TEST( wfips_load_scen_10 ${EXECUTABLE_OUTPUT_PATH}/test_main
+          --run_test=wfipsdata/load_scen_10 )
+ADD_TEST( wfips_load_scen_11 ${EXECUTABLE_OUTPUT_PATH}/test_main
+          --run_test=wfipsdata/load_scen_11 )
+ADD_TEST( wfips_load_scen_12 ${EXECUTABLE_OUTPUT_PATH}/test_main
+          --run_test=wfipsdata/load_scen_12 )
+ADD_TEST( wfips_load_scen_13 ${EXECUTABLE_OUTPUT_PATH}/test_main
+          --run_test=wfipsdata/load_scen_13 )
+ADD_TEST( wfips_set_resource_db_1 ${EXECUTABLE_OUTPUT_PATH}/test_main
+          --run_test=wfipsdata/set_resource_db_1 )
+ADD_TEST( wfips_scen_count_1 ${EXECUTABLE_OUTPUT_PATH}/test_main
+          --run_test=wfipsdata/scen_count_1 )
+ADD_TEST( wfips_load_resc_types_1 ${EXECUTABLE_OUTPUT_PATH}/test_main
+          --run_test=wfipsdata/load_resc_types_1 )
+ADD_TEST( wfips_load_prod_rates_1 ${EXECUTABLE_OUTPUT_PATH}/test_main
+          --run_test=wfipsdata/load_prod_rates_1 )
+ADD_TEST( wfips_load_disp_log_1 ${EXECUTABLE_OUTPUT_PATH}/test_main
+          --run_test=wfipsdata/load_disp_log_1 )
+ADD_TEST( wfips_load_disp_log_2 ${EXECUTABLE_OUTPUT_PATH}/test_main
+          --run_test=wfipsdata/load_disp_log_2 )
+ADD_TEST( wfips_load_fwa_1 ${EXECUTABLE_OUTPUT_PATH}/test_main
+          --run_test=wfipsdata/load_fwa_1 )
+ADD_TEST( wfips_load_fwa_2 ${EXECUTABLE_OUTPUT_PATH}/test_main
+          --run_test=wfipsdata/load_fwa_2 )
+ADD_TEST( wfips_load_disp_loc_1 ${EXECUTABLE_OUTPUT_PATH}/test_main
+          --run_test=wfipsdata/load_disp_loc_1 )
+ADD_TEST( wfips_load_disp_loc_2 ${EXECUTABLE_OUTPUT_PATH}/test_main
+          --run_test=wfipsdata/load_disp_loc_2 )
+ADD_TEST( wfips_load_resource_1 ${EXECUTABLE_OUTPUT_PATH}/test_main
+          --run_test=wfipsdata/load_resource_1 )
+ADD_TEST( wfips_load_resource_2 ${EXECUTABLE_OUTPUT_PATH}/test_main
+          --run_test=wfipsdata/load_resource_2 )
+ADD_TEST( wfips_compile_geom_1 ${EXECUTABLE_OUTPUT_PATH}/test_main
+          --run_test=wfipsdata/compile_geom_1 )
+ADD_TEST( wfips_compile_geom_2 ${EXECUTABLE_OUTPUT_PATH}/test_main
+          --run_test=wfipsdata/compile_geom_2 )
+ADD_TEST( wfips_compile_geom_4 ${EXECUTABLE_OUTPUT_PATH}/test_main
+          --run_test=wfipsdata/compile_geom_4 )
+ADD_TEST( wfips_compile_geom_5 ${EXECUTABLE_OUTPUT_PATH}/test_main
+          --run_test=wfipsdata/compile_geom_5 )
+ADD_TEST( wfips_has_table_1 ${EXECUTABLE_OUTPUT_PATH}/test_main
+          --run_test=wfipsdata/has_table_1 )
+ADD_TEST( wfips_has_table_2 ${EXECUTABLE_OUTPUT_PATH}/test_main
+          --run_test=wfipsdata/has_table_2 )
+ADD_TEST( wfips_has_table_3 ${EXECUTABLE_OUTPUT_PATH}/test_main
+          --run_test=wfipsdata/has_table_3 )
+ADD_TEST( wfips_has_table_4 ${EXECUTABLE_OUTPUT_PATH}/test_main
+          --run_test=wfipsdata/has_table_4 )
 IF(RUN_SLOW_TESTS)
-
-    # *************************************************************************
-    # IRS tests
-    # *************************************************************************
     IF(BUILD_IRS)
+        ADD_TEST( wfips_load_all_1 ${EXECUTABLE_OUTPUT_PATH}/test_main
+                  --run_test=wfipsdata/load_all_1 )
+        ADD_TEST( wfips_run_small_1 ${EXECUTABLE_OUTPUT_PATH}/test_main
+                  --run_test=wfipsdata/run_small_1 )
+        ADD_TEST( wfips_run_small_multi_1 ${EXECUTABLE_OUTPUT_PATH}/test_main
+                  --run_test=wfipsdata/run_small_multi_1 )
+        ADD_TEST( wfips_small_output_1 ${EXECUTABLE_OUTPUT_PATH}/test_main
+                  --run_test=wfipsdata/run_small_output_1 )
+              #ADD_TEST( wfips_small_output_2 ${EXECUTABLE_OUTPUT_PATH}/test_main
+              #--run_test=wfipsdata/run_small_output_2 )
+        ADD_TEST( wfips_small_output_3 ${EXECUTABLE_OUTPUT_PATH}/test_main
+                  --run_test=wfipsdata/run_small_output_3 )
+        ADD_TEST( wfips_small_output_lf_1 ${EXECUTABLE_OUTPUT_PATH}/test_main
+                  --run_test=wfipsdata/run_small_output_lf_1 )
+        ADD_TEST( wfips_small_output_fwa_1 ${EXECUTABLE_OUTPUT_PATH}/test_main
+                  --run_test=wfipsdata/run_small_output_fwa_1 )
+        ADD_TEST( wfips_small_output_fires_1 ${EXECUTABLE_OUTPUT_PATH}/test_main
+                  --run_test=wfipsdata/run_small_output_fwa_1 )
+        ADD_TEST( wfips_small_output_lf_treat_1 ${EXECUTABLE_OUTPUT_PATH}/test_main
+                  --run_test=wfipsdata/run_small_output_lf_treat_1 )
+        ADD_TEST( wfips_run_gb_id_002_no_spatial ${EXECUTABLE_OUTPUT_PATH}/test_main
+                  --run_test=wfipsdata/run_gb_id_002_no_spatial )
+        ADD_TEST( wfips_preposition_1 ${EXECUTABLE_OUTPUT_PATH}/test_main
+                  --run_test=wfipsdata/preposition_1 )
         #ADD_TEST(irs_test_avg_fires_1 ${EXECUTABLE_OUTPUT_PATH}/test_main
         #         --run_test=irs/avg_fires_1)
         ADD_TEST(irs_test_scenario_order ${EXECUTABLE_OUTPUT_PATH}/test_main
@@ -242,3 +361,13 @@ IF(RUN_SLOW_TESTS)
     ENDIF(BUILD_IRS)
 ENDIF(RUN_SLOW_TESTS)
 
+IF(RUN_REALLY_SLOW_TESTS)
+    ADD_TEST( wfips_run_full_1 ${EXECUTABLE_OUTPUT_PATH}/test_main
+              --run_test=wfipsdata/run_full_1 )
+    ADD_TEST( wfips_run_full_no_space_1 ${EXECUTABLE_OUTPUT_PATH}/test_main
+              --run_test=wfipsdata/run_full_no_space_1 )
+    ADD_TEST( wfips_run_gb_id_002 ${EXECUTABLE_OUTPUT_PATH}/test_main
+              --run_test=wfipsdata/run_gb_id_002 )
+    ADD_TEST( wfips_run_ca_ca_015 ${EXECUTABLE_OUTPUT_PATH}/test_main
+              --run_test=wfipsdata/run_ca_ca_015 )
+ENDIF(RUN_REALLY_SLOW_TESTS)

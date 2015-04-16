@@ -13,6 +13,26 @@ using std::string;
 
 #include "DispLogic.h"
 
+// Default constructor 
+CDispLogic::CDispLogic()
+{
+	m_LogicID = "DEFAULT DISPATCH LOGIC";
+	m_Index = "BI";
+	m_NumLevels = 5;
+	for ( int i = 0; i < 4; i++ )	
+		m_BreakPoints.push_back((i+1) * 5);							
+	m_BreakPoints.push_back(0);
+	
+	for ( int i = 0; i < 13; i++ )	{
+		for ( int j = 0; j < 5; j++ )	{
+			if ( i == 1 || i == 3)
+				m_RescNums.push_back(j + 1);
+			else
+				m_RescNums.push_back(0);
+		}
+	}
+}
+
 // Constructor for class CDispLogic
 CDispLogic::CDispLogic( string logicid, string index, int nlevels, int breakpoints[5], int rescnum[13][5] )
 {
@@ -21,16 +41,14 @@ CDispLogic::CDispLogic( string logicid, string index, int nlevels, int breakpoin
 	m_NumLevels = nlevels;											//initialize number of levels in the dispatch logic
 
 	for ( int i = 0; i < 5; i++ )	{
-		m_BreakPoints.push_back( breakpoints[i] );							//initialize the maximum index value for each dispatch level m_BreakPoints[4] = infinity
+		m_BreakPoints.push_back( breakpoints[i] );					//initialize the maximum index value for each dispatch level m_BreakPoints[4] = infinity
 	}
 	
 	for ( int i = 0; i < 13; i++ )	{
 		for ( int j = 0; j < 5; j++ )	{
-			m_RescNums.push_back( rescnum[i][j]);							//initialize the maximum number of each resource type for each dispatch level
-	
+			m_RescNums.push_back( rescnum[i][j] );							
 		}
 	}
-	
 }
 
 // Copy constructor for CDispLogic
