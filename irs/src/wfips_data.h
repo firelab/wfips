@@ -293,7 +293,7 @@ private:
 
     /* Diane's structs */
     CRunScenario *poScenario;
-    std::vector<CRunScenario>aoScens;
+    std::vector<CRunScenario*>apoScens;
     int LoadRescTypes();
     int LoadProdRates();
     int LoadDispatchLogic();

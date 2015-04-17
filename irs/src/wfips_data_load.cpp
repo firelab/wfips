@@ -34,26 +34,30 @@ WfipsData::LoadRescTypes()
     poScenario->m_VRescType.clear();
     sqlite3_prepare_v2( db, "SELECT * FROM resc_type", -1, &stmt,
                         NULL );
-    poScenario->m_VRescType.clear();
     const char *pszName;
     int nSpeed, nDispDelay, nRespDelay, nSetupTime;
-    while( sqlite3_step( stmt ) == SQLITE_ROW )
+    for( int i = 0; i < apoScens.size(); i++ )
     {
-        pszName = (const char*)sqlite3_column_text( stmt, 0 );
-        assert( pszName );
-        nSpeed = sqlite3_column_int( stmt, 1 );
-        assert( nSpeed >= 0 );
-        nDispDelay = sqlite3_column_int( stmt, 2 );
-        assert( nDispDelay >= 0 );
-        nRespDelay = sqlite3_column_int( stmt, 3 );
-        assert( nRespDelay >= 0 );
-        nSetupTime = sqlite3_column_int( stmt, 4 );
-        assert( nSetupTime >= 0 );
-        poScenario->m_VRescType.push_back( CRescType( std::string( pszName ),
-                                                      nSpeed, nDispDelay,
-                                                      nRespDelay, nSetupTime ) );
+        poScenario = apoScens[i];
+        poScenario->m_VRescType.clear();
+        while( sqlite3_step( stmt ) == SQLITE_ROW )
+        {
+            pszName = (const char*)sqlite3_column_text( stmt, 0 );
+            assert( pszName );
+            nSpeed = sqlite3_column_int( stmt, 1 );
+            assert( nSpeed >= 0 );
+            nDispDelay = sqlite3_column_int( stmt, 2 );
+            assert( nDispDelay >= 0 );
+            nRespDelay = sqlite3_column_int( stmt, 3 );
+            assert( nRespDelay >= 0 );
+            nSetupTime = sqlite3_column_int( stmt, 4 );
+            assert( nSetupTime >= 0 );
+            poScenario->m_VRescType.push_back( CRescType( std::string( pszName ),
+                                                          nSpeed, nDispDelay,
+                                                          nRespDelay, nSetupTime ) );
+        }
+        sqlite3_reset( stmt );
     }
-
     sqlite3_finalize( stmt );
     stmt = NULL;
     return 0;
@@ -778,7 +782,7 @@ int
 WfipsData::LoadIrsData()
 {
     int rc = 0;
-    poScenario = new CRunScenario();
+    apoScens.push_back( new CRunScenario() );
     WFIPS_CHECK;
     rc = LoadRescTypes();
     WFIPS_CHECK;
