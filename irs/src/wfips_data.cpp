@@ -1023,9 +1023,19 @@ WfipsData::WriteResults()
 }
 
 int
+WfipsData::SpatialExport( const char *pszKey )
+{
+    int rc;
+    if( poResult == NULL )
+        return SQLITE_ERROR;
+    rc = poResult->SpatialExport( pszKey );
+    return rc;
+}
+
+int
 WfipsData::SpatialSummary( const char *pszKey )
 {
-    int i, rc;
+    int rc;
     if( poResult == NULL )
         return SQLITE_ERROR;
     rc = poResult->SpatialSummary( pszKey );

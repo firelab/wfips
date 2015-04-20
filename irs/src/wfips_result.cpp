@@ -595,12 +595,94 @@ WfipsResult::SimulateLargeFire( int nJulStart, int nJulEnd, double dfNoRescProb,
 }
 
 int
+WfipsResult::SpatialExport( const char *pszKey )
+{
+    sqlite3_stmt *stmt, *lfstmt;
+    int rc, nYear;
+    const char *pszPath, *pszSql;
+    pszPath = CPLSPrintf( "%s%s", pszDataPath, FPU_DB );
+    rc = WfipsAttachDb( db, pszPath, "fpu" );
+    pszPath = CPLSPrintf( "%s%s", pszDataPath, FWA_DB );
+    rc = WfipsAttachDb( db, pszPath, "fwa" );
+
+    assert( EQUAL( pszKey, "fwa" ) || EQUAL( pszKey, "fpu" ) );
+
+    if( rc != SQLITE_OK )
+        return rc;
+
+    int bWriteLargeFire = WfipsHasTable( db, "large_fire_result" );
+
+    if( EQUAL( pszKey, "fpu" ) )
+    {
+        rc = sqlite3_exec( db, "CREATE TABLE spatial_output AS "
+                               "SELECT fpu_code as name, year, status, "
+                               "COUNT(status) FROM fire_result, fpu WHERE "
+                               "ST_Intersects(fire_result.geometry,"
+                               "fpu.geometry) AND fire_result.ROWID IN "
+                               "(SELECT pkid FROM idx_fire_result_geometry WHERE "
+                               "xmin <= MbrMaxX(fpu.geometry) AND "
+                               "xmax >= MbrMinX(fpu.geometry) AND "
+                               "ymin <= MbrMaxY(fpu.geometry) AND "
+                               "ymax >= MbrMinY(fpu.geometry)) "
+                               "GROUP BY fpu_code, year, status",
+                           NULL, NULL, NULL );
+
+        if( bWriteLargeFire )
+        {
+            /* Add columns */
+            /* FIXME: !!! */
+            rc = sqlite3_prepare_v2( db, "SELECT fpu.fpu_code, acres, pop, " \
+                                         "cost FROM large_fire_result " \
+                                         "LEFT JOIN fig.fig USING(year,fire_num) " \
+                                         "LEFT JOIN fpu.fpu ON "
+                                         "substr(fig.fwa_name,0,10)=fpu.fpu_code " \
+                                         "WHERE fpu.fpu_code=? AND year=?",
+                                     -1, &lfstmt, NULL );
+        }
+        rc = sqlite3_exec( db, "CREATE TABLE geom(name)", NULL, NULL, NULL );
+        rc = sqlite3_exec( db, "SELECT AddGeometryColumn('geom','geometry',"
+                               "4269, 'MULTIPOLYGON','XY' )",
+                           NULL, NULL, NULL );
+        rc = sqlite3_exec( db, "INSERT INTO geom(name,geometry) "
+                               "SELECT DISTINCT(name),fpu.geometry FROM "
+                               "spatial_output LEFT JOIN fpu ON name=fpu_code",
+                           NULL, NULL, NULL );
+        rc = sqlite3_prepare_v2( db, "SELECT DISTINCT(year) FROM spatial_output",
+                                 -1, &stmt, NULL );
+        while( sqlite3_step( stmt ) == SQLITE_ROW )
+        {
+            nYear = sqlite3_column_int( stmt, 0 );
+
+            pszSql = sqlite3_mprintf( "CREATE VIEW spatial_result_year_%d AS "
+                                      "SELECT spatial_output.*,"
+                                      "geom.geometry as geometry "
+                                      "FROM spatial_output LEFT JOIN geom "
+                                      "USING(name) WHERE year=%d",
+                                      nYear, nYear );
+
+            rc = sqlite3_exec( db, pszSql, NULL, NULL, NULL );
+            sqlite3_free( (void*)pszSql );
+            pszSql = sqlite3_mprintf( "INSERT INTO views_geometry_columns"
+                                      "(view_name,view_geometry,view_rowid,"
+                                      "f_table_name,f_geometry_column,"
+                                      "read_only) "
+                                      "VALUES('spatial_result_year_%d','geometry','rowid', 'geom', 'geometry',1)",
+                                      nYear );
+            rc = sqlite3_exec( db, pszSql, NULL, NULL, NULL );
+            sqlite3_free( (void*)pszSql );
+        }
+        sqlite3_reset( stmt );
+    }
+    sqlite3_finalize( stmt );
+    return 0;
+}
+
+int
 WfipsResult::SpatialSummary( const char *pszKey )
 {
     sqlite3_stmt *stmt, *sstmt, *lfstmt;
     int rc;
     char szPath[8192];
-    char szFile[8192];
     szPath[0] = '\0';
     sprintf( szPath, "%s%s", pszDataPath, FPU_DB );
     rc = WfipsAttachDb( db, szPath, "fpu" );
@@ -611,6 +693,8 @@ WfipsResult::SpatialSummary( const char *pszKey )
 
     if( rc != SQLITE_OK )
         return rc;
+
+    /* How many years to we have? */
 
     int bWriteLargeFire = WfipsHasTable( db, "large_fire_result" );
     /*

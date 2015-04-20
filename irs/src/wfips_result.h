@@ -78,6 +78,7 @@ public:
                            double dfExhaustProb, const char *pszTreatWkt,
                            double dfTreatProb );
 
+    int SpatialExport( const char *pszKey );
     int SpatialSummary( const char *pszKey );
 
     int EnableVolatile( int bVolatile );

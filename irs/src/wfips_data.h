@@ -65,7 +65,7 @@
  #else
   #define WFIPS_DATA_TEST_PATH "/home/kyle/src/wfips/build/"
  #endif
- #define WFIPS_TEST_OUTPUT_DB  ""
+ #define WFIPS_TEST_OUTPUT_DB  "TEST.DB"
 #endif
 
 #define WFIPS_SCRAP_BUFFER_SIZE 10
@@ -198,6 +198,7 @@ public:
     int SetAnalysisAreaMask( const char *pszWkt );
     int SetResultPath( const char *pszPath );
     int WriteResults();
+    int SpatialExport( const char *pszKey );
     int SpatialSummary( const char *pszKey );
     int CloseResults();
     WfipsResult * GetResults() { return poResult; }

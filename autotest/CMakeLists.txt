@@ -336,6 +336,8 @@ IF(RUN_SLOW_TESTS)
               #--run_test=wfipsdata/run_small_output_2 )
         ADD_TEST( wfips_small_output_3 ${EXECUTABLE_OUTPUT_PATH}/test_main
                   --run_test=wfipsdata/run_small_output_3 )
+        ADD_TEST( wfips_small_output_4 ${EXECUTABLE_OUTPUT_PATH}/test_main
+                  --run_test=wfipsdata/run_small_output_4 )
         ADD_TEST( wfips_small_output_lf_1 ${EXECUTABLE_OUTPUT_PATH}/test_main
                   --run_test=wfipsdata/run_small_output_lf_1 )
         ADD_TEST( wfips_small_output_fwa_1 ${EXECUTABLE_OUTPUT_PATH}/test_main
