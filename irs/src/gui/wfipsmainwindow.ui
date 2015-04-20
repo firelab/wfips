@@ -362,6 +362,16 @@
               </property>
              </widget>
             </item>
+            <item>
+             <widget class="QToolButton" name="clearRescDbButton">
+              <property name="text">
+               <string>Clear</string>
+              </property>
+              <property name="toolButtonStyle">
+               <enum>Qt::ToolButtonTextBesideIcon</enum>
+              </property>
+             </widget>
+            </item>
            </layout>
           </item>
           <item>

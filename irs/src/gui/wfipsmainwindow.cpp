@@ -209,6 +209,8 @@ void WfipsMainWindow::CreateConnections()
     /* Open a resource db */
     connect( ui->openRescDbButton, SIGNAL( clicked() ),
              this, SLOT( OpenRescDb() ) );
+    connect( ui->clearRescDbButton, SIGNAL( clicked() ),
+             this, SLOT( ClearRescDb() ) );
     /* Update the analysis layer based on the combo box choice */
     connect( ui->analysisAreaComboBox, SIGNAL( currentIndexChanged( int ) ),
              this, SLOT( UpdateAnalysisAreaMap( int ) ) );
@@ -695,6 +697,14 @@ void WfipsMainWindow::OpenRescDb()
     qDebug() << "Using" << path << "for custom resource path.";
 }
 
+void WfipsMainWindow::ClearRescDb()
+{
+    if( poData == NULL )
+        return;
+    ui->openRescDbLineEdit->setText( "" );
+    poData->SetRescDb( NULL );
+}
+
 void WfipsMainWindow::UpdateMapToolType()
 {
     /*
@@ -912,8 +922,8 @@ void WfipsMainWindow::ClearAnalysisAreaSelection()
 
     ((WfipsSelectMapTool*)analysisSelectTool)->clear();
     dispatchEditDialog->Clear();
-    poData->SetRescDb( NULL );
-    externRescDb = "";
+    //poData->SetRescDb( NULL );
+    //externRescDb = "";
 
     /* Dispatch Layer */
     if( dispatchMapCanvasLayers.size() > 0 )
