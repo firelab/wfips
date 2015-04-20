@@ -614,6 +614,12 @@ WfipsResult::SpatialExport( const char *pszKey )
 
     if( EQUAL( pszKey, "fpu" ) )
     {
+        rc = sqlite3_exec( db, "CREATE TABLE spatial_output(name,noresc DEFAULT 0,"
+                               "tlimit DEFAULT 0,slimit DEFAULT 0,exhaust DEFAULT 0,"
+                               "contain DEFAULT 0,monitor DEFAULT 0,contratio DEFAULT 0,"
+                               "lfacre DEFAULT 0,lfpop DEFAULT 0,lfcost DEFAULT 0)",
+                           NULL, NULL, NULL );
+
         rc = sqlite3_exec( db, "CREATE TABLE spatial_output AS "
                                "SELECT fpu_code as name, year, status, "
                                "COUNT(status) FROM fire_result, fpu WHERE "
