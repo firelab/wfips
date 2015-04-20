@@ -691,10 +691,7 @@ void WfipsMainWindow::OpenRescDb()
     ui->openRescDbLineEdit->setText( path );
     if( path == "" )
         return;
-    char *pszDb = QStringToCString( path );
-    poData->SetRescDb( pszDb );
-    free( (void*)pszDb );
-    qDebug() << "Using" << path << "for custom resource path.";
+    SetExternRescDb( path );
 }
 
 void WfipsMainWindow::ClearRescDb()
@@ -702,6 +699,7 @@ void WfipsMainWindow::ClearRescDb()
     if( poData == NULL )
         return;
     ui->openRescDbLineEdit->setText( "" );
+    externRescDb = "";
     poData->SetRescDb( NULL );
 }
 
@@ -1347,6 +1345,13 @@ void WfipsMainWindow::HideDispatchLocations( QgsFeatureIds fids )
 
 void WfipsMainWindow::SetExternRescDb( QString path )
 {
+    if( !poData )
+        return;
+    char *pszDb = QStringToCString( path );
+    poData->SetRescDb( pszDb );
+    free( (void*)pszDb );
+    qDebug() << "Using" << path << "for custom resource path.";
+    ui->openRescDbLineEdit-> setText( path );
     externRescDb = path;
 }
 
