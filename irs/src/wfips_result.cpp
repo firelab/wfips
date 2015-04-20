@@ -636,7 +636,11 @@ WfipsResult::SpatialExport( const char *pszKey )
         ** custer      a           4
         ** custer      d           4
         **
-        ** sqlite> select c1, sum(case when c2='a' then val else 0 end) as a, sum(case when c2='b' then val else 0 end) as b, sum(case when c2='c' then val else 0 end) as c, sum(case when c2='d' then val else 0 end) as d from (select c1,c2,count(c2) as val from t1 group by c1,c2) group by c1;
+        ** sqlite> select c1, sum(case when c2='a' then val else 0 end) as a, 
+        ** sum(case when c2='b' then val else 0 end) as b, sum(case when c2='c'
+        ** then val else 0 end) as c, sum(case when c2='d' then val else 0 end)
+        ** as d from (select c1,c2,count(c2) as val from t1 group by c1,c2)
+        ** group by c1;
         ** c1          a           b           c           d
         ** ----------  ----------  ----------  ----------  ----------
         ** ada         7           8           4           1
@@ -645,7 +649,11 @@ WfipsResult::SpatialExport( const char *pszKey )
         **
         ** And with the years:
         **
-        ** select c1,c2 as year,sum(case when c3='a' then val else 0 end) as a, sum(case when c3='b' then val else 0 end) as b, sum(case when c3='c' then val else 0 end) as c, sum(case when c3='d' then val else 0 end) as d from (select c1,c2,c3,count(c3) as val from t2 group by c1,c2,c3) group by c1,c2;
+        ** select c1,c2 as year,sum(case when c3='a' then val else 0 end) as a,
+        ** sum(case when c3='b' then val else 0 end) as b, sum(case when c3='c'
+        ** then val else 0 end) as c, sum(case when c3='d' then val else 0 end)
+        ** as d from (select c1,c2,c3,count(c3) as val from t2 group by c1,c2,c3)
+        ** group by c1,c2;
         */
         rc = sqlite3_exec( db, "CREATE TABLE spatial_output AS "
                                "SELECT fpu_code as name, year, "
