@@ -614,23 +614,64 @@ WfipsResult::SpatialExport( const char *pszKey )
 
     if( EQUAL( pszKey, "fpu" ) )
     {
-        rc = sqlite3_exec( db, "CREATE TABLE spatial_output(name,noresc DEFAULT 0,"
-                               "tlimit DEFAULT 0,slimit DEFAULT 0,exhaust DEFAULT 0,"
-                               "contain DEFAULT 0,monitor DEFAULT 0,contratio DEFAULT 0,"
-                               "lfacre DEFAULT 0,lfpop DEFAULT 0,lfcost DEFAULT 0)",
-                           NULL, NULL, NULL );
-
+        /*
+        ** This is how we can do this???
+        **
+        ** sqlite> pragma table_info(t1);
+        ** cid         name        type        notnull     dflt_value  pk
+        ** ----------  ----------  ----------  ----------  ----------  ----------
+        ** 0           c1                      0                       0
+        ** 1           c2                      0                       0
+        **
+        ** sqlite> select c1,c2,count(c2) as val from t1 group by c1,c2;
+        ** c1          c2          val
+        ** ----------  ----------  ----------
+        ** ada         a           7
+        ** ada         b           8
+        ** ada         c           4
+        ** ada         d           1
+        ** blaine      a           1
+        ** blaine      b           2
+        ** blaine      c           2
+        ** custer      a           4
+        ** custer      d           4
+        **
+        ** sqlite> select c1, sum(case when c2='a' then val else 0 end) as a, sum(case when c2='b' then val else 0 end) as b, sum(case when c2='c' then val else 0 end) as c, sum(case when c2='d' then val else 0 end) as d from (select c1,c2,count(c2) as val from t1 group by c1,c2) group by c1;
+        ** c1          a           b           c           d
+        ** ----------  ----------  ----------  ----------  ----------
+        ** ada         7           8           4           1
+        ** blaine      1           2           2           0
+        ** custer      4           0           0           4
+        **
+        ** And with the years:
+        **
+        ** select c1,c2 as year,sum(case when c3='a' then val else 0 end) as a, sum(case when c3='b' then val else 0 end) as b, sum(case when c3='c' then val else 0 end) as c, sum(case when c3='d' then val else 0 end) as d from (select c1,c2,c3,count(c3) as val from t2 group by c1,c2,c3) group by c1,c2;
+        */
         rc = sqlite3_exec( db, "CREATE TABLE spatial_output AS "
-                               "SELECT fpu_code as name, year, status, "
-                               "COUNT(status) FROM fire_result, fpu WHERE "
-                               "ST_Intersects(fire_result.geometry,"
-                               "fpu.geometry) AND fire_result.ROWID IN "
-                               "(SELECT pkid FROM idx_fire_result_geometry WHERE "
-                               "xmin <= MbrMaxX(fpu.geometry) AND "
-                               "xmax >= MbrMinX(fpu.geometry) AND "
-                               "ymin <= MbrMaxY(fpu.geometry) AND "
-                               "ymax >= MbrMinY(fpu.geometry)) "
-                               "GROUP BY fpu_code, year, status",
+                               "SELECT fpu_code as name, year, "
+                               "SUM(CASE WHEN status='"NO_RESC_SENT_STR"'"
+                               "    THEN c ELSE 0 END) as noresc,"
+                               "SUM(CASE WHEN status='"TIME_LIMIT_EXCEED_STR"'"
+                               "    THEN c ELSE 0 END) as tlimit,"
+                               "SUM(CASE WHEN status='"SIZE_LIMIT_EXCEED_STR"'"
+                               "    THEN c ELSE 0 END) as slimit,"
+                               "SUM(CASE WHEN status='"EXHAUSTED_STR"'"
+                               "    THEN c ELSE 0 END) as exhaust,"
+                               "SUM(CASE WHEN status='"CONTAINED_STR"'"
+                               "    THEN c ELSE 0 END) as contain,"
+                               "SUM(CASE WHEN status='"MONITOR_STR"'"
+                               "    THEN c ELSE 0 END) as monitor "
+                               "FROM(SELECT fpu_code,year,status,COUNT(status) as c "
+                               "     FROM fire_result, fpu WHERE "
+                               "    ST_Intersects(fire_result.geometry,"
+                               "    fpu.geometry) AND fire_result.ROWID IN "
+                               "        (SELECT pkid FROM idx_fire_result_geometry WHERE "
+                               "        xmin <= MbrMaxX(fpu.geometry) AND "
+                               "        xmax >= MbrMinX(fpu.geometry) AND "
+                               "        ymin <= MbrMaxY(fpu.geometry) AND "
+                               "        ymax >= MbrMinY(fpu.geometry)) "
+                               "    GROUP BY fpu_code, year, status) "
+                               " GROUP BY name,year",
                            NULL, NULL, NULL );
 
         if( bWriteLargeFire )
