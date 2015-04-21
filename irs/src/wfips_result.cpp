@@ -636,6 +636,7 @@ WfipsResult::SpatialExport( const char *pszKey )
         assert( 0 );
     }
 
+    EnableVolatile( 1 );
     StartTransaction();
 
     /*
@@ -740,6 +741,8 @@ WfipsResult::SpatialExport( const char *pszKey )
         std::vector<int>anPop;
         std::vector<int>anCost;
 
+        StartTransaction();
+
         while( sqlite3_step( lfstmt ) == SQLITE_ROW )
         {
             pszPlace = (const char*)sqlite3_column_text( lfstmt, 0 );
@@ -775,6 +778,7 @@ WfipsResult::SpatialExport( const char *pszKey )
             rc = sqlite3_reset( lfustmt );
         }
         sqlite3_finalize( lfustmt );
+        Commit();
     }
     sqlite3_exec(db, "UPDATE spatial_output SET lf_acres=1, lf_pop=2,lf_cost=3"
                      "WHERE name='NR_MT_003' AND year=5", NULL, NULL, NULL );
@@ -860,6 +864,7 @@ WfipsResult::SpatialExport( const char *pszKey )
                        NULL, NULL, NULL );
 
     Commit();
+    EnableVolatile( 0 );
 
     return 0;
 }
