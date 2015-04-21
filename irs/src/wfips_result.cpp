@@ -708,7 +708,7 @@ WfipsResult::SpatialExport( const char *pszKey )
         {
             nYear = sqlite3_column_int( stmt, 0 );
 
-            pszSql = sqlite3_mprintf( "CREATE VIEW spatial_result_year_%d AS "
+            pszSql = sqlite3_mprintf( "CREATE VIEW spatial_result_%d AS "
                                       "SELECT spatial_output.*,"
                                       "geom.geometry as geometry "
                                       "FROM spatial_output LEFT JOIN geom "
@@ -721,7 +721,8 @@ WfipsResult::SpatialExport( const char *pszKey )
                                       "(view_name,view_geometry,view_rowid,"
                                       "f_table_name,f_geometry_column,"
                                       "read_only) "
-                                      "VALUES('spatial_result_year_%d','geometry','rowid', 'geom', 'geometry',1)",
+                                      "VALUES('spatial_result_%d',"
+                                      "'geometry','rowid','geom','geometry',1)",
                                       nYear );
             rc = sqlite3_exec( db, pszSql, NULL, NULL, NULL );
             sqlite3_free( (void*)pszSql );
@@ -729,7 +730,54 @@ WfipsResult::SpatialExport( const char *pszKey )
         sqlite3_reset( stmt );
     }
     sqlite3_finalize( stmt );
+    /* Summary layer */
+    rc = sqlite3_exec( db, "CREATE VIEW spatial_result_summary AS "
+                           "SELECT name, "
+                           "MAX(noresc) AS noresc_max,"
+                           "AVG(noresc) AS noresc_avg,"
+                           "MIN(noresc) AS noresc_min,"
+                           "MAX(tlimit) AS tlimit_max,"
+                           "AVG(tlimit) AS tlimit_avg,"
+                           "MIN(tlimit) AS tlimit_min,"
+                           "MAX(slimit) AS slimit_max,"
+                           "AVG(slimit) AS slimit_avg,"
+                           "MIN(slimit) AS slimit_min,"
+                           "MAX(exhaust) AS exhaust_max,"
+                           "AVG(exhaust) AS exhaust_avg,"
+                           "MIN(exhaust) AS exhaust_min,"
+                           "MAX(contain) AS contain_max,"
+                           "AVG(contain) AS contain_avg,"
+                           "MIN(contain) AS contain_min,"
+                           "MAX(monitor) AS monitor_max,"
+                           "AVG(monitor) AS monitor_avg,"
+                           "MIN(monitor) AS monitor_min,"
+                           "geom.geometry as geometry "
+                           "FROM spatial_output LEFT JOIN "
+                           "geom USING(name) GROUP BY name",
+                       NULL, NULL, NULL );
+    rc = sqlite3_exec( db, "INSERT INTO views_geometry_columns"
+                           "(view_name,view_geometry,view_rowid,"
+                           "f_table_name,f_geometry_column,read_only) "
+                           "VALUES('spatial_result_summary','geometry','rowid',"
+                           "'geom','geometry',1)",
+                       NULL, NULL, NULL );
+
     return 0;
+}
+
+std::vector<int>
+WfipsResult::GetResultYears()
+{
+    sqlite3_stmt *stmt;
+    int rc;
+    std::vector<int>anYears;
+    rc = sqlite3_prepare_v2( db, "SELECT DISTINCT year FROM spatial_output", -1,
+                             &stmt, NULL );
+    while( sqlite3_step( stmt ) == SQLITE_ROW )
+    {
+        anYears.push_back( sqlite3_column_int( stmt, 0 ) );
+    }
+    return anYears;
 }
 
 int

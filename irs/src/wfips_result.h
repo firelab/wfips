@@ -79,6 +79,7 @@ public:
                            double dfTreatProb );
 
     int SpatialExport( const char *pszKey );
+    std::vector<int> GetResultYears();
     int SpatialSummary( const char *pszKey );
 
     int EnableVolatile( int bVolatile );

@@ -289,8 +289,10 @@ private slots:
     void ClearResults();
     void ShowResults( QString qgisLayerPath );
     void OpenResults();
+    void OpenResults2( QString path );
     void ExportResults();
     void SetResultColorRamp( QString attribute );
+    void ChangeResultYear( QString index );
 
     /* Settings */
     void ReadSettings();

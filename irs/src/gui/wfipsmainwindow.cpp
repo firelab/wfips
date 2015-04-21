@@ -230,6 +230,8 @@ void WfipsMainWindow::CreateConnections()
              this, SLOT( ExportResults() ) );
     connect( ui->resultAttComboBox, SIGNAL(currentIndexChanged( QString ) ),
              this, SLOT( SetResultColorRamp( QString ) ) );
+    connect( ui->resultYearComboBox, SIGNAL( currentIndexChanged( QString ) ),
+             this, SLOT( ChangeResultYear( QString ) ) );
 }
 
 void WfipsMainWindow::PostConstructionActions()
@@ -1599,15 +1601,16 @@ int WfipsMainWindow::RunIrs()
     {
         int nIdx = ui->spatSumComboBox->currentIndex();
         if( nIdx == 0 )
-            rc = poData->SpatialSummary( "fpu" );
+            rc = poData->SpatialExport( "fpu" );
         else
-            rc = poData->SpatialSummary( "fwa" );
+            rc = poData->SpatialExport( "fwa" );
     }
     this->statusBar()->showMessage( "Done." );
     free( (void*)pszTreatWkt );
     free( (void*)pszPath );
     /* We should probably make our own, and leave this one alone */
-    ShowResults( outputFile );
+    //ShowResults( outputFile );
+    OpenResults2( outputFile );
     this->setEnabled( true );
     return rc;
 }
@@ -1646,7 +1649,7 @@ void WfipsMainWindow::SetResultColorRamp( QString attribute )
     }
     /* Good/bad?  high contain ratio is good, others are usually bad. */
     bool invert = false;
-    if( attribute != "contratio" && attribute != "contain" )
+    if( attribute.contains( "cont" ) )
         invert = true;
     /*
     ** Do we own these?  It appears the layer owns the actual renderer and
@@ -1672,14 +1675,14 @@ void WfipsMainWindow::ShowResults( QString qgisResultPath )
 {
     if( qgisResultPath == "" )
         return;
-    QString layerPath = qgisResultPath + "|layername=spatial_result";
-    QgsVectorLayer *layer = new QgsVectorLayer( layerPath, "result", "ogr", true );
+    QgsVectorLayer *layer = new QgsVectorLayer( qgisResultPath, "result", "ogr", true );
     if( !layer->isValid() )
     {
         delete layer;
         qDebug() << "Invalid result layer";
         return;
     }
+    int iIdx = ui->resultAttComboBox->currentIndex();
     ClearResults();
     layer->setReadOnly( true );
     QgsMapLayerRegistry::instance()->addMapLayer( layer, true );
@@ -1694,15 +1697,18 @@ void WfipsMainWindow::ShowResults( QString qgisResultPath )
     QgsFields fields = layer->dataProvider()->fields();
     disconnect( ui->resultAttComboBox, SIGNAL( currentIndexChanged( QString ) ),
                 this, SLOT( SetResultColorRamp( QString ) ) );
-    /* Skip name */
-    for( int i = 1; i < fields.size(); i++ )
+    QString att;
+    for( int i = 0; i < fields.size(); i++ )
     {
-        ui->resultAttComboBox->addItem( fields[i].name() );
+        att = fields[i].name();
+        if( att == "name" || att == "year" )
+            continue;
+        ui->resultAttComboBox->addItem( att );
     }
     connect( ui->resultAttComboBox, SIGNAL( currentIndexChanged( QString ) ),
              this, SLOT( SetResultColorRamp( QString ) ) );
     ui->resultAttComboBox->setCurrentIndex( 1 );
-    ui->resultAttComboBox->setCurrentIndex( 0 );
+    ui->resultAttComboBox->setCurrentIndex( iIdx );
     return;
 }
 
@@ -1714,8 +1720,38 @@ void WfipsMainWindow::OpenResults()
                                       "", tr( "WFIPS Database files (*.db)" ) );
     if( resultsFile == "" )
         return;
-    ShowResults( resultsFile );
+    return OpenResults2( resultsFile );
 }
+
+void WfipsMainWindow::OpenResults2( QString path )
+{
+    int i;
+    std::vector<int>anYears;
+    char *pszPath, *pszDataPath;
+    ui->resultYearComboBox->clear();
+    pszPath = QStringToCString( path );
+    pszDataPath = QStringToCString( wfipsPath );
+    WfipsResult oResults( pszPath, pszDataPath );
+    free( pszPath );
+    free( pszDataPath );
+    if( !oResults.Valid() )
+        return;
+    anYears = oResults.GetResultYears();
+    for( i = 0; i < anYears.size(); i++ )
+    {
+        ui->resultYearComboBox->addItem( QString::number( anYears[i] ) );
+    }
+    ui->resultYearComboBox->addItem( "summary" );
+    currentResultPath = path;
+    //ShowResults( resultsFile );
+}
+
+void WfipsMainWindow::ChangeResultYear( QString text )
+{
+    QString layerPath = currentResultPath + "|layername=spatial_result_" + text;
+    ShowResults( layerPath );
+}
+
 
 void WfipsMainWindow::ExportResults()
 {
