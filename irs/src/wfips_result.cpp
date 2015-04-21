@@ -612,123 +612,178 @@ WfipsResult::SpatialExport( const char *pszKey )
 
     int bWriteLargeFire = WfipsHasTable( db, "large_fire_result" );
 
+    const char *pszName, *pszTable;
     if( EQUAL( pszKey, "fpu" ) )
     {
-        /*
-        ** This is how we can do this???
-        **
-        ** sqlite> pragma table_info(t1);
-        ** cid         name        type        notnull     dflt_value  pk
-        ** ----------  ----------  ----------  ----------  ----------  ----------
-        ** 0           c1                      0                       0
-        ** 1           c2                      0                       0
-        **
-        ** sqlite> select c1,c2,count(c2) as val from t1 group by c1,c2;
-        ** c1          c2          val
-        ** ----------  ----------  ----------
-        ** ada         a           7
-        ** ada         b           8
-        ** ada         c           4
-        ** ada         d           1
-        ** blaine      a           1
-        ** blaine      b           2
-        ** blaine      c           2
-        ** custer      a           4
-        ** custer      d           4
-        **
-        ** sqlite> select c1, sum(case when c2='a' then val else 0 end) as a, 
-        ** sum(case when c2='b' then val else 0 end) as b, sum(case when c2='c'
-        ** then val else 0 end) as c, sum(case when c2='d' then val else 0 end)
-        ** as d from (select c1,c2,count(c2) as val from t1 group by c1,c2)
-        ** group by c1;
-        ** c1          a           b           c           d
-        ** ----------  ----------  ----------  ----------  ----------
-        ** ada         7           8           4           1
-        ** blaine      1           2           2           0
-        ** custer      4           0           0           4
-        **
-        ** And with the years:
-        **
-        ** select c1,c2 as year,sum(case when c3='a' then val else 0 end) as a,
-        ** sum(case when c3='b' then val else 0 end) as b, sum(case when c3='c'
-        ** then val else 0 end) as c, sum(case when c3='d' then val else 0 end)
-        ** as d from (select c1,c2,c3,count(c3) as val from t2 group by c1,c2,c3)
-        ** group by c1,c2;
-        */
-        rc = sqlite3_exec( db, "CREATE TABLE spatial_output AS "
-                               "SELECT fpu_code as name, year, "
-                               "SUM(CASE WHEN status='"NO_RESC_SENT_STR"'"
-                               "    THEN c ELSE 0 END) as noresc,"
-                               "SUM(CASE WHEN status='"TIME_LIMIT_EXCEED_STR"'"
-                               "    THEN c ELSE 0 END) as tlimit,"
-                               "SUM(CASE WHEN status='"SIZE_LIMIT_EXCEED_STR"'"
-                               "    THEN c ELSE 0 END) as slimit,"
-                               "SUM(CASE WHEN status='"EXHAUSTED_STR"'"
-                               "    THEN c ELSE 0 END) as exhaust,"
-                               "SUM(CASE WHEN status='"CONTAINED_STR"'"
-                               "    THEN c ELSE 0 END) as contain,"
-                               "SUM(CASE WHEN status='"MONITOR_STR"'"
-                               "    THEN c ELSE 0 END) as monitor "
-                               "FROM(SELECT fpu_code,year,status,COUNT(status) as c "
-                               "     FROM fire_result, fpu WHERE "
-                               "    ST_Intersects(fire_result.geometry,"
-                               "    fpu.geometry) AND fire_result.ROWID IN "
-                               "        (SELECT pkid FROM idx_fire_result_geometry WHERE "
-                               "        xmin <= MbrMaxX(fpu.geometry) AND "
-                               "        xmax >= MbrMinX(fpu.geometry) AND "
-                               "        ymin <= MbrMaxY(fpu.geometry) AND "
-                               "        ymax >= MbrMinY(fpu.geometry)) "
-                               "    GROUP BY fpu_code, year, status) "
-                               " GROUP BY name,year",
-                           NULL, NULL, NULL );
-
-        if( bWriteLargeFire )
-        {
-            /* Add columns */
-            /* FIXME: !!! */
-            rc = sqlite3_prepare_v2( db, "SELECT fpu.fpu_code, acres, pop, " \
-                                         "cost FROM large_fire_result " \
-                                         "LEFT JOIN fig.fig USING(year,fire_num) " \
-                                         "LEFT JOIN fpu.fpu ON "
-                                         "substr(fig.fwa_name,0,10)=fpu.fpu_code " \
-                                         "WHERE fpu.fpu_code=? AND year=?",
-                                     -1, &lfstmt, NULL );
-        }
-        rc = sqlite3_exec( db, "CREATE TABLE geom(name)", NULL, NULL, NULL );
-        rc = sqlite3_exec( db, "SELECT AddGeometryColumn('geom','geometry',"
-                               "4269, 'MULTIPOLYGON','XY' )",
-                           NULL, NULL, NULL );
-        rc = sqlite3_exec( db, "INSERT INTO geom(name,geometry) "
-                               "SELECT DISTINCT(name),fpu.geometry FROM "
-                               "spatial_output LEFT JOIN fpu ON name=fpu_code",
-                           NULL, NULL, NULL );
-        rc = sqlite3_prepare_v2( db, "SELECT DISTINCT(year) FROM spatial_output",
-                                 -1, &stmt, NULL );
-        while( sqlite3_step( stmt ) == SQLITE_ROW )
-        {
-            nYear = sqlite3_column_int( stmt, 0 );
-
-            pszSql = sqlite3_mprintf( "CREATE VIEW spatial_result_%d AS "
-                                      "SELECT spatial_output.*,"
-                                      "geom.geometry as geometry "
-                                      "FROM spatial_output LEFT JOIN geom "
-                                      "USING(name) WHERE year=%d",
-                                      nYear, nYear );
-
-            rc = sqlite3_exec( db, pszSql, NULL, NULL, NULL );
-            sqlite3_free( (void*)pszSql );
-            pszSql = sqlite3_mprintf( "INSERT INTO views_geometry_columns"
-                                      "(view_name,view_geometry,view_rowid,"
-                                      "f_table_name,f_geometry_column,"
-                                      "read_only) "
-                                      "VALUES('spatial_result_%d',"
-                                      "'geometry','rowid','geom','geometry',1)",
-                                      nYear );
-            rc = sqlite3_exec( db, pszSql, NULL, NULL, NULL );
-            sqlite3_free( (void*)pszSql );
-        }
-        sqlite3_reset( stmt );
+        pszName = "fpu_code";
+        pszTable = "fpu";
     }
+    else if( EQUAL( pszKey, "fwa" ) )
+    {
+        pszName = "name";
+        pszTable = "fwa";
+    }
+    else
+    {
+        assert( 0 );
+    }
+
+    /*
+    ** This is how we can do this???
+    **
+    ** sqlite> pragma table_info(t1);
+    ** cid         name        type        notnull     dflt_value  pk
+    ** ----------  ----------  ----------  ----------  ----------  ----------
+    ** 0           c1                      0                       0
+    ** 1           c2                      0                       0
+    **
+    ** sqlite> select c1,c2,count(c2) as val from t1 group by c1,c2;
+    ** c1          c2          val
+    ** ----------  ----------  ----------
+    ** ada         a           7
+    ** ada         b           8
+    ** ada         c           4
+    ** ada         d           1
+    ** blaine      a           1
+    ** blaine      b           2
+    ** blaine      c           2
+    ** custer      a           4
+    ** custer      d           4
+    **
+    ** sqlite> select c1, sum(case when c2='a' then val else 0 end) as a, 
+    ** sum(case when c2='b' then val else 0 end) as b, sum(case when c2='c'
+    ** then val else 0 end) as c, sum(case when c2='d' then val else 0 end)
+    ** as d from (select c1,c2,count(c2) as val from t1 group by c1,c2)
+    ** group by c1;
+    ** c1          a           b           c           d
+    ** ----------  ----------  ----------  ----------  ----------
+    ** ada         7           8           4           1
+    ** blaine      1           2           2           0
+    ** custer      4           0           0           4
+    **
+    ** And with the years:
+    **
+    ** select c1,c2 as year,sum(case when c3='a' then val else 0 end) as a,
+    ** sum(case when c3='b' then val else 0 end) as b, sum(case when c3='c'
+    ** then val else 0 end) as c, sum(case when c3='d' then val else 0 end)
+    ** as d from (select c1,c2,c3,count(c3) as val from t2 group by c1,c2,c3)
+    ** group by c1,c2;
+    */
+    pszSql = sqlite3_mprintf( "CREATE TABLE spatial_output AS "
+                              "SELECT %s as name, year, "
+                              "SUM(CASE WHEN status='"NO_RESC_SENT_STR"'"
+                              "    THEN c ELSE 0 END) as noresc,"
+                              "SUM(CASE WHEN status='"TIME_LIMIT_EXCEED_STR"'"
+                              "    THEN c ELSE 0 END) as tlimit,"
+                              "SUM(CASE WHEN status='"SIZE_LIMIT_EXCEED_STR"'"
+                              "    THEN c ELSE 0 END) as slimit,"
+                              "SUM(CASE WHEN status='"EXHAUSTED_STR"'"
+                              "    THEN c ELSE 0 END) as exhaust,"
+                              "SUM(CASE WHEN status='"CONTAINED_STR"'"
+                              "    THEN c ELSE 0 END) as contain,"
+                              "SUM(CASE WHEN status='"MONITOR_STR"'"
+                              "    THEN c ELSE 0 END) as monitor "
+                              "FROM(SELECT %s,year,status,COUNT(status) as c "
+                              "     FROM fire_result,%s WHERE "
+                              "    ST_Intersects(fire_result.geometry,"
+                              "    %s.geometry) AND fire_result.ROWID IN "
+                              "        (SELECT pkid FROM idx_fire_result_geometry WHERE "
+                              "        xmin <= MbrMaxX(%s.geometry) AND "
+                              "        xmax >= MbrMinX(%s.geometry) AND "
+                              "        ymin <= MbrMaxY(%s.geometry) AND "
+                              "        ymax >= MbrMinY(%s.geometry)) "
+                              "    GROUP BY %s, year, status) "
+                              " GROUP BY name,year", pszName, pszName,
+                              pszTable, pszTable, pszTable, pszTable, pszTable,
+                              pszTable, pszName );
+    rc = sqlite3_exec( db, pszSql, NULL, NULL, NULL );
+    sqlite3_free( (void*)pszSql );
+
+    /*
+    rc = sqlite3_exec( db, "CREATE TABLE spatial_output AS "
+                           "SELECT fpu_code as name, year, "
+                           "SUM(CASE WHEN status='"NO_RESC_SENT_STR"'"
+                           "    THEN c ELSE 0 END) as noresc,"
+                           "SUM(CASE WHEN status='"TIME_LIMIT_EXCEED_STR"'"
+                           "    THEN c ELSE 0 END) as tlimit,"
+                           "SUM(CASE WHEN status='"SIZE_LIMIT_EXCEED_STR"'"
+                           "    THEN c ELSE 0 END) as slimit,"
+                           "SUM(CASE WHEN status='"EXHAUSTED_STR"'"
+                           "    THEN c ELSE 0 END) as exhaust,"
+                           "SUM(CASE WHEN status='"CONTAINED_STR"'"
+                           "    THEN c ELSE 0 END) as contain,"
+                           "SUM(CASE WHEN status='"MONITOR_STR"'"
+                           "    THEN c ELSE 0 END) as monitor "
+                           "FROM(SELECT fpu_code,year,status,COUNT(status) as c "
+                           "     FROM fire_result, fpu WHERE "
+                           "    ST_Intersects(fire_result.geometry,"
+                           "    fpu.geometry) AND fire_result.ROWID IN "
+                           "        (SELECT pkid FROM idx_fire_result_geometry WHERE "
+                           "        xmin <= MbrMaxX(fpu.geometry) AND "
+                           "        xmax >= MbrMinX(fpu.geometry) AND "
+                           "        ymin <= MbrMaxY(fpu.geometry) AND "
+                           "        ymax >= MbrMinY(fpu.geometry)) "
+                           "    GROUP BY fpu_code, year, status) "
+                           " GROUP BY name,year",
+                       NULL, NULL, NULL );
+    */
+
+    if( bWriteLargeFire )
+    {
+        /* Add columns */
+        /* FIXME: !!! */
+        rc = sqlite3_prepare_v2( db, "SELECT fpu.fpu_code, acres, pop, "
+                                     "cost FROM large_fire_result "
+                                     "LEFT JOIN fig.fig USING(year,fire_num) "
+                                     "LEFT JOIN fpu.fpu ON "
+                                     "substr(fig.fwa_name,0,10)=fpu.fpu_code "
+                                     "WHERE fpu.fpu_code=? AND year=?",
+                                 -1, &lfstmt, NULL );
+    }
+    rc = sqlite3_exec( db, "CREATE TABLE geom(name)", NULL, NULL, NULL );
+    rc = sqlite3_exec( db, "SELECT AddGeometryColumn('geom','geometry',"
+                           "4269, 'MULTIPOLYGON','XY' )",
+                       NULL, NULL, NULL );
+    pszSql = sqlite3_mprintf( "INSERT INTO geom(name,geometry) "
+                              "SELECT DISTINCT(spatial_output.name),"
+                              "%s.geometry FROM spatial_output "
+                              "LEFT JOIN %s ON spatial_output.name=%s.%s",
+                              pszTable, pszTable, pszTable, pszName );
+    rc = sqlite3_exec( db, pszSql, NULL, NULL, NULL );
+    sqlite3_free( (void*)pszSql );
+
+    /*
+    rc = sqlite3_exec( db, "INSERT INTO geom(name,geometry) "
+                           "SELECT DISTINCT(name),fpu.geometry FROM "
+                           "spatial_output LEFT JOIN fpu ON name=fpu_code",
+                       NULL, NULL, NULL );
+    */
+    rc = sqlite3_prepare_v2( db, "SELECT DISTINCT(year) FROM spatial_output",
+                             -1, &stmt, NULL );
+    while( sqlite3_step( stmt ) == SQLITE_ROW )
+    {
+        nYear = sqlite3_column_int( stmt, 0 );
+
+        pszSql = sqlite3_mprintf( "CREATE VIEW spatial_result_%d AS "
+                                  "SELECT spatial_output.*,"
+                                  "geom.geometry as geometry "
+                                  "FROM spatial_output LEFT JOIN geom "
+                                  "USING(name) WHERE year=%d",
+                                  nYear, nYear );
+
+        rc = sqlite3_exec( db, pszSql, NULL, NULL, NULL );
+        sqlite3_free( (void*)pszSql );
+        pszSql = sqlite3_mprintf( "INSERT INTO views_geometry_columns"
+                                  "(view_name,view_geometry,view_rowid,"
+                                  "f_table_name,f_geometry_column,"
+                                  "read_only) "
+                                  "VALUES('spatial_result_%d',"
+                                  "'geometry','rowid','geom','geometry',1)",
+                                  nYear );
+        rc = sqlite3_exec( db, pszSql, NULL, NULL, NULL );
+        sqlite3_free( (void*)pszSql );
+    }
+    sqlite3_reset( stmt );
     sqlite3_finalize( stmt );
     /* Summary layer */
     rc = sqlite3_exec( db, "CREATE VIEW spatial_result_summary AS "
