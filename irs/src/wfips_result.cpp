@@ -410,7 +410,11 @@ WfipsResult::SimulateLargeFire( int nJulStart, int nJulEnd, double dfNoRescProb,
     rc = sqlite3_exec( db, "CREATE TABLE IF NOT EXISTS " \
                            "large_fire_result(year,fire_num,acres,pop,cost)",
                        NULL, NULL, NULL );
-    rc = sqlite3_prepare_v2( db, "INSERT INTO large_fire_result VALUES(?,?,?,?,?)",
+    rc = sqlite3_exec( db, "SELECT AddGeometryColumn('large_fire_result',"
+                           "'geometry', 4269, 'POINT', 'XY')",
+                       NULL, NULL, NULL );
+    rc = sqlite3_prepare_v2( db, "INSERT INTO large_fire_result "
+                                 "VALUES(?,?,?,?,?,MakePoint(?,?,4269))",
                              -1, &lfistmt, NULL );
 
     double dfRadius = 0.1;
@@ -578,6 +582,8 @@ WfipsResult::SimulateLargeFire( int nJulStart, int nJulEnd, double dfNoRescProb,
                 rc = sqlite3_bind_int( lfistmt, 3, pasFires[k].dfSize );
                 rc = sqlite3_bind_int( lfistmt, 4, pasFires[k].dfPop );
                 rc = sqlite3_bind_double( lfistmt, 5, pasFires[k].dfCost );
+                rc = sqlite3_bind_double( lfistmt, 6, dfX );
+                rc = sqlite3_bind_double( lfistmt, 7, dfY );
                 rc = sqlite3_step( lfistmt );
                 sqlite3_reset( lfistmt );
             }
@@ -590,6 +596,8 @@ WfipsResult::SimulateLargeFire( int nJulStart, int nJulEnd, double dfNoRescProb,
     sqlite3_finalize( gstmt );
     sqlite3_free( pTreatGeom );
     sqlite3_free( pasFires );
+    rc = sqlite3_exec( db, "SELECT CreateSpatialIndex('large_fire_result','geometry')",
+                       NULL, NULL, NULL );
     Commit();
     return 0;
 }
@@ -597,7 +605,7 @@ WfipsResult::SimulateLargeFire( int nJulStart, int nJulEnd, double dfNoRescProb,
 int
 WfipsResult::SpatialExport( const char *pszKey )
 {
-    sqlite3_stmt *stmt, *lfstmt;
+    sqlite3_stmt *stmt, *lfstmt, *lfustmt;
     int rc, nYear;
     const char *pszPath, *pszSql;
     pszPath = CPLSPrintf( "%s%s", pszDataPath, FPU_DB );
@@ -627,6 +635,8 @@ WfipsResult::SpatialExport( const char *pszKey )
     {
         assert( 0 );
     }
+
+    StartTransaction();
 
     /*
     ** This is how we can do this???
@@ -682,7 +692,8 @@ WfipsResult::SpatialExport( const char *pszKey )
                               "SUM(CASE WHEN status='"CONTAINED_STR"'"
                               "    THEN c ELSE 0 END) as contain,"
                               "SUM(CASE WHEN status='"MONITOR_STR"'"
-                              "    THEN c ELSE 0 END) as monitor "
+                              "    THEN c ELSE 0 END) as monitor, "
+                              "0 as lf_acres, 0 as lf_pop, 0 as lf_cost "
                               "FROM(SELECT %s,year,status,COUNT(status) as c "
                               "     FROM fire_result,%s WHERE "
                               "    ST_Intersects(fire_result.geometry,"
@@ -699,47 +710,52 @@ WfipsResult::SpatialExport( const char *pszKey )
     rc = sqlite3_exec( db, pszSql, NULL, NULL, NULL );
     sqlite3_free( (void*)pszSql );
 
-    /*
-    rc = sqlite3_exec( db, "CREATE TABLE spatial_output AS "
-                           "SELECT fpu_code as name, year, "
-                           "SUM(CASE WHEN status='"NO_RESC_SENT_STR"'"
-                           "    THEN c ELSE 0 END) as noresc,"
-                           "SUM(CASE WHEN status='"TIME_LIMIT_EXCEED_STR"'"
-                           "    THEN c ELSE 0 END) as tlimit,"
-                           "SUM(CASE WHEN status='"SIZE_LIMIT_EXCEED_STR"'"
-                           "    THEN c ELSE 0 END) as slimit,"
-                           "SUM(CASE WHEN status='"EXHAUSTED_STR"'"
-                           "    THEN c ELSE 0 END) as exhaust,"
-                           "SUM(CASE WHEN status='"CONTAINED_STR"'"
-                           "    THEN c ELSE 0 END) as contain,"
-                           "SUM(CASE WHEN status='"MONITOR_STR"'"
-                           "    THEN c ELSE 0 END) as monitor "
-                           "FROM(SELECT fpu_code,year,status,COUNT(status) as c "
-                           "     FROM fire_result, fpu WHERE "
-                           "    ST_Intersects(fire_result.geometry,"
-                           "    fpu.geometry) AND fire_result.ROWID IN "
-                           "        (SELECT pkid FROM idx_fire_result_geometry WHERE "
-                           "        xmin <= MbrMaxX(fpu.geometry) AND "
-                           "        xmax >= MbrMinX(fpu.geometry) AND "
-                           "        ymin <= MbrMaxY(fpu.geometry) AND "
-                           "        ymax >= MbrMinY(fpu.geometry)) "
-                           "    GROUP BY fpu_code, year, status) "
-                           " GROUP BY name,year",
-                       NULL, NULL, NULL );
-    */
+    Commit();
 
     if( bWriteLargeFire )
     {
         /* Add columns */
         /* FIXME: !!! */
-        rc = sqlite3_prepare_v2( db, "SELECT fpu.fpu_code, acres, pop, "
-                                     "cost FROM large_fire_result "
-                                     "LEFT JOIN fig.fig USING(year,fire_num) "
-                                     "LEFT JOIN fpu.fpu ON "
-                                     "substr(fig.fwa_name,0,10)=fpu.fpu_code "
-                                     "WHERE fpu.fpu_code=? AND year=?",
-                                 -1, &lfstmt, NULL );
+        const char *pszPlace;
+        int nYear, nAcres, nPop, nCost;
+        pszSql = sqlite3_mprintf( "SELECT %s,large_fire_result.year,"
+                                  "SUM(acres),SUM(pop),SUM(cost) FROM "
+                                  "large_fire_result,%s "
+                                  "WHERE ST_Intersects(large_fire_result.geometry,"
+                                  "    %s.geometry) AND large_fire_result.ROWID IN "
+                                  "        (SELECT pkid FROM idx_large_fire_result_geometry WHERE "
+                                  "        xmin <= MbrMaxX(%s.geometry) AND "
+                                  "        xmax >= MbrMinX(%s.geometry) AND "
+                                  "        ymin <= MbrMaxY(%s.geometry) AND "
+                                  "        ymax >= MbrMinY(%s.geometry)) "
+                                  "    GROUP BY %s,large_fire_result.year",
+                                  pszName, pszTable, pszTable, pszTable, pszTable,
+                                  pszTable, pszTable, pszName );
+        rc = sqlite3_prepare_v2( db, pszSql, -1, &lfstmt, NULL );
+        rc = sqlite3_prepare_v2( db, "UPDATE spatial_output SET lf_acres=?,"
+                                     "lf_pop=?,lf_cost=? WHERE name=? AND year=?",
+                                 -1, &lfustmt, NULL );
+        while( sqlite3_step( lfstmt ) == SQLITE_ROW )
+        {
+            pszPlace = (const char*)sqlite3_column_text( lfstmt, 0 );
+            nYear = sqlite3_column_int( lfstmt, 1 );
+            nAcres = sqlite3_column_int( lfstmt, 2 );
+            nPop = sqlite3_column_int( lfstmt, 3 );
+            nCost = sqlite3_column_int( lfstmt, 4 );
+            rc = sqlite3_bind_int( lfustmt, 1, nAcres );
+            rc = sqlite3_bind_int( lfustmt, 2, nPop );
+            rc = sqlite3_bind_int( lfustmt, 3, nCost );
+            rc = sqlite3_bind_text( lfustmt, 4, pszName, -1, NULL );
+            rc = sqlite3_bind_int( lfustmt, 5, nYear );
+            rc = sqlite3_step( lfustmt );
+            rc = sqlite3_reset( lfustmt );
+        }
+        sqlite3_reset( lfstmt );
+        sqlite3_reset( lfustmt );
+        sqlite3_finalize( lfstmt );
+        sqlite3_finalize( lfustmt );
     }
+    StartTransaction();
     rc = sqlite3_exec( db, "CREATE TABLE geom(name)", NULL, NULL, NULL );
     rc = sqlite3_exec( db, "SELECT AddGeometryColumn('geom','geometry',"
                            "4269, 'MULTIPOLYGON','XY' )",
@@ -752,12 +768,6 @@ WfipsResult::SpatialExport( const char *pszKey )
     rc = sqlite3_exec( db, pszSql, NULL, NULL, NULL );
     sqlite3_free( (void*)pszSql );
 
-    /*
-    rc = sqlite3_exec( db, "INSERT INTO geom(name,geometry) "
-                           "SELECT DISTINCT(name),fpu.geometry FROM "
-                           "spatial_output LEFT JOIN fpu ON name=fpu_code",
-                       NULL, NULL, NULL );
-    */
     rc = sqlite3_prepare_v2( db, "SELECT DISTINCT(year) FROM spatial_output",
                              -1, &stmt, NULL );
     while( sqlite3_step( stmt ) == SQLITE_ROW )
@@ -806,6 +816,15 @@ WfipsResult::SpatialExport( const char *pszKey )
                            "MAX(monitor) AS monitor_max,"
                            "AVG(monitor) AS monitor_avg,"
                            "MIN(monitor) AS monitor_min,"
+                           "MAX(lf_acres) AS lf_acres_max,"
+                           "AVG(lf_acres) AS lf_acres_avg,"
+                           "MIN(lf_acres) AS lf_acres_min,"
+                           "MAX(lf_pop) AS lf_pop_max,"
+                           "AVG(lf_pop) AS lf_pop_avg,"
+                           "MIN(lf_pop) AS lf_pop_min,"
+                           "MAX(lf_cost) AS lf_cost_max,"
+                           "AVG(lf_cost) AS lf_cost_avg,"
+                           "MIN(lf_cost) AS lf_cost_min,"
                            "geom.geometry as geometry "
                            "FROM spatial_output LEFT JOIN "
                            "geom USING(name) GROUP BY name",
@@ -816,6 +835,8 @@ WfipsResult::SpatialExport( const char *pszKey )
                            "VALUES('spatial_result_summary','geometry','rowid',"
                            "'geom','geometry',1)",
                        NULL, NULL, NULL );
+
+    Commit();
 
     return 0;
 }

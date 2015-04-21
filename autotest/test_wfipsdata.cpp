@@ -473,7 +473,7 @@ BOOST_AUTO_TEST_CASE( run_small_output_4 )
     poData->SetResultPath( WFIPS_TEST_OUTPUT_DB );
     rc = poData->RunScenarios( 2, NULL, 0.0, 0, WFP_NO_TREAT, 0, 1, 365, 0 );
     BOOST_CHECK( rc == 1 );
-    poData->SetResultPath( WFIPS_TEST_OUTPUT_DB );
+    poData->SimulateLargeFire( 1, 365, 1., 1., 1., 1., NULL, 0. );
     poData->SpatialExport( "fpu" );
     poData->CloseResults();
     poData->Reset();
