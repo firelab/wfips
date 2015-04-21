@@ -714,8 +714,6 @@ WfipsResult::SpatialExport( const char *pszKey )
 
     if( bWriteLargeFire )
     {
-        /* Add columns */
-        /* FIXME: !!! */
         const char *pszPlace;
         int nYear, nAcres, nPop, nCost;
         pszSql = sqlite3_mprintf( "SELECT %s,large_fire_result.year,"
@@ -735,6 +733,13 @@ WfipsResult::SpatialExport( const char *pszKey )
         rc = sqlite3_prepare_v2( db, "UPDATE spatial_output SET lf_acres=?,"
                                      "lf_pop=?,lf_cost=? WHERE name=? AND year=?",
                                  -1, &lfustmt, NULL );
+        std::vector<std::string>aoPlaces;
+        std::string osPlace;
+        std::vector<int>anYears;
+        std::vector<int>anAcres;
+        std::vector<int>anPop;
+        std::vector<int>anCost;
+
         while( sqlite3_step( lfstmt ) == SQLITE_ROW )
         {
             pszPlace = (const char*)sqlite3_column_text( lfstmt, 0 );
@@ -742,19 +747,37 @@ WfipsResult::SpatialExport( const char *pszKey )
             nAcres = sqlite3_column_int( lfstmt, 2 );
             nPop = sqlite3_column_int( lfstmt, 3 );
             nCost = sqlite3_column_int( lfstmt, 4 );
+            aoPlaces.push_back( std::string( pszPlace ) );
+            anYears.push_back( nYear );
+            anAcres.push_back( nAcres );
+            anPop.push_back( nPop );
+            anCost.push_back( nCost );
+        }
+        rc = sqlite3_reset( lfstmt );
+        rc = sqlite3_finalize( lfstmt );
+
+        rc = sqlite3_prepare_v2( db, "UPDATE spatial_output SET lf_acres=?,"
+                                     "lf_pop=?,lf_cost=? WHERE name=? AND year=?",
+                                 -1, &lfustmt, NULL );
+        for( int i = 0; i < aoPlaces.size(); i++ )
+        {
+            osPlace = aoPlaces[i];
+            nYear = anYears[i];
+            nAcres = anAcres[i];
+            nPop = anPop[i];
+            nCost = anCost[i];
             rc = sqlite3_bind_int( lfustmt, 1, nAcres );
             rc = sqlite3_bind_int( lfustmt, 2, nPop );
             rc = sqlite3_bind_int( lfustmt, 3, nCost );
-            rc = sqlite3_bind_text( lfustmt, 4, pszName, -1, NULL );
+            rc = sqlite3_bind_text( lfustmt, 4, osPlace.c_str(), -1, SQLITE_TRANSIENT );
             rc = sqlite3_bind_int( lfustmt, 5, nYear );
             rc = sqlite3_step( lfustmt );
             rc = sqlite3_reset( lfustmt );
         }
-        sqlite3_reset( lfstmt );
-        sqlite3_reset( lfustmt );
-        sqlite3_finalize( lfstmt );
         sqlite3_finalize( lfustmt );
     }
+    sqlite3_exec(db, "UPDATE spatial_output SET lf_acres=1, lf_pop=2,lf_cost=3"
+                     "WHERE name='NR_MT_003' AND year=5", NULL, NULL, NULL );
     StartTransaction();
     rc = sqlite3_exec( db, "CREATE TABLE geom(name)", NULL, NULL, NULL );
     rc = sqlite3_exec( db, "SELECT AddGeometryColumn('geom','geometry',"
