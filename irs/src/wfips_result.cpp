@@ -887,6 +887,7 @@ WfipsResult::GetResultYears()
 int
 WfipsResult::SpatialSummary( const char *pszKey )
 {
+    return SpatialExport( pszKey );
     sqlite3_stmt *stmt, *sstmt, *lfstmt;
     int rc;
     char szPath[8192];
