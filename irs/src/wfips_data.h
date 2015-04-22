@@ -223,6 +223,7 @@ public:
                            double dfExhaustProb, const char *pszTreatWkt,
                            double dfTreatProb );
     int ExportFires( const char *pszOutFile, const char *pszDrv );
+    int ExportSummary( const char *pszKey, const char *pszOutFile );
     int Reset();
 
     /* XXX TO BE IMPLEMENTED XXX */
