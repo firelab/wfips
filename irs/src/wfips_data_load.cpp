@@ -516,6 +516,10 @@ WfipsData::LoadTankerBases()
 {
     sqlite3_stmt *stmt, *astmt;
     int i, rc;
+    if( nTankerCount < 1 )
+    {
+        return 0;
+    }
     rc = sqlite3_prepare_v2( db, "SELECT name, X(geometry), Y(geometry),"
                                  "fpu_code FROM tanker_base",
                              -1, &stmt, NULL );
