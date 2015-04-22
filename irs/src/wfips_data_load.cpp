@@ -502,15 +502,58 @@ WfipsData::LoadDispatchLocations()
     sqlite3_finalize( astmt );
     sqlite3_finalize( estmt );
 
-	poScenario->CreateRescTypeVectors("C:/wfips/data/");
+#ifdef WIN32
+    poScenario->CreateRescTypeVectors("C:/wfips/data/");
+#else
+    poScenario->CreateRescTypeVectors("./");
+#endif
 
     return 0;
 }
+
 int
 WfipsData::LoadTankerBases()
 {
-    sqlite3_stmt *stmt;
-    int rc;
+    sqlite3_stmt *stmt, *astmt;
+    int i, rc;
+    rc = sqlite3_prepare_v2( db, "SELECT name, X(geometry), Y(geometry) "
+                                 "fpu_code FROM tanker_base",
+                             -1, &stmt, NULL );
+    rc = sqlite3_prepare_v2( db, "SELECT fwa, distance WHERE base=?", -1,
+                             &astmt, NULL );
+    const char *pszName, *pszFwa, *pszFpu;
+    double dfX, dfY;
+    double dfDist;
+    std::map<std::string, int>::iterator it;
+    while( sqlite3_step( stmt ) )
+    {
+        pszName = (const char*)sqlite3_column_text( stmt, 0 );
+        dfX = sqlite3_column_double( stmt, 1 );
+        dfY = sqlite3_column_double( stmt, 2 );
+        pszFpu = (const char*)sqlite3_column_text( stmt, 3 );
+        CDispLoc oDispLoc( std::string( pszName ), 120, std::string( pszFpu ),
+                           dfY, dfX );
+        rc = sqlite3_bind_text( astmt, 1, pszName, -1, NULL );
+        while( sqlite3_step( astmt ) == SQLITE_ROW )
+        {
+            pszFwa = (const char*)sqlite3_column_text( astmt, 0 );
+            assert( pszFwa );
+            dfDist = sqlite3_column_double( astmt, 1 );
+            assert( dfDist >= 0 );
+            it = FwaIndexMap.find( std::string( pszFwa ) );
+            if( it != FwaIndexMap.end() )
+            {
+                i = it->second;
+                poScenario->m_VFWA[i].AddAssociation( std::string( pszName ), dfDist );
+                oDispLoc.AddAssocFWA( &(poScenario->m_VFWA[i]) );
+            }
+        }
+        sqlite3_reset( astmt );
+        poScenario->m_VDispLoc.push_back( oDispLoc );
+    }
+    sqlite3_finalize( stmt );
+    sqlite3_finalize( astmt );
+
     return 0;
 }
 /*
@@ -757,7 +800,40 @@ WfipsData::AssociateHelitack( std::multimap<std::string, CResource*>&resc_map )
 int
 WfipsData::CreateLargeAirTankers()
 {
-    /* Implement later... */
+    int i;
+    int nType;
+    int nBase;
+    char szName[32];
+    int bFound = FALSE;
+    for( i = 0; i < poScenario->m_VRescType.size(); i++ )
+    {
+        if( poScenario->m_VRescType[i].GetRescType() == "ATT" )
+        {
+            nType = i;
+            break;
+        }
+    }
+    bFound = FALSE;
+    for( i = 0; i < poScenario->m_VDispLoc.size(); i++ )
+    {
+        if( strstr( poScenario->m_VDispLoc[i].GetDispLocID().c_str(), "Alamogordo_KYLE" ) )
+        {
+            nBase = i;
+            break;
+        }
+    }
+    CResource *poR;
+    const char *pszName;
+    /* XXX: 21 is tanker count! */
+    for( i = 0; i < 21; i++ )
+    {
+        pszName = CPLSPrintf( "LAT_%d", i );
+        poR = new CAirtanker( szName, poScenario->m_VRescType[nType], 1, "930",
+                              "2000", DayOfWeek( i % 7 ), DayOfWeek( (i+5) % 7 ),
+                              100, 200, poScenario->m_VDispLoc[nBase],
+                              100, 0, 0, 2600 );
+        poScenario->m_VResource.push_back( poR );
+    }
     return 0;
 }
 
