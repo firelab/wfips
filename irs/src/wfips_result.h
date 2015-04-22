@@ -83,6 +83,7 @@ public:
     int EnableVolatile( int bVolatile );
 
     int ExportFires( const char *pszFile, const char *pszDriver );
+    int ExportSummary( const char *pszKey, const char *pszOutFile );
 
 private:
     WfipsResult();

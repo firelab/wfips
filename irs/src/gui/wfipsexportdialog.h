@@ -24,6 +24,7 @@ public:
 
     QString GetFormat() {return driver;}
     QString GetFilename() {return filename;}
+    int GetExportLevel() {return exportLevel;}
 
 private:
     Ui::WfipsExportDialog *ui;

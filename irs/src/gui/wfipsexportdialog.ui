@@ -30,6 +30,16 @@
          <string>All fires</string>
         </property>
        </item>
+       <item>
+        <property name="text">
+         <string>FPU Summary</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>FWA Summary</string>
+        </property>
+       </item>
       </widget>
      </item>
     </layout>
