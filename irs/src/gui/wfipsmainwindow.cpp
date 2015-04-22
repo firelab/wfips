@@ -1762,10 +1762,22 @@ void WfipsMainWindow::ExportResults()
     QString exportFile = dialog.GetFilename();
     if( !poData || format == "" || exportFile == ""  || currentResultPath == "" )
         return;
-    char *pszDrv, *pszOut;
+    char *pszDrv, *pszOut, *pszPath, *pszDataPath;
     pszDrv = QStringToCString( format );
     pszOut = QStringToCString( exportFile );
-    poData->ExportFires( pszOut, pszDrv );
+    pszPath = QStringToCString( currentResultPath );
+    pszDataPath = QStringToCString( wfipsPath );
+    WfipsResult oResult( pszPath, pszDataPath );
+    if( dialog.GetExportLevel() == 0 )
+        oResult.ExportFires( pszOut, pszDrv );
+    else if( dialog.GetExportLevel() == 1 )
+        oResult.ExportSummary( "fpu", pszOut );
+    else if( dialog.GetExportLevel() == 2 )
+        oResult.ExportSummary( "fwa", pszOut );
+    free( (void*)pszDrv );
+    free( (void*)pszOut );
+    free( (void*)pszPath );
+    free( (void*)pszDataPath );
 }
 
 /*

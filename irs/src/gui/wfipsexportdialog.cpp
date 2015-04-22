@@ -17,6 +17,7 @@ WfipsExportDialog::~WfipsExportDialog()
 
 void WfipsExportDialog::SaveAs()
 {
+    exportLevel = ui->comboBox->currentIndex();
     /* Get our OGR available drivers for output */
     QStringList formats;
     QByteArray format;
@@ -31,7 +32,7 @@ void WfipsExportDialog::SaveAs()
     OGRRegisterAll();
     int i;
     OGRSFDriverH hDrv;
-    if( ui->comboBox->currentIndex() == 1 )
+    if( exportLevel > 0 )
     {
         formats << "CSV files *.txt";
     }

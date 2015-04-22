@@ -1198,6 +1198,247 @@ int WfipsResult::ExportFires( const char *pszFile, const char *pszDriver )
     return 0;
 }
 
+/*
+** Export the data for each year by an area.  This is highly related to the
+** spat-sum branch.
+*/
+int
+WfipsResult::ExportSummary( const char *pszKey, const char *pszOutFile )
+{
+    sqlite3_stmt *stmt, *lfstmt, *lfustmt;
+    int rc, i, nYear;
+    const char *pszPath, *pszSql;
+    pszPath = CPLSPrintf( "%s%s", pszDataPath, FPU_DB );
+    rc = WfipsAttachDb( db, pszPath, "fpu" );
+    pszPath = CPLSPrintf( "%s%s", pszDataPath, FWA_DB );
+    rc = WfipsAttachDb( db, pszPath, "fwa" );
+
+    assert( EQUAL( pszKey, "fwa" ) || EQUAL( pszKey, "fpu" ) );
+
+    if( rc != SQLITE_OK )
+        return rc;
+
+    int bWriteLargeFire = WfipsHasTable( db, "large_fire_result" );
+
+    const char *pszName, *pszTable;
+    if( EQUAL( pszKey, "fpu" ) )
+    {
+        pszName = "fpu_code";
+        pszTable = "fpu";
+    }
+    else if( EQUAL( pszKey, "fwa" ) )
+    {
+        pszName = "name";
+        pszTable = "fwa";
+    }
+    else
+    {
+        assert( 0 );
+    }
+
+    EnableVolatile( 1 );
+    StartTransaction();
+
+    /*
+    ** This is how we can do this???
+    **
+    ** sqlite> pragma table_info(t1);
+    ** cid         name        type        notnull     dflt_value  pk
+    ** ----------  ----------  ----------  ----------  ----------  ----------
+    ** 0           c1                      0                       0
+    ** 1           c2                      0                       0
+    **
+    ** sqlite> select c1,c2,count(c2) as val from t1 group by c1,c2;
+    ** c1          c2          val
+    ** ----------  ----------  ----------
+    ** ada         a           7
+    ** ada         b           8
+    ** ada         c           4
+    ** ada         d           1
+    ** blaine      a           1
+    ** blaine      b           2
+    ** blaine      c           2
+    ** custer      a           4
+    ** custer      d           4
+    **
+    ** sqlite> select c1, sum(case when c2='a' then val else 0 end) as a, 
+    ** sum(case when c2='b' then val else 0 end) as b, sum(case when c2='c'
+    ** then val else 0 end) as c, sum(case when c2='d' then val else 0 end)
+    ** as d from (select c1,c2,count(c2) as val from t1 group by c1,c2)
+    ** group by c1;
+    ** c1          a           b           c           d
+    ** ----------  ----------  ----------  ----------  ----------
+    ** ada         7           8           4           1
+    ** blaine      1           2           2           0
+    ** custer      4           0           0           4
+    **
+    ** And with the years:
+    **
+    ** select c1,c2 as year,sum(case when c3='a' then val else 0 end) as a,
+    ** sum(case when c3='b' then val else 0 end) as b, sum(case when c3='c'
+    ** then val else 0 end) as c, sum(case when c3='d' then val else 0 end)
+    ** as d from (select c1,c2,c3,count(c3) as val from t2 group by c1,c2,c3)
+    ** group by c1,c2;
+    */
+    rc = sqlite3_exec( db, "DROP TABLE IF EXISTS temp_spatial_output", NULL,
+                       NULL, NULL );
+    pszSql = sqlite3_mprintf( "CREATE TABLE temp_spatial_output AS "
+                              "SELECT %s as name, year, "
+                              "SUM(CASE WHEN status='"NO_RESC_SENT_STR"'"
+                              "    THEN c ELSE 0 END) as noresc,"
+                              "SUM(CASE WHEN status='"TIME_LIMIT_EXCEED_STR"'"
+                              "    THEN c ELSE 0 END) as tlimit,"
+                              "SUM(CASE WHEN status='"SIZE_LIMIT_EXCEED_STR"'"
+                              "    THEN c ELSE 0 END) as slimit,"
+                              "SUM(CASE WHEN status='"EXHAUSTED_STR"'"
+                              "    THEN c ELSE 0 END) as exhaust,"
+                              "SUM(CASE WHEN status='"CONTAINED_STR"'"
+                              "    THEN c ELSE 0 END) as contain,"
+                              "SUM(CASE WHEN status='"MONITOR_STR"'"
+                              "    THEN c ELSE 0 END) as monitor, "
+                              "0 as lf_acres, 0 as lf_pop, 0 as lf_cost "
+                              "FROM(SELECT %s,year,status,COUNT(status) as c "
+                              "     FROM fire_result,%s WHERE "
+                              "    ST_Intersects(fire_result.geometry,"
+                              "    %s.geometry) AND fire_result.ROWID IN "
+                              "        (SELECT pkid FROM idx_fire_result_geometry WHERE "
+                              "        xmin <= MbrMaxX(%s.geometry) AND "
+                              "        xmax >= MbrMinX(%s.geometry) AND "
+                              "        ymin <= MbrMaxY(%s.geometry) AND "
+                              "        ymax >= MbrMinY(%s.geometry)) "
+                              "    GROUP BY %s, year, status) "
+                              " GROUP BY name,year", pszName, pszName,
+                              pszTable, pszTable, pszTable, pszTable, pszTable,
+                              pszTable, pszName );
+    rc = sqlite3_exec( db, pszSql, NULL, NULL, NULL );
+    sqlite3_free( (void*)pszSql );
+
+    Commit();
+
+    if( bWriteLargeFire )
+    {
+        const char *pszPlace;
+        int nYear, nAcres, nPop, nCost;
+        pszSql = sqlite3_mprintf( "SELECT %s,large_fire_result.year,"
+                                  "SUM(acres),SUM(pop),SUM(cost) FROM "
+                                  "large_fire_result,%s "
+                                  "WHERE ST_Intersects(large_fire_result.geometry,"
+                                  "    %s.geometry) AND large_fire_result.ROWID IN "
+                                  "        (SELECT pkid FROM idx_large_fire_result_geometry WHERE "
+                                  "        xmin <= MbrMaxX(%s.geometry) AND "
+                                  "        xmax >= MbrMinX(%s.geometry) AND "
+                                  "        ymin <= MbrMaxY(%s.geometry) AND "
+                                  "        ymax >= MbrMinY(%s.geometry)) "
+                                  "    GROUP BY %s,large_fire_result.year",
+                                  pszName, pszTable, pszTable, pszTable, pszTable,
+                                  pszTable, pszTable, pszName );
+        rc = sqlite3_prepare_v2( db, pszSql, -1, &lfstmt, NULL );
+        rc = sqlite3_prepare_v2( db, "UPDATE temp_spatial_output SET lf_acres=?,"
+                                     "lf_pop=?,lf_cost=? WHERE name=? AND year=?",
+                                 -1, &lfustmt, NULL );
+        std::vector<std::string>aoPlaces;
+        std::string osPlace;
+        std::vector<int>anYears;
+        std::vector<int>anAcres;
+        std::vector<int>anPop;
+        std::vector<int>anCost;
+
+        StartTransaction();
+
+        while( sqlite3_step( lfstmt ) == SQLITE_ROW )
+        {
+            pszPlace = (const char*)sqlite3_column_text( lfstmt, 0 );
+            nYear = sqlite3_column_int( lfstmt, 1 );
+            nAcres = sqlite3_column_int( lfstmt, 2 );
+            nPop = sqlite3_column_int( lfstmt, 3 );
+            nCost = sqlite3_column_int( lfstmt, 4 );
+            aoPlaces.push_back( std::string( pszPlace ) );
+            anYears.push_back( nYear );
+            anAcres.push_back( nAcres );
+            anPop.push_back( nPop );
+            anCost.push_back( nCost );
+        }
+        rc = sqlite3_reset( lfstmt );
+        rc = sqlite3_finalize( lfstmt );
+
+        rc = sqlite3_prepare_v2( db, "UPDATE spatial_output SET lf_acres=?,"
+                                     "lf_pop=?,lf_cost=? WHERE name=? AND year=?",
+                                 -1, &lfustmt, NULL );
+        for( i = 0; i < aoPlaces.size(); i++ )
+        {
+            osPlace = aoPlaces[i];
+            nYear = anYears[i];
+            nAcres = anAcres[i];
+            nPop = anPop[i];
+            nCost = anCost[i];
+            rc = sqlite3_bind_int( lfustmt, 1, nAcres );
+            rc = sqlite3_bind_int( lfustmt, 2, nPop );
+            rc = sqlite3_bind_int( lfustmt, 3, nCost );
+            rc = sqlite3_bind_text( lfustmt, 4, osPlace.c_str(), -1, SQLITE_TRANSIENT );
+            rc = sqlite3_bind_int( lfustmt, 5, nYear );
+            rc = sqlite3_step( lfustmt );
+            rc = sqlite3_reset( lfustmt );
+        }
+        sqlite3_finalize( lfustmt );
+        Commit();
+    }
+    /* Export */
+    FILE *fout;
+    fout = fopen( pszOutFile, "wb" );
+    if( !fout )
+    {
+        return 1;
+    }
+    rc = sqlite3_prepare_v2( db, "PRAGMA table_info(temp_spatial_output)", -1,
+                             &stmt, NULL );
+
+    int n = 0;
+    while( sqlite3_step( stmt ) == SQLITE_ROW )
+    {
+        fprintf( fout, "%s,", sqlite3_column_text( stmt, 1 ) );
+        n++;
+    }
+    /* eat the last comma */
+    fseek( fout, -1, SEEK_CUR );
+    fprintf( fout, "%s", "\n" );
+
+    rc = sqlite3_finalize( stmt );
+    rc = sqlite3_prepare_v2( db, "SELECT * FROM temp_spatial_output", -1, &stmt,
+                             NULL );
+    const char *pszToken;
+    int nType;
+    while( sqlite3_step( stmt ) == SQLITE_ROW )
+    {
+        i = 0;
+        while( i < n )
+        {
+            nType = sqlite3_column_type( stmt, i );
+            switch( nType )
+            {
+                case SQLITE_INTEGER:
+                    fprintf( fout, "%d,", sqlite3_column_int( stmt, i ) );
+                    break;
+                case SQLITE_FLOAT:
+                    fprintf( fout, "%lf,", sqlite3_column_double( stmt, i ) );
+                    break;
+                case SQLITE_TEXT:
+                    fprintf( fout, "\"%s\",", sqlite3_column_text( stmt, i ) );
+                    break;
+                case SQLITE_BLOB:
+                case SQLITE_NULL:
+                    fprintf( fout, ",", sqlite3_column_int( stmt, i ) );
+                    break;
+            }
+            i++;
+        }
+        fseek( fout, -1, SEEK_CUR );
+        fprintf( fout, "%s", "\n" );
+    }
+    rc = sqlite3_finalize( stmt );
+    fclose( fout );
+    return 0;
+}
+
 WfipsResult::WfipsResult() {}
 WfipsResult::WfipsResult( const WfipsResult &rhs ){}
 

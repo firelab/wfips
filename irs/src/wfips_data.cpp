@@ -1053,6 +1053,16 @@ WfipsData::ExportFires( const char *pszOutFile, const char *pszDrv )
 }
 
 int
+WfipsData::ExportSummary( const char *pszKey, const char *pszOutFile )
+{
+    int rc;
+    if( poResult == NULL )
+        return SQLITE_ERROR;
+    rc = poResult->ExportSummary( pszKey, pszOutFile );
+    return rc;
+}
+
+int
 WfipsData::CloseResults()
 {
     return poResult->Close();
