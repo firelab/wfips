@@ -607,7 +607,7 @@
              </spacer>
             </item>
             <item>
-             <widget class="QSpinBox" name="spinBox">
+             <widget class="QSpinBox" name="tankerSpinBox">
               <property name="accelerated">
                <bool>true</bool>
               </property>

@@ -516,24 +516,28 @@ WfipsData::LoadTankerBases()
 {
     sqlite3_stmt *stmt, *astmt;
     int i, rc;
-    rc = sqlite3_prepare_v2( db, "SELECT name, X(geometry), Y(geometry) "
+    rc = sqlite3_prepare_v2( db, "SELECT name, X(geometry), Y(geometry),"
                                  "fpu_code FROM tanker_base",
                              -1, &stmt, NULL );
-    rc = sqlite3_prepare_v2( db, "SELECT fwa, distance WHERE base=?", -1,
+    rc = sqlite3_prepare_v2( db, "SELECT fwa, distance FROM att_assoc WHERE base=?", -1,
                              &astmt, NULL );
     const char *pszName, *pszFwa, *pszFpu;
     double dfX, dfY;
     double dfDist;
     std::map<std::string, int>::iterator it;
-    while( sqlite3_step( stmt ) )
+    while( sqlite3_step( stmt ) == SQLITE_ROW )
     {
         pszName = (const char*)sqlite3_column_text( stmt, 0 );
+        assert( pszName );
         dfX = sqlite3_column_double( stmt, 1 );
+        assert( dfX >= -180. && dfX < 360. );
         dfY = sqlite3_column_double( stmt, 2 );
+        assert( dfY < 90. && dfY > -90. );
         pszFpu = (const char*)sqlite3_column_text( stmt, 3 );
+        assert( pszFpu );
         CDispLoc oDispLoc( std::string( pszName ), 120, std::string( pszFpu ),
                            dfY, dfX );
-        rc = sqlite3_bind_text( astmt, 1, pszName, -1, NULL );
+        rc = sqlite3_bind_text( astmt, 1, pszName, -1, SQLITE_TRANSIENT );
         while( sqlite3_step( astmt ) == SQLITE_ROW )
         {
             pszFwa = (const char*)sqlite3_column_text( astmt, 0 );
@@ -551,6 +555,7 @@ WfipsData::LoadTankerBases()
         sqlite3_reset( astmt );
         poScenario->m_VDispLoc.push_back( oDispLoc );
     }
+    sqlite3_reset( stmt );
     sqlite3_finalize( stmt );
     sqlite3_finalize( astmt );
 
@@ -805,6 +810,10 @@ WfipsData::CreateLargeAirTankers()
     int nBase;
     char szName[32];
     int bFound = FALSE;
+    if( nTankerCount < 1 )
+    {
+        return 0;
+    }
     for( i = 0; i < poScenario->m_VRescType.size(); i++ )
     {
         if( poScenario->m_VRescType[i].GetRescType() == "ATT" )
@@ -824,8 +833,7 @@ WfipsData::CreateLargeAirTankers()
     }
     CResource *poR;
     const char *pszName;
-    /* XXX: 21 is tanker count! */
-    for( i = 0; i < 21; i++ )
+    for( i = 0; i < nTankerCount; i++ )
     {
         pszName = CPLSPrintf( "LAT_%d", i );
         poR = new CAirtanker( szName, poScenario->m_VRescType[nType], 1, "930",

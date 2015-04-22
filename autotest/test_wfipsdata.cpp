@@ -367,6 +367,19 @@ BOOST_AUTO_TEST_CASE( load_resource_2 )
     BOOST_CHECK( poData->TestResourceLoad2() == 0 );
 }
 
+BOOST_AUTO_TEST_CASE( load_tanker_1 )
+{
+    int rc;
+    poData->SetTankerCount( 20 );
+    rc = poData->LoadIrsData( "POLYGON((-114 47, -113 47, -113 46, -114 46, -114 47))" );
+    BOOST_REQUIRE( rc == 0 );
+    rc = poData->LoadScenario( 5, NULL, 0.0, 0, WFP_NO_TREAT, 0, 1, 365, 0 );
+    BOOST_REQUIRE( rc == 0 );
+    rc = poData->RunScenario( 0 );
+    BOOST_CHECK( rc == 1 );
+    poData->Reset();
+}
+
 BOOST_AUTO_TEST_CASE( load_all_1 )
 {
     int rc;

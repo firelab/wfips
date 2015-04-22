@@ -1482,6 +1482,9 @@ int WfipsMainWindow::RunIrs()
         dfPpHeli = GetPrepositionValue( ui->helitackPPComboBox );
     }
 
+    /* Tanker stuff */
+    int nTankers = ui->tankerSpinBox->value();
+
     /* Fuel Treatment */
     double dfTreatProb = 0.0;
     const char *pszTreatWkt = NULL;
@@ -1568,6 +1571,8 @@ int WfipsMainWindow::RunIrs()
         nYearCount = 1;
         nSpecificYear = ui->singleYearComboBox->currentText().toInt();
     }
+    /* Set Tanker count */
+    poData->SetTankerCount( nTankers );
     /* Fix this for QFuture stuff, like:
     future = QtConcurrent::run( poData, &WfipsData::LoadIrsData );
     */

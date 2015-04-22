@@ -186,6 +186,8 @@ public:
                      int *panDispLocIds,
                      int nCount );
 
+    int SetTankerCount( int n ) { nTankerCount = n; return n; }
+
     std::vector<int> GetScenarioIndices();
 
     /* Move to private ??? */
@@ -302,6 +304,7 @@ private:
     int LoadTankerBases();
     int LoadResources();
     int AssociateHelitack( std::multimap<std::string, CResource*>&resc_map );
+    int nTankerCount;
     int CreateLargeAirTankers();
 
     /* Helper for Diane's structs */

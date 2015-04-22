@@ -306,6 +306,8 @@ ADD_TEST( wfips_load_resource_1 ${EXECUTABLE_OUTPUT_PATH}/test_main
           --run_test=wfipsdata/load_resource_1 )
 ADD_TEST( wfips_load_resource_2 ${EXECUTABLE_OUTPUT_PATH}/test_main
           --run_test=wfipsdata/load_resource_2 )
+ADD_TEST( wfips_load_tanker_1 ${EXECUTABLE_OUTPUT_PATH}/test_main
+          --run_test=wfipsdata/load_tanker_1 )
 ADD_TEST( wfips_compile_geom_1 ${EXECUTABLE_OUTPUT_PATH}/test_main
           --run_test=wfipsdata/compile_geom_1 )
 ADD_TEST( wfips_compile_geom_2 ${EXECUTABLE_OUTPUT_PATH}/test_main

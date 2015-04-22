@@ -63,6 +63,7 @@ WfipsData::Init()
     pszRescPath = NULL;
     poResult = NULL;
     pszResultPath = NULL;
+    nTankerCount = 0;
 }
 
 WfipsData::~WfipsData()
