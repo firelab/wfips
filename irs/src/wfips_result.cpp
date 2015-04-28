@@ -944,6 +944,9 @@ WfipsResult::ExportSummary( const char *pszKey, const char *pszOutFile )
         assert( 0 );
     }
 
+    /* Make sure we have our indices, no-op otherwise */
+    CreateIndices();
+
     EnableVolatile( 1 );
     StartTransaction();
 
