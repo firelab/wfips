@@ -1414,6 +1414,11 @@ char * WfipsMainWindow::GetTreatWkt()
 {
     QgsVectorLayer layer(fuelMaskSource + "|layername=" + fuelMaskLayer, "", "ogr" );
 
+    if( !layer.isValid() )
+    {
+        return NULL;
+    }
+
     QgsFeatureIterator fit = layer.getFeatures();
     QList<QgsGeometry*>geometries;
     QgsFeature feature;
