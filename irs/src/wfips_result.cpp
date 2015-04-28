@@ -1072,7 +1072,7 @@ WfipsResult::ExportSummary( const char *pszKey, const char *pszOutFile )
         rc = sqlite3_reset( lfstmt );
         rc = sqlite3_finalize( lfstmt );
 
-        rc = sqlite3_prepare_v2( db, "UPDATE spatial_output SET lf_acres=?,"
+        rc = sqlite3_prepare_v2( db, "UPDATE temp_spatial_output SET lf_acres=?,"
                                      "lf_pop=?,lf_cost=? WHERE name=? AND year=?",
                                  -1, &lfustmt, NULL );
         for( i = 0; i < aoPlaces.size(); i++ )
