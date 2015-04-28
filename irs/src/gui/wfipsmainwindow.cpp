@@ -1653,9 +1653,9 @@ void WfipsMainWindow::SetResultColorRamp( QString attribute )
         return;
     }
     /* Good/bad?  high contain ratio is good, others are usually bad. */
-    bool invert = false;
-    if( attribute.contains( "cont" ) )
-        invert = true;
+    bool invert = true;
+    if( attribute == "contratio" || attribute == "contain" )
+        invert = false;
     /*
     ** Do we own these?  It appears the layer owns the actual renderer and
     ** calls delete.  I am guessing the renderer owns the ramp and symbol.  We
