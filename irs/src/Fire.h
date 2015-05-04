@@ -103,6 +103,8 @@ public:
         void SetManageObjective( int mo ){m_ManageObjective = mo;}
         int GetUseStrategy() {return m_UseStategy;}
         void SetUseStrategy( int bOn ) {m_UseStategy = bOn;}
+        double GetUserValue(){ return m_UserValue; }
+        void SetUserValue(double dfVal){ m_UserValue = dfVal; }
 
 private:
 	int m_Scenario;												//fire scenario
@@ -135,6 +137,8 @@ private:
         int m_TreatPriority;
         int m_ManageObjective;
         int m_UseStategy;
+
+        double m_UserValue;
 	
 	static int count;											//number of objects instantiated
 

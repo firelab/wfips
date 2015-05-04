@@ -63,6 +63,7 @@ WfipsData::Init()
     pszRescPath = NULL;
     poResult = NULL;
     pszResultPath = NULL;
+    hUserDS = GDALOpen( "grouse.tif", GA_ReadOnly );
 }
 
 WfipsData::~WfipsData()
@@ -74,6 +75,7 @@ WfipsData::~WfipsData()
     sqlite3_close( db );
     sqlite3_free( (void*)pszAnalysisAreaWkt );
     delete poScenario;
+    GDALClose( hUserDS );
 }
 
 int
@@ -814,6 +816,8 @@ WfipsData::LoadScenario( int nYearIdx, const char *pszTreatWkt,
     char szSunrise[128];
     char szSunset[128];
 
+    double dfUserValue;
+
     while( sqlite3_step( stmt ) == SQLITE_ROW )
     {
         nYear = sqlite3_column_int( stmt, 0 );
@@ -916,6 +920,7 @@ WfipsData::LoadScenario( int nYearIdx, const char *pszTreatWkt,
             //printf("Invalid fwa name: %s\n", pszFwa);
             continue;
         }
+
         i = it->second;
         poScenario->m_VFire.push_back( CFire( nYear, nFire, nJulDay,
                                               std::string( pszWeekDay ),
@@ -939,6 +944,14 @@ WfipsData::LoadScenario( int nYearIdx, const char *pszTreatWkt,
         else
             poScenario->m_VFire[iFire].SetUseStrategy( 0 );
 
+        if( hUserDS )
+        {
+            if( PixelValue( hUserDS, 1, dfX, dfY, &dfUserValue, NULL ) == 0 )
+
+            {
+                poScenario->m_VFire[iFire].SetUserValue( dfUserValue );
+            }
+        }
         iFire++;
     }
     poScenario->m_NumFire = poScenario->m_VFire.size();

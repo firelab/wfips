@@ -292,6 +292,9 @@ private:
     char* pszResultPath;
     WfipsResult *poResult;
 
+    /* User defined raster (grouse) */
+    GDALDatasetH hUserDS;
+
     /* Diane's structs */
     CRunScenario *poScenario;
     int LoadRescTypes();
