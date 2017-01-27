@@ -245,7 +245,7 @@ FIGGenerator::GenerateFromFile( const char *pszInputFilename,
         */
         rc = sscanf( buffer, "%s %d %d %lf %lf %d %d %d", &abyCrap, &nYear,
                      &nJulDay, &dfX, &dfY, &nDiscTime, &nCause, &nErc );
-        if( rc = 0 )
+        if( rc == 0 )
         {
             continue;
         }
